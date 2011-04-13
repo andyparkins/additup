@@ -164,7 +164,6 @@ class TGenericBigInteger
   protected:
 	void normalise();
 
-	void subtract(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void multiply(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitAND(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitOR(const TGenericBigInteger &a, const TGenericBigInteger &b);
@@ -197,14 +196,6 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 	TGenericBigInteger ans;
 	ans.bitNOT(*this);
 	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger> &
-TGenericBigInteger<tLittleInteger>::operator-=(const TGenericBigInteger &x)
-{
-	subtract(*this, x);
-	return *this;
 }
 
 template <typename tLittleInteger>

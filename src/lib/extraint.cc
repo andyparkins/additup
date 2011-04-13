@@ -359,90 +359,92 @@ TGenericBigInteger<tLittleInteger>::operator+=(
 }
 
 //
-// Function:	TGenericBigInteger :: subtract
+// Function:	TGenericBigInteger :: operator-=
 // Description:
-/// Implement A = B - C
-//
-/// A = B - C; with "this" as A.
+/// Implement A = A - B
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::subtract(const TGenericBigInteger<tLittleInteger> &B, const TGenericBigInteger<tLittleInteger> &C)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::operator-=(
+		const TGenericBigInteger<tLittleInteger> &B)
 {
-	TGEN_BIG_INT_SELF_CHECK( this == &B || this == &C, subtract(B,C) );
+	typename tLittleDigitsVector::iterator itA;
+	typename tLittleDigitsVector::const_iterator itB;
 
 	// If one is invalid, then the answer is invalid
-	if( !B.isValid() || ! C.isValid() ) {
+	if( !isValid() || ! B.isValid() ) {
 		invalidate();
-		return;
+		return *this;
 	}
 
-	if (C.LittleDigits.size() == 0) {
-		// If C is zero, copy B.
-		(*this) = B;
-		return;
-	} else if (B.LittleDigits.size() < C.LittleDigits.size()) {
+	if( LittleDigits.size() < B.LittleDigits.size()) {
 		// If a is shorter than b, the result is negative.
-		throw runtime_error("TGenericBigInteger<tLittleInteger>::subtract: "
+		throw runtime_error("TGenericBigInteger<tLittleInteger>::operator-=: "
 			"Negative result in unsigned calculation");
 	}
 
-	// Warn LittleDigits how much space we will be needing
-	LittleDigits.clear();
-	LittleDigits.assign( B.LittleDigits.size(), 0 );
-
 	// ---
-	bool borrowIn, borrowOut;
-	tLittleInteger temp;
-	tIndex i;
 
-	borrowIn = false;
+	bool borrowIn = false, borrowOut;
+
+	// Point at begining of both arrays
+	itA = LittleDigits.begin();
+	itB = B.LittleDigits.begin();
 
 	// For each block index that is present in both inputs...
-	for( i = 0; i < C.LittleDigits.size(); i++ ) {
-		// Perform the block operation
-		temp = B.LittleDigits[i] - C.LittleDigits[i];
-
+	while( itA != LittleDigits.end() && itB != B.LittleDigits.end() ) {
 		// If we're short in this block; we must borrow from the next
-		// loop; note that because temp will have wrapped around
-		// naturally, we don't need to apply the borrow -- it's already
-		// done.
-		borrowOut = (temp > B.LittleDigits[i]);
+		// block; we're "short" when the subtraction is going to be
+		// negative -- which means wrapped around
+		borrowOut = (*itB > *itA);
 
-		// Check for a borrow request from the previous loop, and reduce
-		// temp accordingly
+		// Perform subtraction
+		*itA -= *itB;
+
+		// Check for a borrow request from the previous loop
 		if( borrowIn ) {
 			// If we need to borrow but our block is already zero, then
-			// we'll have to borrow from the next block ourselves.
-			borrowOut |= (temp == 0);
+			// we'll have to borrow from the next block.  If we're
+			// already borrowing then it will take care of itself, we've
+			// got a whole digits worth of extra numbers already
+			borrowOut |= (*itA == 0);
 			// Apply our borrow
-			temp--;
+			(*itA)--;
 		}
-		LittleDigits[i] = temp;
 
 		// Our borrowOut, is the next loop's borrowIn
 		borrowIn = borrowOut;
+
+		// Next element
+		itA++;
+		itB++;
 	}
 
-	while( i < B.LittleDigits.size() ) {
-		temp = B.LittleDigits[i];
+	// It's impossible to run out of A before B, so we must be here
+	// because we've run out of B digits; therefore we're only concerned
+	// with applying any remaining carrys to A
+	while( itA != LittleDigits.end() && borrowIn ) {
 		// If there is a borrow remaining, then apply it
 		if( borrowIn ) {
-			borrowIn = (B.LittleDigits[i] == 0);
-			temp--;
+			// If the current digit is already zero, we're going to need
+			// to borrow from the next position
+			borrowIn = (*itA == 0);
+			(*itA)--;
 		}
-		LittleDigits[i] = temp;
-		i++;
+		itA++;
 	}
 
 	// If there is still a borrow, then the result would be negative,
 	// which we checked for at the top, and so should be impossible
 	// here.
 	if( borrowIn )
-		throw logic_error("TGenericBigInteger<tLittleInteger>::subtract: Negative result in unsigned calculation impossible here");
+		throw logic_error("TGenericBigInteger<tLittleInteger>::operator-=: Negative result in unsigned calculation impossible here");
 
 	// We could quite easily have made leading zero-containing blocks.
 	// Remove them.
 	normalise();
+
+	return *this;
 }
 
 //
@@ -1078,6 +1080,11 @@ int main( int argc, char *argv[] )
 		log() << "64bit: " << sixtyFourB << " + " << sixtyFourC << " = " << k << endl;
 		if( k != TBigInteger( 0x1, 0xEEEEEEEE, 0xAAAAAAA9 ) )
 			throw logic_error( "64bit addition incorrect" );
+
+		k = sixtyFourB - sixtyFourC;
+		log() << "64bit: " << sixtyFourB << " - " << sixtyFourC << " = " << k << endl;
+		if( k != TBigInteger( 0x11111111, 0x11111111 ) )
+			throw logic_error( "64bit subtraction incorrect" );
 
 		k = thirtyTwoB * thirtyTwoC;
 		log() << "32bit: " << thirtyTwoB << " * " << thirtyTwoC << " = " << k << endl;
