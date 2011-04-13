@@ -120,19 +120,7 @@ class TGenericBigInteger
 	tIndex lowestBit() const;
 //	bool setBit( tIndex bi, bool b );
 
-	// Arithmetic
-	TGenericBigInteger operator+( const TGenericBigInteger & ) const;
-	TGenericBigInteger operator-( const TGenericBigInteger & ) const;
-	TGenericBigInteger operator*( const TGenericBigInteger & ) const;
-	TGenericBigInteger operator/( const TGenericBigInteger & ) const;
-	TGenericBigInteger operator%( const TGenericBigInteger & ) const;
-	TGenericBigInteger operator&( const TGenericBigInteger & ) const;
-	TGenericBigInteger operator|( const TGenericBigInteger & ) const;
-	TGenericBigInteger operator^( const TGenericBigInteger & ) const;
-	TGenericBigInteger operator~() const;
-	TGenericBigInteger operator<<( tIndex ) const;
-	TGenericBigInteger operator>>( tIndex ) const;
-
+	// Arithmetic - Compound
 	TGenericBigInteger &operator +=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator -=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator *=(const TGenericBigInteger &x);
@@ -149,6 +137,19 @@ class TGenericBigInteger
 	TGenericBigInteger &operator--();
 	TGenericBigInteger &operator--( int );
 
+	// Arithmetic - non compound
+	TGenericBigInteger operator+( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) += x; }
+	TGenericBigInteger operator-( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) -= x; };
+	TGenericBigInteger operator*( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) *= x; };
+	TGenericBigInteger operator/( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) /= x; };
+	TGenericBigInteger operator%( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) %= x; };
+	TGenericBigInteger operator&( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) &= x; };
+	TGenericBigInteger operator|( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) |= x; };
+	TGenericBigInteger operator^( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) ^= x; };
+	TGenericBigInteger operator~() const;
+	TGenericBigInteger operator<<( tIndex b ) const { return TGenericBigInteger<tLittleInteger>(*this) <<= b; };
+	TGenericBigInteger operator>>( tIndex b ) const { return TGenericBigInteger<tLittleInteger>(*this) >>= b; };
+
 	// Comparison
 	eComparisonResult compareTo( const TGenericBigInteger & ) const;
 	bool operator<( const TGenericBigInteger &O ) const { return isValid() && O.isValid() && compareTo(O) == LessThan; }
@@ -163,10 +164,6 @@ class TGenericBigInteger
   protected:
 	void normalise();
 
-	template <typename T> T convertToSignedPrimitive() const;
-	template <typename T> T convertToPrimitive() const;
-
-	void add(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void subtract(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void multiply(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitAND(const TGenericBigInteger &a, const TGenericBigInteger &b);
@@ -195,84 +192,6 @@ class TGenericBigInteger
 
 template <typename tLittleInteger>
 inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator+(const TGenericBigInteger &x) const
-{
-	TGenericBigInteger ans;
-	ans.add(*this, x);
-	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator-(const TGenericBigInteger &x) const
-{
-	TGenericBigInteger ans;
-	ans.subtract(*this, x);
-	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator*(const TGenericBigInteger &x) const
-{
-	TGenericBigInteger ans;
-	ans.multiply(*this, x);
-	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator/(const TGenericBigInteger &x) const
-{
-	if( x.isZero() )
-		throw runtime_error("TGenericBigInteger<tLittleInteger>::operator/: division by zero");
-	TGenericBigInteger q, r;
-	r = *this;
-	r.divideWithRemainder(x, q);
-	return q;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator%(const TGenericBigInteger &x) const
-{
-	if( x.isZero() )
-		throw runtime_error("TGenericBigInteger<tLittleInteger>::operator/: division by zero");
-	TGenericBigInteger q, r;
-	r = *this;
-	r.divideWithRemainder(x, q);
-	return r;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator&(const TGenericBigInteger &x) const
-{
-	TGenericBigInteger ans;
-	ans.bitAND(*this, x);
-	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator|(const TGenericBigInteger &x) const
-{
-	TGenericBigInteger ans;
-	ans.bitOR(*this, x);
-	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator^(const TGenericBigInteger &x) const
-{
-	TGenericBigInteger ans;
-	ans.bitXOR(*this, x);
-	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
 TGenericBigInteger<tLittleInteger>::operator~() const
 {
 	TGenericBigInteger ans;
@@ -280,31 +199,6 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 	return ans;
 }
 
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator<<(tIndex b) const
-{
-	TGenericBigInteger ans;
-	ans.bitShiftLeft(*this, b);
-	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator>>(tIndex b) const
-{
-	TGenericBigInteger ans;
-	ans.bitShiftRight(*this, b);
-	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger> &
-TGenericBigInteger<tLittleInteger>::operator+=(const TGenericBigInteger &x)
-{
-	add(*this, x);
-	return *this;
-}
 template <typename tLittleInteger>
 inline TGenericBigInteger<tLittleInteger> &
 TGenericBigInteger<tLittleInteger>::operator-=(const TGenericBigInteger &x)

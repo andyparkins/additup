@@ -272,65 +272,44 @@ void TGenericBigInteger<tLittleInteger>::normalise()
 	}
 
 //
-// Function:	TGenericBigInteger :: add
+// Function:	TGenericBigInteger :: operator+=
 // Description:
-/// Implement A = B + C
-//
-/// A = B + C; with "this" as A.
+/// Implement A = A + B
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::add(const TGenericBigInteger<tLittleInteger> &B, const TGenericBigInteger<tLittleInteger> &C)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::operator+=(
+		const TGenericBigInteger<tLittleInteger> &B)
 {
-	TGEN_BIG_INT_SELF_CHECK( this == &B || this == &C, add(B,C) );
+	typename tLittleDigitsVector::iterator itA;
+	typename tLittleDigitsVector::const_iterator itB;
 
 	// If one is invalid, then the answer is invalid
-	if( !B.isValid() || !C.isValid() ) {
+	if( !isValid() || !B.isValid() ) {
 		invalidate();
-		return;
+		return *this;
 	}
-
-	// If one argument is zero, copy the other.
-	if( B.LittleDigits.size() == 0 ) {
-		(*this) = C;
-		return;
-	} else if (C.LittleDigits.size() == 0) {
-		(*this) = B;
-		return;
-	}
-
-	const TGenericBigInteger *LongestArg, *ShortestArg;
-	if( B.LittleDigits.size() >= C.LittleDigits.size() ) {
-		LongestArg = &B;
-		ShortestArg = &C;
-	} else {
-		LongestArg = &C;
-		ShortestArg = &B;
-	}
-
-	// Warn our own vector how much space it's going to need
-	LittleDigits.clear();
-	LittleDigits.assign( LongestArg->LittleDigits.size() + 1, 0 );
-
-	// ---
 
 	// Starting at the least significant blocks (the front of the
 	// vector), we now iterate through until we've used up the shortest
 	// input argument.
-	bool carryIn, carryOut;
+	bool carryIn = false, carryOut;
 	tLittleInteger temp;
-	tIndex i;
-	carryIn = false;
 
-	for( i = 0; i < ShortestArg->LittleDigits.size(); i++ ) {
-		// Perform the block operation
-		temp = LongestArg->LittleDigits[i] + ShortestArg->LittleDigits[i];
+	// Point at begining of both arrays
+	itA = LittleDigits.begin();
+	itB = B.LittleDigits.begin();
+
+	while( itA != LittleDigits.end() && itB != B.LittleDigits.end() ) {
+		// Perform sum
+		temp = *itA + *itB;
 
 		// A carry has ocurred if we've got an answer smaller than the
 		// inputs.  The result will be the wrap around equivalent of the
 		// answer, so we must note that we need an extra in the next
 		// block if we detect it.
 		// http://www.fefe.de/intof.html
-		carryOut = (temp < LongestArg->LittleDigits[i]);
+		carryOut = (temp < *itA);
 
 		// Was there a carry from the previous block?
 		if( carryIn ) {
@@ -341,34 +320,42 @@ void TGenericBigInteger<tLittleInteger>::add(const TGenericBigInteger<tLittleInt
 			carryOut |= (temp == 0);
 		}
 
-		// Store this part of the addition
-		LittleDigits[i] = temp;
-
-		// Our carryOut is the next loop's carryIn
+		// Store
+		*itA = temp;
 		carryIn = carryOut;
-	}
 
-	// Simply store the remaining blocks of the longest argument, adding
-	// in any leftover carry from above as necessary.
-	while( i < LongestArg->LittleDigits.size() ) {
-		temp = LongestArg->LittleDigits[i];
-		if( carryIn ) {
-			// Apply the carry
-			temp++;
-			// Check if this carry overflowed, and pass it to the next
-			// loop
-			carryIn = (temp == 0);
-		}
-		LittleDigits[i] = temp;
-		i++;
+		// Next element
+		itA++;
+		itB++;
+
+	}
+	// Local array still has digits in it
+	while( itA != LittleDigits.end() && carryIn ) {
+		if( carryIn )
+			(*itA)++;
+		if( *itA != 0 )
+			carryIn = false;
+		itA++;
+	}
+	// Remote array still has digits, whilst we have run out. Basically
+	// copy with only the carry to worry about
+	while( itB != B.LittleDigits.end() ) {
+		LittleDigits.push_back( *itB );
+		if( carryIn )
+			LittleDigits.back()++;
+		if( LittleDigits.back() != 0 )
+			carryIn = false;
+		itB++;
 	}
 
 	// If there is _still_ a carry remaining, we'll need the extra block
 	// (the one we reserved in our LittleDigits.reserve() call ealier
 	if( carryIn )
-		LittleDigits[i] = 1;
+		LittleDigits.push_back(1);
 
 	normalise();
+
+	return *this;
 }
 
 //
