@@ -448,16 +448,17 @@ TGenericBigInteger<tLittleInteger>::operator-=(
 }
 
 //
-// Function:	TGenericBigInteger :: multiply
+// Function:	TGenericBigInteger :: operator*=
 // Description:
-/// Implement A = B * C
-//
-/// A = B * C; with "this" as A.
+/// Implement A = A * B
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::multiply(const TGenericBigInteger<tLittleInteger> &B, const TGenericBigInteger<tLittleInteger> &C)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::operator*=(
+		const TGenericBigInteger<tLittleInteger> &B)
 {
-	TGEN_BIG_INT_SELF_CHECK( this == &B || this == &C, multiply(B,C) );
+	// We can't do this multiply in place, as we need an accumulator
+	TGenericBigInteger<tLittleInteger> C(*this);
 
 	// Warn our own vector how much space it's going to need
 	LittleDigits.clear();
@@ -498,6 +499,8 @@ void TGenericBigInteger<tLittleInteger>::multiply(const TGenericBigInteger<tLitt
 			(*this) += R;
 		}
 	}
+
+	return *this;
 }
 
 //

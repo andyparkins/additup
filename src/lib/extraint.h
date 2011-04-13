@@ -164,7 +164,6 @@ class TGenericBigInteger
   protected:
 	void normalise();
 
-	void multiply(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitAND(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitOR(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitXOR(const TGenericBigInteger &a, const TGenericBigInteger &b);
@@ -173,14 +172,16 @@ class TGenericBigInteger
 	void bitShiftRight(const TGenericBigInteger &a, tIndex b);
 	void divideWithRemainder(const TGenericBigInteger &b, TGenericBigInteger &q);
 
-	static void blockMultiply(tLittleInteger &R1, tLittleInteger &R0,
-		tLittleInteger B, const tLittleInteger C );
-
 	void blockShiftLeft(const TGenericBigInteger &a, tIndex b);
 	void blockShiftRight(const TGenericBigInteger &a, tIndex b);
 
   protected:
 	tLittleDigitsVector LittleDigits;
+
+  private:
+	static void blockMultiply(tLittleInteger &R1, tLittleInteger &R0,
+		tLittleInteger B, const tLittleInteger C );
+
 };
 
 
@@ -196,14 +197,6 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 	TGenericBigInteger ans;
 	ans.bitNOT(*this);
 	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger> &
-TGenericBigInteger<tLittleInteger>::operator*=(const TGenericBigInteger &x)
-{
-	multiply(*this, x);
-	return *this;
 }
 
 template <typename tLittleInteger>
