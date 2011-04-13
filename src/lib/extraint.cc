@@ -693,26 +693,24 @@ void TGenericBigInteger<tLittleInteger>::divideWithRemainder(const TGenericBigIn
 }
 
 //
-// Function:	TGenericBigInteger :: bitAND
+// Function:	TGenericBigInteger :: operator&=
 // Description:
+/// Implement A = A & B
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::bitAND(const TGenericBigInteger &a, const TGenericBigInteger &b)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::operator&=(
+		const TGenericBigInteger<tLittleInteger> &B)
 {
-	typename tLittleDigitsVector::const_iterator itA;
+	typename tLittleDigitsVector::iterator itA;
 	typename tLittleDigitsVector::const_iterator itB;
 
-	TGEN_BIG_INT_SELF_CHECK( this == &a || this == &b, bitAND(a,b) );
-
-	// Warn our own vector how much space it's going to need
-	LittleDigits.clear();
-
 	// Start at least significant end of source
-	itA = a.LittleDigits.begin();
-	itB = b.LittleDigits.begin();
+	itA = LittleDigits.begin();
+	itB = B.LittleDigits.begin();
 
-	while( itA != a.LittleDigits.end() && itB != b.LittleDigits.end() ) {
-		LittleDigits.push_back( *itA & *itB );
+	while( itA != LittleDigits.end() && itB != B.LittleDigits.end() ) {
+		*itA = *itA & *itB;
 		itA++;
 		itB++;
 	}
@@ -720,6 +718,8 @@ void TGenericBigInteger<tLittleInteger>::bitAND(const TGenericBigInteger &a, con
 	// would strip them.
 
 	normalise();
+
+	return *this;
 }
 
 //

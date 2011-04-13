@@ -164,7 +164,6 @@ class TGenericBigInteger
   protected:
 	void normalise();
 
-	void bitAND(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitOR(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitXOR(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitShiftLeft(const TGenericBigInteger &a, tIndex b);
@@ -188,15 +187,6 @@ class TGenericBigInteger
 
 
 // -------------- Inline Functions
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger> &
-TGenericBigInteger<tLittleInteger>::operator&=(const TGenericBigInteger &x)
-{
-	bitAND(*this, x);
-
-	return *this;
-}
 
 template <typename tLittleInteger>
 inline TGenericBigInteger<tLittleInteger> &
