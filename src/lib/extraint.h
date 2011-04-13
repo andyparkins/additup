@@ -124,8 +124,8 @@ class TGenericBigInteger
 	TGenericBigInteger &operator +=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator -=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator *=(const TGenericBigInteger &x);
-	TGenericBigInteger &operator /=(const TGenericBigInteger &x);
-	TGenericBigInteger &operator %=(const TGenericBigInteger &x);
+	TGenericBigInteger &operator /=(const TGenericBigInteger &x) { TGenericBigInteger<tLittleInteger> q; divideWithRemainder(x,q); *this = q; return *this; }
+	TGenericBigInteger &operator %=(const TGenericBigInteger &x) { TGenericBigInteger<tLittleInteger> q; divideWithRemainder(x,q); return *this; }
 	TGenericBigInteger &operator &=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator |=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator ^=(const TGenericBigInteger &x);
@@ -197,35 +197,6 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 	TGenericBigInteger ans;
 	ans.bitNOT(*this);
 	return ans;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger> &
-TGenericBigInteger<tLittleInteger>::operator/=(const TGenericBigInteger &x)
-{
-	if( x.isZero() )
-		throw runtime_error("TGenericBigInteger<tLittleInteger>::operator/: division by zero");
-	/* The following technique is slightly faster than copying *this first
-	 * when x is large. */
-	TGenericBigInteger q;
-	divideWithRemainder(x, q);
-	// *this contains the remainder, but we overwrite it with the quotient.
-	*this = q;
-
-	return *this;
-}
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger> &
-TGenericBigInteger<tLittleInteger>::operator%=(const TGenericBigInteger &x)
-{
-	if( x.isZero() )
-		throw runtime_error("TGenericBigInteger<tLittleInteger>::operator/: division by zero");
-	TGenericBigInteger q;
-	// Mods *this by x.  Don't care about quotient left in q.
-	divideWithRemainder(x, q);
-
-	return *this;
 }
 
 template <typename tLittleInteger>
