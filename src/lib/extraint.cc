@@ -797,24 +797,21 @@ void TGenericBigInteger<tLittleInteger>::bitXOR(const TGenericBigInteger &a, con
 }
 
 //
-// Function:	TGenericBigInteger :: bitNOT
+// Function:	TGenericBigInteger :: operator~
 // Description:
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::bitNOT(const TGenericBigInteger &a )
+TGenericBigInteger<tLittleInteger>
+TGenericBigInteger<tLittleInteger>::operator~() const
 {
+	TGenericBigInteger<tLittleInteger> R;
 	typename tLittleDigitsVector::const_iterator itA;
 
-	TGEN_BIG_INT_SELF_CHECK( this == &a, bitNOT(a) );
-
-	// Warn our own vector how much space it's going to need
-	LittleDigits.clear();
-
 	// Start at least significant end of source
-	itA = a.LittleDigits.begin();
+	itA = LittleDigits.begin();
 
-	while( itA != a.LittleDigits.end() ) {
-		LittleDigits.push_back( ~(*itA) );
+	while( itA != LittleDigits.end() ) {
+		R.LittleDigits.push_back( ~(*itA) );
 		itA++;
 	}
 
@@ -822,7 +819,9 @@ void TGenericBigInteger<tLittleInteger>::bitNOT(const TGenericBigInteger &a )
 	// leave them off.  It's the users problem to ensure they have the
 	// right width.
 
-	normalise();
+	R.normalise();
+
+	return *this;
 }
 
 //

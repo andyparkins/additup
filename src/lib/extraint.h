@@ -167,7 +167,6 @@ class TGenericBigInteger
 	void bitAND(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitOR(const TGenericBigInteger &a, const TGenericBigInteger &b);
 	void bitXOR(const TGenericBigInteger &a, const TGenericBigInteger &b);
-	void bitNOT(const TGenericBigInteger &a);
 	void bitShiftLeft(const TGenericBigInteger &a, tIndex b);
 	void bitShiftRight(const TGenericBigInteger &a, tIndex b);
 	void divideWithRemainder(const TGenericBigInteger &b, TGenericBigInteger &q);
@@ -189,15 +188,6 @@ class TGenericBigInteger
 
 
 // -------------- Inline Functions
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger>
-TGenericBigInteger<tLittleInteger>::operator~() const
-{
-	TGenericBigInteger ans;
-	ans.bitNOT(*this);
-	return ans;
-}
 
 template <typename tLittleInteger>
 inline TGenericBigInteger<tLittleInteger> &
