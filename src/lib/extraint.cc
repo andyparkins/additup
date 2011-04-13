@@ -723,40 +723,37 @@ TGenericBigInteger<tLittleInteger>::operator&=(
 }
 
 //
-// Function:	TGenericBigInteger :: bitOR
+// Function:	TGenericBigInteger :: operator|=
 // Description:
+/// Implement A = A | B
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::bitOR(const TGenericBigInteger &a, const TGenericBigInteger &b)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::operator|=(
+		const TGenericBigInteger<tLittleInteger> &B)
 {
-	typename tLittleDigitsVector::const_iterator itA;
+	typename tLittleDigitsVector::iterator itA;
 	typename tLittleDigitsVector::const_iterator itB;
 
-	TGEN_BIG_INT_SELF_CHECK( this == &a || this == &b, bitOR(a,b) );
-
-	// Warn our own vector how much space it's going to need
-	LittleDigits.clear();
-
 	// Start at least significant end of source
-	itA = a.LittleDigits.begin();
-	itB = b.LittleDigits.begin();
+	itA = LittleDigits.begin();
+	itB = B.LittleDigits.begin();
 
-	while( itA != a.LittleDigits.end() && itB != b.LittleDigits.end() ) {
-		LittleDigits.push_back( *itA | *itB );
+	while( itA != LittleDigits.end() && itB != B.LittleDigits.end() ) {
+		*itA = *itA | *itB;
 		itA++;
 		itB++;
 	}
+	// No need to do implied copy of A, we _are_ A.
 	// Implied zeroes are just copies
-	while( itA != a.LittleDigits.end() ) {
-		LittleDigits.push_back( *itA );
-		itA++;
-	}
-	while( itB != b.LittleDigits.end() ) {
+	while( itB != B.LittleDigits.end() ) {
 		LittleDigits.push_back( *itB );
 		itB++;
 	}
 
 	normalise();
+
+	return *this;
 }
 
 //
