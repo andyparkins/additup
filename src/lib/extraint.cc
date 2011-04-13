@@ -58,10 +58,37 @@ const size_t TGenericBigInteger<tLittleInteger>::bitsPerBlock = numeric_limits<t
 // Description:
 //
 template <typename tLittleInteger>
-TGenericBigInteger<tLittleInteger>::TGenericBigInteger( tLittleInteger r0, tLittleInteger r1 )
+TGenericBigInteger<tLittleInteger>::TGenericBigInteger( tLittleInteger r1, tLittleInteger r0 )
 {
 	LittleDigits.push_back(r0);
 	LittleDigits.push_back(r1);
+	normalise();
+}
+
+//
+// Function:	TGenericBigInteger :: TGenericBigInteger
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigInteger<tLittleInteger>::TGenericBigInteger( tLittleInteger r2, tLittleInteger r1, tLittleInteger r0 )
+{
+	LittleDigits.push_back(r0);
+	LittleDigits.push_back(r1);
+	LittleDigits.push_back(r2);
+	normalise();
+}
+
+//
+// Function:	TGenericBigInteger :: TGenericBigInteger
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigInteger<tLittleInteger>::TGenericBigInteger( tLittleInteger r3, tLittleInteger r2, tLittleInteger r1, tLittleInteger r0 )
+{
+	LittleDigits.push_back(r0);
+	LittleDigits.push_back(r1);
+	LittleDigits.push_back(r2);
+	LittleDigits.push_back(r3);
 	normalise();
 }
 
@@ -478,7 +505,7 @@ void TGenericBigInteger<tLittleInteger>::multiply(const TGenericBigInteger<tLitt
 
 			// Use TGenericBigInteger to do the digit shift and addition with
 			// carry
-			R.blockShiftLeft( TGenericBigInteger<tLittleInteger>(R0,R1), i+j );
+			R.blockShiftLeft( TGenericBigInteger<tLittleInteger>(R1,R0), i+j );
 			(*this) += R;
 		}
 	}
@@ -982,8 +1009,8 @@ int main( int argc, char *argv[] )
 		//      2^64 = 18446744073709551616
 		TBigInteger i("99999999999999999999"); // 0x56BC75E2D630FFFFF
 		TBigInteger thirtyTwoB( 0xffffdddd ), thirtyTwoC( 0xeeeecccc );
-		TBigInteger sixtyFourB( 0xdddddddd, 0xffffffff ),
-					sixtyFourC( 0xcccccccc, 0xeeeeeeee );
+		TBigInteger sixtyFourB( 0xffffffff, 0xdddddddd ),
+					sixtyFourC( 0xeeeeeeee, 0xcccccccc );
 		TBigInteger j, k;
 
 		j = 1LL;
@@ -997,7 +1024,7 @@ int main( int argc, char *argv[] )
 
 		log(TLog::Status) << "Testing bit operators on large numbers" << endl;
 
-		k = TBigInteger( 0xffffffff, 0x1 ) << 1;
+		k = TBigInteger( 0x1, 0xffffffff ) << 1;
 		log() << "k = " << k << endl;
 		if( k.getBlock(1) != 0x3 || k.getBlock(0) != 0xfffffffe )
 			throw logic_error( "Shift left incorrect (non block multiple, edge)" );
@@ -1059,6 +1086,12 @@ int main( int argc, char *argv[] )
 
 
 		log(TLog::Status) << "Testing arithmetic operators on large numbers" << endl;
+
+		k = sixtyFourB + sixtyFourC;
+		log() << "64bit: " << sixtyFourB << " + " << sixtyFourC << " = " << k << endl;
+		if( k != TBigInteger( 0x1, 0xEEEEEEEE, 0xAAAAAAA9 ) )
+			throw logic_error( "64bit addition incorrect" );
+
 		k = thirtyTwoB * thirtyTwoC;
 		log() << "32bit: " << thirtyTwoB << " * " << thirtyTwoC << " = " << k << endl;
 		// 0xffffdddd * 0xeeeecccc = 0xeeeeacef9e26e81c
@@ -1095,8 +1128,9 @@ int main( int argc, char *argv[] )
 		for( unsigned int b = 0; b < 4*1000; b++ ) {
 			k = j + 1;
 			if( (k-j) != 1 ) {
-				log(TLog::Error) << "[" << b << "] " << j << endl;
-				log(TLog::Error) << "[" << b << "] " << k << " diff = " << (k-j) << endl;
+				log(TLog::Error) << "[" << b << "] j = " << j
+					<< "; j+1 = " << k
+					<< "; diff = " << (k-j) << endl;
 				throw logic_error("Adding one didn't make numbers one apart");
 			}
 

@@ -91,8 +91,10 @@ class TGenericBigInteger
 	TGenericBigInteger( const TGenericBigInteger &O ) { operator=(O); }
 	TGenericBigInteger( const string &s ) { operator=(s); }
 	TGenericBigInteger( int t ) { operator=(static_cast<unsigned int>(t) ); }
-	TGenericBigInteger( unsigned int t ) { operator=(t); }
-	TGenericBigInteger( tLittleInteger r0, tLittleInteger r1 );
+	TGenericBigInteger( tLittleInteger r0 ) { operator=(r0); }
+	TGenericBigInteger( tLittleInteger r1, tLittleInteger r0 );
+	TGenericBigInteger( tLittleInteger r2, tLittleInteger r1, tLittleInteger r0 );
+	TGenericBigInteger( tLittleInteger r3, tLittleInteger r2, tLittleInteger r1, tLittleInteger r0 );
 	TGenericBigInteger( unsigned long long t ) { operator=(t); }
 
 	void invalidate() { LittleDigits.clear(); }
