@@ -857,19 +857,19 @@ TGenericBigInteger<tLittleInteger>::operator<<=( tIndex b )
 }
 
 //
-// Function:	TGenericBigInteger :: bitShiftRight
+// Function:	TGenericBigInteger :: operator>>=
 // Description:
+/// Implement A = A >> B
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::bitShiftRight(const TGenericBigInteger &a, tIndex b)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::operator>>=( tIndex b )
 {
 	typename tLittleDigitsVector::reverse_iterator it;
 	tLittleInteger underflowBits, lastBits = 0;
 
-	TGEN_BIG_INT_SELF_CHECK( this == &a, bitShiftRight(a,b) );
-
-	// The block part can be done with blockShiftLeft()
-	blockShiftRight( a, b / bitsPerBlock );
+	// The block part can be done with blockShiftRight()
+	blockShiftRight( b / bitsPerBlock );
 	// The left over must be done with a bit shift
 	b = b % bitsPerBlock;
 
@@ -896,6 +896,8 @@ void TGenericBigInteger<tLittleInteger>::bitShiftRight(const TGenericBigInteger 
 	// the right hand edge.
 
 	normalise();
+
+	return *this;
 }
 
 //
@@ -938,22 +940,37 @@ TGenericBigInteger<tLittleInteger>::blockShiftLeft( tIndex b )
 // xxx yyy zzz -> xxx yyy
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::blockShiftRight(const TGenericBigInteger<tLittleInteger> &a, tIndex b)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::blockShiftRight( tIndex b )
 {
-	typename tLittleDigitsVector::const_iterator it;
+	typename tLittleDigitsVector::iterator itA;
+	typename tLittleDigitsVector::const_iterator itB;
 
-	TGEN_BIG_INT_SELF_CHECK( this == &a, blockShiftRight(a,b) );
-
-	LittleDigits.clear();
+	if( !isValid() || isZero() || b == 0 )
+		return *this;
 
 	// Start at least significant end of source
-	it = a.LittleDigits.begin();
+	itA = LittleDigits.begin();
+	itB = LittleDigits.begin();
 
-	// Skip b blocks
-	it += b;
+	itB += b;
+	if( itB == LittleDigits.end() ) {
+		LittleDigits.clear();
+		LittleDigits.push_back(0);
+		return *this;
+	}
 
-	// Copy remainder
-	copy( it, a.LittleDigits.end(), back_inserter( LittleDigits ) );
+	while( itB != LittleDigits.end() ) {
+		cerr << *this << endl;
+		*itA = *itB;
+		itA++;
+		itB++;
+	}
+
+	// Remove the last element
+	LittleDigits.pop_back();
+
+	return *this;
 }
 
 //
