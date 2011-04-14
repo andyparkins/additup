@@ -124,8 +124,8 @@ class TGenericBigInteger
 	TGenericBigInteger &operator +=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator -=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator *=(const TGenericBigInteger &x);
-	TGenericBigInteger &operator /=(const TGenericBigInteger &x) { TGenericBigInteger<tLittleInteger> q; divideWithRemainder(x,q); *this = q; return *this; }
-	TGenericBigInteger &operator %=(const TGenericBigInteger &x) { TGenericBigInteger<tLittleInteger> q; divideWithRemainder(x,q); return *this; }
+	TGenericBigInteger &operator /=(const TGenericBigInteger &x) { TGenericBigInteger q; divideWithRemainder(x,q); *this = q; return *this; }
+	TGenericBigInteger &operator %=(const TGenericBigInteger &x) { TGenericBigInteger q; divideWithRemainder(x,q); return *this; }
 	TGenericBigInteger &operator &=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator |=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator ^=(const TGenericBigInteger &x);
@@ -140,17 +140,17 @@ class TGenericBigInteger
 	TGenericBigInteger &operator--( int );
 
 	// Arithmetic - non compound
-	TGenericBigInteger operator+( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) += x; }
-	TGenericBigInteger operator-( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) -= x; };
-	TGenericBigInteger operator*( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) *= x; };
-	TGenericBigInteger operator/( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) /= x; };
-	TGenericBigInteger operator%( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) %= x; };
-	TGenericBigInteger operator&( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) &= x; };
-	TGenericBigInteger operator|( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) |= x; };
-	TGenericBigInteger operator^( const TGenericBigInteger &x ) const { return TGenericBigInteger<tLittleInteger>(*this) ^= x; };
+	TGenericBigInteger operator+( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) += x; }
+	TGenericBigInteger operator-( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) -= x; };
+	TGenericBigInteger operator*( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) *= x; };
+	TGenericBigInteger operator/( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) /= x; };
+	TGenericBigInteger operator%( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) %= x; };
+	TGenericBigInteger operator&( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) &= x; };
+	TGenericBigInteger operator|( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) |= x; };
+	TGenericBigInteger operator^( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) ^= x; };
 	TGenericBigInteger operator~() const;
-	TGenericBigInteger operator<<( tIndex b ) const { return TGenericBigInteger<tLittleInteger>(*this) <<= b; };
-	TGenericBigInteger operator>>( tIndex b ) const { return TGenericBigInteger<tLittleInteger>(*this) >>= b; };
+	TGenericBigInteger operator<<( tIndex b ) const { return TGenericBigInteger(*this) <<= b; };
+	TGenericBigInteger operator>>( tIndex b ) const { return TGenericBigInteger(*this) >>= b; };
 
 	// Comparison
 	eComparisonResult compareTo( const TGenericBigInteger & ) const;
