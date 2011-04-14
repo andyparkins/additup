@@ -111,7 +111,7 @@ TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::operator
 
 		if( !isdigit(s[pos]) )
 			break;
-		(*this) += static_cast<unsigned int>(s[pos] - '0');
+		(*this) += TGenericBigInteger( static_cast<tLittleInteger>(s[pos] - '0') );
 
 		// Shift left by base ready for next round
 		if( pos > 0 )
