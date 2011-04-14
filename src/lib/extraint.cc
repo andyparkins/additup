@@ -19,6 +19,7 @@
 // -------------- Includes
 // --- C
 #include <ctype.h>
+#include <stdint.h>
 // --- C++
 #include <algorithm>
 #include <limits>
@@ -93,29 +94,77 @@ TGenericBigInteger<tLittleInteger>::TGenericBigInteger( tLittleInteger r3, tLitt
 }
 
 //
-// Function:	TGenericBigInteger :: operator=
+// Function:	TGenericBigInteger :: fromString
 // Description:
 //
 template <typename tLittleInteger>
-TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::operator=( const string &s )
+TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::fromString( const string &s, unsigned int Base )
 {
-	static const unsigned int Base = 10;
+	// 80 byte lookup table for reversing the above map.  It is the
+	// indexed by (ASCII_VALUE - '+') because '+' is the lowest ASCII
+	// value in the above map, and we rely on the user of the table to
+	// ensure they don't look up negative values.  Invalid lookups are
+	// marked by 0xff, which is outside the 0-63 base64 range, so would
+	// never occur naturally.
+	static const uint8_t ASCIIToBase64[] = {
+		// Output (0-63)                                 // Input (ASCII)
+		0x3e, 0xff, 0xff, 0xff, 0x3f, 0x34, 0x35, 0x36,  // + . . . / 0 1 2
+		0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0xff,  // 3 4 5 6 7 8 9 .
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00, 0x01,  // . . . . . . A B
+		0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,  // C D E F G H I J
+		0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10, 0x11,  // K L M N O P Q R
+		0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19,  // S T U V W X Y Z
+		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x1a, 0x1b,  // . . . . . . a b
+		0x1c, 0x1d, 0x1e, 0x1f, 0x20, 0x21, 0x22, 0x23,  // c d e f g h i j
+		0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,  // k l m n o p q r
+		0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33   // s t u v w x y z
+	};
+
 	string::size_type pos;
+	tLittleInteger ch;
 
 	// Start at zero
 	(*this) = 0;
 
-	pos = s.size();
-	while( pos > 0 ) {
-		pos--;
+	pos = 0;
+	while( pos < s.size() ) {
+		ch = s[pos];
 
-		if( !isdigit(s[pos]) )
-			break;
-		(*this) += TGenericBigInteger( static_cast<tLittleInteger>(s[pos] - '0') );
+		if( Base <= 10 ) {
+			if( !isdigit(s[pos]) )
+				break;
+			ch = (ch - '0');
+		} else if( Base <= 10 + 26 ) {
+			if( !isalnum(s[pos]) )
+				break;
+			if( ch <= '9' ) {
+				ch = ch - '0';
+			} else if( ch <= 'Z' ) {
+				ch = ch - 'A' + 0xa;
+			} else if( ch <= 'z' ) {
+				ch = ch - 'a' + 0xa;
+			}
+		} else if( Base <= 10 + 26*2 ) {
+			if( !isalnum(s[pos]) )
+				break;
+			if( ch <= '9' ) {
+				ch = ch - '0';
+			} else if( ch <= 'Z' ) {
+				ch = ch - 'A' + 0xa;
+			} else if( ch <= 'z' ) {
+				ch = ch - 'a' + 10 + 26;
+			}
+		} else if( Base <= 64 ) {
+			if( ch < '+' || ch-'+' > sizeof(ASCIIToBase64) )
+				break;
+			ch = ASCIIToBase64[ch];
+		}
 
-		// Shift left by base ready for next round
-		if( pos > 0 )
-			(*this) *= Base;
+		// Shift left by base, and add the next digit
+		(*this) *= Base;
+		(*this) += TGenericBigInteger( ch );
+
+		pos++;
 	}
 
 	normalise();
@@ -1018,6 +1067,29 @@ int main( int argc, char *argv[] )
 	static const unsigned int LOOPS = 1000000;
 
 	try {
+		log(TLog::Status) << "Testing constructors and initialisation" << endl;
+
+		TBigInteger i("99999999999999999999"); // 0x56BC75E2D630FFFFF
+		TBigInteger j("56bC75E2D630ffFFF",16); // 0x56BC75E2D630FFFFF
+		TBigInteger k("56bC75E2D630ffFFF",36);
+		TBigInteger l("56bC75E2D630ffFFF",56);
+		TBigInteger m("56bC75E2D630ffFFF",64);
+
+		log() << "i = " << i << endl;
+		if( i.getBlock(2) != 0x5 || i.getBlock(1) != 0x6bc75e2d || i.getBlock(0) != 0x630fffff )
+			throw logic_error("Assignment from decimal-representing string incorrect");
+		log() << "j = " << j << endl;
+		if( j != i )
+			throw logic_error("Assignment from hexadecimal-representing string incorrect");
+		log() << "k = " << k << endl;
+		log() << "l = " << l << endl;
+	} catch( exception &e ) {
+		log(TLog::Error) << e.what() << endl;
+		return 255;
+	}
+
+
+	try {
 		//      2^32 = 4294967296
 		//      2^64 = 18446744073709551616
 		TBigInteger i("99999999999999999999"); // 0x56BC75E2D630FFFFF
@@ -1027,13 +1099,6 @@ int main( int argc, char *argv[] )
 		TBigInteger j, k;
 
 		j = 1LL;
-
-		log(TLog::Status) << "Testing constructors and initialisation" << endl;
-		log() << "i = " << i << endl;
-		if( i.getBlock(2) != 0x5 || i.getBlock(1) != 0x6bc75e2d || i.getBlock(0) != 0x630fffff )
-			throw logic_error("Assignment from decimal-representing string incorrect");
-		log() << "j = " << j << endl;
-		log() << "k = " << k << endl;
 
 		log(TLog::Status) << "Testing bit operators on large numbers" << endl;
 

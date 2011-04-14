@@ -89,7 +89,7 @@ class TGenericBigInteger
   public:
 	TGenericBigInteger() { LittleDigits.push_back(0); }
 	TGenericBigInteger( const TGenericBigInteger &O ) { operator=(O); }
-	TGenericBigInteger( const string &s ) { operator=(s); }
+	TGenericBigInteger( const string &s, unsigned int b = 10 ) { fromString(s,b); }
 	TGenericBigInteger( int t ) { operator=(static_cast<unsigned int>(t) ); }
 	TGenericBigInteger( tLittleInteger r0 ) { operator=(r0); }
 	TGenericBigInteger( tLittleInteger r1, tLittleInteger r0 );
@@ -102,7 +102,7 @@ class TGenericBigInteger
 	bool isZero() const { return LittleDigits.size() == 1 && LittleDigits.back() == 0; }
 
 	// Assignment
-	TGenericBigInteger &operator=( const string & );
+	TGenericBigInteger &operator=( const string &s ) { return fromString(s, 10); }
 //	TGenericBigInteger &operator=( unsigned int t ) { LittleDigits.clear(); LittleDigits.push_back(t); return *this; }
 	TGenericBigInteger &operator=( unsigned long long t );
 	TGenericBigInteger &operator=( const TGenericBigInteger &O ) { LittleDigits = O.LittleDigits; return *this; }
@@ -166,6 +166,7 @@ class TGenericBigInteger
   protected:
 	void normalise();
 
+	TGenericBigInteger &fromString( const string &, unsigned int = 10 );
 	void divideWithRemainder(const TGenericBigInteger &b, TGenericBigInteger &q);
 
   protected:
