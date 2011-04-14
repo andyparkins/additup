@@ -131,6 +131,7 @@ class TGenericBigInteger
 	TGenericBigInteger &operator ^=(const TGenericBigInteger &x);
 	TGenericBigInteger &operator <<=( tIndex );
 	TGenericBigInteger &operator >>=( tIndex );
+	TGenericBigInteger &blockShiftLeft( tIndex );
 
 	TGenericBigInteger &operator++();
 	TGenericBigInteger &operator++( int );
@@ -164,11 +165,9 @@ class TGenericBigInteger
   protected:
 	void normalise();
 
-	void bitShiftLeft(const TGenericBigInteger &a, tIndex b);
 	void bitShiftRight(const TGenericBigInteger &a, tIndex b);
 	void divideWithRemainder(const TGenericBigInteger &b, TGenericBigInteger &q);
 
-	void blockShiftLeft(const TGenericBigInteger &a, tIndex b);
 	void blockShiftRight(const TGenericBigInteger &a, tIndex b);
 
   protected:
@@ -185,15 +184,6 @@ class TGenericBigInteger
 
 
 // -------------- Inline Functions
-
-template <typename tLittleInteger>
-inline TGenericBigInteger<tLittleInteger> &
-TGenericBigInteger<tLittleInteger>::operator<<=(tIndex b)
-{
-	bitShiftLeft(*this, b);
-
-	return *this;
-}
 
 template <typename tLittleInteger>
 inline TGenericBigInteger<tLittleInteger> &

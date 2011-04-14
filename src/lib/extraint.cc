@@ -487,7 +487,6 @@ TGenericBigInteger<tLittleInteger>::operator*=(
 	//        3 5 1 9
 
 	tLittleInteger R0, R1;
-	TGenericBigInteger R;
 
 	for( tIndex i = 0; i < B.LittleDigits.size(); i++ ) {
 		for( tIndex j = 0; j < C.LittleDigits.size(); j++ ) {
@@ -495,8 +494,7 @@ TGenericBigInteger<tLittleInteger>::operator*=(
 
 			// Use TGenericBigInteger to do the digit shift and addition with
 			// carry
-			R.blockShiftLeft( TGenericBigInteger<tLittleInteger>(R1,R0), i+j );
-			(*this) += R;
+			(*this) += TGenericBigInteger<tLittleInteger>(R1,R0).blockShiftLeft( i + j );;
 		}
 	}
 
@@ -819,27 +817,25 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 }
 
 //
-// Function:	TGenericBigInteger :: bitShiftLeft
+// Function:	TGenericBigInteger :: operator<<=
 // Description:
+/// Implement A = A << B
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::bitShiftLeft(const TGenericBigInteger &a, tIndex b)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::operator<<=( tIndex b )
 {
 	typename tLittleDigitsVector::iterator it;
 	tLittleInteger overflowBits, lastBits = 0;
 
-	TGEN_BIG_INT_SELF_CHECK( this == &a, bitShiftLeft(a,b) );
-
-	// The block part can be done with blockShiftLeft(), we shift by one
-	// more than necessary, as we're going to shift the last block
-	// downwards and the last block upwards
-	blockShiftLeft( a, b / bitsPerBlock );
+	// The block part can be done with blockShiftLeft()
+	blockShiftLeft( b / bitsPerBlock );
 
 	// The left over must be done with a bit shift
 	b = b % bitsPerBlock;
 
 	if( b == 0 )
-		return;
+		return *this;
 
 	// Start at least significant end
 	for( it = LittleDigits.begin(); it != LittleDigits.end(); it++ ) {
@@ -856,6 +852,8 @@ void TGenericBigInteger<tLittleInteger>::bitShiftLeft(const TGenericBigInteger &
 		LittleDigits.push_back( lastBits );
 
 	normalise();
+
+	return *this;
 }
 
 //
@@ -906,19 +904,32 @@ void TGenericBigInteger<tLittleInteger>::bitShiftRight(const TGenericBigInteger 
 // xxx yyy zzz -> xxx yyy zzz 0
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::blockShiftLeft(const TGenericBigInteger<tLittleInteger> &a, tIndex b)
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::blockShiftLeft( tIndex b )
 {
-	typename tLittleDigitsVector::const_iterator it;
+	typename tLittleDigitsVector::const_iterator itA;
 
-	TGEN_BIG_INT_SELF_CHECK( this == &a, blockShiftLeft(a,b) );
+	// Leave zero and invalid as they are
+	if( isZero() || !isValid() || b == 0 )
+		return *this;
+
+	tLittleDigitsVector DigitsCopy(LittleDigits);
+	itA = DigitsCopy.begin();
 
 	LittleDigits.clear();
+	LittleDigits.reserve( DigitsCopy.size() + b );
 
-	// Push extra blocks at the least significant end
-	while( b-- > 0 )
-		LittleDigits.push_back(0);
+	// b new blocks are a copy of the last b blocks
+	while( b-- ) {
+		LittleDigits.push_back( 0 );
+	}
 
-	copy( a.LittleDigits.begin(), a.LittleDigits.end(), back_inserter( LittleDigits ) );
+	while( itA != DigitsCopy.end() ) {
+		LittleDigits.push_back(*itA);
+		itA++;
+	}
+
+	return *this;
 }
 
 //
