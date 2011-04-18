@@ -3,3 +3,5 @@
 *.a
 # --- Core
 core*
+# --- Out-of-repository Configuration
+config.mak

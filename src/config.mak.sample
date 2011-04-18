@@ -1,0 +1,28 @@
+# ----------------------------------------------------------------------------
+# Version Control
+#    $Author: andyp $
+#      $Date$
+#       $Rev$
+#        $Id$
+#
+# Legal
+#    Copyright 2011  Andy Parkins
+#
+# ----------------------------------------------------------------------------
+
+# This is a Makefile fragment.  The file config.mak is included by other
+# makefiles in the project; it sets variables which control the conditional
+# parts of the build.
+#
+# The config.mak file is never intended to be included in the repository, that
+# way you can have local settings that won't be propagated to other people's
+# checkouts.  This file is intended to document the contents of the config.mak
+# file though.
+
+REMOVEDSOURCES :=
+
+# --- Operating system
+
+# --- Utility
+
+# --- Flags
