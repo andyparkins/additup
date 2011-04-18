@@ -1,0 +1,5 @@
+# --- Objects (program)
+*.o
+*.a
+# --- Core
+core*

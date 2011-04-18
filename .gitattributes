@@ -1,0 +1,23 @@
+# Source code
+Makefile ident
+*.cc ident
+*.h ident
+*.pro ident
+*.sh ident
+*.py ident
+*.sql ident
+
+# SVGs should be left as they are
+*.svg ident
+# Text files
+*.txt ident
+
+# Binaries
+*.png
+*.jpg
+*.gz
+*.doc
+*.pdf
+
+# git-archive skip
+.git* export-ignore

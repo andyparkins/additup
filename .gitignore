@@ -1,0 +1,15 @@
+# --- Auto generated
+debian/changelog
+# --- Output (program)
+# --- Miscellaneous build files
+build-arch-stamp
+build-indep-stamp
+configure-stamp
+debian/files
+# --- Externals
+# --- Temporary
+temp*
+# --- Backups
+*~
+# --- Out-of-repository config
+config.mak
