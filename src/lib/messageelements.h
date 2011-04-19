@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 // Project: bitcoin
-/// @file   structures.h
+/// @file   messageelements.h
 /// @author Andy Parkins
 //
 // Version Control
@@ -14,8 +14,8 @@
 // ----------------------------------------------------------------------------
 
 // Catch multiple includes
-#ifndef STRUCTURES_H
-#define STRUCTURES_H
+#ifndef MESSAGEELEMENTS_H
+#define MESSAGEELEMENTS_H
 
 // -------------- Includes
 // --- C

@@ -27,7 +27,7 @@
 #include <stdexcept>
 // --- OS
 // --- Project
-#include "structures.h"
+#include "messageelements.h"
 
 
 // -------------- Namespace

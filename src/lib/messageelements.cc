@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 // Project: bitcoin
-/// @file   structures.cc
+/// @file   messageelements.cc
 /// @author Andy Parkins
 //
 // Version Control
@@ -14,7 +14,7 @@
 // ----------------------------------------------------------------------------
 
 // Module include
-#include "structures.h"
+#include "messageelements.h"
 
 // -------------- Includes
 // --- C
