@@ -105,6 +105,10 @@ class message_parse_error_version : public message_parse_error
 //
 // Class: TMessage
 // Description:
+// BitCoin network message encapsulation.
+//
+// https://en.bitcoin.it/wiki/Protocol_specification
+//
 //
 class TMessage
 {

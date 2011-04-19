@@ -387,6 +387,7 @@ void TMessage_version_209::parse( const string &d )
 // --------
 
 const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
+	// Hash: 1AGRxqDa5WjUKBwHB9XYEjmkv1ucoUUy1s
 	string("04fc9702847840aaf195de8442ebeced"
 	"f5b095cdbb9bc716bda9110971b28a49"
 	"e0ead8564ff0db22209e0374782c093b"
