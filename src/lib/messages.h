@@ -120,6 +120,7 @@ class TMessage
 	const sMessageHeader &header() const { return MessageHeader; }
 
   protected:
+	virtual bool acceptCommandCode( const string & ) const;
 	virtual const char *commandString() const = 0;
 
 	virtual ostream &printOn( ostream & ) const;
@@ -156,7 +157,8 @@ class TMessageUnimplemented : public TMessage
 	TMessage *clone() const { return new TMessageUnimplemented(*this); }
 
   protected:
-	const char *commandString() const { return ""; }
+	bool acceptCommandCode( const string & ) const { return true; }
+	const char *commandString() const { return NULL; }
 };
 
 //

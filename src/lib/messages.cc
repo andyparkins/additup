@@ -123,16 +123,28 @@ uint32_t TMessage::queryMessageExtractSize( const string &d ) const
 
 	// Four bytes little endian magic (d0-d3)
 
+	if( !acceptCommandCode( d.substr(4,12) ) )
+		return 0;
+
+	// Four bytes length (d16-d19)
+	return littleEndian32FromString(d, 16) + 20;
+}
+
+//
+// Function:	TMessage :: acceptCommandCode
+// Description:
+//
+bool TMessage::acceptCommandCode( const string &d ) const
+{
 	// Twelve bytes command code (d4-d15)
-	string headerCommandCode = d.substr(4,12);
+	string headerCommandCode = d;
 	// Strip NUL bytes
 	headerCommandCode.erase( headerCommandCode.find_last_not_of('\0') + 1 );
 
 	if( headerCommandCode != commandString() )
-		return 0;
+		return false;
 
-	// Four bytes length (d16-d19)
-	return littleEndian32FromString(d, 16) + (4 + 12 + 4);
+	return true;
 }
 
 //
