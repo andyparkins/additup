@@ -124,6 +124,8 @@ class TMessage
 	virtual bool isVariableSize() const = 0;
 	virtual unsigned int minimumPayload() const = 0;
 
+	virtual const char *commandString() const = 0;
+
 	virtual ostream &printOn( ostream & ) const;
 	friend ostream &operator<<( ostream &, const TMessage & );
 
@@ -184,6 +186,9 @@ class TMessage_version : public TMessage
 {
   public:
 	const char *className() const { return "TMessage_version"; }
+
+  protected:
+	const char *commandString() const { return "version"; }
 
   protected:
 
@@ -261,6 +266,9 @@ class TMessage_verack : public TMessage
 	TMessage *clone() const { return new TMessage_verack(*this); }
 
   protected:
+	const char *commandString() const { return "verack"; }
+
+  protected:
 };
 
 //
@@ -278,6 +286,9 @@ class TMessage_addr : public TMessage
   public:
 	const char *className() const { return "TMessage_addr"; }
 	TMessage *clone() const { return new TMessage_addr(*this); }
+
+  protected:
+	const char *commandString() const { return "addr"; }
 
   protected:
 	struct {
@@ -312,6 +323,9 @@ class TMessage_inv : public TMessage_InventoryBase
 	TMessage *clone() const { return new TMessage_inv(*this); }
 
   protected:
+	const char *commandString() const { return "inv"; }
+
+  protected:
 };
 
 //
@@ -325,6 +339,9 @@ class TMessage_getdata : public TMessage_InventoryBase
 	TMessage *clone() const { return new TMessage_getdata(*this); }
 
   protected:
+	const char *commandString() const { return "getdata"; }
+
+  protected:
 };
 
 //
@@ -336,6 +353,9 @@ class TMessage_getblocks : public TMessage
   public:
 	const char *className() const { return "TMessage_getblocks"; }
 	TMessage *clone() const { return new TMessage_getblocks(*this); }
+
+  protected:
+	const char *commandString() const { return "getblocks"; }
 
   protected:
 	struct {
@@ -357,6 +377,9 @@ class TMessage_tx : public TMessage
   public:
 	const char *className() const { return "TMessage_tx"; }
 	TMessage *clone() const { return new TMessage_tx(*this); }
+
+  protected:
+	const char *commandString() const { return "tx"; }
 
   protected:
 	struct sTransactionOutputReference {
@@ -396,6 +419,9 @@ class TMessage_block : public TMessage
 	TMessage *clone() const { return new TMessage_block(*this); }
 
   protected:
+	const char *commandString() const { return "block"; }
+
+  protected:
 	struct {
 		uint32_t Version;
 		sHash PreviousBlock;
@@ -426,6 +452,9 @@ class TMessage_getaddr : public TMessage
 	TMessage *clone() const { return new TMessage_getaddr(*this); }
 
   protected:
+	const char *commandString() const { return "getaddr"; }
+
+  protected:
 };
 
 //
@@ -437,6 +466,9 @@ class TMessage_checkorder : public TMessage
   public:
 	const char *className() const { return "TMessage_checkorder"; }
 	TMessage *clone() const { return new TMessage_checkorder(*this); }
+
+  protected:
+	const char *commandString() const { return "checkorder"; }
 
   protected:
 };
@@ -452,6 +484,9 @@ class TMessage_submitorder : public TMessage
 	TMessage *clone() const { return new TMessage_submitorder(*this); }
 
   protected:
+	const char *commandString() const { return "submitorder"; }
+
+  protected:
 };
 
 //
@@ -465,6 +500,9 @@ class TMessage_reply : public TMessage
 	TMessage *clone() const { return new TMessage_reply(*this); }
 
   protected:
+	const char *commandString() const { return "reply"; }
+
+  protected:
 };
 
 //
@@ -476,6 +514,9 @@ class TMessage_ping : public TMessage
   public:
 	const char *className() const { return "TMessage_ping"; }
 	TMessage *clone() const { return new TMessage_ping(*this); }
+
+  protected:
+	const char *commandString() const { return "ping"; }
 
   protected:
 };
@@ -499,6 +540,9 @@ class TMessage_alert : public TMessage
   public:
 	const char *className() const { return "TMessage_alert"; }
 	TMessage *clone() const { return new TMessage_alert(*this); }
+
+  protected:
+	const char *commandString() const { return "alert"; }
 
   protected:
 	struct {
