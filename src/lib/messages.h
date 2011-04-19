@@ -110,6 +110,8 @@ class TMessage
 {
   public:
 	TMessage();
+	virtual const char *className() const { return "TMessage"; }
+	virtual TMessage *clone() const = 0;
 
 	unsigned int queryMessageExtractSize( const string & );
 
@@ -181,6 +183,8 @@ class TMessageAutoSizeField
 class TMessage_version : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_version"; }
+
   protected:
 
 	struct {
@@ -206,6 +210,9 @@ class TMessage_version : public TMessage
 class TMessage_version_0 : public TMessage_version
 {
   public:
+	const char *className() const { return "TMessage_version_0"; }
+	TMessage *clone() const { return new TMessage_version_0(*this); }
+
   protected:
 };
 
@@ -216,6 +223,9 @@ class TMessage_version_0 : public TMessage_version
 class TMessage_version_106 : public TMessage_version_0
 {
   public:
+	const char *className() const { return "TMessage_version_106"; }
+	TMessage *clone() const { return new TMessage_version_106(*this); }
+
   protected:
 };
 
@@ -226,6 +236,9 @@ class TMessage_version_106 : public TMessage_version_0
 class TMessage_version_209 : public TMessage_version_106
 {
   public:
+	const char *className() const { return "TMessage_version_209"; }
+	TMessage *clone() const { return new TMessage_version_209(*this); }
+
   protected:
 };
 
@@ -244,6 +257,9 @@ class TMessage_version_209 : public TMessage_version_106
 class TMessage_verack : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_verack"; }
+	TMessage *clone() const { return new TMessage_verack(*this); }
+
   protected:
 };
 
@@ -260,6 +276,9 @@ class TMessage_verack : public TMessage
 class TMessage_addr : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_addr"; }
+	TMessage *clone() const { return new TMessage_addr(*this); }
+
   protected:
 	struct {
 		list<sAddressData> AddressData;
@@ -273,6 +292,8 @@ class TMessage_addr : public TMessage
 class TMessage_InventoryBase : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_InventoryBase"; }
+
   protected:
 	struct {
 		TMessageAutoSizeField Count;
@@ -287,6 +308,9 @@ class TMessage_InventoryBase : public TMessage
 class TMessage_inv : public TMessage_InventoryBase
 {
   public:
+	const char *className() const { return "TMessage_inv"; }
+	TMessage *clone() const { return new TMessage_inv(*this); }
+
   protected:
 };
 
@@ -297,6 +321,9 @@ class TMessage_inv : public TMessage_InventoryBase
 class TMessage_getdata : public TMessage_InventoryBase
 {
   public:
+	const char *className() const { return "TMessage_getdata"; }
+	TMessage *clone() const { return new TMessage_getdata(*this); }
+
   protected:
 };
 
@@ -307,6 +334,9 @@ class TMessage_getdata : public TMessage_InventoryBase
 class TMessage_getblocks : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_getblocks"; }
+	TMessage *clone() const { return new TMessage_getblocks(*this); }
+
   protected:
 	struct {
 		uint32_t Version;
@@ -325,6 +355,9 @@ class TMessage_getblocks : public TMessage
 class TMessage_tx : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_tx"; }
+	TMessage *clone() const { return new TMessage_tx(*this); }
+
   protected:
 	struct sTransactionOutputReference {
 		sHash Hash;
@@ -359,6 +392,9 @@ class TMessage_tx : public TMessage
 class TMessage_block : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_block"; }
+	TMessage *clone() const { return new TMessage_block(*this); }
+
   protected:
 	struct {
 		uint32_t Version;
@@ -386,6 +422,9 @@ class TMessage_block : public TMessage
 class TMessage_getaddr : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_getaddr"; }
+	TMessage *clone() const { return new TMessage_getaddr(*this); }
+
   protected:
 };
 
@@ -396,6 +435,9 @@ class TMessage_getaddr : public TMessage
 class TMessage_checkorder : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_checkorder"; }
+	TMessage *clone() const { return new TMessage_checkorder(*this); }
+
   protected:
 };
 
@@ -406,6 +448,9 @@ class TMessage_checkorder : public TMessage
 class TMessage_submitorder : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_submitorder"; }
+	TMessage *clone() const { return new TMessage_submitorder(*this); }
+
   protected:
 };
 
@@ -416,6 +461,9 @@ class TMessage_submitorder : public TMessage
 class TMessage_reply : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_reply"; }
+	TMessage *clone() const { return new TMessage_reply(*this); }
+
   protected:
 };
 
@@ -426,6 +474,9 @@ class TMessage_reply : public TMessage
 class TMessage_ping : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_ping"; }
+	TMessage *clone() const { return new TMessage_ping(*this); }
+
   protected:
 };
 
@@ -446,6 +497,8 @@ class TMessage_ping : public TMessage
 class TMessage_alert : public TMessage
 {
   public:
+	const char *className() const { return "TMessage_alert"; }
+	TMessage *clone() const { return new TMessage_alert(*this); }
 
   protected:
 	struct {

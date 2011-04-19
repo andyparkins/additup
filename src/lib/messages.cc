@@ -120,7 +120,7 @@ int main( int argc, char *argv[] )
 
 		for( it = TMessageTemplates::t.Templates.begin();
 				it != TMessageTemplates::t.Templates.end(); it++ ) {
-			cerr << *(*it) << endl;
+			cerr << (*it)->className() << endl;
 		}
 	} catch( exception &e ) {
 		cerr << e.what() << endl;
