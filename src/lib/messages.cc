@@ -94,6 +94,16 @@ TMessageTemplates::~TMessageTemplates()
 // --------
 
 //
+// Function:	TMessageAutoSizeInteger :: TMessageAutoSizeInteger
+// Description:
+//
+TMessageAutoSizeInteger::TMessageAutoSizeInteger()
+{
+}
+
+// --------
+
+//
 // Function:	TMessage :: TMessage
 // Description:
 //
