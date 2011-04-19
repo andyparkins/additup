@@ -240,9 +240,12 @@ class TMessage_version : public TMessageWithoutChecksum
   public:
 	const char *className() const { return "TMessage_version"; }
 
+	void parse( const string & );
+
   protected:
 	const char *commandString() const { return "version"; }
 
+	ostream &printOn( ostream & ) const;
   protected:
 
 	struct {
@@ -271,6 +274,8 @@ class TMessage_version_0 : public TMessage_version
 	const char *className() const { return "TMessage_version_0"; }
 	TMessage *clone() const { return new TMessage_version_0(*this); }
 
+	void parse( const string & );
+
   protected:
 	virtual uint32_t minimumAcceptedVersion() const { return 0; }
 };
@@ -285,6 +290,8 @@ class TMessage_version_106 : public TMessage_version_0
 	const char *className() const { return "TMessage_version_106"; }
 	TMessage *clone() const { return new TMessage_version_106(*this); }
 
+	void parse( const string & );
+
   protected:
 	uint32_t minimumAcceptedVersion() const { return 106; }
 };
@@ -298,6 +305,8 @@ class TMessage_version_209 : public TMessage_version_106
   public:
 	const char *className() const { return "TMessage_version_209"; }
 	TMessage *clone() const { return new TMessage_version_209(*this); }
+
+	void parse( const string & );
 
   protected:
 	uint32_t minimumAcceptedVersion() const { return 209; }

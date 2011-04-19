@@ -255,6 +255,115 @@ void TMessageWithoutChecksum::parse( const string &d )
 
 // --------
 
+//
+// Function:	TMessage_version :: parse
+// Description:
+//
+ostream &TMessage_version::printOn( ostream &s ) const
+{
+	TMessage::printOn(s);
+	s << " { Version = " << Payload.Version
+		<< "; Services = ["
+		<< (Payload.Services & sAddressData::NODE_NETWORK ? " NODE_NETWORK" : "" )
+		<< " ]; Time = " << Payload.Timestamp
+		<< "; SenderAddress = ";
+	if( Payload.Version >= 106 ) {
+		s << "; ReceiverAddress = "
+			<< "; Nonce = " << Payload.Nonce
+			<< "; SubVersion = \"" << Payload.SubVersionNum << "\"";
+	}
+	if( Payload.Version >= 209 ) {
+		s << "; Height = " << Payload.StartingHeight;
+	}
+
+	s << " }";
+	return s;
+}
+
+//
+// Function:	TMessage_version :: parse
+// Description:
+//
+void TMessage_version::parse( const string &d )
+{
+	TMessageWithoutChecksum::parse(d);
+
+	// Clear everything
+	Payload.Version = 0;
+	Payload.Services = 0;
+	Payload.Timestamp = 0;
+//	Payload.AddrMe.clear();
+//	Payload.AddrFrom.clear();
+	Payload.Nonce = 0;
+	Payload.SubVersionNum.clear();
+	Payload.StartingHeight = 0;
+}
+
+//
+// Function:	TMessage_version_0 :: parse
+// Description:
+//
+void TMessage_version_0::parse( const string &d )
+{
+	TMessage_version::parse(d);
+
+	if( RawPayload.size() < 46 )
+		throw message_parse_error_underflow();
+
+	// d0
+	Payload.Version = littleEndian32FromString(RawPayload,0);
+
+	if( Payload.Version < minimumAcceptedVersion() )
+		throw message_parse_error_version();
+
+	Payload.Services = littleEndian64FromString(RawPayload,4);
+	Payload.Timestamp = littleEndian64FromString(RawPayload,12);
+
+	// d20
+	Payload.AddrMe;
+	PayloadAccepted = 46;
+}
+
+//
+// Function:	TMessage_version_106 :: parse
+// Description:
+//
+void TMessage_version_106::parse( const string &d )
+{
+	TMessage_version_0::parse(d);
+
+	if( RawPayload.size() < PayloadAccepted + 34 + 1 )
+		throw message_parse_error_underflow();
+
+	// d46
+	Payload.AddrFrom;
+
+	// d72
+	Payload.Nonce = littleEndian64FromString(RawPayload,72);
+	PayloadAccepted = 80;
+
+	// d80: Variable sized NUL-terminated string
+	PayloadAccepted += NULTerminatedString(Payload.SubVersionNum, RawPayload, 80);
+}
+
+//
+// Function:	TMessage_version_209 :: parse
+// Description:
+//
+void TMessage_version_209::parse( const string &d )
+{
+	TMessage_version_106::parse(d);
+
+	if( RawPayload.size() < PayloadAccepted + 4 )
+		throw message_parse_error_underflow();
+
+	// Version >= 209
+	Payload.StartingHeight = littleEndian32FromString(RawPayload,PayloadAccepted);
+	PayloadAccepted += 4;
+}
+
+// --------
+
 const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
 	string("04fc9702847840aaf195de8442ebeced"
 	"f5b095cdbb9bc716bda9110971b28a49"
