@@ -252,19 +252,13 @@ class TMessageElement
 // Class:	TMessageAutoSizeInteger
 // Description:
 //
-class TMessageAutoSizeInteger
+class TMessageAutoSizeInteger : public TMessageElement
 {
   public:
-	TMessageAutoSizeInteger();
-	const char *className() const { return "TMessageAutoSizeInteger"; }
+	unsigned int read( const string & );
+	string write() const;
 
-	unsigned int queryMessageExtractSize( const string & );
-	void take( string & );
-	string give() const;
-
-	uint8_t getWidth() const;
-
-	uint64_t getValue() const;
+	uint64_t getValue() const { return Value; }
 	void setValue( uint64_t s ) { Value = s; }
 
   protected:
