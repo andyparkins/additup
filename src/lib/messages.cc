@@ -19,7 +19,7 @@
 // -------------- Includes
 // --- C
 // --- C++
-#include <set>
+#include <list>
 // --- Qt
 // --- OS
 // --- Project libs
@@ -40,17 +40,25 @@
 
 // -------------- Class declarations
 
+//
+// Class: TMessageTemplates
+// Description:
+// Master message list.
+//
 class TMessageTemplates
 {
   public:
 	TMessageTemplates();
 	~TMessageTemplates();
 
-	typedef set<const TMessage *> container;
+	typedef list<const TMessage *> container;
 
-  protected:
 	container Templates;
+
+	static TMessageTemplates t;
 };
+
+TMessageTemplates TMessageTemplates::t;
 
 
 // -------------- Class member definitions
@@ -70,7 +78,7 @@ TMessageTemplates::TMessageTemplates()
 
 	// Insert each template message into the master list
 	while( *p != NULL ) {
-		Templates.insert( *p );
+		Templates.push_back( *p );
 		p++;
 	}
 }
@@ -105,6 +113,20 @@ const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
 
 int main( int argc, char *argv[] )
 {
+	try {
+		TMessageTemplates::container::iterator it;
+
+		cerr << "--- Available TMessage templates" << endl;
+
+		for( it = TMessageTemplates::t.Templates.begin();
+				it != TMessageTemplates::t.Templates.end(); it++ ) {
+			cerr << *(*it) << endl;
+		}
+	} catch( exception &e ) {
+		cerr << e.what() << endl;
+		return 255;
+	}
+
 	return 0;
 }
 #endif
