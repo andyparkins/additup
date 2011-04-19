@@ -23,6 +23,7 @@
 // --- C++
 #include <string>
 #include <list>
+#include <iostream>
 // --- OS
 // --- Project
 #include "structures.h"
@@ -80,6 +81,9 @@ class TMessage
   protected:
 	virtual bool isVariableSize() const = 0;
 	virtual unsigned int minimumPayload() const = 0;
+
+	virtual ostream &printOn( ostream & ) const;
+	friend ostream &operator<<( ostream &, const TMessage & );
 
   protected:
 	sMessageHeader MessageHeader;
@@ -417,6 +421,7 @@ class TMessage_alert : public TMessage
 
 
 // -------------- Inline Functions
+inline ostream &operator<<(ostream &s, const TMessage &M ) { return M.printOn(s); }
 
 
 // -------------- Function prototypes
