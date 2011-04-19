@@ -24,6 +24,7 @@
 #include <string>
 #include <list>
 #include <iostream>
+#include <stdexcept>
 // --- OS
 // --- Project
 #include "structures.h"
@@ -61,6 +62,45 @@
 
 
 // -------------- Class declarations
+
+//
+// Class: message_parse_error
+// Description:
+//
+class message_parse_error : public runtime_error
+{
+  public:
+	explicit message_parse_error( const string &s ) :
+		runtime_error(s) {}
+};
+
+class message_parse_error_type : public message_parse_error
+{
+  public:
+	message_parse_error_type() :
+		message_parse_error("message type wrong") {}
+};
+
+class message_parse_error_checksum : public message_parse_error
+{
+  public:
+	message_parse_error_checksum() :
+		message_parse_error("checksum") {}
+};
+
+class message_parse_error_underflow : public message_parse_error
+{
+  public:
+	message_parse_error_underflow() :
+		message_parse_error("not enough data for message to be parsed") {}
+};
+
+class message_parse_error_version : public message_parse_error
+{
+  public:
+	message_parse_error_version() :
+		message_parse_error("message version too old") {}
+};
 
 //
 // Class: TMessage
