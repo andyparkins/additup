@@ -132,18 +132,7 @@ uint32_t TMessage::queryMessageExtractSize( const string &d ) const
 		return 0;
 
 	// Four bytes length (d16-d19)
-	uint32_t x = littleEndian32FromString(d, 16);
-
-	// Include header
-	x += 4 + 12 + 4;
-	if( headerHasPayloadChecksum() )
-		x += 4;
-
-	// Check for overflow
-	if( x < (headerHasPayloadChecksum() ? 24 : 20) )
-		return 0;
-
-	return x;
+	return littleEndian32FromString(d, 16) + (4 + 12 + 4);
 }
 
 //
@@ -152,8 +141,6 @@ uint32_t TMessage::queryMessageExtractSize( const string &d ) const
 //
 void TMessage::parse( const string &d )
 {
-	string::size_type pos;
-
 	// Don't try and extract more data than is available
 	if( d.size() < 20 )
 		throw message_parse_error_underflow();
@@ -161,27 +148,6 @@ void TMessage::parse( const string &d )
 	MessageHeader.Magic = littleEndian32FromString( d, 0 );
 	MessageHeader.Command = d.substr(4,12);
 	MessageHeader.PayloadLength = littleEndian32FromString( d, 16 );
-
-	if( headerHasPayloadChecksum() ) {
-		pos = 24;
-		if( d.size() < pos )
-			throw message_parse_error_underflow();
-		MessageHeader.Checksum = littleEndian32FromString( d, 20 );
-	} else {
-		pos = 20;
-		if( d.size() < pos )
-			throw message_parse_error_underflow();
-		MessageHeader.Checksum = 0;
-	}
-
-	// Don't try and extract more data than is available
-	if( MessageHeader.PayloadLength > d.size() - pos )
-		throw message_parse_error_underflow();
-
-	// Pull the payload out
-	RawPayload = d.substr(pos, MessageHeader.PayloadLength);
-	// TMessage parses none of the payload, so we point at zero
-	PayloadAccepted = 0;
 }
 
 //
@@ -192,6 +158,87 @@ ostream &TMessage::printOn( ostream &s ) const
 {
 	s << className();
 	return s;
+}
+
+// --------
+
+//
+// Function:	TMessageWithChecksum :: queryMessageExtractSize
+// Description:
+//
+uint32_t TMessageWithChecksum::queryMessageExtractSize( const string &d ) const
+{
+	uint32_t x = TMessage::queryMessageExtractSize(d);
+
+	// We have a checksum, so add it on
+	x += 4;
+
+	// Check for overflow (this will also check for a zero returned from
+	// the base class)
+	if( x < 24 )
+		return 0;
+
+	return x;
+}
+
+//
+// Function:	TMessageWithChecksum :: parse
+// Description:
+//
+void TMessageWithChecksum::parse( const string &d )
+{
+	TMessage::parse(d);
+
+	if( d.size() < 24 )
+		throw message_parse_error_underflow();
+	MessageHeader.Checksum = littleEndian32FromString( d, 20 );
+
+	// Don't try and extract more data than is available
+	if( MessageHeader.PayloadLength > d.size() - 24 )
+		throw message_parse_error_underflow();
+
+	// Pull the payload out
+	RawPayload = d.substr(24, MessageHeader.PayloadLength);
+	// TMessage parses none of the payload, so we point at zero
+	PayloadAccepted = 0;
+}
+
+//
+// Function:	TMessageWithoutChecksum :: queryMessageExtractSize
+// Description:
+//
+uint32_t TMessageWithoutChecksum::queryMessageExtractSize( const string &d ) const
+{
+	uint32_t x = TMessage::queryMessageExtractSize(d);
+
+	// Check for overflow (this will also check for a zero returned from
+	// the base class)
+	if( x < 20 )
+		return 0;
+
+	return x;
+}
+
+//
+// Function:	TMessageWithoutChecksum :: parse
+// Description:
+//
+void TMessageWithoutChecksum::parse( const string &d )
+{
+	TMessage::parse(d);
+
+	if( d.size() < 20 )
+		throw message_parse_error_underflow();
+	MessageHeader.Checksum = 0;
+
+	// Don't try and extract more data than is available
+	if( MessageHeader.PayloadLength > d.size() - 20 )
+		throw message_parse_error_underflow();
+
+	// Pull the payload out
+	RawPayload = d.substr(20, MessageHeader.PayloadLength);
+	// TMessage parses none of the payload, so we point at zero
+	PayloadAccepted = 0;
 }
 
 // --------

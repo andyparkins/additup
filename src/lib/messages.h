@@ -113,15 +113,13 @@ class TMessage
 	virtual const char *className() const { return "TMessage"; }
 	virtual TMessage *clone() const = 0;
 
-	uint32_t queryMessageExtractSize( const string & ) const;
+	virtual uint32_t queryMessageExtractSize( const string & ) const;
 
 	virtual void parse( const string & );
 
 	const sMessageHeader &header() const { return MessageHeader; }
 
   protected:
-	virtual bool headerHasPayloadChecksum() const { return true; }
-
 	virtual const char *commandString() const = 0;
 
 	virtual ostream &printOn( ostream & ) const;
@@ -159,6 +157,34 @@ class TMessageUnimplemented : public TMessage
 
   protected:
 	const char *commandString() const { return ""; }
+};
+
+//
+// Class: TMessageWithChecksum
+// Description:
+//
+class TMessageWithChecksum : public TMessage
+{
+  public:
+	const char *className() const { return "TMessageWithChecksum"; }
+
+	uint32_t queryMessageExtractSize( const string & ) const;
+
+	void parse( const string & );
+};
+
+//
+// Class: TMessageWithoutChecksum
+// Description:
+//
+class TMessageWithoutChecksum : public TMessage
+{
+  public:
+	const char *className() const { return "TMessageWithoutChecksum"; }
+
+	uint32_t queryMessageExtractSize( const string & ) const;
+
+	void parse( const string & );
 };
 
 //
@@ -207,13 +233,12 @@ class TMessageAutoSizeInteger
 // Upon successful reception of a Version packet, the VerAck packet shall
 // be sent, to nodes with version >= 209.
 //
-class TMessage_version : public TMessage
+class TMessage_version : public TMessageWithoutChecksum
 {
   public:
 	const char *className() const { return "TMessage_version"; }
 
   protected:
-	bool headerHasPayloadChecksum() const { return false; }
 	const char *commandString() const { return "version"; }
 
   protected:
@@ -285,14 +310,13 @@ class TMessage_version_209 : public TMessage_version_106
 // version packet has been successfully transmitted to a node.
 //
 //
-class TMessage_verack : public TMessage
+class TMessage_verack : public TMessageWithoutChecksum
 {
   public:
 	const char *className() const { return "TMessage_verack"; }
 	TMessage *clone() const { return new TMessage_verack(*this); }
 
   protected:
-	bool headerHasPayloadChecksum() const { return false; }
 	const char *commandString() const { return "verack"; }
 
   protected:
@@ -308,7 +332,7 @@ class TMessage_verack : public TMessage
 // If the size of all of the address data is greater than 1000 bytes, an
 // error condition is assumed.
 //
-class TMessage_addr : public TMessage
+class TMessage_addr : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_addr"; }
@@ -327,7 +351,7 @@ class TMessage_addr : public TMessage
 // Class: TMessage_InventoryBase
 // Description:
 //
-class TMessage_InventoryBase : public TMessage
+class TMessage_InventoryBase : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_InventoryBase"; }
@@ -375,7 +399,7 @@ class TMessage_getdata : public TMessage_InventoryBase
 // Class: TMessage_getblocks
 // Description:
 //
-class TMessage_getblocks : public TMessage
+class TMessage_getblocks : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_getblocks"; }
@@ -399,7 +423,7 @@ class TMessage_getblocks : public TMessage
 // The tx message is sent in response to a getdata message which
 // requests transaction information from a transaction hash.
 //
-class TMessage_tx : public TMessage
+class TMessage_tx : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_tx"; }
@@ -439,7 +463,7 @@ class TMessage_tx : public TMessage
 // The block message is sent in response to a getdata message which
 // requests transaction information from a block hash.
 //
-class TMessage_block : public TMessage
+class TMessage_block : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_block"; }
@@ -472,7 +496,7 @@ class TMessage_block : public TMessage
 // No additional data is transmitted with this message.
 //
 //
-class TMessage_getaddr : public TMessage
+class TMessage_getaddr : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_getaddr"; }
@@ -488,7 +512,7 @@ class TMessage_getaddr : public TMessage
 // Class: TMessage_checkorder
 // Description:
 //
-class TMessage_checkorder : public TMessage
+class TMessage_checkorder : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_checkorder"; }
@@ -504,7 +528,7 @@ class TMessage_checkorder : public TMessage
 // Class: TMessage_submitorder
 // Description:
 //
-class TMessage_submitorder : public TMessage
+class TMessage_submitorder : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_submitorder"; }
@@ -520,7 +544,7 @@ class TMessage_submitorder : public TMessage
 // Class: TMessage_reply
 // Description:
 //
-class TMessage_reply : public TMessage
+class TMessage_reply : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_reply"; }
@@ -536,7 +560,7 @@ class TMessage_reply : public TMessage
 // Class: TMessage_ping
 // Description:
 //
-class TMessage_ping : public TMessage
+class TMessage_ping : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_ping"; }
@@ -562,7 +586,7 @@ class TMessage_ping : public TMessage
 //
 // (see also http://www.bitcoin.org/smf/index.php?topic=898.0 )
 //
-class TMessage_alert : public TMessage
+class TMessage_alert : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_alert"; }
