@@ -193,16 +193,16 @@ struct sHash
 //
 struct sInventoryVector
 {
-	enum eDataType {
+	enum eObjectType {
 		ERROR = 0,
 		MSG_TX,
 		MSG_BLOCK,
 		// Other Data Type values are considered reserved for future
 		// implementations.
-		DATA_TYPE_COUNT
+		OBJECT_TYPE_COUNT
 	};
 
-	eDataType DataType;
+	eObjectType ObjectType;
 	sHash Hash;
 };
 
