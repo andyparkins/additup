@@ -218,6 +218,36 @@ struct sInventoryVector
 
 // -------------- Class declarations
 
+//
+// Class:	TMessageAutoSizeInteger
+// Description:
+//
+// Numeric Value     Data Size Required    Format
+// < 253             1 byte                < data >
+// <= USHRT_MAX      3 bytes               253 + <data> (as ushort datatype)
+// <= UINT_MAX       5 bytes               254 + <data> (as uint datatype)
+// size > UINT_MAX   9 bytes               255 + <data>
+//
+//
+class TMessageAutoSizeInteger
+{
+  public:
+	TMessageAutoSizeInteger();
+	const char *className() const { return "TMessageAutoSizeInteger"; }
+
+	unsigned int queryMessageExtractSize( const string & );
+	void take( string & );
+	string give() const;
+
+	uint8_t getWidth() const;
+
+	uint64_t getValue() const;
+	void setValue( uint64_t s ) { Value = s; }
+
+  protected:
+	uint64_t Value;
+};
+
 
 // -------------- Constants
 
