@@ -272,6 +272,7 @@ class TMessage_version_0 : public TMessage_version
 	TMessage *clone() const { return new TMessage_version_0(*this); }
 
   protected:
+	virtual uint32_t minimumAcceptedVersion() const { return 0; }
 };
 
 //
@@ -285,6 +286,7 @@ class TMessage_version_106 : public TMessage_version_0
 	TMessage *clone() const { return new TMessage_version_106(*this); }
 
   protected:
+	uint32_t minimumAcceptedVersion() const { return 106; }
 };
 
 //
@@ -298,6 +300,7 @@ class TMessage_version_209 : public TMessage_version_106
 	TMessage *clone() const { return new TMessage_version_209(*this); }
 
   protected:
+	uint32_t minimumAcceptedVersion() const { return 209; }
 };
 
 //
