@@ -121,9 +121,6 @@ class TMessage
 	const sMessageHeader &header() const { return MessageHeader; }
 
   protected:
-	virtual bool isVariableSize() const = 0;
-	virtual unsigned int minimumPayload() const = 0;
-
 	virtual const char *commandString() const = 0;
 
 	virtual ostream &printOn( ostream & ) const;
