@@ -113,7 +113,7 @@ class TMessage
 	virtual const char *className() const { return "TMessage"; }
 	virtual TMessage *clone() const = 0;
 
-	unsigned int queryMessageExtractSize( const string & );
+	uint32_t queryMessageExtractSize( const string & ) const;
 
 	virtual void take( string & );
 	virtual string give() const = 0;
