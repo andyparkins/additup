@@ -134,7 +134,7 @@ class TMessage
 };
 
 //
-// Class:	TMessageAutoSizeField
+// Class:	TMessageAutoSizeInteger
 // Description:
 //
 // Numeric Value     Data Size Required    Format
@@ -143,26 +143,24 @@ class TMessage
 // <= UINT_MAX       5 bytes               254 + <data> (as uint datatype)
 // size > UINT_MAX   9 bytes               255 + <data>
 //
-// XXX: WTF? On what planet are we going to send multi-gigabyte sized
-// fields (32-bit) let alone 64-bit sized fields.  It's also not like
-// the rest of the protocol has tried hard to pack the bits together.
-// Wouldn't it have been easier just to make these variable sized count
-// fields a single 32 bit number?
 //
-class TMessageAutoSizeField
+class TMessageAutoSizeInteger
 {
   public:
-	TMessageAutoSizeField();
+	TMessageAutoSizeInteger();
+	const char *className() const { return "TMessageAutoSizeInteger"; }
 
 	unsigned int queryMessageExtractSize( const string & );
-	void take( string );
+	void take( string & );
 	string give() const;
 
-	uint64_t getSize() const;
-	void setSize( uint64_t s ) { Size = s; }
+	uint8_t getWidth() const;
+
+	uint64_t getValue() const;
+	void setValue( uint64_t s ) { Value = s; }
 
   protected:
-	uint64_t Size;
+	uint64_t Value;
 };
 
 //
@@ -308,7 +306,7 @@ class TMessage_InventoryBase : public TMessage
 
   protected:
 	struct {
-		TMessageAutoSizeField Count;
+		TMessageAutoSizeInteger Count;
 		list<sInventoryVector> InventoryVector;
 	} Payload;
 };
@@ -361,7 +359,7 @@ class TMessage_getblocks : public TMessage
   protected:
 	struct {
 		uint32_t Version;
-		TMessageAutoSizeField HashStartCount;
+		TMessageAutoSizeInteger HashStartCount;
 		list<sHash> HashStart;
 		sHash HashStop;
 	} Payload;
