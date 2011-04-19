@@ -115,8 +115,7 @@ class TMessage
 
 	uint32_t queryMessageExtractSize( const string & ) const;
 
-	virtual void take( string & );
-	virtual string give() const = 0;
+	virtual void parse( const string & );
 
 	const sMessageHeader &header() const { return MessageHeader; }
 
@@ -144,6 +143,7 @@ class TMessage
   protected:
 	sMessageHeader MessageHeader;
 	string RawPayload;
+	string::size_type PayloadAccepted;
 };
 
 //
