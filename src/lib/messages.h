@@ -147,6 +147,21 @@ class TMessage
 };
 
 //
+// Class: TMessageUnimplemented
+// Description:
+/// TMessage child representing unknown message types
+//
+class TMessageUnimplemented : public TMessage
+{
+  public:
+	const char *className() const { return "TMessageUnimplemented"; }
+	TMessage *clone() const { return new TMessageUnimplemented(*this); }
+
+  protected:
+	const char *commandString() const { return ""; }
+};
+
+//
 // Class:	TMessageAutoSizeInteger
 // Description:
 //
