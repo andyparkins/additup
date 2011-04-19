@@ -70,6 +70,28 @@ TMessageTemplates TMessageTemplates::t;
 TMessageTemplates::TMessageTemplates()
 {
 	static const TMessage *ModuleTemplates[] = {
+		// Note: version messages have to be in reverse order so that the
+		// highest matching version will be tried first.  This is
+		// necessary because version_0 will happilly accept a
+		// version_209 message, being that it is backwards compatible
+		new TMessage_version_209(),
+		new TMessage_version_106(),
+		new TMessage_version_0(),
+		new TMessage_verack(),
+		new TMessage_addr(),
+		new TMessage_inv(),
+		new TMessage_getdata(),
+		new TMessage_getblocks(),
+		new TMessage_tx(),
+		new TMessage_block(),
+		new TMessage_getaddr(),
+		new TMessage_checkorder(),
+		new TMessage_submitorder(),
+		new TMessage_reply(),
+		new TMessage_ping(),
+		new TMessage_alert(),
+		// Note: The unimplemented type should always be tried last
+		new TMessageUnimplemented(),
 		NULL
 	};
 
