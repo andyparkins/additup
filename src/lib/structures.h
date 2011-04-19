@@ -21,6 +21,7 @@
 // --- C
 #include <stdint.h>
 // --- C++
+#include <string>
 // --- Qt
 // --- OS
 // --- Project
@@ -147,9 +148,9 @@ enum eWords {
 //
 struct sMessageHeader
 {
-	uint32_t MessageStart;
-	uint8_t Command[12];
-	uint32_t PacketLength;
+	uint32_t Magic;
+	string Command;
+	uint32_t PayloadLength;
 	uint32_t Checksum;
 };
 
