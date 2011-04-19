@@ -121,6 +121,8 @@ class TMessage
 	const sMessageHeader &header() const { return MessageHeader; }
 
   protected:
+	virtual bool headerHasPayloadChecksum() const { return true; }
+
 	virtual const char *commandString() const = 0;
 
 	virtual ostream &printOn( ostream & ) const;
@@ -185,6 +187,7 @@ class TMessage_version : public TMessage
 	const char *className() const { return "TMessage_version"; }
 
   protected:
+	bool headerHasPayloadChecksum() const { return false; }
 	const char *commandString() const { return "version"; }
 
   protected:
@@ -263,6 +266,7 @@ class TMessage_verack : public TMessage
 	TMessage *clone() const { return new TMessage_verack(*this); }
 
   protected:
+	bool headerHasPayloadChecksum() const { return false; }
 	const char *commandString() const { return "verack"; }
 
   protected:
