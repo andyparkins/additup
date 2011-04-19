@@ -219,15 +219,38 @@ struct sInventoryVector
 // -------------- Class declarations
 
 //
-// Class:	TMessageAutoSizeInteger
+// Class:	TMessageElement
 // Description:
 //
-// Numeric Value     Data Size Required    Format
-// < 253             1 byte                < data >
-// <= USHRT_MAX      3 bytes               253 + <data> (as ushort datatype)
-// <= UINT_MAX       5 bytes               254 + <data> (as uint datatype)
-// size > UINT_MAX   9 bytes               255 + <data>
+class TMessageElement
+{
+  public:
+	virtual unsigned int read( const string & ) = 0;
+	virtual string write() const = 0;
+
+	virtual unsigned int childCount() const { return 0; }
+	virtual TMessageElement *child() const { return NULL; }
+
+	static uint32_t littleEndian16FromString( const string &d, string::size_type p = 0) {
+		return static_cast<uint8_t>(d[p]) << 0
+		| static_cast<uint8_t>(d[p+1]) << 8; }
+	static uint32_t littleEndian32FromString( const string &d, string::size_type p = 0) {
+		return static_cast<uint8_t>(d[p]) << 0
+		| static_cast<uint8_t>(d[p+1]) << 8
+		| static_cast<uint8_t>(d[p+2]) << 16
+		| static_cast<uint8_t>(d[p+3]) << 24; }
+	static uint64_t littleEndian64FromString( const string &d, string::size_type p = 0) {
+		return static_cast<uint64_t>(littleEndian32FromString(d,p)) << 0
+		| static_cast<uint64_t>(littleEndian32FromString(d,p+4)) << 32; }
+	static string::size_type NULTerminatedString( string &d, const string &s, string::size_type p = 0) {
+		d = s.substr(p, s.find_first_of('\0', p) - p );
+		return d.size();
+	}
+};
+
 //
+// Class:	TMessageAutoSizeInteger
+// Description:
 //
 class TMessageAutoSizeInteger
 {

@@ -130,19 +130,6 @@ class TMessage
 	virtual ostream &printOn( ostream & ) const;
 	friend ostream &operator<<( ostream &, const TMessage & );
 
-	static uint32_t littleEndian32FromString( const string &d, string::size_type p = 0) {
-		return static_cast<uint8_t>(d[p]) << 0
-		| static_cast<uint8_t>(d[p+1]) << 8
-		| static_cast<uint8_t>(d[p+2]) << 16
-		| static_cast<uint8_t>(d[p+3]) << 24; }
-	static uint64_t littleEndian64FromString( const string &d, string::size_type p = 0) {
-		return static_cast<uint64_t>(littleEndian32FromString(d,p)) << 0
-		| static_cast<uint64_t>(littleEndian32FromString(d,p+4)) << 32; }
-	static string::size_type NULTerminatedString( string &d, const string &s, string::size_type p = 0) {
-		d = s.substr(p, s.find_first_of('\0', p) - p );
-		return d.size();
-	}
-
   protected:
 	sMessageHeader MessageHeader;
 	string RawPayload;

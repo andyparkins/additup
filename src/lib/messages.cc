@@ -139,7 +139,7 @@ uint32_t TMessage::queryMessageExtractSize( const string &d ) const
 		return 0;
 
 	// Four bytes length (d16-d19)
-	return littleEndian32FromString(d, 16) + 20;
+	return TMessageElement::littleEndian32FromString(d, 16) + 20;
 }
 
 //
@@ -169,9 +169,9 @@ void TMessage::parse( const string &d )
 	if( d.size() < 20 )
 		throw message_parse_error_underflow();
 
-	MessageHeader.Magic = littleEndian32FromString( d, 0 );
+	MessageHeader.Magic = TMessageElement::littleEndian32FromString( d, 0 );
 	MessageHeader.Command = d.substr(4,12);
-	MessageHeader.PayloadLength = littleEndian32FromString( d, 16 );
+	MessageHeader.PayloadLength = TMessageElement::littleEndian32FromString( d, 16 );
 }
 
 //
@@ -215,7 +215,7 @@ void TMessageWithChecksum::parse( const string &d )
 
 	if( d.size() < 24 )
 		throw message_parse_error_underflow();
-	MessageHeader.Checksum = littleEndian32FromString( d, 20 );
+	MessageHeader.Checksum = TMessageElement::littleEndian32FromString( d, 20 );
 
 	// Don't try and extract more data than is available
 	if( MessageHeader.PayloadLength > d.size() - 24 )
@@ -323,13 +323,13 @@ void TMessage_version_0::parse( const string &d )
 		throw message_parse_error_underflow();
 
 	// d0
-	Payload.Version = littleEndian32FromString(RawPayload,0);
+	Payload.Version = TMessageElement::littleEndian32FromString(RawPayload,0);
 
 	if( Payload.Version < minimumAcceptedVersion() )
 		throw message_parse_error_version();
 
-	Payload.Services = littleEndian64FromString(RawPayload,4);
-	Payload.Timestamp = littleEndian64FromString(RawPayload,12);
+	Payload.Services = TMessageElement::littleEndian64FromString(RawPayload,4);
+	Payload.Timestamp = TMessageElement::littleEndian64FromString(RawPayload,12);
 
 	// d20
 	Payload.AddrMe;
@@ -351,11 +351,11 @@ void TMessage_version_106::parse( const string &d )
 	Payload.AddrFrom;
 
 	// d72
-	Payload.Nonce = littleEndian64FromString(RawPayload,72);
+	Payload.Nonce = TMessageElement::littleEndian64FromString(RawPayload,72);
 	PayloadAccepted = 80;
 
 	// d80: Variable sized NUL-terminated string
-	PayloadAccepted += NULTerminatedString(Payload.SubVersionNum, RawPayload, 80);
+	PayloadAccepted += TMessageElement::NULTerminatedString(Payload.SubVersionNum, RawPayload, 80);
 }
 
 //
@@ -370,7 +370,7 @@ void TMessage_version_209::parse( const string &d )
 		throw message_parse_error_underflow();
 
 	// Version >= 209
-	Payload.StartingHeight = littleEndian32FromString(RawPayload,PayloadAccepted);
+	Payload.StartingHeight = TMessageElement::littleEndian32FromString(RawPayload,PayloadAccepted);
 	PayloadAccepted += 4;
 }
 
