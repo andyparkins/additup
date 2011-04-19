@@ -271,8 +271,8 @@ class TMessage_getblocks : public TMessage
 	struct {
 		uint32_t Version;
 		TMessageAutoSizeField HashStartCount;
-		list<tHash> HashStart;
-		tHash HashStop;
+		list<sHash> HashStart;
+		sHash HashStop;
 	} Payload;
 };
 
@@ -287,7 +287,7 @@ class TMessage_tx : public TMessage
   public:
   protected:
 	struct sTransactionOutputReference {
-		tHash Hash;
+		sHash Hash;
 		uint32_t Index;
 	};
 	struct sScriptElement {
@@ -322,8 +322,8 @@ class TMessage_block : public TMessage
   protected:
 	struct {
 		uint32_t Version;
-		tHash PreviousBlock;
-		tHash MerkleRoot;
+		sHash PreviousBlock;
+		sHash MerkleRoot;
 		uint32_t Time;
 		uint32_t DifficultyBits;
 		uint32_t Nonce;

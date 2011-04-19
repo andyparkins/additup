@@ -42,7 +42,6 @@
 
 // -------------- Typedefs (pre-structure)
 
-typedef uint8_t tHash[32];
 
 // -------------- Enumerations
 
@@ -175,6 +174,15 @@ struct sAddressData
 };
 
 //
+// Struct:	sHash
+// Description:
+//
+struct sHash
+{
+	uint32_t Hash[32];
+};
+
+//
 // Struct:	sInventoryVector
 // Description:
 // Inventory vectors are used for notifying other nodes about data they
@@ -194,7 +202,7 @@ struct sInventoryVector
 	};
 
 	eDataType DataType;
-	tHash Hash;
+	sHash Hash;
 };
 
 
