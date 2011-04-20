@@ -46,7 +46,7 @@
 // -------------- Class member definitions
 
 //
-// Function:	TMessageAutoSizeInteger :: read
+// Function:	TAutoSizeIntegerElement :: read
 // Description:
 //
 // Numeric Value     Data Size Required    Format
@@ -55,30 +55,42 @@
 // <= UINT_MAX       5 bytes               254 + <data> (as uint datatype)
 // size > UINT_MAX   9 bytes               255 + <data>
 //
-unsigned int TMessageAutoSizeInteger::read( const string &s )
+istream &TAutoSizeIntegerElement::read( istream &is )
 {
-	if( s.empty() )
-		throw runtime_error("TMessageAutoSizeInteger's can't be read from empty strings" );
+	unsigned char ch;
 
-	switch( static_cast<uint8_t>(s[0]) ) {
-		case 255:
-			Value = littleEndian64FromString( s, 1 );
-			return 9;
-		case 254:
-			Value = littleEndian32FromString( s, 1 );
-			return 5;
-		case 253:
-			Value = littleEndian16FromString( s, 1 );
-			return 3;
+	ch = is.get();
+
+	switch( ch ) {
+		case 255: {
+			TLittleEndian64Element i64;
+			is >> i64;
+			Value = i64.getValue();
+			break;
+		}
+		case 254: {
+			TLittleEndian32Element i32;
+			is >> i32;
+			Value = i32.getValue();
+			break;
+		}
+		case 253: {
+			TLittleEndian16Element i16;
+			is >> i16;
+			Value = i16.getValue();
+			break;
+		}
 		default:
 			// Less than 253, means use the value literally
-			Value = static_cast<uint64_t>(static_cast<unsigned char>(s[0]));
-			return 1;
+			Value = ch;
+			break;
 	}
+
+	return is;
 }
 
 //
-// Function:	TMessageAutoSizeInteger :: write
+// Function:	TAutoSizeIntegerElement :: write
 // Description:
 //
 // Numeric Value     Data Size Required    Format
@@ -87,7 +99,7 @@ unsigned int TMessageAutoSizeInteger::read( const string &s )
 // <= UINT_MAX       5 bytes               254 + <data> (as uint datatype)
 // size > UINT_MAX   9 bytes               255 + <data>
 //
-string TMessageAutoSizeInteger::write() const
+ostream &TAutoSizeIntegerElement::write( ostream &os ) const
 {
 	char buffer[9];
 	unsigned int n;
@@ -123,7 +135,9 @@ string TMessageAutoSizeInteger::write() const
 		buffer[8] = (Value & 0xff00000000000000ULL) >> 56;
 	}
 
-	return string(buffer, n);
+	os.write( buffer, n );
+
+	return os;
 }
 
 
@@ -132,6 +146,7 @@ string TMessageAutoSizeInteger::write() const
 
 #ifdef UNITTEST
 #include <iostream>
+#include <sstream>
 
 // -------------- main()
 
@@ -147,17 +162,50 @@ int main( int argc, char *argv[] )
 			string("\xff\xff\xff\xff\xff\xff\xff\xff\xff", 9),
 			string()
 		};
-		TMessageAutoSizeInteger x;
 		const string *p = SampleMessages;
+
 		while( !p->empty() ) {
+			istringstream iss( *p );
+			TAutoSizeIntegerElement x;
+			iss >> x;
 
-			cerr << p->size() << " input -> " << x.read( *p );
-			cerr << " output = " << x.getValue() << endl;
+			cerr << p->size() << " bytes input; output = " << x.getValue() << endl;
 
-			string y = x.write();
+			ostringstream oss;
+			oss << x;
 
-			if( y != *p )
+			if( oss.str() != *p )
 				throw runtime_error( "Mismatch" );
+
+			// Confirm we're at the "EOF"; that means that our read
+			// position has been correctly maintained.
+			if( iss.get() != ios::traits_type::eof() )
+				throw runtime_error( "Underflow" );
+
+			p++;
+		}
+
+	} catch( exception &e ) {
+		cerr << e.what() << endl;
+		return 255;
+	}
+
+	try {
+		static const string SampleMessages[] = {
+			string("abcde\0fghijklm\0", 15),
+			string()
+		};
+		const string *p = SampleMessages;
+
+		while( !p->empty() ) {
+			istringstream iss( *p );
+			TNULTerminatedStringElement x;
+
+			while( !iss.eof() ) {
+				iss >> x;
+				cerr << "Got string \"" << x.getValue() << "\" from "
+					<< p->size() << " byte input string" << endl;
+			}
 
 			p++;
 		}

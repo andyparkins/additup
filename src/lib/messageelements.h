@@ -22,6 +22,7 @@
 #include <stdint.h>
 // --- C++
 #include <string>
+#include <iostream>
 // --- Qt
 // --- OS
 // --- Project
@@ -210,9 +211,12 @@ struct sInventoryVector
 
 
 // -------------- Class pre-declarations
+class TMessageElement;
 
 
 // -------------- Function pre-class prototypes
+istream &operator>>(istream &s, TMessageElement &E );
+ostream &operator<<(ostream &s, const TMessageElement &E );
 
 
 // -------------- Class declarations
@@ -224,11 +228,8 @@ struct sInventoryVector
 class TMessageElement
 {
   public:
-	virtual unsigned int read( const string & ) = 0;
-	virtual string write() const = 0;
-
-	virtual unsigned int childCount() const { return 0; }
-	virtual TMessageElement *child() const { return NULL; }
+	virtual istream &read( istream &is ) { return is; }
+	virtual ostream &write( ostream &os ) const { return os; }
 
 	static uint32_t littleEndian16FromString( const string &d, string::size_type p = 0) {
 		return static_cast<uint8_t>(d[p]) << 0
@@ -248,17 +249,105 @@ class TMessageElement
 };
 
 //
-// Class:	TMessageAutoSizeInteger
+// Class:	TNULTerminatedStringElement
 // Description:
 //
-class TMessageAutoSizeInteger : public TMessageElement
+class TNULTerminatedStringElement : public TMessageElement
 {
   public:
-	unsigned int read( const string & );
-	string write() const;
+	istream &read( istream &is ) {
+		char ch;
+		Value.clear();
+		while( !is.eof() && (ch = is.get()) != '\0' && ch != ios::traits_type::eof() ) {
+			Value += ch;
+		}
+		return is;
+	}
+
+	const string &getValue() const { return Value; }
+
+  protected:
+	string Value;
+};
+
+//
+// Class:	TLittleEndian16Element
+// Description:
+//
+class TLittleEndian16Element : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		Value = static_cast<uint8_t>(is.get()) << 0
+			| static_cast<uint8_t>(is.get()) << 8;
+		return is;
+	}
+
+	operator uint16_t() const { return Value; }
+	uint16_t getValue() const { return Value; }
+
+  protected:
+	uint16_t Value;
+};
+
+//
+// Class:	TLittleEndian32Element
+// Description:
+//
+class TLittleEndian32Element : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		Value = static_cast<uint8_t>(is.get()) << 0
+			| static_cast<uint8_t>(is.get()) << 8
+			| static_cast<uint8_t>(is.get()) << 16
+			| static_cast<uint8_t>(is.get()) << 24;
+		return is;
+	}
+
+	operator uint32_t() const { return Value; }
+	uint32_t getValue() const { return Value; }
+
+  protected:
+	uint32_t Value;
+};
+
+//
+// Class:	TLittleEndian64Element
+// Description:
+//
+class TLittleEndian64Element : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		TLittleEndian32Element a, b;
+		is >> a >> b;
+		Value = static_cast<uint64_t>(a) << 0
+			| static_cast<uint64_t>(b) << 32;
+		return is;
+	}
+
+	operator uint64_t() const { return Value; }
+	uint64_t getValue() const { return Value; }
+
+  protected:
+	uint64_t Value;
+};
+
+//
+// Class:	TAutoSizeIntegerElement
+// Description:
+//
+class TAutoSizeIntegerElement : public TMessageElement
+{
+  public:
+	istream &read( istream & );
+	ostream &write( ostream & ) const;
 
 	uint64_t getValue() const { return Value; }
 	void setValue( uint64_t s ) { Value = s; }
+
+	operator uint64_t() const { return Value; }
 
   protected:
 	uint64_t Value;
@@ -269,6 +358,8 @@ class TMessageAutoSizeInteger : public TMessageElement
 
 
 // -------------- Inline Functions
+inline istream &operator>>(istream &s, TMessageElement &E ) { return E.read(s); }
+inline ostream &operator<<(ostream &s, const TMessageElement &E ) { return E.write(s); }
 
 
 // -------------- Function prototypes
