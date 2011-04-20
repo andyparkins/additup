@@ -191,7 +191,7 @@ ostream &TMessage::printOn( ostream &s ) const
 // Static:	TMessageWithChecksum :: queryMessageExtractSize
 // Description:
 //
-TSSLMessageDigest *TMessageWithChecksum::PayloadHasher = new THash_sha256;
+TMessageDigest *TMessageWithChecksum::PayloadHasher = new THash_sha256;
 
 //
 // Function:	TMessageWithChecksum :: queryMessageExtractSize

@@ -163,8 +163,7 @@ const char* ssl_error::what() const throw()
 // TSSLMessageDigest wraps.  This is the OpenSSL equivalent of setting
 // the structure to zero.
 //
-TSSLMessageDigest::TSSLMessageDigest() :
-	Initialised(false)
+TSSLMessageDigest::TSSLMessageDigest()
 {
 	EVP_MD_CTX_init( &EVPContext );
 }
@@ -203,7 +202,8 @@ void TSSLMessageDigest::init()
 	ret = EVP_DigestInit_ex( &EVPContext, getMD(), NULL );
 	if( ret != 1 )
 		throw ssl_error( "EVP_DigestInit_ex()" );
-	Initialised = true;
+
+	TMessageDigest::init();
 }
 
 //
@@ -262,7 +262,7 @@ string TSSLMessageDigest::final()
 	// DigestFinal pushes any bytes remaining in the current block out.
 	ret = EVP_DigestFinal_ex( &EVPContext, b, &returnSize );
 	if( ret != 1 ) {
-		Initialised = false;
+		deinit();
 		throw ssl_error("EVP_DigestFinal_ex()");
 	}
 
@@ -273,7 +273,7 @@ string TSSLMessageDigest::final()
 
 	// After a hash is finalised, no more calls to EVP_DigestUpdate()
 	// are allowed without starting again with a EVP_DigestInit()
-	Initialised = false;
+	deinit();
 
 	return result;
 }
@@ -358,7 +358,7 @@ int main( int argc, char *argv[] )
 
 	try {
 		struct sTestSample {
-			TSSLMessageDigest *Hasher;
+			TMessageDigest *Hasher;
 			const string Plaintext;
 			const string ExpectedDigest;
 		};

@@ -147,9 +147,9 @@ class TEllipticCurveKey
 // ------------
 
 //
-// Class:		TSSLMessageDigest
+// Class:		TMessageDigest
 // Description:
-/// Wrapper class around an OpenSSL EVP message digest collection.
+/// Abstract base class to make a common interface to hashes.
 //
 /// "Message digest" is the name that OpenSSL (and other cyrptographers)
 /// give to what is commonly called a "hash".  The idea is that an
@@ -164,6 +164,27 @@ class TEllipticCurveKey
 /// A good hash is highly sensitive to small changes in the input data,
 /// is unpredicatable, and fast.
 ///
+//
+class TMessageDigest
+{
+  public:
+	TMessageDigest() : Initialised( false ) {}
+	virtual ~TMessageDigest() {}
+	virtual string transform( const string & ) = 0;
+
+  protected:
+	virtual void init() { Initialised = true; }
+	virtual void deinit() { Initialised = false; }
+
+  protected:
+	bool Initialised;
+};
+
+//
+// Class:		TSSLMessageDigest
+// Description:
+/// Wrapper class around an OpenSSL EVP message digest collection.
+//
 /// This class represents a convenience wrapper around OpenSSL's message
 /// digest functions.  Combined with TSSLMessageDigestTemplate below, it
 /// makes hashing data as simple as:
@@ -182,7 +203,7 @@ class TEllipticCurveKey
 ///
 /// They are template instantiations to make objects per hash type.
 //
-class TSSLMessageDigest
+class TSSLMessageDigest : public TMessageDigest
 {
   public:
 	TSSLMessageDigest();
@@ -199,8 +220,6 @@ class TSSLMessageDigest
 
   protected:
 	EVP_MD_CTX EVPContext;
-
-	bool Initialised;
 };
 
 //

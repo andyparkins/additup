@@ -56,7 +56,7 @@
 
 
 // -------------- Class pre-declarations
-class TSSLMessageDigest;
+class TMessageDigest;
 
 
 // -------------- Function pre-class prototypes
@@ -169,7 +169,7 @@ class TMessageWithChecksum : public TMessage
   protected:
 	void verifyPayloadChecksum();
 
-	static TSSLMessageDigest *PayloadHasher;
+	static TMessageDigest *PayloadHasher;
 };
 
 //
