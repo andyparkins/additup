@@ -100,6 +100,7 @@ class ssl_error : public libc_error
 	virtual const char* what() const throw();
 };
 
+// ------------
 
 //
 // Class:	TEllipticCurveKey
@@ -108,40 +109,21 @@ class ssl_error : public libc_error
 class TEllipticCurveKey
 {
   public:
-	TEllipticCurveKey() {
-		Key = EC_KEY_new_by_curve_name( NID_secp256k1 );
-		EC_KEY_generate_key( Key );
-	}
-	~TEllipticCurveKey() { EC_KEY_free( Key ); }
+	TEllipticCurveKey();
+	~TEllipticCurveKey();
 
-	unsigned int getSize() const {
-		return ECDSA_size( Key );
-	}
+	unsigned int getMaximumSignatureSize() const;
 
-	string sign( const string &s ) const {
-		string Out;
-		unsigned int OutLen = getSize();
-		unsigned char *buffer = new unsigned char[OutLen];
-		ECDSA_sign( 0,
-				reinterpret_cast<const unsigned char *>(s.data()), s.size(),
-				buffer, &OutLen,
-				Key);
-		Out.assign( reinterpret_cast<const char*>(buffer), OutLen );
-		delete[] buffer;
-		return Out;
-	}
-
-	bool verify( const string &digest, const string &signature ) const {
-		int ret;
-		ret = ECDSA_verify( 0,
-				reinterpret_cast<const unsigned char *>(digest.data()), digest.size(),
-				reinterpret_cast<const unsigned char *>(signature.data()), signature.size(),
-				Key);
-		return ret == 1;
-	}
+	string sign( const string &digest ) const;
+	bool verify( const string &digest, const string &signature ) const;
 
   protected:
 	EC_KEY *Key;
+
+	BIGNUM *Precompute_kinv;
+	BIGNUM *Precompute_rp;
+
+	static const int EC_SIGNATURE_TYPE;
 };
 
 // ------------

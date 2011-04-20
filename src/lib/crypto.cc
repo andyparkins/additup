@@ -157,6 +157,94 @@ const char* ssl_error::what() const throw()
 // -----------------
 
 //
+// Static:	TEllipticCurveKey :: EC_SIGNATURE_TYPE
+// Description:
+// "The parameter type is ignored"
+//
+const int TEllipticCurveKey::EC_SIGNATURE_TYPE = 0;
+
+//
+// Function:	TEllipticCurveKey :: TEllipticCurveKey
+// Description:
+//
+TEllipticCurveKey::TEllipticCurveKey() :
+	Precompute_kinv( NULL ),
+	Precompute_rp( NULL )
+{
+	Key = EC_KEY_new_by_curve_name( NID_secp256k1 );
+	EC_KEY_generate_key( Key );
+
+	// Future: speed things up by using ECSDA_sign_setup() to precompute
+	// kinv and rp for passing to ECDSA_sign_ex().
+}
+
+//
+// Function:	TEllipticCurveKey :: ~TEllipticCurveKey
+// Description:
+//
+TEllipticCurveKey::~TEllipticCurveKey()
+{
+	EC_KEY_free( Key );
+}
+
+//
+// Function:	TEllipticCurveKey :: getMaximumSignatureSize
+// Description:
+//
+unsigned int TEllipticCurveKey::getMaximumSignatureSize() const
+{
+	return ECDSA_size( Key );
+}
+
+//
+// Function:	TEllipticCurveKey :: sign
+// Description:
+//
+string TEllipticCurveKey::sign( const string &digest ) const
+{
+	unsigned int SignatureLength = getMaximumSignatureSize();
+	unsigned char *SignatureBuffer = new unsigned char[SignatureLength];
+	string SignatureDER;
+
+	ECDSA_sign_ex( EC_SIGNATURE_TYPE,
+			reinterpret_cast<const unsigned char *>(digest.data()),
+			digest.size(),
+			SignatureBuffer, &SignatureLength,
+			Precompute_kinv,
+			Precompute_rp,
+			Key);
+
+	// ECDSA_do_sign_ex() outputs to a newly allocated ECDSA_SIG
+	// structure instead of the DER encoded buffer we output here.
+
+	// Convert the raw byte buffer to a string
+	SignatureDER.assign(
+			reinterpret_cast<const char*>(SignatureBuffer),
+			SignatureLength );
+	delete[] SignatureBuffer;
+
+	return SignatureDER;
+}
+
+//
+// Function:	TEllipticCurveKey :: verify
+// Description:
+//
+bool TEllipticCurveKey::verify( const string &digest, const string &signature ) const
+{
+	int ret;
+
+	ret = ECDSA_verify( EC_SIGNATURE_TYPE,
+			reinterpret_cast<const unsigned char *>(digest.data()), digest.size(),
+			reinterpret_cast<const unsigned char *>(signature.data()), signature.size(),
+			Key);
+
+	return ret == 1;
+}
+
+// -----------------
+
+//
 // Function:	TSSLMessageDigest :: TSSLMessageDigest
 // Description:
 // Call EVP_MD_CTX_init() for the EVP_MD_CTX object that
