@@ -23,6 +23,7 @@
 // --- Qt
 // --- OS
 // --- Project libs
+#include "crypto.h"
 // --- Project
 
 
@@ -187,6 +188,12 @@ ostream &TMessage::printOn( ostream &s ) const
 // --------
 
 //
+// Static:	TMessageWithChecksum :: queryMessageExtractSize
+// Description:
+//
+TSSLMessageDigest *TMessageWithChecksum::PayloadHasher = new THash_sha256;
+
+//
 // Function:	TMessageWithChecksum :: queryMessageExtractSize
 // Description:
 //
@@ -225,7 +232,30 @@ void TMessageWithChecksum::parse( const string &d )
 	RawPayload = d.substr(24, MessageHeader.PayloadLength);
 	// TMessage parses none of the payload, so we point at zero
 	PayloadAccepted = 0;
+
+	// Confirm the checksum
+	verifyPayloadChecksum();
 }
+
+//
+// Function:	TMessageWithChecksum :: verifyPayloadChecksum
+// Description:
+// First 4 bytes of sha256(sha256(payload))
+//
+void TMessageWithChecksum::verifyPayloadChecksum()
+{
+	string digest = PayloadHasher->transform( RawPayload );
+	uint32_t CalculatedChecksum = TMessageElement::littleEndian32FromString( digest, 0 );
+
+	if( CalculatedChecksum != MessageHeader.Checksum ) {
+		cerr << "CalculatedChecksum = " << hex << CalculatedChecksum << dec
+			<< "; HeaderChecksum = " << hex << MessageHeader.Checksum << dec
+			<< endl;
+		throw message_parse_error_checksum();
+	}
+}
+
+// --------
 
 //
 // Function:	TMessageWithoutChecksum :: queryMessageExtractSize
@@ -468,17 +498,17 @@ int main( int argc, char *argv[] )
 				"\xf9\xbe\xb4\xd9\x76\x65\x72\x61\x63\x6b\x00\x00\x00\x00\x00\x00"
 				"\x00\x00\x00\x00"
 				, 20 ),
-			// addr
+			// addr (with checksum corrected from 0xc239857f to 0xc86588d6)
 			string(
 				"\xF9\xBE\xB4\xD9\x61\x64\x64\x72\x00\x00\x00\x00\x00\x00\x00\x00"
-				"\x1F\x00\x00\x00\x7F\x85\x39\xC2\x01\xE2\x15\x10\x4D\x01\x00\x00"
+				"\x1F\x00\x00\x00\xd6\x88\x65\xc8\x01\xE2\x15\x10\x4D\x01\x00\x00"
 				"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF"
 				"\xFF\x0A\x00\x00\x01\x20\x8D"
 				, 55 ),
-			// tx
+			// tx (with checksum corrected from 0xbecd93e2 to 0x2ede9745)
 			string(
 				"\xF9\xBE\xB4\xD9\x74\x78\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-				"\x02\x01\x00\x00\xE2\x93\xCD\xBE\x01\x00\x00\x00\x01\x6D\xBD\xDB"
+				"\x02\x01\x00\x00\x45\x97\xde\x2e\x01\x00\x00\x00\x01\x6D\xBD\xDB"
 				"\x08\x5B\x1D\x8A\xF7\x51\x84\xF0\xBC\x01\xFA\xD5\x8D\x12\x66\xE9"
 				"\xB6\x3B\x50\x88\x19\x90\xE4\xB4\x0D\x6A\xEE\x36\x29\x00\x00\x00"
 				"\x00\x8B\x48\x30\x45\x02\x21\x00\xF3\x58\x1E\x19\x72\xAE\x8A\xC7"

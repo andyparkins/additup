@@ -56,6 +56,7 @@
 
 
 // -------------- Class pre-declarations
+class TSSLMessageDigest;
 
 
 // -------------- Function pre-class prototypes
@@ -164,6 +165,11 @@ class TMessageWithChecksum : public TMessage
 	uint32_t queryMessageExtractSize( const string & ) const;
 
 	void parse( const string & );
+
+  protected:
+	void verifyPayloadChecksum();
+
+	static TSSLMessageDigest *PayloadHasher;
 };
 
 //
