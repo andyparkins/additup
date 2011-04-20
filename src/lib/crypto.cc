@@ -157,6 +157,17 @@ const char* ssl_error::what() const throw()
 // -----------------
 
 //
+// Function:	TDigitalSignature :: TDigitalSignature
+// Description:
+//
+TDigitalSignature::TDigitalSignature() :
+	KeyAvailable( false )
+{
+}
+
+// -----------------
+
+//
 // Static:	TEllipticCurveKey :: EC_SIGNATURE_TYPE
 // Description:
 // "The parameter type is ignored"
@@ -168,14 +179,10 @@ const int TEllipticCurveKey::EC_SIGNATURE_TYPE = 0;
 // Description:
 //
 TEllipticCurveKey::TEllipticCurveKey() :
+	Key( NULL ),
 	Precompute_kinv( NULL ),
 	Precompute_rp( NULL )
 {
-	Key = EC_KEY_new_by_curve_name( NID_secp256k1 );
-	EC_KEY_generate_key( Key );
-
-	// Future: speed things up by using ECSDA_sign_setup() to precompute
-	// kinv and rp for passing to ECDSA_sign_ex().
 }
 
 //
@@ -185,6 +192,22 @@ TEllipticCurveKey::TEllipticCurveKey() :
 TEllipticCurveKey::~TEllipticCurveKey()
 {
 	EC_KEY_free( Key );
+}
+
+//
+// Function:	TEllipticCurveKey :: generate
+// Description:
+//
+void TEllipticCurveKey::generate()
+{
+	// Set the curve
+	Key = EC_KEY_new_by_curve_name( NID_secp256k1 );
+
+	// Create a new private and public key
+	EC_KEY_generate_key( Key );
+
+	// Future: speed things up by using ECSDA_sign_setup() to precompute
+	// kinv and rp for passing to ECDSA_sign_ex().
 }
 
 //
@@ -423,21 +446,20 @@ int main( int argc, char *argv[] )
 
 	try {
 		TEllipticCurveKey ECKEY;
-		string x("1234567");
-		string y;
+		string digest("1234567");
+		string signature;
 
-		y = ECKEY.sign( x );
-		for( unsigned int i = 0; i < y.size(); i++ ) {
-			cerr << hex
-				<< static_cast<unsigned int>(static_cast<unsigned char>(y[i]))
-				<< " " << dec;
-		}
-		cerr << endl;
+		// Generate a completely new ECKEY pair
+		ECKEY.generate();
 
-		if( ECKEY.verify( x, y ) ) {
-			cerr << "Verifies" << endl;
+		signature = ECKEY.sign( digest );
+		cerr << "EC: Signature of \"" << digest << "\" is ";
+		hexify( cerr, signature );
+
+		if( ECKEY.verify( digest, signature ) ) {
+			cerr << " : verifies" << endl;
 		} else {
-			cerr << "Does not verify" << endl;
+			cerr << " : does not verify" << endl;
 		}
 	} catch( exception &e ) {
 		cerr << e.what() << endl;

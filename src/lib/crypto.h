@@ -103,19 +103,61 @@ class ssl_error : public libc_error
 // ------------
 
 //
+// Class:	TDigitalSignature
+// Description:
+/// Abstract base class to represent public key digital signature
+//
+// A digital signature uses asymmetric cryptography to produce a unique
+// number from a given message and a private key and public key.  A
+// receiver of the message can verify the signature is valid given the
+// public key and the message.
+//
+// This class assumes that the signature is generated for small
+// quantities of data (asymmetric cryptography is CPU intensive so it is
+// more efficient to hash a message and sign the hash).  This
+// representative hash is called the message digest.  The sign()
+// function returns a signature, and the verify function checks that
+// signature against the given digest to establish veracity.
+//
+class TDigitalSignature
+{
+  public:
+	TDigitalSignature();
+	virtual ~TDigitalSignature() {}
+
+	virtual string sign( const string &digest ) const = 0;
+	virtual bool verify( const string &digest, const string &signature ) const = 0;
+
+  protected:
+	bool KeyAvailable;
+};
+
+//
 // Class:	TEllipticCurveKey
 // Description:
 //
-class TEllipticCurveKey
+class TEllipticCurveKey : public TDigitalSignature
 {
   public:
 	TEllipticCurveKey();
 	~TEllipticCurveKey();
 
+	void generate();
+
 	unsigned int getMaximumSignatureSize() const;
 
 	string sign( const string &digest ) const;
 	bool verify( const string &digest, const string &signature ) const;
+
+  protected:
+	// const EC_GROUP *EC_KEY_get0_group(const EC_KEY *);
+	// int EC_KEY_set_group(EC_KEY *, const EC_GROUP *);
+	//
+	// const BIGNUM *EC_KEY_get0_private_key(const EC_KEY *);
+	// int EC_KEY_set_private_key(EC_KEY *, const BIGNUM *);
+	//
+	// const EC_POINT *EC_KEY_get0_public_key(const EC_KEY *);
+	// int EC_KEY_set_public_key(EC_KEY *, const EC_POINT *);
 
   protected:
 	EC_KEY *Key;
