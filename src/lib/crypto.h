@@ -181,6 +181,24 @@ class TMessageDigest
 };
 
 //
+// Class:		TDoubleHash
+// Description:
+//
+class TDoubleHash : public TMessageDigest
+{
+  public:
+	TDoubleHash( TMessageDigest *h2, TMessageDigest *h1 ) :
+		Hash1(h1), Hash2(h2) {}
+
+	string transform( const string &s ) { return Hash2->transform( Hash1->transform(s) ); }
+
+  protected:
+	TMessageDigest *Hash1;
+	TMessageDigest *Hash2;
+};
+
+
+//
 // Class:		TSSLMessageDigest
 // Description:
 /// Wrapper class around an OpenSSL EVP message digest collection.
