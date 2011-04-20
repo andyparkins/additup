@@ -144,12 +144,12 @@ class TEllipticCurveKey : public TDigitalSignature
 
 	void generate();
 
-	unsigned int getMaximumSignatureSize() const;
-
 	string sign( const string &digest ) const;
 	bool verify( const string &digest, const string &signature ) const;
 
   protected:
+	unsigned int getMaximumSignatureSize() const;
+
 	// const EC_GROUP *EC_KEY_get0_group(const EC_KEY *);
 	// int EC_KEY_set_group(EC_KEY *, const EC_GROUP *);
 	//
