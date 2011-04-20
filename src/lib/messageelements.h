@@ -169,8 +169,7 @@ struct sAddressData
 	};
 
 	uint64_t Services;
-	uint8_t Reserved[12];
-	uint32_t IPv4Address;
+	string Address;
 	uint16_t PortNumber;
 };
 
