@@ -207,6 +207,8 @@ class TNULTerminatedStringElement : public TStringBasedElement
 		}
 		return is;
 	}
+
+	using TStringBasedElement::operator=;
 };
 
 //
@@ -225,6 +227,8 @@ class TSizedStringElement : public TStringBasedElement
 		return is;
 	}
 
+	using TStringBasedElement::operator=;
+
   protected:
 	string::size_type N;
 };
@@ -238,6 +242,8 @@ class TFixedStringElement : public TSizedStringElement
 {
   public:
 	TFixedStringElement() : TSizedStringElement(NUM) {}
+
+	using TSizedStringElement::operator=;
 };
 
 //
