@@ -327,7 +327,7 @@ istream &TMessageWithoutChecksum::read( istream &is )
 //
 ostream &TMessage_version::printOn( ostream &s ) const
 {
-	TMessage::printOn(s);
+	TMessageWithoutChecksum::printOn(s);
 	s << "{ Version=" << Payload.Version.getValue()
 		<< "; Services=["
 		<< (Payload.Services.getValue() & TAddressDataElement::NODE_NETWORK ? " NODE_NETWORK" : "" )

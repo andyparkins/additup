@@ -23,6 +23,7 @@
 // --- C++
 #include <string>
 #include <iostream>
+#include <vector>
 // --- Qt
 // --- OS
 // --- Project
@@ -431,6 +432,33 @@ class TAddressDataElement : public TMessageElement
 	TLittleEndian64Element Services;
 	TFixedStringElement<16> Address;
 	TBigEndian16Element PortNumber;
+};
+
+//
+// Class:	TNElementsElement
+// Description:
+//
+template <typename Element>
+class TNElementsElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		TAutoSizeIntegerElement N;
+		is >> N;
+		cerr << "reading " << N.getValue() << " elements" << endl;
+		for( unsigned int i = 0; i < N; i++ ) {
+			Array.push_back( Element() );
+			is >> Array.back();
+		}
+		return is;
+	}
+
+	unsigned int size() const { return Array.size(); }
+	Element &operator[]( unsigned int i ) { return Array[i]; }
+	const Element &operator[]( unsigned int i ) const { return Array[i]; }
+
+  protected:
+	vector<Element> Array;
 };
 
 
