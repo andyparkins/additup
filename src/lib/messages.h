@@ -462,6 +462,32 @@ class TMessage_block : public TMessageWithChecksum
 };
 
 //
+// Class: TMessage_headers
+// Description:
+// The headers packet returns block headers in response to a getheaders
+// packet.
+//
+class TMessage_headers : public TMessageWithChecksum
+{
+  public:
+	const char *className() const { return "TMessage_headers"; }
+	TMessage *clone() const { return new TMessage_headers(*this); }
+
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> BlockHeaders;
+		return is;
+	}
+
+  protected:
+	const char *commandString() const { return "headers"; }
+
+	ostream &printOn( ostream & ) const;
+  protected:
+	TNElementsElement<TPaddedBlockHeaderElement> BlockHeaders;
+};
+
+//
 // Class: TMessage_getaddr
 // Description:
 // The getaddr message sends a request to a node asking for information

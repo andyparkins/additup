@@ -522,6 +522,21 @@ class TBlockHeaderElement : public TMessageElement
 	TLittleEndian32Element Nonce;
 };
 
+//
+// Class:	TPaddedBlockHeaderElement
+// Description:
+//
+class TPaddedBlockHeaderElement : public TBlockHeaderElement
+{
+  public:
+	istream &read( istream &is ) {
+		TBlockHeaderElement::read(is);
+		TAutoSizeIntegerElement ignore;
+		is >> ignore;
+		return is;
+	}
+};
+
 ////
 //// Struct:	sInventoryVector
 //// Description:
