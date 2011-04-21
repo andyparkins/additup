@@ -431,13 +431,13 @@ class TMessageHeaderElement : public TMessageElement
 };
 
 //
-// Class:	TAddressDataElement
+// Class:	TNetworkAddressElement
 // Description:
 /// Address data is used in several places in the packets.
 //
 /// (from CAddress in net.h)
 //
-class TAddressDataElement : public TMessageElement
+class TNetworkAddressElement : public TMessageElement
 {
   public:
 	enum eServices {
@@ -458,15 +458,15 @@ class TAddressDataElement : public TMessageElement
 };
 
 //
-// Class:	TTimedAddressDataElement
+// Class:	TTimedNetworkAddressElement
 // Description:
 //
-class TTimedAddressDataElement : public TAddressDataElement
+class TTimedNetworkAddressElement : public TNetworkAddressElement
 {
   public:
 	istream &read( istream &is ) {
 		is >> Time;
-		return TAddressDataElement::read(is);
+		return TNetworkAddressElement::read(is);
 	}
 
   public:

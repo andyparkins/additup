@@ -221,11 +221,12 @@ class TMessage_version : public TMessageWithoutChecksum
 		TLittleEndian32Element Version;
 		TLittleEndian64Element Services;
 		TLittleEndian64Element Timestamp;
-		// XXX: Why does TAddressDataElement have a services field _and_ the
-		// version message have a services field?
-		TAddressDataElement AddrMe;
+		// XXX: Why does TNetworkAddressElement have a services
+		// field _and_ the version message have a services field?  The
+		// one in the version message is redundant.
+		TNetworkAddressElement AddrMe;
 		// Version >= 106
-		TAddressDataElement AddrFrom;
+		TNetworkAddressElement AddrFrom;
 		TLittleEndian64Element Nonce;
 		TNULTerminatedStringElement SubVersionNum;
 		// Version >= 209
@@ -332,7 +333,7 @@ class TMessage_addr : public TMessageWithChecksum
 
 	ostream &printOn( ostream & ) const;
   protected:
-	TNElementsElement<TTimedAddressDataElement> AddressData;
+	TNElementsElement<TTimedNetworkAddressElement> AddressData;
 };
 
 //

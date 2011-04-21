@@ -330,7 +330,7 @@ ostream &TMessage_version::printOn( ostream &s ) const
 	TMessageWithoutChecksum::printOn(s);
 	s << "{ Version=" << Payload.Version.getValue()
 		<< "; Services=["
-		<< (Payload.Services.getValue() & TAddressDataElement::NODE_NETWORK ? " NODE_NETWORK" : "" )
+		<< (Payload.Services.getValue() & TNetworkAddressElement::NODE_NETWORK ? " NODE_NETWORK" : "" )
 		<< " ]; Time=" << Payload.Timestamp.getValue()
 		<< "; SenderAddress=";
 	if( Payload.Version >= 106 ) {
