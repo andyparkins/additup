@@ -312,6 +312,27 @@ class TFixedSizeElement : public TSizedElement
 };
 
 //
+// Class:	TBigEndian16Element
+// Description:
+//
+class TBigEndian16Element : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		Value = static_cast<uint8_t>(is.get()) << 8
+			| static_cast<uint8_t>(is.get()) << 0;
+		return is;
+	}
+
+	operator uint16_t() const { return Value; }
+	uint16_t getValue() const { return Value; }
+	TBigEndian16Element &operator=( uint16_t s ) { Value = s; return *this; }
+
+  protected:
+	uint16_t Value;
+};
+
+//
 // Class:	TLittleEndian16Element
 // Description:
 //
