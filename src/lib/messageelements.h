@@ -241,6 +241,26 @@ class TFixedStringElement : public TSizedStringElement
 };
 
 //
+// Class:	TByteElement
+// Description:
+//
+class TByteElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		Value = is.get();
+		return is;
+	}
+
+	operator uint8_t() const { return Value; }
+	uint8_t getValue() const { return Value; }
+	TByteElement &operator=( uint8_t s ) { Value = s; return *this; }
+
+  protected:
+	uint8_t Value;
+};
+
+//
 // Class:	TBigEndian16Element
 // Description:
 //
