@@ -475,7 +475,7 @@ int main( int argc, char *argv[] )
 
 	try {
 		static const string SampleMessages[] = {
-			// TMessage_version_0
+			// TMessageUnimplemented
 			string("\xf9\xbe\xb4\xd9"    // Magic
 					"unimplement\0"      // Command
 					"\0\0\0\0"         // Length
@@ -569,6 +569,7 @@ int main( int argc, char *argv[] )
 		while( !p->empty() ) {
 			TMessage *potential = NULL;
 
+			cerr << "* Attempting to parse " << p << endl;
 			for( it = TMessageTemplates::t.Templates.begin();
 					it != TMessageTemplates::t.Templates.end(); it++ ) {
 				if( (*it)->queryMessageExtractSize( *p ) == 0 ) {
@@ -579,7 +580,7 @@ int main( int argc, char *argv[] )
 					istringstream iss(*p);
 					potential->read( iss );
 				} catch( exception &e ) {
-					cerr << p << " message parse by " << potential->className()
+					cerr << " - message parse by " << potential->className()
 						<< " failed, " << e.what() << endl;
 					delete potential;
 					potential = NULL;
@@ -588,9 +589,9 @@ int main( int argc, char *argv[] )
 				break;
 			}
 			if( it != TMessageTemplates::t.Templates.end() ) {
-				cerr << "Sample message " << p << " is a " << *potential << endl;
+				cerr << " - is a " << *potential << endl;
 			} else {
-				cerr << "Sample message " << p << " is not understood" << endl;
+				cerr << " - is not understood" << endl;
 			}
 			delete potential;
 
