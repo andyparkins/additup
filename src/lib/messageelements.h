@@ -522,6 +522,84 @@ class TNElementsElement : public TMessageElement
 //	sHash Hash;
 //};
 
+//
+// Class:	TOutputTransactionReferenceElement
+// Description:
+//
+class TOutputTransactionReferenceElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		is >> TransactionHash >> Index;
+		return is;
+	}
+
+  public:
+	THashElement TransactionHash;
+	TLittleEndian32Element Index;
+};
+
+//
+// Class:	TInputSplitElement
+// Description:
+//
+class TInputSplitElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		is >> OutPoint >> SignatureScript >> Sequence;
+		return is;
+	}
+
+  public:
+	TOutputTransactionReferenceElement OutPoint;
+	TVariableSizedStringElement SignatureScript;
+	TLittleEndian32Element Sequence;
+};
+
+//
+// Class:	TOutputSplitElement
+// Description:
+//
+class TOutputSplitElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		is >> HundredsOfNanoCoins >> Script;
+		return is;
+	}
+
+  public:
+	//    5000000  =  0.05 Coins
+	// 3354000000  = 33.54 Coins
+	//  100000000x =  x    Coins
+	TLittleEndian64Element HundredsOfNanoCoins;
+	TVariableSizedStringElement Script;
+};
+
+//
+// Class:	TTransactionElement
+// Description:
+//
+class TTransactionElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		is >> Version
+			>> Inputs
+			>> Outputs
+			>> LockTime;
+		return is;
+	}
+
+  public:
+	TLittleEndian32Element Version;
+	TNElementsElement<TInputSplitElement> Inputs;
+	TNElementsElement<TOutputSplitElement> Outputs;
+	TLittleEndian32Element LockTime;
+};
+
+
 // -------------- Constants
 
 
