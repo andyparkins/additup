@@ -93,7 +93,7 @@ class message_parse_error_underflow : public message_parse_error
 {
   public:
 	message_parse_error_underflow() :
-		message_parse_error("not enough data for message to be parsed") {}
+		message_parse_error("data too short for message") {}
 };
 
 class message_parse_error_version : public message_parse_error
