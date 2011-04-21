@@ -394,14 +394,13 @@ class TMessage_getdata : public TMessage_InventoryBase
 };
 
 //
-// Class: TMessage_getblocks
+// Class: TMessageGetBase
 // Description:
 //
-class TMessage_getblocks : public TMessageWithChecksum
+class TMessageGetBase : public TMessageWithChecksum
 {
   public:
-	const char *className() const { return "TMessage_getblocks"; }
-	TMessage *clone() const { return new TMessage_getblocks(*this); }
+	const char *className() const { return "TMessageGetBase"; }
 
 	istream &read( istream &is ) {
 		TMessageWithChecksum::read(is);
@@ -412,13 +411,56 @@ class TMessage_getblocks : public TMessageWithChecksum
 	}
 
   protected:
-	const char *commandString() const { return "getblocks"; }
-
 	ostream &printOn( ostream & ) const;
+
   protected:
 	TLittleEndian32Element Version;
 	TNElementsElement<THashElement> HashStarts;
 	THashElement HashStop;
+};
+
+//
+// Class: TMessage_getblocks
+// Description:
+// Return an inv packet containing the list of blocks starting at
+// hash_start, up to hash_stop or 500 blocks, whichever comes first. To
+// receive the next blocks hashes, one needs to issue getblocks again
+// with the last known hash.
+//
+class TMessage_getblocks : public TMessageGetBase
+{
+  public:
+	const char *className() const { return "TMessage_getblocks"; }
+	TMessage *clone() const { return new TMessage_getblocks(*this); }
+
+  protected:
+	const char *commandString() const { return "getblocks"; }
+
+  protected:
+	static const unsigned int MAXIMUM_BLOCK_COUNT;
+};
+
+//
+// Class: TMessage_getheaders
+// Description:
+// Return a headers packet containing the headers for blocks starting at
+// hash_start, up to hash_stop or 2000 blocks, whichever comes first. To
+// receive the next blocks hashes, one needs to issue getheaders again
+// with the last known hash. The getheaders command is used by thin
+// clients to quickly download the blockchain where the contents of the
+// transactions would be irrelevant (because they are not ours)
+//
+class TMessage_getheaders : public TMessageGetBase
+{
+  public:
+	const char *className() const { return "TMessage_getheaders"; }
+	TMessage *clone() const { return new TMessage_getheaders(*this); }
+
+  protected:
+	const char *commandString() const { return "getheaders"; }
+
+  protected:
+	static const unsigned int MAXIMUM_BLOCK_COUNT;
 };
 
 //
