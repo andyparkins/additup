@@ -258,9 +258,6 @@ void TMessageWithChecksum::verifyPayloadChecksum()
 	uint32_t CalculatedChecksum = TMessageElement::littleEndian32FromString( digest, 0 );
 
 	if( CalculatedChecksum != MessageHeader.Checksum ) {
-		cerr << "CalculatedChecksum = " << hex << CalculatedChecksum << dec
-			<< "; HeaderChecksum = " << hex << MessageHeader.Checksum << dec
-			<< endl;
 		throw message_parse_error_checksum();
 	}
 }
