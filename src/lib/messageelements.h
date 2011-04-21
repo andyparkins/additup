@@ -380,6 +380,12 @@ class TAutoSizeIntegerElement : public TMessageElement
 };
 
 //
+// Typedef:	TTimestampElement
+// Description:
+//
+typedef TLittleEndian32Element TTimestampElement;
+
+//
 // Class:	TMessageHeaderElement
 // Description:
 //
@@ -432,6 +438,22 @@ class TAddressDataElement : public TMessageElement
 	TLittleEndian64Element Services;
 	TFixedStringElement<16> Address;
 	TBigEndian16Element PortNumber;
+};
+
+//
+// Class:	TTimedAddressDataElement
+// Description:
+//
+class TTimedAddressDataElement : public TAddressDataElement
+{
+  public:
+	istream &read( istream &is ) {
+		is >> Time;
+		return TAddressDataElement::read(is);
+	}
+
+  public:
+	TTimestampElement Time;
 };
 
 //
