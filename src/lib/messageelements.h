@@ -368,6 +368,23 @@ class TAutoSizeIntegerElement : public TMessageElement
 };
 
 //
+// Class:	TVariableSizedStringElement
+// Description:
+//
+class TVariableSizedStringElement : public TSizedStringElement
+{
+  public:
+	TVariableSizedStringElement() : TSizedStringElement(0) {}
+
+	istream &read( istream &is ) {
+		TAutoSizeIntegerElement VarInt;
+		is >> VarInt;
+		N = VarInt.getValue();
+		return TSizedStringElement::read(is);
+	}
+};
+
+//
 // Typedef:    THashElement
 // Description:
 //
