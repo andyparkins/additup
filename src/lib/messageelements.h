@@ -537,6 +537,21 @@ class TPaddedBlockHeaderElement : public TBlockHeaderElement
 	}
 };
 
+//
+// Class:	TWalletTxElement
+// Description:
+//
+class TWalletTxElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		return is;
+	}
+
+  public:
+	// Not enough information in protocol to implement
+};
+
 ////
 //// Struct:	sInventoryVector
 //// Description:

@@ -515,6 +515,13 @@ class TMessage_getaddr : public TMessageWithChecksum
 //
 // Class: TMessage_checkorder
 // Description:
+// This message is used for IP Transactions, to ask the peer if it
+// accepts such transactions and allow it to look at the content of the
+// order.
+//
+// It contains a CWalletTx object in the reference client.
+//
+// Not enough information in spec to implement.
 //
 class TMessage_checkorder : public TMessageWithChecksum
 {
@@ -522,26 +529,41 @@ class TMessage_checkorder : public TMessageWithChecksum
 	const char *className() const { return "TMessage_checkorder"; }
 	TMessage *clone() const { return new TMessage_checkorder(*this); }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> WalletTransaction;
+		return is;
+	}
+
   protected:
 	const char *commandString() const { return "checkorder"; }
 
   protected:
+	TWalletTxElement WalletTransaction;
 };
 
 //
 // Class: TMessage_submitorder
 // Description:
 //
-class TMessage_submitorder : public TMessageWithChecksum
+class TMessage_submitorder : public TMessage_checkorder
 {
   public:
 	const char *className() const { return "TMessage_submitorder"; }
 	TMessage *clone() const { return new TMessage_submitorder(*this); }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> TransactionHash
+			>> WalletTransaction;
+		return is;
+	}
+
   protected:
 	const char *commandString() const { return "submitorder"; }
 
   protected:
+	THashElement TransactionHash;
 };
 
 //
@@ -554,10 +576,17 @@ class TMessage_reply : public TMessageWithChecksum
 	const char *className() const { return "TMessage_reply"; }
 	TMessage *clone() const { return new TMessage_reply(*this); }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> ReplyCode;
+		return is;
+	}
+
   protected:
 	const char *commandString() const { return "reply"; }
 
   protected:
+	TLittleEndian32Element ReplyCode;
 };
 
 //
