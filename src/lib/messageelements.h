@@ -451,6 +451,8 @@ class TNetworkAddressElement : public TMessageElement
 		return is;
 	}
 
+	void clear() { Services = 0; Address = ""; PortNumber = 0; }
+
   public:
 	TLittleEndian64Element Services;
 	TFixedStringElement<16> Address;
