@@ -344,12 +344,23 @@ class TMessage_InventoryBase : public TMessageWithChecksum
   public:
 	const char *className() const { return "TMessage_InventoryBase"; }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> Inventory;
+		return is;
+	}
+
   protected:
+	TNElementsElement<TInventoryElement> Inventory;
+
+	static const unsigned int MAXIMUM_PAYLOAD;
 };
 
 //
 // Class: TMessage_inv
 // Description:
+// Allows a node to advertise its knowledge of one or more objects. It
+// can be received unsolicited, or in reply to getblocks.
 //
 class TMessage_inv : public TMessage_InventoryBase
 {
@@ -366,6 +377,9 @@ class TMessage_inv : public TMessage_InventoryBase
 //
 // Class: TMessage_getdata
 // Description:
+// getdata is used in response to inv, to retrieve the content of a
+// specific object, and is usually sent after receiving an inv packet,
+// after filtering known elements.
 //
 class TMessage_getdata : public TMessage_InventoryBase
 {

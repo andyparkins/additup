@@ -552,28 +552,35 @@ class TWalletTxElement : public TMessageElement
 	// Not enough information in protocol to implement
 };
 
-////
-//// Struct:	sInventoryVector
-//// Description:
-//// Inventory vectors are used for notifying other nodes about data they
-//// may have, and data which is being requested.
-////
-//// (from net.h)
-////
-//struct sInventoryVector
-//{
-//	enum eObjectType {
-//		ERROR = 0,
-//		MSG_TX,
-//		MSG_BLOCK,
-//		// Other Data Type values are considered reserved for future
-//		// implementations.
-//		OBJECT_TYPE_COUNT
-//	};
 //
-//	eObjectType ObjectType;
-//	sHash Hash;
-//};
+// Class:	TInventoryElement
+// Description:
+// Inventory vectors are used for notifying other nodes about data they
+// may have, and data which is being requested.
+//
+// (from net.h)
+//
+class TInventoryElement : public TMessageElement
+{
+  public:
+	enum eObjectType {
+		ERROR = 0,
+		MSG_TX,
+		MSG_BLOCK,
+		// Other Data Type values are considered reserved for future
+		// implementations.
+		OBJECT_TYPE_COUNT
+	};
+
+	istream &read( istream &is ) {
+		is >> ObjectType >> Hash;
+		return is;
+	}
+
+  public:
+	TLittleEndian32Element ObjectType;
+	THashElement Hash;
+};
 
 //
 // Class:	TOutputTransactionReferenceElement
