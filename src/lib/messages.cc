@@ -180,7 +180,7 @@ ostream &TMessage::printOn( ostream &s ) const
 // --------
 
 //
-// Static:	TMessageWithChecksum :: queryMessageExtractSize
+// Static:	TMessageWithChecksum :: PayloadHasher
 // Description:
 //
 TMessageDigest *TMessageWithChecksum::PayloadHasher = new TDoubleHash( new THash_sha256, new THash_sha256 );
