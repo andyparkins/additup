@@ -389,16 +389,22 @@ class TMessage_getblocks : public TMessageWithChecksum
 	const char *className() const { return "TMessage_getblocks"; }
 	TMessage *clone() const { return new TMessage_getblocks(*this); }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> Version
+			>> HashStarts
+			>> HashStop;
+		return is;
+	}
+
   protected:
 	const char *commandString() const { return "getblocks"; }
 
+	ostream &printOn( ostream & ) const;
   protected:
-	struct {
-		TLittleEndian32Element Version;
-		TAutoSizeIntegerElement HashStartCount;
-		list<sHash> HashStart;
-		sHash HashStop;
-	} Payload;
+	TLittleEndian32Element Version;
+	TNElementsElement<THashElement> HashStarts;
+	THashElement HashStop;
 };
 
 //

@@ -459,6 +459,20 @@ ostream &TMessage_addr::printOn( ostream &s ) const
 // --------
 
 //
+// Function:	TMessage_getblocks :: printOn
+// Description:
+//
+ostream &TMessage_getblocks::printOn( ostream &s ) const
+{
+	TMessageWithChecksum::printOn(s);
+	s << "{ N=" << HashStarts.size();
+	s << " }";
+	return s;
+}
+
+// --------
+
+//
 // Function:	TMessage_tx :: printOn
 // Description:
 //
