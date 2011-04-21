@@ -192,13 +192,7 @@ istream &TMessageWithChecksum::read( istream &is )
 {
 	TMessage::read(is);
 
-//	if( d.size() < 24 )
-//		throw message_parse_error_underflow();
 	is >> MessageHeader.Checksum;
-
-//	// Don't try and extract more data than is available
-//	if( MessageHeader.PayloadLength > d.size() - 24 )
-//		throw message_parse_error_underflow();
 
 	// Pull the payload out, but preserve position
 	TSizedStringElement PL( MessageHeader.PayloadLength );
@@ -252,13 +246,7 @@ istream &TMessageWithoutChecksum::read( istream &is )
 {
 	TMessage::read(is);
 
-//	if( d.size() < 20 )
-//		throw message_parse_error_underflow();
 	MessageHeader.Checksum = 0;
-
-//	// Don't try and extract more data than is available
-//	if( MessageHeader.PayloadLength > d.size() - 20 )
-//		throw message_parse_error_underflow();
 
 	// Pull the payload out
 	TSizedStringElement PL( MessageHeader.PayloadLength );
@@ -323,9 +311,6 @@ istream &TMessage_version::read( istream &is )
 istream &TMessage_version_0::read( istream &is )
 {
 	TMessage_version::read(is);
-
-//	if( RawPayload.size() < 46 )
-//		throw message_parse_error_underflow();
 
 	// d0
 	is >> Version;
