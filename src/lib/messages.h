@@ -445,18 +445,20 @@ class TMessage_block : public TMessageWithChecksum
 	const char *className() const { return "TMessage_block"; }
 	TMessage *clone() const { return new TMessage_block(*this); }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> BlockHeader
+			>> Transactions;
+		return is;
+	}
+
   protected:
 	const char *commandString() const { return "block"; }
 
+	ostream &printOn( ostream & ) const;
   protected:
-	struct {
-		uint32_t Version;
-		sHash PreviousBlock;
-		sHash MerkleRoot;
-		uint32_t Time;
-		uint32_t DifficultyBits;
-		uint32_t Nonce;
-	} Payload;
+	TBlockHeaderElement BlockHeader;
+	TNElementsElement<TTransactionElement> Transactions;
 };
 
 //

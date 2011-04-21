@@ -499,6 +499,29 @@ class TNElementsElement : public TMessageElement
 	vector<Element> Array;
 };
 
+//
+// Class:	TBlockHeaderElement
+// Description:
+//
+class TBlockHeaderElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		is >> Version
+			>> PreviousBlock >> MerkleRoot >> Timestamp
+			>> DifficultyBits >> Nonce;
+		return is;
+	}
+
+  public:
+	TLittleEndian32Element Version;
+	THashElement PreviousBlock;
+	THashElement MerkleRoot;
+	TTimestampElement Timestamp;
+	TLittleEndian32Element DifficultyBits;
+	TLittleEndian32Element Nonce;
+};
+
 ////
 //// Struct:	sInventoryVector
 //// Description:
