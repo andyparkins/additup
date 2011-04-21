@@ -241,13 +241,13 @@ class TNULTerminatedStringElement : public TStringBasedElement
 };
 
 //
-// Class:	TSizedElement
+// Class:	TSizedStringElement
 // Description:
 //
-class TSizedElement : public TStringBasedElement
+class TSizedStringElement : public TStringBasedElement
 {
   public:
-	TSizedElement(string::size_type n) : N(n) {}
+	TSizedStringElement(string::size_type n) : N(n) {}
 
 	istream &read( istream &is ) {
 		char buffer[N];
@@ -261,14 +261,14 @@ class TSizedElement : public TStringBasedElement
 };
 
 //
-// Class:	TFixedSizeElement
+// Class:	TFixedStringElement
 // Description:
 //
 template<string::size_type NUM>
-class TFixedSizeElement : public TSizedElement
+class TFixedStringElement : public TSizedStringElement
 {
   public:
-	TFixedSizeElement() : TSizedElement(NUM) {}
+	TFixedStringElement() : TSizedStringElement(NUM) {}
 };
 
 //
@@ -401,7 +401,7 @@ class TMessageHeaderElement : public TMessageElement
 
   public:
 	TLittleEndian32Element Magic;
-	TFixedSizeElement<12> Command;
+	TFixedStringElement<12> Command;
 	TLittleEndian32Element PayloadLength;
 	TLittleEndian32Element Checksum;
 };
@@ -429,7 +429,7 @@ class TAddressDataElement : public TMessageElement
 
   public:
 	TLittleEndian64Element Services;
-	TFixedSizeElement<16> Address;
+	TFixedStringElement<16> Address;
 	TBigEndian16Element PortNumber;
 };
 

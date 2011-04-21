@@ -137,7 +137,7 @@ uint32_t TMessage::queryMessageExtractSize( const string &d ) const
 
 	istringstream iss( d );
 	TLittleEndian32Element Magic;
-	TSizedElement Command(12);
+	TSizedStringElement Command(12);
 	TLittleEndian32Element Length;
 
 	iss >> Magic >> Command >> Length;
@@ -233,7 +233,7 @@ istream &TMessageWithChecksum::read( istream &is )
 //		throw message_parse_error_underflow();
 
 	// Pull the payload out, but preserve position
-	TSizedElement PL( MessageHeader.PayloadLength );
+	TSizedStringElement PL( MessageHeader.PayloadLength );
 	streampos p = is.tellg();
 	is >> PL;
 	is.seekg(p);
@@ -311,7 +311,7 @@ istream &TMessageWithoutChecksum::read( istream &is )
 //		throw message_parse_error_underflow();
 
 	// Pull the payload out
-	TSizedElement PL( MessageHeader.PayloadLength );
+	TSizedStringElement PL( MessageHeader.PayloadLength );
 	RawPayload = PL.getValue();
 	// TMessage parses none of the payload, so we point at zero
 	PayloadAccepted = 0;
