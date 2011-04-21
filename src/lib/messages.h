@@ -649,6 +649,11 @@ class TMessage_reply : public TMessageWithChecksum
 //
 // Class: TMessage_ping
 // Description:
+// The ping message is sent primarily to confirm that the TCP/IP
+// connection is still valid. An error in transmission is presumed to be
+// a closed connection and the address is removed as a current peer. No
+// reply is expected as a result of this message being sent nor any sort
+// of action expected on the part of a client when it is used.
 //
 class TMessage_ping : public TMessageWithChecksum
 {
