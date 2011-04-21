@@ -129,28 +129,6 @@ TMessage::TMessage() :
 }
 
 //
-// Function:	TMessage :: queryMessageExtractSize
-// Description:
-//
-uint32_t TMessage::queryMessageExtractSize( const string &d ) const
-{
-	if( d.size() < 20 )
-		return 0;
-
-	istringstream iss( d );
-	TLittleEndian32Element Magic;
-	TSizedStringElement Command(12);
-	TLittleEndian32Element Length;
-
-	iss >> Magic >> Command >> Length;
-
-	if( !acceptCommandCode( Command.getValue() ) )
-		return 0;
-
-	return Length.getValue() + 20;
-}
-
-//
 // Function:	TMessage :: acceptCommandCode
 // Description:
 //
@@ -173,7 +151,15 @@ bool TMessage::acceptCommandCode( const string &d ) const
 //
 istream &TMessage::read( istream &is )
 {
-	is >> MessageHeader;
+	try {
+		is >> MessageHeader;
+	} catch( ios::failure &e ) {
+		is.clear();
+		throw message_parse_error_underflow();
+	}
+
+	if( !acceptCommandCode( MessageHeader.Command.getValue() ) )
+		throw message_parse_error_type();
 
 	return is;
 }
@@ -198,25 +184,6 @@ ostream &TMessage::printOn( ostream &s ) const
 // Description:
 //
 TMessageDigest *TMessageWithChecksum::PayloadHasher = new TDoubleHash( new THash_sha256, new THash_sha256 );
-
-//
-// Function:	TMessageWithChecksum :: queryMessageExtractSize
-// Description:
-//
-uint32_t TMessageWithChecksum::queryMessageExtractSize( const string &d ) const
-{
-	uint32_t x = TMessage::queryMessageExtractSize(d);
-
-	// We have a checksum, so add it on
-	x += 4;
-
-	// Check for overflow (this will also check for a zero returned from
-	// the base class)
-	if( x < 24 )
-		return 0;
-
-	return x;
-}
 
 //
 // Function:	TMessageWithChecksum :: read
@@ -279,22 +246,6 @@ ostream &TMessageWithChecksum::printOn( ostream &s ) const
 }
 
 // --------
-
-//
-// Function:	TMessageWithoutChecksum :: queryMessageExtractSize
-// Description:
-//
-uint32_t TMessageWithoutChecksum::queryMessageExtractSize( const string &d ) const
-{
-	uint32_t x = TMessage::queryMessageExtractSize(d);
-
-	// Check for overflow (this will also check for a zero returned from
-	// the base class)
-	if( x < 20 )
-		return 0;
-
-	return x;
-}
 
 //
 // Function:	TMessageWithoutChecksum :: read
@@ -539,6 +490,7 @@ const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
 
 #ifdef UNITTEST
 #include <iostream>
+#include <typeinfo>
 
 // -------------- main()
 
@@ -560,6 +512,10 @@ int main( int argc, char *argv[] )
 
 	try {
 		static const string SampleMessages[] = {
+			// Short invalid message
+			string("\xf9\xbe\xb4\xd9"    // Magic
+					"unimplement\0"      // Command
+					, 16 ),
 			// TMessageUnimplemented
 			string("\xf9\xbe\xb4\xd9"    // Magic
 					"unimplement\0"      // Command
@@ -653,30 +609,47 @@ int main( int argc, char *argv[] )
 		const string *p = SampleMessages;
 		while( !p->empty() ) {
 			TMessage *potential = NULL;
+			istringstream iss(*p);
+			iss.exceptions( ios::eofbit | ios::failbit | ios::badbit );
+			ios::streampos sp;
 
 			cerr << "* Attempting to parse " << p << endl;
 			for( it = TMessageTemplates::t.Templates.begin();
 					it != TMessageTemplates::t.Templates.end(); it++ ) {
-				if( (*it)->queryMessageExtractSize( *p ) == 0 ) {
-					continue;
-				}
 				potential = (*it)->clone();
 				try {
-					istringstream iss(*p);
+					sp = iss.tellg();
 					potential->read( iss );
-				} catch( exception &e ) {
+				} catch( ios::failure &e ) {
 					cerr << " - message parse by " << potential->className()
-						<< " failed, " << e.what() << endl;
+						<< " failed with I/O error.  Message is likely too short." << endl;
 					delete potential;
 					potential = NULL;
+				} catch( message_parse_error_type &e ) {
+					delete potential;
+					potential = NULL;
+					// Try next template
+					iss.seekg( sp, ios::beg );
+					continue;
+				} catch( exception &e ) {
+					cerr << " - message parse by " << potential->className()
+						<< " failed, " << e.what()
+#ifdef _TYPEINFO
+						<< " (" << typeid(e).name() << ")"
+#endif
+						<< endl;
+					delete potential;
+					potential = NULL;
+					// Try next template
+					iss.seekg( sp, ios::beg );
 					continue;
 				}
 				break;
 			}
-			if( it != TMessageTemplates::t.Templates.end() ) {
+			if( potential != NULL ) {
 				cerr << " - is a " << *potential << endl;
 			} else {
-				cerr << " - is not understood" << endl;
+				cerr << " - is not a message" << endl;
 			}
 			delete potential;
 

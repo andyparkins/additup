@@ -118,8 +118,6 @@ class TMessage
 	virtual const char *className() const { return "TMessage"; }
 	virtual TMessage *clone() const = 0;
 
-	virtual uint32_t queryMessageExtractSize( const string & ) const;
-
 	virtual istream &read( istream & );
 
 	const TMessageHeaderElement &header() const { return MessageHeader; }
@@ -162,8 +160,6 @@ class TMessageWithChecksum : public TMessage
   public:
 	const char *className() const { return "TMessageWithChecksum"; }
 
-	uint32_t queryMessageExtractSize( const string & ) const;
-
 	istream &read( istream & );
 
   protected:
@@ -182,8 +178,6 @@ class TMessageWithoutChecksum : public TMessage
 {
   public:
 	const char *className() const { return "TMessageWithoutChecksum"; }
-
-	uint32_t queryMessageExtractSize( const string & ) const;
 
 	istream &read( istream & );
 };
