@@ -458,6 +458,26 @@ ostream &TMessage_addr::printOn( ostream &s ) const
 
 // --------
 
+//
+// Function:	TMessage_tx :: printOn
+// Description:
+//
+ostream &TMessage_tx::printOn( ostream &s ) const
+{
+	TMessageWithChecksum::printOn(s);
+	s << "{ Ni=" << Transaction.Inputs.size()
+		<< "; No=" << Transaction.Outputs.size();
+	s << "; Outputs=[";
+	for( unsigned int i = 0; i < Transaction.Outputs.size(); i++ ) {
+		s << " Value=" << (Transaction.Outputs[i].HundredsOfNanoCoins.getValue()/100000000.0);
+	}
+	s << " ]";
+	s << " }";
+	return s;
+}
+
+// --------
+
 const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
 	// Hash: 1AGRxqDa5WjUKBwHB9XYEjmkv1ucoUUy1s
 	string("04fc9702847840aaf195de8442ebeced"

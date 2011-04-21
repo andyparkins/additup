@@ -413,32 +413,18 @@ class TMessage_tx : public TMessageWithChecksum
 	const char *className() const { return "TMessage_tx"; }
 	TMessage *clone() const { return new TMessage_tx(*this); }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> Transaction;
+		return is;
+	}
+
   protected:
 	const char *commandString() const { return "tx"; }
 
+	ostream &printOn( ostream & ) const;
   protected:
-	struct sTransactionOutputReference {
-		sHash Hash;
-		uint32_t Index;
-	};
-	struct sScriptElement {
-	};
-	struct sInputTransaction {
-		sTransactionOutputReference PreviousOut;
-		list<sScriptElement> Signature;
-		uint32_t Sequence;
-	};
-	struct sOutputTransaction {
-		uint64_t Value;
-		list<sScriptElement> PublicKeyScript;
-	};
-
-	struct {
-		uint8_t Version;
-		list<sInputTransaction> TxIn;
-		list<sOutputTransaction> TxOut;
-		uint32_t LockTime;
-	} Payload;
+	TTransactionElement Transaction;
 };
 
 //
