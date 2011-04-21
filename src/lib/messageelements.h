@@ -326,6 +326,7 @@ class TLittleEndian16Element : public TMessageElement
 
 	operator uint16_t() const { return Value; }
 	uint16_t getValue() const { return Value; }
+	TLittleEndian16Element &operator=( uint16_t s ) { Value = s; return *this; }
 
   protected:
 	uint16_t Value;
@@ -348,6 +349,7 @@ class TLittleEndian32Element : public TMessageElement
 
 	operator uint32_t() const { return Value; }
 	uint32_t getValue() const { return Value; }
+	TLittleEndian32Element &operator=( uint32_t s ) { Value = s; return *this; }
 
   protected:
 	uint32_t Value;
@@ -370,6 +372,7 @@ class TLittleEndian64Element : public TMessageElement
 
 	operator uint64_t() const { return Value; }
 	uint64_t getValue() const { return Value; }
+	TLittleEndian64Element &operator=( uint64_t s ) { Value = s; return *this; }
 
   protected:
 	uint64_t Value;
@@ -386,7 +389,7 @@ class TAutoSizeIntegerElement : public TMessageElement
 	ostream &write( ostream & ) const;
 
 	uint64_t getValue() const { return Value; }
-	void setValue( uint64_t s ) { Value = s; }
+	TAutoSizeIntegerElement &operator=( uint64_t s ) { Value = s; return *this; }
 
 	operator uint64_t() const { return Value; }
 
