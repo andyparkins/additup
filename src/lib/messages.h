@@ -321,13 +321,18 @@ class TMessage_addr : public TMessageWithChecksum
 	const char *className() const { return "TMessage_addr"; }
 	TMessage *clone() const { return new TMessage_addr(*this); }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> AddressData;
+		return is;
+	}
+
   protected:
 	const char *commandString() const { return "addr"; }
 
+	ostream &printOn( ostream & ) const;
   protected:
-	struct {
-		list<TAddressDataElement> AddressData;
-	} Payload;
+	TNElementsElement<TTimedAddressDataElement> AddressData;
 };
 
 //

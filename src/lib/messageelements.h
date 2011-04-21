@@ -467,7 +467,6 @@ class TNElementsElement : public TMessageElement
 	istream &read( istream &is ) {
 		TAutoSizeIntegerElement N;
 		is >> N;
-		cerr << "reading " << N.getValue() << " elements" << endl;
 		for( unsigned int i = 0; i < N; i++ ) {
 			Array.push_back( Element() );
 			is >> Array.back();

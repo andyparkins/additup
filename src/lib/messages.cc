@@ -438,6 +438,26 @@ istream &TMessage_version_209::read( istream &is )
 
 // --------
 
+//
+// Function:	TMessage_addr :: printOn
+// Description:
+//
+ostream &TMessage_addr::printOn( ostream &s ) const
+{
+	TMessageWithChecksum::printOn(s);
+	s << "{ N=" << AddressData.size();
+	for( unsigned int i = 0; i < AddressData.size(); i++ ) {
+		s << "; [" << i << ":"
+			<< " Time=" << AddressData[i].Time.getValue()
+			<< "; Address=" << AddressData[i].Address.getValue()
+			<< " ]";
+	}
+	s << " }";
+	return s;
+}
+
+// --------
+
 const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
 	// Hash: 1AGRxqDa5WjUKBwHB9XYEjmkv1ucoUUy1s
 	string("04fc9702847840aaf195de8442ebeced"
