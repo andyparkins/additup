@@ -182,7 +182,10 @@ istream &TMessage::read( istream &is )
 //
 ostream &TMessage::printOn( ostream &s ) const
 {
-	s << className();
+	s << className() << "{"
+		<< " Command=\"" << MessageHeader.Command.getValue() << "\""
+		<< "; Payload=" << MessageHeader.PayloadLength.getValue()
+		<< " }";
 	return s;
 }
 
@@ -262,6 +265,20 @@ void TMessageWithChecksum::verifyPayloadChecksum()
 	}
 }
 
+//
+// Function:	TMessageWithChecksum :: printOn
+// Description:
+//
+ostream &TMessageWithChecksum::printOn( ostream &s ) const
+{
+	s << className() << "{"
+		<< " Command=\"" << MessageHeader.Command.getValue() << "\""
+		<< "; Payload=" << MessageHeader.PayloadLength.getValue()
+		<< "; Checksum=" << hex << MessageHeader.Checksum.getValue() << dec
+		<< " }";
+	return s;
+}
+
 // --------
 
 //
@@ -308,24 +325,24 @@ istream &TMessageWithoutChecksum::read( istream &is )
 // --------
 
 //
-// Function:	TMessage_version :: parse
+// Function:	TMessage_version :: printOn
 // Description:
 //
 ostream &TMessage_version::printOn( ostream &s ) const
 {
 	TMessage::printOn(s);
-	s << " { Version = " << Payload.Version
-		<< "; Services = ["
-		<< (Payload.Services & sAddressData::NODE_NETWORK ? " NODE_NETWORK" : "" )
-		<< " ]; Time = " << Payload.Timestamp
-		<< "; SenderAddress = ";
+	s << "{ Version=" << Payload.Version.getValue()
+		<< "; Services=["
+		<< (Payload.Services.getValue() & TAddressDataElement::NODE_NETWORK ? " NODE_NETWORK" : "" )
+		<< " ]; Time=" << Payload.Timestamp.getValue()
+		<< "; SenderAddress=";
 	if( Payload.Version >= 106 ) {
-		s << "; ReceiverAddress = "
-			<< "; Nonce = " << Payload.Nonce
-			<< "; SubVersion = \"" << Payload.SubVersionNum << "\"";
+		s << "; ReceiverAddress="
+			<< "; Nonce=" << Payload.Nonce.getValue()
+			<< "; SubVersion=\"" << Payload.SubVersionNum.getValue() << "\"";
 	}
 	if( Payload.Version >= 209 ) {
-		s << "; Height = " << Payload.StartingHeight;
+		s << "; Height=" << Payload.StartingHeight.getValue();
 	}
 
 	s << " }";

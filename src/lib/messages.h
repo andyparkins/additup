@@ -168,7 +168,9 @@ class TMessageWithChecksum : public TMessage
 
   protected:
 	void verifyPayloadChecksum();
+	ostream &printOn( ostream & ) const;
 
+  protected:
 	static TMessageDigest *PayloadHasher;
 };
 
