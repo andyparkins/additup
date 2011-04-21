@@ -69,11 +69,24 @@ info:
 	@echo "CXXFLAGS   = $(CXXFLAGS)"
 	@echo "--- INFO (end)"
 
-build: prebuild $(LIBNAME).a
+build: prebuild $(LIBNAME).mak $(LIBNAME).a
 
 $(LIBNAME).a: $(OBJS)
 	-$(RM) $@
 	$(AR) rcs $@ $(OBJS)
+
+# Pull the dependent library list out of the per-module variables
+$(LIBNAME).mak: $(filter-out $(LIBNAME).mak,$(wildcard *.mak))
+	@echo "$(LIBNAME)_LIBS := $(sort $(foreach x, \
+			$(patsubst %.o,%_LIBS,$(OBJS)), \
+			$($x)))" > $@
+	@echo "$(LIBNAME)_EXTERNINCLUDE := $(sort $(foreach x, \
+			$(patsubst %.o,%_EXTERNINCLUDE,$(OBJS)), \
+			$($x)))" >> $@
+	@echo "$(LIBNAME)_LIBPATH := $(sort $(foreach x, \
+			$(patsubst %.o,%_LIBPATH,$(OBJS)), \
+			$($x)))" >> $@
+
 
 # ------- tests
 TESTABLE := $(shell grep -ls "UNITTEST" $(SOURCES))
@@ -162,7 +175,7 @@ tags: $(SOURCES) $(HEADERS)
 
 clean:
 	-$(RM) tags
-	-$(RM) $(LIBNAME).a
+	-$(RM) $(LIBNAME).a $(LIBNAME).mak
 	-$(RM) $(OBJS)
 	-$(RM) $(UNITEXES)
 	-$(RM) $(patsubst %,%.out,$(UNITEXES))
