@@ -324,7 +324,7 @@ class TMessage_addr : public TMessageWithChecksum
 
   protected:
 	struct {
-		list<sAddressData> AddressData;
+		list<TAddressDataElement> AddressData;
 	} Payload;
 };
 

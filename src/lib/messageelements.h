@@ -135,25 +135,6 @@ enum eWords {
 // -------------- Structures/Unions
 
 //
-// Struct:	sAddressData
-// Description:
-/// Address data is used in several places in the packets.
-//
-/// (from CAddress in net.h)
-//
-struct sAddressData
-{
-	enum eServices {
-		// This node can be asked for full blocks instead of just headers.
-		NODE_NETWORK = 1
-	};
-
-	uint64_t Services;
-	string Address;
-	uint16_t PortNumber;
-};
-
-//
 // Struct:	sHash
 // Description:
 //
@@ -423,6 +404,33 @@ class TMessageHeaderElement : public TMessageElement
 	TFixedSizeElement<12> Command;
 	TLittleEndian32Element PayloadLength;
 	TLittleEndian32Element Checksum;
+};
+
+//
+// Class:	TAddressDataElement
+// Description:
+/// Address data is used in several places in the packets.
+//
+/// (from CAddress in net.h)
+//
+class TAddressDataElement : public TMessageElement
+{
+  public:
+	enum eServices {
+		// This node can be asked for full blocks instead of just headers.
+		NODE_NETWORK = 1
+	};
+
+  public:
+	istream &read( istream &is ) {
+		is >> Services >> Address >> PortNumber;
+		return is;
+	}
+
+  public:
+	TLittleEndian64Element Services;
+	TFixedSizeElement<16> Address;
+	TBigEndian16Element PortNumber;
 };
 
 
