@@ -210,22 +210,19 @@ class TMessage_version : public TMessageWithoutChecksum
 
 	ostream &printOn( ostream & ) const;
   protected:
-
-	struct {
-		TLittleEndian32Element Version;
-		TLittleEndian64Element Services;
-		TLittleEndian64Element Timestamp;
-		// XXX: Why does TNetworkAddressElement have a services
-		// field _and_ the version message have a services field?  The
-		// one in the version message is redundant.
-		TNetworkAddressElement AddrMe;
-		// Version >= 106
-		TNetworkAddressElement AddrFrom;
-		TLittleEndian64Element Nonce;
-		TNULTerminatedStringElement SubVersionNum;
-		// Version >= 209
-		TLittleEndian32Element StartingHeight;
-	} Payload;
+	TLittleEndian32Element Version;
+	TLittleEndian64Element Services;
+	TLittleEndian64Element Timestamp;
+	// XXX: Why does TNetworkAddressElement have a services
+	// field _and_ the version message have a services field?  The
+	// one in the version message is redundant.
+	TNetworkAddressElement AddrMe;
+	// Version >= 106
+	TNetworkAddressElement AddrFrom;
+	TLittleEndian64Element Nonce;
+	TNULTerminatedStringElement SubVersionNum;
+	// Version >= 209
+	TLittleEndian32Element StartingHeight;
 };
 
 //

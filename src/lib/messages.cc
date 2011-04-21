@@ -281,18 +281,18 @@ istream &TMessageWithoutChecksum::read( istream &is )
 ostream &TMessage_version::printOn( ostream &s ) const
 {
 	TMessageWithoutChecksum::printOn(s);
-	s << "{ Version=" << Payload.Version.getValue()
+	s << "{ Version=" << Version.getValue()
 		<< "; Services=["
-		<< (Payload.Services.getValue() & TNetworkAddressElement::NODE_NETWORK ? " NODE_NETWORK" : "" )
-		<< " ]; Time=" << Payload.Timestamp.getValue()
+		<< (Services.getValue() & TNetworkAddressElement::NODE_NETWORK ? " NODE_NETWORK" : "" )
+		<< " ]; Time=" << Timestamp.getValue()
 		<< "; SenderAddress=";
-	if( Payload.Version >= 106 ) {
+	if( Version >= 106 ) {
 		s << "; ReceiverAddress="
-			<< "; Nonce=" << Payload.Nonce.getValue()
-			<< "; SubVersion=\"" << Payload.SubVersionNum.getValue() << "\"";
+			<< "; Nonce=" << Nonce.getValue()
+			<< "; SubVersion=\"" << SubVersionNum.getValue() << "\"";
 	}
-	if( Payload.Version >= 209 ) {
-		s << "; Height=" << Payload.StartingHeight.getValue();
+	if( Version >= 209 ) {
+		s << "; Height=" << StartingHeight.getValue();
 	}
 
 	s << " }";
@@ -308,14 +308,14 @@ istream &TMessage_version::read( istream &is )
 	TMessageWithoutChecksum::read(is);
 
 	// Clear everything
-	Payload.Version = 0;
-	Payload.Services = 0;
-	Payload.Timestamp = 0;
-//	Payload.AddrMe.clear();
-//	Payload.AddrFrom.clear();
-	Payload.Nonce = 0;
-	Payload.SubVersionNum.clear();
-	Payload.StartingHeight = 0;
+	Version = 0;
+	Services = 0;
+	Timestamp = 0;
+	AddrMe.clear();
+	AddrFrom.clear();
+	Nonce = 0;
+	SubVersionNum.clear();
+	StartingHeight = 0;
 
 	return is;
 }
@@ -332,16 +332,16 @@ istream &TMessage_version_0::read( istream &is )
 //		throw message_parse_error_underflow();
 
 	// d0
-	is >> Payload.Version;
+	is >> Version;
 
-	if( Payload.Version.getValue() < minimumAcceptedVersion() )
+	if( Version < minimumAcceptedVersion() )
 		throw message_parse_error_version();
 
-	is >> Payload.Services;
-	is >> Payload.Timestamp;
+	is >> Services;
+	is >> Timestamp;
 
 	// d20
-	is >> Payload.AddrMe;
+	is >> AddrMe;
 //	PayloadAccepted = is.tellg();
 
 	return is;
@@ -359,13 +359,13 @@ istream &TMessage_version_106::read( istream &is )
 //		throw message_parse_error_underflow();
 
 	// d46
-	is >> Payload.AddrFrom;
+	is >> AddrFrom;
 
 	// d72
-	is >> Payload.Nonce;
+	is >> Nonce;
 
 	// d80: Variable sized NUL-terminated string
-	is >> Payload.SubVersionNum;
+	is >> SubVersionNum;
 //	PayloadAccepted = is.tellg();
 
 	return is;
@@ -383,7 +383,7 @@ istream &TMessage_version_209::read( istream &is )
 //		throw message_parse_error_underflow();
 
 	// Version >= 209
-	is >> Payload.StartingHeight;
+	is >> StartingHeight;
 //	PayloadAccepted = is.tellg();
 
 	return is;
