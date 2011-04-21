@@ -625,14 +625,19 @@ class TMessage_alert : public TMessageWithChecksum
 	const char *className() const { return "TMessage_alert"; }
 	TMessage *clone() const { return new TMessage_alert(*this); }
 
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> Message
+			>> Signature;
+		return is;
+	}
+
   protected:
 	const char *commandString() const { return "alert"; }
 
   protected:
-	struct {
-		string Message;
-		string Signature;
-	} Payload;
+	TVariableSizedStringElement Message;
+	TVariableSizedStringElement Signature;
 
 	static const string ALERT_VERIFICATION_KEYS[];
 };
