@@ -249,10 +249,25 @@ class TMessageElement
 };
 
 //
+// Class:	TStringBasedElement
+// Description:
+//
+class TStringBasedElement : public TMessageElement
+{
+  public:
+	const string &getValue() const { return Value; }
+	TStringBasedElement &operator=( const string &s ) { Value = s; return *this; }
+	void clear() { Value.clear(); }
+
+  protected:
+	string Value;
+};
+
+//
 // Class:	TNULTerminatedStringElement
 // Description:
 //
-class TNULTerminatedStringElement : public TMessageElement
+class TNULTerminatedStringElement : public TStringBasedElement
 {
   public:
 	istream &read( istream &is ) {
@@ -263,11 +278,37 @@ class TNULTerminatedStringElement : public TMessageElement
 		}
 		return is;
 	}
+};
 
-	const string &getValue() const { return Value; }
+//
+// Class:	TSizedElement
+// Description:
+//
+class TSizedElement : public TStringBasedElement
+{
+  public:
+	TSizedElement(string::size_type n) : N(n) {}
+
+	istream &read( istream &is ) {
+		char buffer[N];
+		is.read( buffer, N );
+		Value.assign( buffer, N );
+		return is;
+	}
 
   protected:
-	string Value;
+	string::size_type N;
+};
+
+//
+// Class:	TFixedSizeElement
+// Description:
+//
+template<string::size_type NUM>
+class TFixedSizeElement : public TSizedElement
+{
+  public:
+	TFixedSizeElement() : TSizedElement(NUM) {}
 };
 
 //
