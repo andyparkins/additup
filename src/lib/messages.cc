@@ -123,8 +123,7 @@ TMessageTemplates::~TMessageTemplates()
 // Function:	TMessage :: TMessage
 // Description:
 //
-TMessage::TMessage() :
-	PayloadAccepted(0)
+TMessage::TMessage()
 {
 }
 
@@ -207,8 +206,6 @@ istream &TMessageWithChecksum::read( istream &is )
 	is >> PL;
 	is.seekg(p);
 	RawPayload = PL.getValue();
-	// TMessage parses none of the payload, so we point at zero
-	PayloadAccepted = 0;
 
 	// Confirm the checksum
 	verifyPayloadChecksum();
@@ -267,7 +264,6 @@ istream &TMessageWithoutChecksum::read( istream &is )
 	TSizedStringElement PL( MessageHeader.PayloadLength );
 	RawPayload = PL.getValue();
 	// TMessage parses none of the payload, so we point at zero
-	PayloadAccepted = 0;
 
 	return is;
 }
@@ -342,7 +338,6 @@ istream &TMessage_version_0::read( istream &is )
 
 	// d20
 	is >> AddrMe;
-//	PayloadAccepted = is.tellg();
 
 	return is;
 }
@@ -355,9 +350,6 @@ istream &TMessage_version_106::read( istream &is )
 {
 	TMessage_version_0::read(is);
 
-//	if( RawPayload.size() < PayloadAccepted + 34 + 1 )
-//		throw message_parse_error_underflow();
-
 	// d46
 	is >> AddrFrom;
 
@@ -366,7 +358,6 @@ istream &TMessage_version_106::read( istream &is )
 
 	// d80: Variable sized NUL-terminated string
 	is >> SubVersionNum;
-//	PayloadAccepted = is.tellg();
 
 	return is;
 }
@@ -379,12 +370,8 @@ istream &TMessage_version_209::read( istream &is )
 {
 	TMessage_version_106::read(is);
 
-//	if( RawPayload.size() < PayloadAccepted + 4 )
-//		throw message_parse_error_underflow();
-
 	// Version >= 209
 	is >> StartingHeight;
-//	PayloadAccepted = is.tellg();
 
 	return is;
 }

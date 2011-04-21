@@ -132,7 +132,6 @@ class TMessage
   protected:
 	TMessageHeaderElement MessageHeader;
 	string RawPayload;
-	string::size_type PayloadAccepted;
 };
 
 //
