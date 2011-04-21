@@ -17,7 +17,7 @@ SOURCES		:= $(filter-out $(REMOVEDSOURCES),$(SOURCES))
 HEADERS		:= $(SOURCES:.cc=.h)
 OBJS		:= $(SOURCES:.cc=.o)
 PROJECT		?= $(notdir $(shell readlink -f $(PWD)/../..))
-LIB_FILE    := lib$(PROJECT).a
+LIBNAME     := lib$(PROJECT)
 LIBPATH     := .
 INCLUDE     := .
 LDFLAGS     :=
@@ -69,10 +69,10 @@ info:
 	@echo "CXXFLAGS   = $(CXXFLAGS)"
 	@echo "--- INFO (end)"
 
-build: prebuild $(LIB_FILE)
+build: prebuild $(LIBNAME).a
 
-$(LIB_FILE): $(OBJS)
-	rm -f $@
+$(LIBNAME).a: $(OBJS)
+	-$(RM) $@
 	$(AR) rcs $@ $(OBJS)
 
 # ------- tests
@@ -92,7 +92,7 @@ test-%: unit-%
 	@echo "[$*] --------------------------- Running module"
 	@./unit-$* > unit-$*.out || echo "[$*] Error $$? in module unit test"
 	@echo "[$*] --------------------------- Success running module $*"
-unit-%: %.cc $(LIB_FILE)
+unit-%: %.cc $(LIBNAME).a
 	$(CXX) $(CXXFLAGS) -O0 \
 		$(LDFLAGS) \
 		$(patsubst %,-I%,$(INCLUDE)) $(patsubst %,-I%,$($*_INCLUDE)) \
@@ -162,7 +162,7 @@ tags: $(SOURCES) $(HEADERS)
 
 clean:
 	-$(RM) tags
-	-$(RM) $(LIB_FILE)
+	-$(RM) $(LIBNAME).a
 	-$(RM) $(OBJS)
 	-$(RM) $(UNITEXES)
 	-$(RM) $(patsubst %,%.out,$(UNITEXES))
