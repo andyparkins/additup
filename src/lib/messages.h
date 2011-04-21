@@ -345,10 +345,6 @@ class TMessage_InventoryBase : public TMessageWithChecksum
 	const char *className() const { return "TMessage_InventoryBase"; }
 
   protected:
-	struct {
-		TAutoSizeIntegerElement Count;
-		list<sInventoryVector> InventoryVector;
-	} Payload;
 };
 
 //

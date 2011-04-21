@@ -135,38 +135,6 @@ enum eWords {
 
 // -------------- Structures/Unions
 
-//
-// Struct:	sHash
-// Description:
-//
-struct sHash
-{
-	uint32_t Hash[32];
-};
-
-//
-// Struct:	sInventoryVector
-// Description:
-// Inventory vectors are used for notifying other nodes about data they
-// may have, and data which is being requested.
-//
-// (from net.h)
-//
-struct sInventoryVector
-{
-	enum eObjectType {
-		ERROR = 0,
-		MSG_TX,
-		MSG_BLOCK,
-		// Other Data Type values are considered reserved for future
-		// implementations.
-		OBJECT_TYPE_COUNT
-	};
-
-	eObjectType ObjectType;
-	sHash Hash;
-};
-
 
 // -------------- Typedefs (post-structure)
 
@@ -380,6 +348,12 @@ class TAutoSizeIntegerElement : public TMessageElement
 };
 
 //
+// Typedef:    THashElement
+// Description:
+//
+typedef TFixedStringElement<32> THashElement;
+
+//
 // Typedef:	TTimestampElement
 // Description:
 //
@@ -482,6 +456,28 @@ class TNElementsElement : public TMessageElement
 	vector<Element> Array;
 };
 
+////
+//// Struct:	sInventoryVector
+//// Description:
+//// Inventory vectors are used for notifying other nodes about data they
+//// may have, and data which is being requested.
+////
+//// (from net.h)
+////
+//struct sInventoryVector
+//{
+//	enum eObjectType {
+//		ERROR = 0,
+//		MSG_TX,
+//		MSG_BLOCK,
+//		// Other Data Type values are considered reserved for future
+//		// implementations.
+//		OBJECT_TYPE_COUNT
+//	};
+//
+//	eObjectType ObjectType;
+//	sHash Hash;
+//};
 
 // -------------- Constants
 
