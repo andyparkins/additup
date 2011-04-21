@@ -120,9 +120,9 @@ class TMessage
 
 	virtual uint32_t queryMessageExtractSize( const string & ) const;
 
-	virtual void parse( const string & );
+	virtual istream &read( istream & );
 
-	const sMessageHeader &header() const { return MessageHeader; }
+	const TMessageHeaderElement &header() const { return MessageHeader; }
 
   protected:
 	virtual bool acceptCommandCode( const string & ) const;
@@ -132,7 +132,7 @@ class TMessage
 	friend ostream &operator<<( ostream &, const TMessage & );
 
   protected:
-	sMessageHeader MessageHeader;
+	TMessageHeaderElement MessageHeader;
 	string RawPayload;
 	string::size_type PayloadAccepted;
 };
@@ -164,7 +164,7 @@ class TMessageWithChecksum : public TMessage
 
 	uint32_t queryMessageExtractSize( const string & ) const;
 
-	void parse( const string & );
+	istream &read( istream & );
 
   protected:
 	void verifyPayloadChecksum();
@@ -183,7 +183,7 @@ class TMessageWithoutChecksum : public TMessage
 
 	uint32_t queryMessageExtractSize( const string & ) const;
 
-	void parse( const string & );
+	istream &read( istream & );
 };
 
 //
@@ -207,7 +207,7 @@ class TMessage_version : public TMessageWithoutChecksum
   public:
 	const char *className() const { return "TMessage_version"; }
 
-	void parse( const string & );
+	istream &read( istream & );
 
   protected:
 	const char *commandString() const { return "version"; }
@@ -216,18 +216,18 @@ class TMessage_version : public TMessageWithoutChecksum
   protected:
 
 	struct {
-		uint32_t Version;
-		uint64_t Services;
-		uint64_t Timestamp;
-		// XXX: Why does sAddressData have a services field _and_ the
+		TLittleEndian32Element Version;
+		TLittleEndian64Element Services;
+		TLittleEndian64Element Timestamp;
+		// XXX: Why does TAddressDataElement have a services field _and_ the
 		// version message have a services field?
-		sAddressData AddrMe;
+		TAddressDataElement AddrMe;
 		// Version >= 106
-		sAddressData AddrFrom;
-		uint64_t Nonce;
-		string SubVersionNum;
+		TAddressDataElement AddrFrom;
+		TLittleEndian64Element Nonce;
+		TNULTerminatedStringElement SubVersionNum;
 		// Version >= 209
-		uint32_t StartingHeight;
+		TLittleEndian32Element StartingHeight;
 	} Payload;
 };
 
@@ -241,7 +241,7 @@ class TMessage_version_0 : public TMessage_version
 	const char *className() const { return "TMessage_version_0"; }
 	TMessage *clone() const { return new TMessage_version_0(*this); }
 
-	void parse( const string & );
+	istream &read( istream & );
 
   protected:
 	virtual uint32_t minimumAcceptedVersion() const { return 0; }
@@ -257,7 +257,7 @@ class TMessage_version_106 : public TMessage_version_0
 	const char *className() const { return "TMessage_version_106"; }
 	TMessage *clone() const { return new TMessage_version_106(*this); }
 
-	void parse( const string & );
+	istream &read( istream & );
 
   protected:
 	uint32_t minimumAcceptedVersion() const { return 106; }
@@ -273,7 +273,7 @@ class TMessage_version_209 : public TMessage_version_106
 	const char *className() const { return "TMessage_version_209"; }
 	TMessage *clone() const { return new TMessage_version_209(*this); }
 
-	void parse( const string & );
+	istream &read( istream & );
 
   protected:
 	uint32_t minimumAcceptedVersion() const { return 209; }
@@ -339,7 +339,7 @@ class TMessage_InventoryBase : public TMessageWithChecksum
 
   protected:
 	struct {
-		TMessageAutoSizeInteger Count;
+		TAutoSizeIntegerElement Count;
 		list<sInventoryVector> InventoryVector;
 	} Payload;
 };
@@ -391,8 +391,8 @@ class TMessage_getblocks : public TMessageWithChecksum
 
   protected:
 	struct {
-		uint32_t Version;
-		TMessageAutoSizeInteger HashStartCount;
+		TLittleEndian32Element Version;
+		TAutoSizeIntegerElement HashStartCount;
 		list<sHash> HashStart;
 		sHash HashStop;
 	} Payload;

@@ -20,6 +20,7 @@
 // --- C
 // --- C++
 #include <list>
+#include <sstream>
 // --- Qt
 // --- OS
 // --- Project libs
@@ -134,13 +135,17 @@ uint32_t TMessage::queryMessageExtractSize( const string &d ) const
 	if( d.size() < 20 )
 		return 0;
 
-	// Four bytes little endian magic (d0-d3)
+	istringstream iss( d );
+	TLittleEndian32Element Magic;
+	TSizedElement Command(12);
+	TLittleEndian32Element Length;
 
-	if( !acceptCommandCode( d.substr(4,12) ) )
+	iss >> Magic >> Command >> Length;
+
+	if( !acceptCommandCode( Command.getValue() ) )
 		return 0;
 
-	// Four bytes length (d16-d19)
-	return TMessageElement::littleEndian32FromString(d, 16) + 20;
+	return Length.getValue() + 20;
 }
 
 //
@@ -161,18 +166,14 @@ bool TMessage::acceptCommandCode( const string &d ) const
 }
 
 //
-// Function:	TMessage :: parse
+// Function:	TMessage :: read
 // Description:
 //
-void TMessage::parse( const string &d )
+istream &TMessage::read( istream &is )
 {
-	// Don't try and extract more data than is available
-	if( d.size() < 20 )
-		throw message_parse_error_underflow();
+	is >> MessageHeader;
 
-	MessageHeader.Magic = TMessageElement::littleEndian32FromString( d, 0 );
-	MessageHeader.Command = d.substr(4,12);
-	MessageHeader.PayloadLength = TMessageElement::littleEndian32FromString( d, 16 );
+	return is;
 }
 
 //
@@ -213,28 +214,34 @@ uint32_t TMessageWithChecksum::queryMessageExtractSize( const string &d ) const
 }
 
 //
-// Function:	TMessageWithChecksum :: parse
+// Function:	TMessageWithChecksum :: read
 // Description:
 //
-void TMessageWithChecksum::parse( const string &d )
+istream &TMessageWithChecksum::read( istream &is )
 {
-	TMessage::parse(d);
+	TMessage::read(is);
 
-	if( d.size() < 24 )
-		throw message_parse_error_underflow();
-	MessageHeader.Checksum = TMessageElement::littleEndian32FromString( d, 20 );
+//	if( d.size() < 24 )
+//		throw message_parse_error_underflow();
+	is >> MessageHeader.Checksum;
 
-	// Don't try and extract more data than is available
-	if( MessageHeader.PayloadLength > d.size() - 24 )
-		throw message_parse_error_underflow();
+//	// Don't try and extract more data than is available
+//	if( MessageHeader.PayloadLength > d.size() - 24 )
+//		throw message_parse_error_underflow();
 
-	// Pull the payload out
-	RawPayload = d.substr(24, MessageHeader.PayloadLength);
+	// Pull the payload out, but preserve position
+	TSizedElement PL( MessageHeader.PayloadLength );
+	streampos p = is.tellg();
+	is >> PL;
+	is.seekg(p);
+	RawPayload = PL.getValue();
 	// TMessage parses none of the payload, so we point at zero
 	PayloadAccepted = 0;
 
 	// Confirm the checksum
 	verifyPayloadChecksum();
+
+	return is;
 }
 
 //
@@ -274,25 +281,28 @@ uint32_t TMessageWithoutChecksum::queryMessageExtractSize( const string &d ) con
 }
 
 //
-// Function:	TMessageWithoutChecksum :: parse
+// Function:	TMessageWithoutChecksum :: read
 // Description:
 //
-void TMessageWithoutChecksum::parse( const string &d )
+istream &TMessageWithoutChecksum::read( istream &is )
 {
-	TMessage::parse(d);
+	TMessage::read(is);
 
-	if( d.size() < 20 )
-		throw message_parse_error_underflow();
+//	if( d.size() < 20 )
+//		throw message_parse_error_underflow();
 	MessageHeader.Checksum = 0;
 
-	// Don't try and extract more data than is available
-	if( MessageHeader.PayloadLength > d.size() - 20 )
-		throw message_parse_error_underflow();
+//	// Don't try and extract more data than is available
+//	if( MessageHeader.PayloadLength > d.size() - 20 )
+//		throw message_parse_error_underflow();
 
 	// Pull the payload out
-	RawPayload = d.substr(20, MessageHeader.PayloadLength);
+	TSizedElement PL( MessageHeader.PayloadLength );
+	RawPayload = PL.getValue();
 	// TMessage parses none of the payload, so we point at zero
 	PayloadAccepted = 0;
+
+	return is;
 }
 
 // --------
@@ -323,12 +333,12 @@ ostream &TMessage_version::printOn( ostream &s ) const
 }
 
 //
-// Function:	TMessage_version :: parse
+// Function:	TMessage_version :: read
 // Description:
 //
-void TMessage_version::parse( const string &d )
+istream &TMessage_version::read( istream &is )
 {
-	TMessageWithoutChecksum::parse(d);
+	TMessageWithoutChecksum::read(is);
 
 	// Clear everything
 	Payload.Version = 0;
@@ -339,69 +349,77 @@ void TMessage_version::parse( const string &d )
 	Payload.Nonce = 0;
 	Payload.SubVersionNum.clear();
 	Payload.StartingHeight = 0;
+
+	return is;
 }
 
 //
-// Function:	TMessage_version_0 :: parse
+// Function:	TMessage_version_0 :: read
 // Description:
 //
-void TMessage_version_0::parse( const string &d )
+istream &TMessage_version_0::read( istream &is )
 {
-	TMessage_version::parse(d);
+	TMessage_version::read(is);
 
-	if( RawPayload.size() < 46 )
-		throw message_parse_error_underflow();
+//	if( RawPayload.size() < 46 )
+//		throw message_parse_error_underflow();
 
 	// d0
-	Payload.Version = TMessageElement::littleEndian32FromString(RawPayload,0);
+	is >> Payload.Version;
 
-	if( Payload.Version < minimumAcceptedVersion() )
+	if( Payload.Version.getValue() < minimumAcceptedVersion() )
 		throw message_parse_error_version();
 
-	Payload.Services = TMessageElement::littleEndian64FromString(RawPayload,4);
-	Payload.Timestamp = TMessageElement::littleEndian64FromString(RawPayload,12);
+	is >> Payload.Services;
+	is >> Payload.Timestamp;
 
 	// d20
-	Payload.AddrMe;
-	PayloadAccepted = 46;
+	is >> Payload.AddrMe;
+//	PayloadAccepted = is.tellg();
+
+	return is;
 }
 
 //
-// Function:	TMessage_version_106 :: parse
+// Function:	TMessage_version_106 :: read
 // Description:
 //
-void TMessage_version_106::parse( const string &d )
+istream &TMessage_version_106::read( istream &is )
 {
-	TMessage_version_0::parse(d);
+	TMessage_version_0::read(is);
 
-	if( RawPayload.size() < PayloadAccepted + 34 + 1 )
-		throw message_parse_error_underflow();
+//	if( RawPayload.size() < PayloadAccepted + 34 + 1 )
+//		throw message_parse_error_underflow();
 
 	// d46
-	Payload.AddrFrom;
+	is >> Payload.AddrFrom;
 
 	// d72
-	Payload.Nonce = TMessageElement::littleEndian64FromString(RawPayload,72);
-	PayloadAccepted = 80;
+	is >> Payload.Nonce;
 
 	// d80: Variable sized NUL-terminated string
-	PayloadAccepted += TMessageElement::NULTerminatedString(Payload.SubVersionNum, RawPayload, 80);
+	is >> Payload.SubVersionNum;
+//	PayloadAccepted = is.tellg();
+
+	return is;
 }
 
 //
-// Function:	TMessage_version_209 :: parse
+// Function:	TMessage_version_209 :: read
 // Description:
 //
-void TMessage_version_209::parse( const string &d )
+istream &TMessage_version_209::read( istream &is )
 {
-	TMessage_version_106::parse(d);
+	TMessage_version_106::read(is);
 
-	if( RawPayload.size() < PayloadAccepted + 4 )
-		throw message_parse_error_underflow();
+//	if( RawPayload.size() < PayloadAccepted + 4 )
+//		throw message_parse_error_underflow();
 
 	// Version >= 209
-	Payload.StartingHeight = TMessageElement::littleEndian32FromString(RawPayload,PayloadAccepted);
-	PayloadAccepted += 4;
+	is >> Payload.StartingHeight;
+//	PayloadAccepted = is.tellg();
+
+	return is;
 }
 
 // --------
@@ -544,7 +562,8 @@ int main( int argc, char *argv[] )
 				}
 				potential = (*it)->clone();
 				try {
-					potential->parse( *p );
+					istringstream iss(*p);
+					potential->read( iss );
 				} catch( exception &e ) {
 					cerr << p << " message parse by " << potential->className()
 						<< " failed, " << e.what() << endl;

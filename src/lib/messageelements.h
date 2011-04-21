@@ -135,27 +135,6 @@ enum eWords {
 // -------------- Structures/Unions
 
 //
-// Struct:	sMessageHeader
-// Description:
-//
-/// All Network communications packets have the following initial bytes
-/// that form a 'header' to identify a valid packet.
-///
-/// Data is appended after the Checksum depending upon the data type,
-/// with verification using the packet size for the validity of the
-/// packet as well.
-///
-/// (from net.h)
-//
-struct sMessageHeader
-{
-	uint32_t Magic;
-	string Command;
-	uint32_t PayloadLength;
-	uint32_t Checksum;
-};
-
-//
 // Struct:	sAddressData
 // Description:
 /// Address data is used in several places in the packets.
@@ -416,6 +395,34 @@ class TAutoSizeIntegerElement : public TMessageElement
 
   protected:
 	uint64_t Value;
+};
+
+//
+// Class:	TMessageHeaderElement
+// Description:
+//
+/// All Network communications packets have the following initial bytes
+/// that form a 'header' to identify a valid packet.
+///
+/// Data is appended after the Checksum depending upon the data type,
+/// with verification using the packet size for the validity of the
+/// packet as well.
+///
+/// (from net.h)
+//
+class TMessageHeaderElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		is >> Magic >> Command >> PayloadLength;
+		return is;
+	}
+
+  public:
+	TLittleEndian32Element Magic;
+	TFixedSizeElement<12> Command;
+	TLittleEndian32Element PayloadLength;
+	TLittleEndian32Element Checksum;
 };
 
 
