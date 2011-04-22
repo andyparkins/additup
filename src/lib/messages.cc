@@ -244,6 +244,19 @@ void TMessageWithChecksum::verifyPayloadChecksum() const
 }
 
 //
+// Function:	TMessageWithChecksum :: generatePayloadChecksum
+// Description:
+// First 4 bytes of sha256(sha256(payload))
+//
+void TMessageWithChecksum::generatePayloadChecksum()
+{
+	string digest = PayloadHasher->transform( RawPayload );
+	MessageHeader.Checksum = TMessageElement::littleEndian32FromString( digest, 0 );
+
+	// XXX: This won't work
+}
+
+//
 // Function:	TMessageWithChecksum :: printOn
 // Description:
 //

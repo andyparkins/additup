@@ -165,6 +165,7 @@ class TMessageWithChecksum : public TMessage
 
   protected:
 	void verifyPayloadChecksum() const;
+	void generatePayloadChecksum();
 	ostream &printOn( ostream & ) const;
 
   protected:
