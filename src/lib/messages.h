@@ -317,6 +317,20 @@ class TMessage_addr : public TMessageWithChecksum
 	const char *className() const { return "TMessage_addr"; }
 	TMessage *clone() const { return new TMessage_addr(*this); }
 
+  protected:
+	const char *commandString() const { return "addr"; }
+};
+
+//
+// Class: TMessage_addr_0
+// Description:
+//
+class TMessage_addr_0 : public TMessage_addr
+{
+  public:
+	const char *className() const { return "TMessage_addr_0"; }
+	TMessage *clone() const { return new TMessage_addr_0(*this); }
+
 	istream &read( istream &is ) {
 		TMessageWithChecksum::read(is);
 		is >> AddressData;
@@ -329,9 +343,38 @@ class TMessage_addr : public TMessageWithChecksum
 	}
 
   protected:
-	const char *commandString() const { return "addr"; }
-
 	ostream &printOn( ostream & ) const;
+
+  protected:
+	TNElementsElement<TNetworkAddressElement> AddressData;
+};
+
+//
+// Class: TMessage_addr
+// Description:
+//
+class TMessage_addr_31402 : public TMessage_addr
+{
+  public:
+	const char *className() const { return "TMessage_addr_31402"; }
+	TMessage *clone() const { return new TMessage_addr_31402(*this); }
+
+	istream &read( istream &is ) {
+		TMessageWithChecksum::read(is);
+		is >> AddressData;
+		return is;
+	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << AddressData;
+		return os;
+	}
+
+  protected:
+	ostream &printOn( ostream & ) const;
+
+	uint32_t minimumAcceptedVersion() const { return 31402; }
+
   protected:
 	TNElementsElement<TTimedNetworkAddressElement> AddressData;
 };

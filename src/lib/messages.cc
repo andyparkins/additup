@@ -80,7 +80,8 @@ TMessageTemplates::TMessageTemplates()
 		new TMessage_version_10600(),
 		new TMessage_version_0(),
 		new TMessage_verack(),
-		new TMessage_addr(),
+		new TMessage_addr_31402(),
+		new TMessage_addr_0(),
 		new TMessage_inv(),
 		new TMessage_getdata(),
 		new TMessage_getblocks(),
@@ -442,10 +443,29 @@ ostream &TMessage_version_20900::write( ostream &os ) const
 // --------
 
 //
-// Function:	TMessage_addr :: printOn
+// Function:	TMessage_addr_0 :: printOn
 // Description:
 //
-ostream &TMessage_addr::printOn( ostream &s ) const
+ostream &TMessage_addr_0::printOn( ostream &s ) const
+{
+	TMessageWithChecksum::printOn(s);
+	s << "{ N=" << AddressData.size();
+	for( unsigned int i = 0; i < AddressData.size(); i++ ) {
+		s << "; [" << i << ":"
+			<< "; Address=" << AddressData[i].Address.getValue()
+			<< " ]";
+	}
+	s << " }";
+	return s;
+}
+
+// --------
+
+//
+// Function:	TMessage_addr_31402 :: printOn
+// Description:
+//
+ostream &TMessage_addr_31402::printOn( ostream &s ) const
 {
 	TMessageWithChecksum::printOn(s);
 	s << "{ N=" << AddressData.size();
