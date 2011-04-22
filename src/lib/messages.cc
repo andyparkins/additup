@@ -164,6 +164,16 @@ istream &TMessage::read( istream &is )
 }
 
 //
+// Function:	TMessage :: write
+// Description:
+//
+ostream &TMessage::write( ostream &os ) const
+{
+	os << MessageHeader;
+	return os;
+}
+
+//
 // Function:	TMessage :: printOn
 // Description:
 //
@@ -205,6 +215,17 @@ istream &TMessageWithChecksum::read( istream &is )
 	verifyPayloadChecksum();
 
 	return is;
+}
+
+//
+// Function:	TMessageWithChecksum :: write
+// Description:
+//
+ostream &TMessageWithChecksum::write( ostream &os ) const
+{
+	TMessage::write(os);
+	os << MessageHeader.Checksum;
+	return os;
 }
 
 //
@@ -328,6 +349,23 @@ istream &TMessage_version_0::read( istream &is )
 }
 
 //
+// Function:	TMessage_version_0 :: write
+// Description:
+//
+ostream &TMessage_version_0::write( ostream &os ) const
+{
+	TMessage_version::write(os);
+
+	// d0
+	os << Version;
+	os << Services;
+	os << Timestamp;
+	os << AddrMe;
+
+	return os;
+}
+
+//
 // Function:	TMessage_version_106 :: read
 // Description:
 //
@@ -348,6 +386,21 @@ istream &TMessage_version_106::read( istream &is )
 }
 
 //
+// Function:	TMessage_version_106 :: write
+// Description:
+//
+ostream &TMessage_version_106::write( ostream &os ) const
+{
+	TMessage_version_0::write(os);
+
+	os << AddrFrom;
+	os << Nonce;
+	os << SubVersionNum;
+
+	return os;
+}
+
+//
 // Function:	TMessage_version_209 :: read
 // Description:
 //
@@ -359,6 +412,18 @@ istream &TMessage_version_209::read( istream &is )
 	is >> StartingHeight;
 
 	return is;
+}
+
+//
+// Function:	TMessage_version_209 :: write
+// Description:
+//
+ostream &TMessage_version_209::write( ostream &os ) const
+{
+	TMessage_version_106::write(os);
+	os << StartingHeight;
+
+	return os;
 }
 
 // --------
@@ -622,7 +687,19 @@ int main( int argc, char *argv[] )
 				cerr << " - is a " << *potential << endl;
 			} else {
 				cerr << " - is not a message" << endl;
+				p++;
+				continue;
 			}
+
+			// Now check that conversion back produces the input
+			ostringstream oss;
+			potential->write( oss );
+			if( oss.str() != *p ) {
+				cerr << "Original message was " << p->size()
+					<< " bytes; generated was " << oss.str().size() << endl;
+				throw runtime_error("message didn't invert");
+			}
+
 			delete potential;
 
 			p++;

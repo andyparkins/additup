@@ -119,6 +119,7 @@ class TMessage
 	virtual TMessage *clone() const = 0;
 
 	virtual istream &read( istream & );
+	virtual ostream &write( ostream & ) const;
 
 	const TMessageHeaderElement &header() const { return MessageHeader; }
 
@@ -160,6 +161,7 @@ class TMessageWithChecksum : public TMessage
 	const char *className() const { return "TMessageWithChecksum"; }
 
 	istream &read( istream & );
+	ostream &write( ostream & ) const;
 
   protected:
 	void verifyPayloadChecksum();
@@ -235,6 +237,7 @@ class TMessage_version_0 : public TMessage_version
 	TMessage *clone() const { return new TMessage_version_0(*this); }
 
 	istream &read( istream & );
+	ostream &write( ostream & ) const;
 
   protected:
 	virtual uint32_t minimumAcceptedVersion() const { return 0; }
@@ -251,6 +254,7 @@ class TMessage_version_106 : public TMessage_version_0
 	TMessage *clone() const { return new TMessage_version_106(*this); }
 
 	istream &read( istream & );
+	ostream &write( ostream & ) const;
 
   protected:
 	uint32_t minimumAcceptedVersion() const { return 106; }
@@ -267,6 +271,7 @@ class TMessage_version_209 : public TMessage_version_106
 	TMessage *clone() const { return new TMessage_version_209(*this); }
 
 	istream &read( istream & );
+	ostream &write( ostream & ) const;
 
   protected:
 	uint32_t minimumAcceptedVersion() const { return 209; }
@@ -317,6 +322,11 @@ class TMessage_addr : public TMessageWithChecksum
 		is >> AddressData;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << AddressData;
+		return os;
+	}
 
   protected:
 	const char *commandString() const { return "addr"; }
@@ -339,6 +349,11 @@ class TMessage_InventoryBase : public TMessageWithChecksum
 		TMessageWithChecksum::read(is);
 		is >> Inventory;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << Inventory;
+		return os;
 	}
 
   protected:
@@ -399,6 +414,13 @@ class TMessageGetBase : public TMessageWithChecksum
 			>> HashStarts
 			>> HashStop;
 		return is;
+	}
+	ostream &write( ostream &os ) {
+		TMessageWithChecksum::write(os);
+		os << Version
+			<< HashStarts
+			<< HashStop;
+		return os;
 	}
 
   protected:
@@ -471,6 +493,11 @@ class TMessage_tx : public TMessageWithChecksum
 		is >> Transaction;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << Transaction;
+		return os;
+	}
 
   protected:
 	const char *commandString() const { return "tx"; }
@@ -498,6 +525,12 @@ class TMessage_block : public TMessageWithChecksum
 			>> Transactions;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << BlockHeader
+			<< Transactions;
+		return os;
+	}
 
   protected:
 	const char *commandString() const { return "block"; }
@@ -524,6 +557,11 @@ class TMessage_headers : public TMessageWithChecksum
 		TMessageWithChecksum::read(is);
 		is >> BlockHeaders;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << BlockHeaders;
+		return os;
 	}
 
   protected:
@@ -581,6 +619,11 @@ class TMessage_checkorder : public TMessageWithChecksum
 		is >> WalletTransaction;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << WalletTransaction;
+		return os;
+	}
 
   protected:
 	const char *commandString() const { return "checkorder"; }
@@ -605,6 +648,12 @@ class TMessage_submitorder : public TMessage_checkorder
 			>> WalletTransaction;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << TransactionHash
+			<< WalletTransaction;
+		return os;
+	}
 
   protected:
 	const char *commandString() const { return "submitorder"; }
@@ -627,6 +676,11 @@ class TMessage_reply : public TMessageWithChecksum
 		TMessageWithChecksum::read(is);
 		is >> ReplyCode;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << ReplyCode;
+		return os;
 	}
 
   protected:
@@ -682,6 +736,12 @@ class TMessage_alert : public TMessageWithChecksum
 		is >> Message
 			>> Signature;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		TMessageWithChecksum::write(os);
+		os << Message
+			<< Signature;
+		return os;
 	}
 
   protected:
