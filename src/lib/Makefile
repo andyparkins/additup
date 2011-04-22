@@ -89,30 +89,8 @@ $(LIBNAME).mak: $(filter-out $(LIBNAME).mak,$(wildcard *.mak))
 
 
 # ------- tests
-TESTABLE := $(shell grep -ls "UNITTEST" $(SOURCES))
-RUNTESTS := $(patsubst %.cc,test-%,$(TESTABLE))
-UNITEXES := $(patsubst %.cc,unit-%,$(TESTABLE))
-tests: $(UNITEXES) $(RUNTESTS)
-	@echo "*** SUCCESS *** $(TESTABLE)"
-grind-%: unit-%
-	-rm -f vg-$*.log
-	-rm -f vg-$*.log.core*
-	valgrind --track-fds=yes --show-reachable=yes --leak-check=yes \
-		--log-file=vg-$*.log \
-		./unit-$* > unit-$*.out
-test-%: unit-%
-	-@rm -f core*
-	@echo "[$*] --------------------------- Running module"
-	@./unit-$* > unit-$*.out || echo "[$*] Error $$? in module unit test"
-	@echo "[$*] --------------------------- Success running module $*"
-unit-%: %.cc $(LIBNAME).a
-	$(CXX) $(CXXFLAGS) -O0 \
-		$(LDFLAGS) \
-		$(patsubst %,-I%,$(INCLUDE)) $(patsubst %,-I%,$($*_INCLUDE)) \
-		$(patsubst %,-L%,$(LIBPATH)) $(patsubst %,-L%,$($*_LIBPATH)) \
-		-DUNITTEST $(patsubst %,"-D%",$($*_DEFINES)) \
-		-o unit-$* $*.cc $(patsubst %,-l%,$(LIBS)) $(patsubst %,-l%,$($*_LIBS))
-# -------
+-include ../unittest.mak
+
 
 # --- Build recipes
 %.o: %.cc %.h
