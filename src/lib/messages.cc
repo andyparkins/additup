@@ -233,7 +233,7 @@ ostream &TMessageWithChecksum::write( ostream &os ) const
 // Description:
 // First 4 bytes of sha256(sha256(payload))
 //
-void TMessageWithChecksum::verifyPayloadChecksum()
+void TMessageWithChecksum::verifyPayloadChecksum() const
 {
 	string digest = PayloadHasher->transform( RawPayload );
 	uint32_t CalculatedChecksum = TMessageElement::littleEndian32FromString( digest, 0 );
