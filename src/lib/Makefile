@@ -68,6 +68,12 @@ info:
 
 build: prebuild $(LIBNAME).mak $(LIBNAME).a
 
+
+# ------- tests
+-include ../unittest.mak
+
+
+# --- Build recipes
 $(LIBNAME).a: $(OBJS)
 	-$(RM) $@
 	$(AR) rcs $@ $(OBJS)
@@ -84,12 +90,6 @@ $(LIBNAME).mak: $(filter-out $(LIBNAME).mak,$(wildcard *.mak))
 			$(patsubst %.o,%_LIBPATH,$(OBJS)), \
 			$($x)))" >> $@
 
-
-# ------- tests
--include ../unittest.mak
-
-
-# --- Build recipes
 %.o: %.cc %.h
 	$(CXX) $(CXXFLAGS) \
 		$(patsubst %,"-D%",$($*_DEFINES)) \
