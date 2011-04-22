@@ -27,15 +27,15 @@ tests: $(UNITEXES) $(RUNTESTS)
 
 # valgrind a particular unit
 grind-%: unit-%
-	-rm -f vg-$*.log
-	-rm -f vg-$*.log.core*
+	-$(RM) vg-$*.log
+	-$(RM) vg-$*.log.core*
 	valgrind --track-fds=yes --show-reachable=yes --leak-check=yes \
 		--log-file=vg-$*.log \
 		./unit-$* > unit-$*.out
 
 # run a particular unit
 test-%: unit-%
-	-@rm -f core*
+	-@$(RM) core*
 	@echo "[$*] --------------------------- Running module"
 	@./unit-$* > unit-$*.out || echo "[$*] Error $$? in module unit test"
 	@echo "[$*] --------------------------- Success running module $*"
