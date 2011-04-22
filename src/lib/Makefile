@@ -24,9 +24,6 @@ LDFLAGS     :=
 CXXFLAGS    = -Wall -g -DDEBUG -fmessage-length=0
 
 ifneq ($(PLATFORM),win32)
-	LIBS     += z \
-			    pthread \
-			    dl
 	CXXFLAGS += -rdynamic -ggdb3
 	LDFLAGS  += -rdynamic
 else
@@ -34,7 +31,7 @@ else
 #	CXXFLAGS += -pg #Generate profiling info.
 	CXXFLAGS += -mconsole -mno-cygwin -mthreads -gstabs
 	LDFLAGS += -mconsole -mno-cygwin -gstabs
-	LIBS += gdi32 ws2_32 iphlpapi pthreadGC2
+	LIBS += gdi32
 endif
 LIBS += $(PROJECT)
 
