@@ -130,6 +130,8 @@ class TMessage
 	virtual ostream &printOn( ostream & ) const;
 	friend ostream &operator<<( ostream &, const TMessage & );
 
+	virtual uint32_t minimumAcceptedVersion() const { return 0; }
+
   protected:
 	TMessageHeaderElement MessageHeader;
 	string RawPayload;
@@ -239,9 +241,6 @@ class TMessage_version_0 : public TMessage_version
 
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
-
-  protected:
-	virtual uint32_t minimumAcceptedVersion() const { return 0; }
 };
 
 //
