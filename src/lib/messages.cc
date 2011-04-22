@@ -76,8 +76,8 @@ TMessageTemplates::TMessageTemplates()
 		// highest matching version will be tried first.  This is
 		// necessary because version_0 will happilly accept a
 		// version_209 message, being that it is backwards compatible
-		new TMessage_version_209(),
-		new TMessage_version_106(),
+		new TMessage_version_20900(),
+		new TMessage_version_10600(),
 		new TMessage_version_0(),
 		new TMessage_verack(),
 		new TMessage_addr(),
@@ -304,12 +304,12 @@ ostream &TMessage_version::printOn( ostream &s ) const
 		<< (Services.getValue() & TNetworkAddressElement::NODE_NETWORK ? " NODE_NETWORK" : "" )
 		<< " ]; Time=" << Timestamp.getValue()
 		<< "; SenderAddress=";
-	if( Version >= 106 ) {
+	if( Version >= 10600 ) {
 		s << "; ReceiverAddress="
 			<< "; Nonce=" << Nonce.getValue()
 			<< "; SubVersion=\"" << SubVersionNum.getValue() << "\"";
 	}
-	if( Version >= 209 ) {
+	if( Version >= 20900 ) {
 		s << "; Height=" << StartingHeight.getValue();
 	}
 
@@ -379,10 +379,10 @@ ostream &TMessage_version_0::write( ostream &os ) const
 }
 
 //
-// Function:	TMessage_version_106 :: read
+// Function:	TMessage_version_10600 :: read
 // Description:
 //
-istream &TMessage_version_106::read( istream &is )
+istream &TMessage_version_10600::read( istream &is )
 {
 	TMessage_version_0::read(is);
 
@@ -399,10 +399,10 @@ istream &TMessage_version_106::read( istream &is )
 }
 
 //
-// Function:	TMessage_version_106 :: write
+// Function:	TMessage_version_10600 :: write
 // Description:
 //
-ostream &TMessage_version_106::write( ostream &os ) const
+ostream &TMessage_version_10600::write( ostream &os ) const
 {
 	TMessage_version_0::write(os);
 
@@ -414,12 +414,12 @@ ostream &TMessage_version_106::write( ostream &os ) const
 }
 
 //
-// Function:	TMessage_version_209 :: read
+// Function:	TMessage_version_20900 :: read
 // Description:
 //
-istream &TMessage_version_209::read( istream &is )
+istream &TMessage_version_20900::read( istream &is )
 {
-	TMessage_version_106::read(is);
+	TMessage_version_10600::read(is);
 
 	// Version >= 209
 	is >> StartingHeight;
@@ -428,12 +428,12 @@ istream &TMessage_version_209::read( istream &is )
 }
 
 //
-// Function:	TMessage_version_209 :: write
+// Function:	TMessage_version_20900 :: write
 // Description:
 //
-ostream &TMessage_version_209::write( ostream &os ) const
+ostream &TMessage_version_20900::write( ostream &os ) const
 {
-	TMessage_version_106::write(os);
+	TMessage_version_10600::write(os);
 	os << StartingHeight;
 
 	return os;
@@ -571,11 +571,11 @@ int main( int argc, char *argv[] )
 					"unimplement\0"      // Command
 					"\0\0\0\0"         // Length
 					, 20 ),
-			// TMessage_version_209
+			// TMessage_version_20900
 			string("\xf9\xbe\xb4\xd9"    // Magic
 					"version\0\0\0\0\0"  // Command
 					"\x55\0\0\0"         // Length
-					"\xd1\x00\x00\x00"   // Version
+					"\xa4\x51\x00\x00"   // Version
 					"\x01\0\0\0\0\0\0\0" // Services
 					"\0\0\0\x80\0\0\0\0" // Timestamp in seconds
 					"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" // Address Me
@@ -584,11 +584,11 @@ int main( int argc, char *argv[] )
 					"\0"                 // Sub version information (NUL terminated)
 					"\0\0\0\0"           // Start height
 					, 105 ),
-			// TMessage_version_106
+			// TMessage_version_10600
 			string("\xf9\xbe\xb4\xd9"    // Magic
 					"version\0\0\0\0\0"  // Command
 					"\x51\0\0\0"         // Length
-					"\x6a\x00\x00\x00"   // Version
+					"\x68\x29\x00\x00"   // Version
 					"\x01\0\0\0\0\0\0\0" // Services
 					"\0\0\0\x80\0\0\0\0" // Timestamp in seconds
 					"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" // Address Me

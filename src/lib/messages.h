@@ -245,37 +245,37 @@ class TMessage_version_0 : public TMessage_version
 };
 
 //
-// Class: TMessage_version_106
+// Class: TMessage_version_10600
 // Description:
 //
-class TMessage_version_106 : public TMessage_version_0
+class TMessage_version_10600 : public TMessage_version_0
 {
   public:
-	const char *className() const { return "TMessage_version_106"; }
-	TMessage *clone() const { return new TMessage_version_106(*this); }
+	const char *className() const { return "TMessage_version_10600"; }
+	TMessage *clone() const { return new TMessage_version_10600(*this); }
 
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
 
   protected:
-	uint32_t minimumAcceptedVersion() const { return 106; }
+	uint32_t minimumAcceptedVersion() const { return 10600; }
 };
 
 //
-// Class: TMessage_version_209
+// Class: TMessage_version_20900
 // Description:
 //
-class TMessage_version_209 : public TMessage_version_106
+class TMessage_version_20900 : public TMessage_version_10600
 {
   public:
-	const char *className() const { return "TMessage_version_209"; }
-	TMessage *clone() const { return new TMessage_version_209(*this); }
+	const char *className() const { return "TMessage_version_20900"; }
+	TMessage *clone() const { return new TMessage_version_20900(*this); }
 
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
 
   protected:
-	uint32_t minimumAcceptedVersion() const { return 209; }
+	uint32_t minimumAcceptedVersion() const { return 20900; }
 };
 
 //
