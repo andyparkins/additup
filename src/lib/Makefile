@@ -54,9 +54,6 @@ ifdef strict
 	CFLAGS += -Wshorten-64-to-32
 endif
 
-# Per-module Makefile components
--include $(OBJS:.o=.mak)
-
 default: build
 
 info:
@@ -69,10 +66,14 @@ info:
 build: prebuild $(LIBNAME).mak $(LIBNAME).a
 
 
--include depends.mak
+# Per-module Makefile components
+-include $(OBJS:.o=.mak)
 
-# ------- tests
--include ../unittest.mak
+# Auto generated dependencies
+include depends.mak
+
+# Unit test standard makefile fragment
+include ../unittest.mak
 
 
 # --- Build recipes
