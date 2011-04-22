@@ -157,8 +157,8 @@ ostream &operator<<(ostream &s, const TMessageElement &E );
 class TMessageElement
 {
   public:
-	virtual istream &read( istream &is ) { return is; }
-	virtual ostream &write( ostream &os ) const { return os; }
+	virtual istream &read( istream &is ) = 0;
+	virtual ostream &write( ostream &os ) const = 0;
 
 	static uint32_t littleEndian16FromString( const string &d, string::size_type p = 0) {
 		return static_cast<uint8_t>(d[p]) << 0
@@ -207,6 +207,7 @@ class TNULTerminatedStringElement : public TStringBasedElement
 		}
 		return is;
 	}
+	ostream &write( ostream &os ) const;
 
 	using TStringBasedElement::operator=;
 };
@@ -226,11 +227,12 @@ class TSizedStringElement : public TStringBasedElement
 		Value.assign( buffer, N );
 		return is;
 	}
+	ostream &write( ostream &os ) const;
 
 	using TStringBasedElement::operator=;
 
   protected:
-	string::size_type N;
+	mutable string::size_type N;
 };
 
 //
@@ -257,6 +259,7 @@ class TByteElement : public TMessageElement
 		Value = is.get();
 		return is;
 	}
+	ostream &write( ostream &os ) const { return os.put( Value ); }
 
 	operator uint8_t() const { return Value; }
 	uint8_t getValue() const { return Value; }
@@ -278,6 +281,10 @@ class TBigEndian16Element : public TMessageElement
 			| static_cast<uint8_t>(is.get()) << 0;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		os.put( (Value & 0xff00) >> 8 );
+		return os.put( (Value & 0xff) >> 0 );
+	}
 
 	operator uint16_t() const { return Value; }
 	uint16_t getValue() const { return Value; }
@@ -298,6 +305,10 @@ class TLittleEndian16Element : public TMessageElement
 		Value = static_cast<uint8_t>(is.get()) << 0
 			| static_cast<uint8_t>(is.get()) << 8;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		os.put( (Value & 0xff) >> 0 );
+		return os.put( (Value & 0xff00) >> 8 );
 	}
 
 	operator uint16_t() const { return Value; }
@@ -322,6 +333,12 @@ class TLittleEndian32Element : public TMessageElement
 			| static_cast<uint8_t>(is.get()) << 24;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		os.put( (Value & 0xff) >> 0 );
+		os.put( (Value & 0xff00) >> 8 );
+		os.put( (Value & 0xff0000) >> 16 );
+		return os.put( (Value & 0xff000000) >> 24 );
+	}
 
 	operator uint32_t() const { return Value; }
 	uint32_t getValue() const { return Value; }
@@ -345,6 +362,17 @@ class TLittleEndian64Element : public TMessageElement
 			| static_cast<uint64_t>(b) << 32;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		os.put( (Value & 0xffULL) >> 0 );
+		os.put( (Value & 0xff00ULL) >> 8 );
+		os.put( (Value & 0xff0000ULL) >> 16 );
+		os.put( (Value & 0xff000000ULL) >> 24 );
+		os.put( (Value & 0xff00000000ULL) >> 32 );
+		os.put( (Value & 0xff0000000000ULL) >> 40 );
+		os.put( (Value & 0xff000000000000ULL) >> 48 );
+		return os.put( (Value & 0xff00000000000000ULL) >> 56 );
+	}
+
 
 	operator uint64_t() const { return Value; }
 	uint64_t getValue() const { return Value; }
@@ -388,6 +416,16 @@ class TVariableSizedStringElement : public TSizedStringElement
 		N = VarInt.getValue();
 		return TSizedStringElement::read(is);
 	}
+	ostream &write( ostream &os ) const {
+		TAutoSizeIntegerElement VarInt;
+		// Ensure the base class writes the whole string
+		N = Value.size();
+		VarInt = N;
+		// Write the size field
+		os << VarInt;
+		// Write the string
+		return TSizedStringElement::write(os);
+	}
 };
 
 //
@@ -422,6 +460,10 @@ class TMessageHeaderElement : public TMessageElement
 		is >> Magic >> Command >> PayloadLength;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		os << Magic << Command << PayloadLength;
+		return os;
+	}
 
   public:
 	TLittleEndian32Element Magic;
@@ -450,6 +492,10 @@ class TNetworkAddressElement : public TMessageElement
 		is >> Services >> Address >> PortNumber;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		os << Services << Address << PortNumber;
+		return os;
+	}
 
 	void clear() { Services = 0; Address = ""; PortNumber = 0; }
 
@@ -469,6 +515,10 @@ class TTimedNetworkAddressElement : public TNetworkAddressElement
 	istream &read( istream &is ) {
 		is >> Time;
 		return TNetworkAddressElement::read(is);
+	}
+	ostream &write( ostream &os ) const {
+		os << Time;
+		return TNetworkAddressElement::write(os);
 	}
 
   public:
@@ -492,6 +542,16 @@ class TNElementsElement : public TMessageElement
 		}
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		typename vector<Element>::const_iterator it;
+		TAutoSizeIntegerElement N;
+		N = Array.size();
+		os << N;
+		for( it = Array.begin(); it != Array.end(); it++ ) {
+			os << *it;
+		}
+		return os;
+	}
 
 	unsigned int size() const { return Array.size(); }
 	Element &operator[]( unsigned int i ) { return Array[i]; }
@@ -513,6 +573,11 @@ class TBlockHeaderElement : public TMessageElement
 			>> PreviousBlock >> MerkleRoot >> Timestamp
 			>> DifficultyBits >> Nonce;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		os << Version << PreviousBlock << MerkleRoot << Timestamp
+			<< DifficultyBits << Nonce;
+		return os;
 	}
 
   public:
@@ -537,6 +602,10 @@ class TPaddedBlockHeaderElement : public TBlockHeaderElement
 		is >> ignore;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		TBlockHeaderElement::write(os);
+		return os.put(0);
+	}
 };
 
 //
@@ -548,6 +617,9 @@ class TWalletTxElement : public TMessageElement
   public:
 	istream &read( istream &is ) {
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		return os;
 	}
 
   public:
@@ -578,6 +650,10 @@ class TInventoryElement : public TMessageElement
 		is >> ObjectType >> Hash;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		os << ObjectType << Hash;
+		return os;
+	}
 
   public:
 	TLittleEndian32Element ObjectType;
@@ -594,6 +670,10 @@ class TOutputTransactionReferenceElement : public TMessageElement
 	istream &read( istream &is ) {
 		is >> TransactionHash >> Index;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		os << TransactionHash << Index;
+		return os;
 	}
 
   public:
@@ -612,6 +692,10 @@ class TInputSplitElement : public TMessageElement
 		is >> OutPoint >> SignatureScript >> Sequence;
 		return is;
 	}
+	ostream &write( ostream &os ) const {
+		os << OutPoint << SignatureScript << Sequence;
+		return os;
+	}
 
   public:
 	TOutputTransactionReferenceElement OutPoint;
@@ -629,6 +713,10 @@ class TOutputSplitElement : public TMessageElement
 	istream &read( istream &is ) {
 		is >> HundredsOfNanoCoins >> Script;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		os << HundredsOfNanoCoins << Script;
+		return os;
 	}
 
   public:
@@ -652,6 +740,13 @@ class TTransactionElement : public TMessageElement
 			>> Outputs
 			>> LockTime;
 		return is;
+	}
+	ostream &write( ostream &os ) const {
+		os << Version
+			<< Inputs
+			<< Outputs
+			<< LockTime;
+		return os;
 	}
 
   public:

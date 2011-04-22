@@ -46,6 +46,47 @@
 // -------------- Class member definitions
 
 //
+// Function:	TNULTerminatedStringElement :: write
+// Description:
+//
+ostream &TNULTerminatedStringElement::write( ostream &os ) const
+{
+	string::size_type pos = Value.find_first_of('\0');
+
+	if( pos == string::npos ) {
+		// String contains no NULs; so we'll send it literally, and
+		// terminate ourselves
+		os << Value << '\0';
+	} else {
+		// The string contains at least one NUL; send up to and
+		// including that NUL.  Anything after that will be lost --
+		// tough, shouldn't have put NULs in a NUL terminated string
+		// then should you?
+		os << Value.substr( 0, Value.find_first_of('\0') );
+	}
+	return os;
+}
+
+//
+// Function:	TSizedStringElement :: write
+// Description:
+//
+ostream &TSizedStringElement::write( ostream &os ) const
+{
+	if( N >= Value.size() ) {
+		// Truncate
+		os.write( Value.data(), N );
+	} else {
+		// Pad
+		string::size_type n = N - Value.size();
+		os << Value;
+		while( n-- )
+			os.put( 0 );
+	}
+	return os;
+}
+
+//
 // Function:	TAutoSizeIntegerElement :: read
 // Description:
 //
