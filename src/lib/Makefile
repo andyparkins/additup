@@ -69,6 +69,8 @@ info:
 build: prebuild $(LIBNAME).mak $(LIBNAME).a
 
 
+-include depends.mak
+
 # ------- tests
 -include ../unittest.mak
 
@@ -90,6 +92,9 @@ $(LIBNAME).mak: $(filter-out $(LIBNAME).mak,$(wildcard *.mak))
 			$(patsubst %.o,%_LIBPATH,$(OBJS)), \
 			$($x)))" >> $@
 
+depends.mak: $(SOURCES) $(SOURCES:.cc=.h)
+	@$(CXX) -M $(CXXFLAGS) $(SOURCES) > $@
+
 %.o: %.cc %.h
 	$(CXX) $(CXXFLAGS) \
 		$(patsubst %,"-D%",$($*_DEFINES)) \
@@ -104,6 +109,7 @@ tags: $(SOURCES) $(HEADERS)
 
 clean:
 	-$(RM) tags
+	-$(RM) depends.mak
 	-$(RM) $(LIBNAME).a $(LIBNAME).mak
 	-$(RM) $(OBJS)
 	-$(RM) $(UNITEXES)
