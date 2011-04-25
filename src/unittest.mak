@@ -44,7 +44,7 @@ test-%: unit-%
 # includes, libarary paths, include paths, libraries and defines.  UNITTEST
 # is automatically defined, which the module can wrap its UNITTEST main() in.
 # LDFLAGS and CXXFLAGS are used as normal.
-unit-%: %.cc $(LIBNAME).a
+unit-%: %.cc $(UNITLIBS)
 	$(CXX) $*.cc $(CXXFLAGS) -O0 \
 		-DUNITTEST $(patsubst %,"-D%",$($*_DEFINES)) \
 		$(patsubst %,-I%,$(INCLUDE)) $(patsubst %,-I%,$($*_INCLUDE)) \

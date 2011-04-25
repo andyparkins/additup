@@ -73,6 +73,7 @@ build: prebuild $(LIBNAME).mak $(LIBNAME).a
 include depends.mak
 
 # Unit test standard makefile fragment
+UNITLIBS := $(LIBNAME).a
 include ../unittest.mak
 
 
