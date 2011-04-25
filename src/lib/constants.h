@@ -110,6 +110,7 @@ class TNetworkParameters
 // -------------- World globals ("extern"s only)
 extern const TOfficialSeedNode SEED_NODES[];
 
+extern const TNetworkParameters *KNOWN_NETWORKS[];
 extern const TNetworkParameters *NETWORK_TESTNET;
 extern const TNetworkParameters *NETWORK_PRODNET;
 

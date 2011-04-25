@@ -217,6 +217,16 @@ const TNetworkParameters *NETWORK_TESTNET = &localTESTNET;
 TTestnetNetworkParameters localPRODNET;
 const TNetworkParameters *NETWORK_PRODNET = &localPRODNET;
 
+//
+// Global:	NETWORK_TESTNET
+// Description:
+//
+const TNetworkParameters *KNOWN_NETWORKS[] = {
+		NETWORK_PRODNET,
+		NETWORK_TESTNET,
+		NULL
+};
+
 
 // -------------- Function definitions
 
