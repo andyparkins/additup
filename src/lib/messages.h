@@ -123,6 +123,8 @@ class TMessage
 
 	const TMessageHeaderElement &header() const { return MessageHeader; }
 
+	virtual unsigned int getMessageSize() { return 4 + 12 + 4 + MessageHeader.PayloadLength; }
+
   protected:
 	virtual bool acceptCommandCode( const string & ) const;
 	virtual const char *commandString() const = 0;
@@ -164,6 +166,8 @@ class TMessageWithChecksum : public TMessage
 
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
+
+	unsigned int getMessageSize() { return TMessage::getMessageSize() + 4; }
 
   protected:
 	void verifyPayloadChecksum() const;
