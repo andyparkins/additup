@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 // Project: bitcoin
-/// @file   constants.h
+/// @file   bitcoinnetwork.h
 /// @author Andy Parkins
 //
 // Version Control
@@ -14,25 +14,26 @@
 // ----------------------------------------------------------------------------
 
 // Catch multiple includes
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#ifndef BITCOINNETWORK_H
+#define BITCOINNETWORK_H
 
 // -------------- Includes
 // --- C
-#include <stdint.h>
 // --- C++
-#include <iostream>
-#include <string>
+#include <boost/smart_ptr.hpp>
+#include <list>
 // --- Qt
 // --- OS
 // --- Project lib
 // --- Project
+#include "constants.h"
 #include "peer.h"
 
 
 // -------------- Namespace
 	// --- Imported namespaces
 	using namespace std;
+	using namespace boost;
 
 
 // -------------- Defines
@@ -57,42 +58,38 @@
 
 // -------------- Class pre-declarations
 
-//
-// Class:	TOfficialSeedNode
-// Description:
-// A simple wrapper around the 32-bit seed node integer obtained from
-// the official bitcoin client.
-//
-class TOfficialSeedNode : public TNodeInfo
-{
-  public:
-	TOfficialSeedNode( uint32_t );
-};
-
-//
-// Class:	TNetworkParameters
-// Description:
-//
-class TNetworkParameters
-{
-  public:
-	TNetworkParameters();
-
-	uint32_t ProtocolVersion;
-	// Block GenesisBlock;
-	// BigInteger ProofOfWorkLimit;
-	uint16_t DefaultTCPPort;
-	uint32_t Magic;
-	uint8_t BitcoinAddressPrefix;
-	unsigned int DifficultyIncreaseSpacing;
-	unsigned int TargetDifficultyIncreaseTime;
-};
-
 
 // -------------- Function pre-class prototypes
 
 
 // -------------- Class declarations
+
+//
+// Class:	TBitcoinNetwork
+// Description:
+/// Object representing the entire bitcoin network.
+//
+/// There is a directory of bitcoin nodes; a list of bitcoin peers we're
+/// connected to, blockchains, transaction chains.  All of that
+/// information is public.  This class is the top level object for the
+/// rest of the objects, and initial connection point.
+//
+class TBitcoinNetwork
+{
+  public:
+	TBitcoinNetwork();
+
+	void connect();
+	void connect( TNodeInfo * );
+
+  protected:
+	TNetworkParameters *Parameters;
+
+	list<shared_ptr<TBitcoinPeer> > Peers;
+	weak_ptr<TBitcoinPeer> Self;
+
+	list<shared_ptr<TNodeInfo> > Directory;
+};
 
 
 // -------------- Constants
@@ -108,10 +105,6 @@ class TNetworkParameters
 
 
 // -------------- World globals ("extern"s only)
-extern const TOfficialSeedNode SEED_NODES[];
-
-extern const TNetworkParameters *NETWORK_TESTNET;
-extern const TNetworkParameters *NETWORK_PRODNET;
 
 
 // End of conditional compilation

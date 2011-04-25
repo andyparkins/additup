@@ -137,39 +137,13 @@ TNetworkParameters::TNetworkParameters()
 // Done like this so that I can simply copy and paste the seed node list
 // from the official client, which stores the addresses right-to-left.
 //
-TOfficialSeedNode::TOfficialSeedNode( uint32_t IP_LittleEndian )
+TOfficialSeedNode::TOfficialSeedNode( uint32_t IP_LittleEndian ) :
+	TNodeInfo( 0 )
 {
 	IPv4 = (IP_LittleEndian & 0xff) << 24
 		| (IP_LittleEndian & 0xff00) << 8
 		| (IP_LittleEndian & 0xff0000) >> 8
 		| (IP_LittleEndian & 0xff000000) >> 24;
-}
-
-//
-// Function:	TOfficialSeedNode :: write
-// Description:
-//
-ostream &TOfficialSeedNode::write( ostream &os ) const
-{
-	os << ((IPv4 & 0xff000000) >> 24)
-		<< "." << ((IPv4 & 0xff0000) >> 16)
-		<< "." << ((IPv4 & 0xff00) >> 8)
-		<< "." << ((IPv4 & 0xff) >> 0);
-
-	return os;
-}
-
-//
-// Function:	TOfficialSeedNode :: get
-// Description:
-//
-string TOfficialSeedNode::get() const
-{
-	ostringstream oss;
-
-	write(oss);
-
-	return oss.str();
 }
 
 // -------------- World Globals (need "extern"s in header)
@@ -234,14 +208,14 @@ const TOfficialSeedNode SEED_NODES[] =
 // Description:
 //
 TTestnetNetworkParameters localTESTNET;
-extern const TNetworkParameters *NETWORK_TESTNET = &localTESTNET;
+const TNetworkParameters *NETWORK_TESTNET = &localTESTNET;
 
 //
 // Global:	NETWORK_PRODNET
 // Description:
 //
 TTestnetNetworkParameters localPRODNET;
-extern const TNetworkParameters *NETWORK_PRODNET = &localPRODNET;
+const TNetworkParameters *NETWORK_PRODNET = &localPRODNET;
 
 
 // -------------- Function definitions

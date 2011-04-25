@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 // Project: bitcoin
-/// @file   constants.h
+/// @file   peer.h
 /// @author Andy Parkins
 //
 // Version Control
@@ -14,20 +14,18 @@
 // ----------------------------------------------------------------------------
 
 // Catch multiple includes
-#ifndef CONSTANTS_H
-#define CONSTANTS_H
+#ifndef PEER_H
+#define PEER_H
 
 // -------------- Includes
 // --- C
 #include <stdint.h>
 // --- C++
 #include <iostream>
-#include <string>
 // --- Qt
 // --- OS
 // --- Project lib
 // --- Project
-#include "peer.h"
 
 
 // -------------- Namespace
@@ -56,43 +54,49 @@
 
 
 // -------------- Class pre-declarations
-
-//
-// Class:	TOfficialSeedNode
-// Description:
-// A simple wrapper around the 32-bit seed node integer obtained from
-// the official bitcoin client.
-//
-class TOfficialSeedNode : public TNodeInfo
-{
-  public:
-	TOfficialSeedNode( uint32_t );
-};
-
-//
-// Class:	TNetworkParameters
-// Description:
-//
-class TNetworkParameters
-{
-  public:
-	TNetworkParameters();
-
-	uint32_t ProtocolVersion;
-	// Block GenesisBlock;
-	// BigInteger ProofOfWorkLimit;
-	uint16_t DefaultTCPPort;
-	uint32_t Magic;
-	uint8_t BitcoinAddressPrefix;
-	unsigned int DifficultyIncreaseSpacing;
-	unsigned int TargetDifficultyIncreaseTime;
-};
+class TBitcoinNetwork;
+class TMessageFactory;
 
 
 // -------------- Function pre-class prototypes
 
 
 // -------------- Class declarations
+
+//
+// Class:	TNodeInfo
+// Description:
+//
+class TNodeInfo
+{
+  public:
+	TNodeInfo( uint32_t ip ) { IPv4 = ip; }
+
+	ostream &write( ostream & ) const;
+	string get() const;
+
+	operator bool() const { return IPv4 != 0; }
+	operator uint32_t() const { return IPv4; }
+
+  protected:
+	uint32_t IPv4;
+};
+
+//
+// Class:	TBitcoinPeer
+// Description:
+//
+class TBitcoinPeer
+{
+  public:
+	TBitcoinPeer( TNodeInfo *, TBitcoinNetwork * );
+
+  protected:
+	TBitcoinNetwork *Network;
+	TMessageFactory *Factory;
+
+	TNodeInfo *Info;
+};
 
 
 // -------------- Constants
@@ -108,10 +112,6 @@ class TNetworkParameters
 
 
 // -------------- World globals ("extern"s only)
-extern const TOfficialSeedNode SEED_NODES[];
-
-extern const TNetworkParameters *NETWORK_TESTNET;
-extern const TNetworkParameters *NETWORK_PRODNET;
 
 
 // End of conditional compilation
