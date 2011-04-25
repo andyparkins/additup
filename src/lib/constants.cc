@@ -19,6 +19,8 @@
 // -------------- Includes
 // --- C
 // --- C++
+#include <string>
+#include <sstream>
 // --- Qt
 // --- OS
 // --- Project libs
@@ -30,6 +32,145 @@
 
 // -------------- Module Globals
 
+
+// -------------- Template instantiations
+
+
+// -------------- Class declarations
+
+//
+// Class:	TTestnetNetworkParameters
+// Description:
+//
+class TTestnetNetworkParameters : public TNetworkParameters
+{
+  public:
+	TTestnetNetworkParameters() {
+		DefaultTCPPort = 18333;
+		Magic = 0xfabfb5da;
+		BitcoinAddressPrefix = 111;
+
+//		Block GenesisBlock;
+//		BigInteger ProofOfWorkLimit;
+
+		// From Android BitCoin client:
+		//
+		// n.proofOfWorkLimit = new BigInteger("0000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
+		// n.packetMagic = 0xfabfb5daL;
+		// n.port = 18333;
+		// n.addressHeader = 111;
+		// n.interval = INTERVAL;
+		// n.targetTimespan = TARGET_TIMESPAN;
+		// n.genesisBlock = createGenesis(n);
+		// n.genesisBlock.setTime(1296688602L);
+		// n.genesisBlock.setDifficultyTarget(0x1d07fff8L);
+		// n.genesisBlock.setNonce(384568319);
+		// String genesisHash = n.genesisBlock.getHashAsString();
+		// assert genesisHash.equals("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008");
+	}
+};
+
+//
+// Class:	TProdnetNetworkParameters
+// Description:
+//
+class TProdnetNetworkParameters : public TNetworkParameters
+{
+  public:
+	TProdnetNetworkParameters() {
+		DefaultTCPPort = 8333;
+		Magic = 0xf9beb4d9;
+		BitcoinAddressPrefix = 0;
+
+//		Block GenesisBlock;
+//		BigInteger ProofOfWorkLimit;
+
+		// From Android BitCoin client:
+		//
+		// n.proofOfWorkLimit = new BigInteger("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
+		// n.port = 8333;
+		// n.packetMagic = 0xf9beb4d9L;
+		// n.addressHeader = 0;
+		// n.interval = INTERVAL;
+		// n.targetTimespan = TARGET_TIMESPAN;
+		// n.genesisBlock = createGenesis(n);
+		// n.genesisBlock.setDifficultyTarget(0x1d00ffffL);
+		// n.genesisBlock.setTime(1231006505L);
+		// n.genesisBlock.setNonce(2083236893);
+		// String genesisHash = n.genesisBlock.getHashAsString();
+		// assert genesisHash.equals("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f") : genesisHash;
+	}
+};
+
+// -------------- Class member definitions
+
+//
+// Function:	TNetworkParameters
+// Description:
+//
+TNetworkParameters::TNetworkParameters()
+{
+	// 14 days
+	static const unsigned int DIFFICULTY_TIMESPAN = 14 * 24 * 60 * 60;
+	// 10 minutes
+	static const unsigned int NEW_BLOCK_PERIOD = 10 * 60;
+
+	// Defined by whatever we support -- not sure this should be here,
+	// would like to support multiple versions in the same client
+	ProtocolVersion = 31800;
+
+	// If we expect new blocks every NEW_BLOCK_PERIOD seconds, and we
+	// expect the difficulty to increase every DIFFICULTY_TIMESPAN then
+	// the number of blocks in DIFFICULTY_TIMESPAN is given by:
+	DifficultyIncreaseSpacing = DIFFICULTY_TIMESPAN / NEW_BLOCK_PERIOD;
+	// And we note the DIFFICULTY_TIMESPAN...
+	TargetDifficultyIncreaseTime = DIFFICULTY_TIMESPAN;
+}
+
+//
+// Function:	TOfficialSeedNode :: TOfficialSeedNode
+// Description:
+// Store the 32 bit IP address in network byte order, so that if you
+// printed the 32 bit number in hex, you could simply read the IP
+// address left-to-right.
+//
+// Done like this so that I can simply copy and paste the seed node list
+// from the official client, which stores the addresses right-to-left.
+//
+TOfficialSeedNode::TOfficialSeedNode( uint32_t IP_LittleEndian )
+{
+	IPv4 = (IP_LittleEndian & 0xff) << 24
+		| (IP_LittleEndian & 0xff00) << 8
+		| (IP_LittleEndian & 0xff0000) >> 8
+		| (IP_LittleEndian & 0xff000000) >> 24;
+}
+
+//
+// Function:	TOfficialSeedNode :: write
+// Description:
+//
+ostream &TOfficialSeedNode::write( ostream &os ) const
+{
+	os << ((IPv4 & 0xff000000) >> 24)
+		<< "." << ((IPv4 & 0xff0000) >> 16)
+		<< "." << ((IPv4 & 0xff00) >> 8)
+		<< "." << ((IPv4 & 0xff) >> 0);
+
+	return os;
+}
+
+//
+// Function:	TOfficialSeedNode :: get
+// Description:
+//
+string TOfficialSeedNode::get() const
+{
+	ostringstream oss;
+
+	write(oss);
+
+	return oss.str();
+}
 
 // -------------- World Globals (need "extern"s in header)
 
@@ -88,46 +229,19 @@ const TOfficialSeedNode SEED_NODES[] =
 	0x0
 };
 
-
-// -------------- Template instantiations
-
-
-// -------------- Class declarations
-
-
-// -------------- Class member definitions
-
 //
-// Function:	TOfficialSeedNode :: TOfficialSeedNode
-// Description:
-// Store the 32 bit IP address in network byte order, so that if you
-// printed the 32 bit number in hex, you could simply read the IP
-// address left-to-right.
-//
-// Done like this so that I can simply copy and paste the seed node list
-// from the official client, which stores the addresses right-to-left.
-//
-TOfficialSeedNode::TOfficialSeedNode( uint32_t IP_LittleEndian )
-{
-	IPv4 = (IP_LittleEndian & 0xff) << 24
-		| (IP_LittleEndian & 0xff00) << 8
-		| (IP_LittleEndian & 0xff0000) >> 8
-		| (IP_LittleEndian & 0xff000000) >> 24;
-}
-
-//
-// Function:	TOfficialSeedNode::write
+// Global:	NETWORK_TESTNET
 // Description:
 //
-ostream &TOfficialSeedNode::write( ostream &os ) const
-{
-	os << ((IPv4 & 0xff000000) >> 24)
-		<< "." << ((IPv4 & 0xff0000) >> 16)
-		<< "." << ((IPv4 & 0xff00) >> 8)
-		<< "." << ((IPv4 & 0xff) >> 0);
+TTestnetNetworkParameters localTESTNET;
+extern const TNetworkParameters *NETWORK_TESTNET = &localTESTNET;
 
-	return os;
-}
+//
+// Global:	NETWORK_PRODNET
+// Description:
+//
+TTestnetNetworkParameters localPRODNET;
+extern const TNetworkParameters *NETWORK_PRODNET = &localPRODNET;
 
 
 // -------------- Function definitions

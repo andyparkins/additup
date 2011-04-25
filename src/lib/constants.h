@@ -22,6 +22,7 @@
 #include <stdint.h>
 // --- C++
 #include <iostream>
+#include <string>
 // --- Qt
 // --- OS
 // --- Project
@@ -67,12 +68,32 @@ class TOfficialSeedNode
 	TOfficialSeedNode( uint32_t );
 
 	ostream &write( ostream & ) const;
+	string get() const;
 
 	operator bool() const { return IPv4 != 0; }
 	operator uint32_t() const { return IPv4; }
 
   protected:
 	uint32_t IPv4;
+};
+
+//
+// Class:	TNetworkParameters
+// Description:
+//
+class TNetworkParameters
+{
+  public:
+	TNetworkParameters();
+
+	uint32_t ProtocolVersion;
+	// Block GenesisBlock;
+	// BigInteger ProofOfWorkLimit;
+	uint16_t DefaultTCPPort;
+	uint32_t Magic;
+	uint8_t BitcoinAddressPrefix;
+	unsigned int DifficultyIncreaseSpacing;
+	unsigned int TargetDifficultyIncreaseTime;
 };
 
 
@@ -96,6 +117,8 @@ class TOfficialSeedNode
 
 // -------------- World globals ("extern"s only)
 extern const TOfficialSeedNode SEED_NODES[];
+extern const TNetworkParameters *NETWORK_TESTNET;
+extern const TNetworkParameters *NETWORK_PRODNET;
 
 // End of conditional compilation
 #endif
