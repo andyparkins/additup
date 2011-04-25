@@ -253,6 +253,7 @@ void TMessageWithChecksum::generatePayloadChecksum()
 {
 	string digest = PayloadHasher->transform( RawPayload );
 	MessageHeader.Checksum = TMessageElement::littleEndian32FromString( digest, 0 );
+	MessageHeader.hasChecksum = true;
 
 	// XXX: This won't work
 }
@@ -282,6 +283,7 @@ istream &TMessageWithoutChecksum::read( istream &is )
 	TMessage::read(is);
 
 	MessageHeader.Checksum = 0;
+	MessageHeader.hasChecksum = false;
 
 	// Pull the payload out
 	TSizedStringElement PL( MessageHeader.PayloadLength );

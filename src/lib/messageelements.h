@@ -469,6 +469,7 @@ class TMessageHeaderElement : public TMessageElement
 	TLittleEndian32Element Magic;
 	TFixedStringElement<12> Command;
 	TLittleEndian32Element PayloadLength;
+	bool hasChecksum;
 	TLittleEndian32Element Checksum;
 };
 
