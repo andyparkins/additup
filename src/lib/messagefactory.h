@@ -89,7 +89,7 @@ class TMessageFactory
 		return IncomingQueue.back();
 	}
 
-	virtual void init();
+	virtual void init() { Initialised = true; }
 
   protected:
 	string RXBuffer;
@@ -99,6 +99,82 @@ class TMessageFactory
 	bool Initialised;
 
 	list<const TMessage *> Templates;
+};
+
+//
+// Class:	TVersioningMessageFactory
+// Description:
+//
+class TVersioningMessageFactory : public TMessageFactory
+{
+  public:
+	void init();
+
+};
+
+//
+// Class:	TMessageFactory
+// Description:
+//
+class TVersionedMessageFactory : public TMessageFactory
+{
+  public:
+//	void init();
+
+  protected:
+	virtual uint32_t minimumAcceptedVersion() const = 0;
+};
+
+//
+// Class:	TMessageFactory_0
+// Description:
+//
+class TMessageFactory_0 : public TVersionedMessageFactory
+{
+  public:
+	void init();
+
+  protected:
+	uint32_t minimumAcceptedVersion() const { return 0; }
+};
+
+//
+// Class:	TMessageFactory_0
+// Description:
+//
+class TMessageFactory_10600 : public TVersionedMessageFactory
+{
+  public:
+	void init();
+
+  protected:
+	uint32_t minimumAcceptedVersion() const { return 10600; }
+};
+
+//
+// Class:	TMessageFactory_0
+// Description:
+//
+class TMessageFactory_20900 : public TVersionedMessageFactory
+{
+  public:
+	void init();
+
+  protected:
+	uint32_t minimumAcceptedVersion() const { return 20900; }
+};
+
+//
+// Class:	TMessageFactory_0
+// Description:
+//
+class TMessageFactory_31402 : public TVersionedMessageFactory
+{
+  public:
+	void init();
+
+  protected:
+	uint32_t minimumAcceptedVersion() const { return 31402; }
 };
 
 

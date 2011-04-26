@@ -52,32 +52,6 @@ TMessageFactory::TMessageFactory() :
 }
 
 //
-// Function:	TMessageFactory :: init
-// Description:
-//
-void TMessageFactory::init()
-{
-	Templates.push_back( new TMessage_version_20900() );
-	Templates.push_back( new TMessage_version_10600() );
-	Templates.push_back( new TMessage_version_0() );
-	Templates.push_back( new TMessage_verack() );
-	Templates.push_back( new TMessage_addr_31402() );
-	Templates.push_back( new TMessage_inv() );
-	Templates.push_back( new TMessage_getdata() );
-	Templates.push_back( new TMessage_getblocks() );
-	Templates.push_back( new TMessage_getheaders() );
-	Templates.push_back( new TMessage_tx() );
-	Templates.push_back( new TMessage_block() );
-	Templates.push_back( new TMessage_headers() );
-	Templates.push_back( new TMessage_getaddr() );
-	Templates.push_back( new TMessage_checkorder() );
-	Templates.push_back( new TMessage_submitorder() );
-	Templates.push_back( new TMessage_reply() );
-	Templates.push_back( new TMessage_ping() );
-	Templates.push_back( new TMessage_alert() );
-}
-
-//
 // Function:	TMessageFactory :: answer
 // Description:
 //
@@ -223,20 +197,128 @@ void TMessageFactory::receive( const string &s )
 	}
 }
 
+// ---------
 
-////
-//// Function:	TMessageFactory :: answer
-//// Description:
-////
-//TMessage *TMessageFactory::answer( TMessage *Message )
-//{
-//	if( dynamic_cast<TMessageUnimplemented>( Message ) != NULL ) {
-//		// No response
-//	} else if( dynamic_cast<TMessage_version_209>( Message ) != NULL ) {
-//	} else if( dynamic_cast<TMessage_version_106>( Message ) != NULL ) {
-//	} else if( dynamic_cast<TMessage_version_0>( Message ) != NULL ) {
-//	}
-//}
+//
+// Function:	TVersioningMessageFactory :: init
+// Description:
+//
+void TVersioningMessageFactory::init()
+{
+	// Must be in reverse order of version so that the highest matches
+	// first
+	Templates.push_back( new TMessage_version_20900() );
+	Templates.push_back( new TMessage_version_10600() );
+	Templates.push_back( new TMessage_version_0() );
+
+	TMessageFactory::init();
+}
+
+// ---------
+
+//
+// Function:	TMessageFactory_0 :: init
+// Description:
+//
+void TMessageFactory_0::init()
+{
+	Templates.push_back( new TMessage_version_0() );
+	Templates.push_back( new TMessage_verack() );
+	Templates.push_back( new TMessage_addr_0() );
+	Templates.push_back( new TMessage_inv() );
+	Templates.push_back( new TMessage_getdata() );
+	Templates.push_back( new TMessage_getblocks() );
+	Templates.push_back( new TMessage_tx() );
+	Templates.push_back( new TMessage_block() );
+	Templates.push_back( new TMessage_getaddr() );
+	Templates.push_back( new TMessage_checkorder() );
+	Templates.push_back( new TMessage_submitorder() );
+	Templates.push_back( new TMessage_reply() );
+	Templates.push_back( new TMessage_ping() );
+	Templates.push_back( new TMessage_alert() );
+
+	TVersionedMessageFactory::init();
+}
+
+// ---------
+
+//
+// Function:	TMessageFactory_10600 :: init
+// Description:
+//
+void TMessageFactory_10600::init()
+{
+	Templates.push_back( new TMessage_version_10600() );
+	Templates.push_back( new TMessage_verack() );
+	Templates.push_back( new TMessage_addr_0() );
+	Templates.push_back( new TMessage_inv() );
+	Templates.push_back( new TMessage_getdata() );
+	Templates.push_back( new TMessage_getblocks() );
+	Templates.push_back( new TMessage_tx() );
+	Templates.push_back( new TMessage_block() );
+	Templates.push_back( new TMessage_getaddr() );
+	Templates.push_back( new TMessage_checkorder() );
+	Templates.push_back( new TMessage_submitorder() );
+	Templates.push_back( new TMessage_reply() );
+	Templates.push_back( new TMessage_ping() );
+	Templates.push_back( new TMessage_alert() );
+
+	TVersionedMessageFactory::init();
+}
+
+// ---------
+
+//
+// Function:	TMessageFactory_20900 :: init
+// Description:
+//
+void TMessageFactory_20900::init()
+{
+	Templates.push_back( new TMessage_version_20900() );
+	Templates.push_back( new TMessage_verack() );
+	Templates.push_back( new TMessage_addr_0() );
+	Templates.push_back( new TMessage_inv() );
+	Templates.push_back( new TMessage_getdata() );
+	Templates.push_back( new TMessage_getblocks() );
+	Templates.push_back( new TMessage_tx() );
+	Templates.push_back( new TMessage_block() );
+	Templates.push_back( new TMessage_getaddr() );
+	Templates.push_back( new TMessage_checkorder() );
+	Templates.push_back( new TMessage_submitorder() );
+	Templates.push_back( new TMessage_reply() );
+	Templates.push_back( new TMessage_ping() );
+	Templates.push_back( new TMessage_alert() );
+
+	TVersionedMessageFactory::init();
+}
+
+// ---------
+
+//
+// Function:	TMessageFactory_31402 :: init
+// Description:
+//
+void TMessageFactory_31402::init()
+{
+	Templates.push_back( new TMessage_version_20900() );
+	Templates.push_back( new TMessage_verack() );
+	Templates.push_back( new TMessage_addr_31402() );
+	Templates.push_back( new TMessage_inv() );
+	Templates.push_back( new TMessage_getdata() );
+	Templates.push_back( new TMessage_getblocks() );
+	Templates.push_back( new TMessage_getheaders() );
+	Templates.push_back( new TMessage_tx() );
+	Templates.push_back( new TMessage_block() );
+	Templates.push_back( new TMessage_headers() );
+	Templates.push_back( new TMessage_getaddr() );
+	Templates.push_back( new TMessage_checkorder() );
+	Templates.push_back( new TMessage_submitorder() );
+	Templates.push_back( new TMessage_reply() );
+	Templates.push_back( new TMessage_ping() );
+	Templates.push_back( new TMessage_alert() );
+
+	TVersionedMessageFactory::init();
+}
 
 
 // -------------- Class member definitions
