@@ -20,6 +20,7 @@
 // --- C
 // --- C++
 #include <sstream>
+#include <memory>
 // --- Qt
 // --- OS
 // --- Project libs
@@ -165,7 +166,7 @@ void TMessageFactory::receive( const string &s )
 	for( it = Templates.begin(); it != Templates.end(); it++ ) {
 
 		// Clone the template
-		potential = (*it)->clone();
+		auto_ptr<TMessage> p( (*it)->clone() );
 
 		cerr << "Trying " << RXBuffer.size() << " bytes with "
 			<< potential->className();
@@ -174,24 +175,22 @@ void TMessageFactory::receive( const string &s )
 			// Store the current position
 			sp = iss.tellg();
 
-			potential->read( iss );
+			p->read( iss );
 			cerr << "*" << endl;
+			potential = p.get();
+			p.release();
 			break;
 
 		} catch( ios::failure &e ) {
 			cerr << " - " << e.what() << endl;
 			// If we run out of message from the source, then leave,
 			// hoping for more
-			delete potential;
-			potential = NULL;
 			break;
 
 		} catch( message_parse_error_underflow &e ) {
 			cerr << " - " << e.what() << endl;
 			// If we run out of message from the source, then leave,
 			// hoping for more
-			delete potential;
-			potential = NULL;
 			break;
 
 		} catch( message_parse_error_version &e ) {
@@ -206,17 +205,12 @@ void TMessageFactory::receive( const string &s )
 
 		} catch( message_parse_error &e ) {
 			cerr << " - " << e.what() << endl;
-			delete potential;
-			potential = NULL;
 
 			// Anything else, chuck the packet away
 			sp = iss.tellg();
 			RXBuffer = RXBuffer.substr( sp, RXBuffer.size() - sp );
 			break;
 		}
-
-		delete potential;
-		potential = NULL;
 	}
 
 	if( potential != NULL ) {
