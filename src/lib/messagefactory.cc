@@ -168,43 +168,43 @@ void TMessageFactory::receive( const string &s )
 		// Clone the template
 		auto_ptr<TMessage> p( (*it)->clone() );
 
-		cerr << "Trying " << RXBuffer.size() << " bytes with "
-			<< potential->className();
+//		cerr << "Trying " << RXBuffer.size() << " bytes with "
+//			<< potential->className();
 
 		try {
 			// Store the current position
 			sp = iss.tellg();
 
 			p->read( iss );
-			cerr << "*" << endl;
+//			cerr << "*" << endl;
 			potential = p.get();
 			p.release();
 			break;
 
 		} catch( ios::failure &e ) {
-			cerr << " - " << e.what() << endl;
+//			cerr << " - " << e.what() << endl;
 			// If we run out of message from the source, then leave,
 			// hoping for more
 			break;
 
 		} catch( message_parse_error_underflow &e ) {
-			cerr << " - " << e.what() << endl;
+//			cerr << " - " << e.what() << endl;
 			// If we run out of message from the source, then leave,
 			// hoping for more
 			break;
 
 		} catch( message_parse_error_version &e ) {
-			cerr << " - " << e.what() << endl;
+//			cerr << " - " << e.what() << endl;
 			// Try next template with the same data
 			iss.seekg( sp, ios::beg );
 
 		} catch( message_parse_error_type &e ) {
-			cerr << " - " << e.what() << endl;
+//			cerr << " - " << e.what() << endl;
 			// Try next template with the same data
 			iss.seekg( sp, ios::beg );
 
 		} catch( message_parse_error &e ) {
-			cerr << " - " << e.what() << endl;
+//			cerr << " - " << e.what() << endl;
 
 			// Anything else, chuck the packet away
 			sp = iss.tellg();
@@ -214,7 +214,7 @@ void TMessageFactory::receive( const string &s )
 	}
 
 	if( potential != NULL ) {
-		cerr << *potential << endl;
+//		cerr << *potential << endl;
 		// Push it onto the receive queue
 		IncomingQueue.push_back( potential );
 		// Remove the bytes from the RX buffer
