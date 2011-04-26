@@ -84,23 +84,59 @@ TMessage *TMessageFactory::answer( TMessage *Message )
 {
 	if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
+	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
+		// RX< version209
+		// TX> verack
+		return new TMessage_verack();
 	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
+		// No response needed
+	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
+		// RX< inv
+		// TX> getdata
+		// RX< block
+		//  or
+		// RX< inv
+		// TX> getdata
+		// RX< tx
+	} else if( dynamic_cast<TMessage_getdata*>( Message ) != NULL ) {
+		// RX< getdata
+		// TX> block
+		//  or
+		// RX< getdata
+		// TX> tx
+	} else if( dynamic_cast<TMessage_getblocks*>( Message ) != NULL ) {
+		// RX< getblocks
+		// TX> inv
+	} else if( dynamic_cast<TMessage_getheaders*>( Message ) != NULL ) {
+		// RX< getheaders
+		// TX> headers
+	} else if( dynamic_cast<TMessage_getaddr*>( Message ) != NULL ) {
+		// "The getaddr message sends a request to a node asking for
+		// information about known active peers to help with identifying
+		// potential nodes in the network. The response to receiving
+		// this message is to transmit an addr message with one or more
+		// peers from a database of known active peers. The typical
+		// presumption is that a node is likely to be active if it has
+		// been sending a message within the last three hours."
+		return new TMessage_addr();
+	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
+		// RX< submitorder
+		// TX> reply
+	} else if( dynamic_cast<TMessage_checkorder*>( Message ) != NULL ) {
+		// RX< checkorder
+		// TX> reply
+	} else if( dynamic_cast<TMessage_tx*>( Message ) != NULL ) {
+		// No response needed
+	} else if( dynamic_cast<TMessage_block*>( Message ) != NULL ) {
+		// No response needed
+	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
+		// No response needed
 	} else if( dynamic_cast<TMessage_verack*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
 		// No response needed
-	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_getdata*>( Message ) != NULL ) {
-	} else if( dynamic_cast<TMessage_getblocks*>( Message ) != NULL ) {
-	} else if( dynamic_cast<TMessage_getheaders*>( Message ) != NULL ) {
-	} else if( dynamic_cast<TMessage_tx*>( Message ) != NULL ) {
-	} else if( dynamic_cast<TMessage_block*>( Message ) != NULL ) {
-	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
-	} else if( dynamic_cast<TMessage_getaddr*>( Message ) != NULL ) {
-	} else if( dynamic_cast<TMessage_checkorder*>( Message ) != NULL ) {
-	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
 	} else if( dynamic_cast<TMessage_reply*>( Message ) != NULL ) {
+		// No response needed
 	} else if( dynamic_cast<TMessage_ping*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_alert*>( Message ) != NULL ) {
