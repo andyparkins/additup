@@ -134,10 +134,10 @@ class TGenericBigInteger
 	TGenericBigInteger &blockShiftLeft( tIndex );
 	TGenericBigInteger &blockShiftRight( tIndex );
 
-	TGenericBigInteger &operator++();
-	TGenericBigInteger &operator++( int );
-	TGenericBigInteger &operator--();
-	TGenericBigInteger &operator--( int );
+	TGenericBigInteger &operator++() { return (*this += 1);}
+	TGenericBigInteger &operator++( int ) { return (*this += 1);}
+	TGenericBigInteger &operator--() { return (*this -= 1); }
+	TGenericBigInteger &operator--( int ) { return (*this -= 1); }
 
 	// Arithmetic - non compound
 	TGenericBigInteger operator+( const TGenericBigInteger &x ) const { return TGenericBigInteger(*this) += x; }
