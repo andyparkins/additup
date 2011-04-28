@@ -1317,6 +1317,7 @@ ostream &TGenericBigInteger<tLittleInteger>::printOn( ostream &s ) const
 #ifdef UNITTEST
 #include "logstream.h"
 #include "extratime.h"
+#include <sstream>
 
 // -------------- main()
 
@@ -1331,16 +1332,39 @@ int main( int argc, char *argv[] )
 		TBigInteger j("56bC75E2D630ffFFF",16); // 0x56BC75E2D630FFFFF
 		TBigInteger k("56bC75E2D630ffFFF",36);
 		TBigInteger l("56bC75E2D630ffFFF",56);
-		TBigInteger m("56bC75E2D630ffFFF",64);
+		TBigInteger m;
 
-		log() << "i = " << i << endl;
+		log() << "i = " << hex << i << dec << endl;
 		if( i.getBlock(2) != 0x5 || i.getBlock(1) != 0x6bc75e2d || i.getBlock(0) != 0x630fffff )
 			throw logic_error("Assignment from decimal-representing string incorrect");
-		log() << "j = " << j << endl;
+		log() << "j = " << hex << j << dec << endl;
 		if( j != i )
 			throw logic_error("Assignment from hexadecimal-representing string incorrect");
-		log() << "k = " << k << endl;
-		log() << "l = " << l << endl;
+		if( j.toBytes() != string("\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",9) ) {
+			log() << "bytes = ";
+			TLog::hexify(log(), j.toBytes(10) );
+			log() << endl;
+			throw logic_error("Comparison in byte mode failed");
+		}
+		if( j.toBytes(10) != string("\x00\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",10)
+				|| j.toBytes(11) != string("\x00\x00\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",11)
+				|| j.toBytes(12) != string("\x00\x00\x00\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",12)
+				|| j.toBytes(13) != string("\x00\x00\x00\x00\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",13) ) {
+			throw logic_error("Minimum over string size failed in conversion to bytes");
+		}
+		if( j.toBytes(5) != string("\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",9) ) {
+			throw logic_error("Minimum under string size failed in conversion to bytes");
+		}
+
+		log() << "k = " << hex << k << dec << endl;
+		log() << "l = " << hex << l << dec << endl;
+
+		m.fromBytes( string("\x00\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",10) );
+		if( m != j ) {
+			log() << "m = " << hex << m << dec << endl;
+			throw logic_error("Assignment from bytes failed");
+		}
+
 	} catch( exception &e ) {
 		log(TLog::Error) << e.what() << endl;
 		return 255;
@@ -1361,7 +1385,7 @@ int main( int argc, char *argv[] )
 		log(TLog::Status) << "Testing bit operators on large numbers" << endl;
 
 		k = TBigInteger( 0x1, 0xffffffff ) << 1;
-		log() << "k = " << k << endl;
+		log() << "k = " << hex << k << dec << endl;
 		if( k.getBlock(1) != 0x3 || k.getBlock(0) != 0xfffffffe )
 			throw logic_error( "Shift left incorrect (non block multiple, edge)" );
 		log() << "k.highestBit() = " << k.highestBit() << "; k.lowestBit() = " << k.lowestBit() << endl;
@@ -1371,7 +1395,7 @@ int main( int argc, char *argv[] )
 			throw logic_error( "TBigInteger::highestBit() incorrect" );
 
 		k = TBigInteger( 0x80010000 ) << 11;
-		log() << "k = " << k << endl;
+		log() << "k = " << hex << k << dec << endl;
 		if( k.getBlock(1) != 0x400 || k.getBlock(0) != 0x08000000 )
 			throw logic_error( "Shift left incorrect (non block multiple)" );
 		log() << "k.highestBit() = " << k.highestBit() << "; k.lowestBit() = " << k.lowestBit() << endl;
@@ -1396,7 +1420,7 @@ int main( int argc, char *argv[] )
 		// lowestBit = 144
 		// highestBit = 159
 		//
-		log() << "k = " << k << endl;
+		log() << "k = " << hex << k << dec << endl;
 		if( k.getBlock(4) != 0x80010000 || k.getBlock(3) != 0x0
 				|| k.getBlock(3) != 0x0 || k.getBlock(2) != 0x0
 				|| k.getBlock(1) != 0x0 || k.getBlock(0) != 0x0 )
@@ -1408,6 +1432,7 @@ int main( int argc, char *argv[] )
 			throw logic_error( "TBigInteger::highestBit() incorrect" );
 
 		k = sixtyFourB & sixtyFourC;
+		log() << hex;
 		log() << "64bit: " << sixtyFourB << " AND " << sixtyFourC << " = " << k << endl;
 		// 0xffffffffdddddddd AND 0xeeeeeeeecccccccc =
 		k = sixtyFourB | sixtyFourC;
@@ -1419,9 +1444,11 @@ int main( int argc, char *argv[] )
 		k = ~sixtyFourB;
 		log() << "64bit: NOT " << sixtyFourB << " = " << k << endl;
 		// 0xffffffffdddddddd NOT 0xeeeeeeeecccccccc =
+		log() << dec;
 
 
 		log(TLog::Status) << "Testing arithmetic operators on large numbers" << endl;
+		log() << hex;
 
 		k = sixtyFourB + sixtyFourC;
 		log() << "64bit: " << sixtyFourB << " + " << sixtyFourC << " = " << k << endl;
@@ -1463,6 +1490,25 @@ int main( int argc, char *argv[] )
 		if( k != 0x1b4e || j != 0x68ac )
 			throw logic_error( "32bit divide incorrect" );
 
+		// Divide by a little number
+		k = sixtyFourB / 10;
+		j = sixtyFourB % 10;
+		log() << "64bit: " << sixtyFourB << " / 10 = " << k << " r " << j << endl;
+		// 0xffffffffdddddddd / 10 = 0x19999999962fc962 r 9
+		if( j != 9 || k != TBigInteger( 0x19999999, 0x962fc962) )
+			throw logic_error( "64bit divide incorrect" );
+
+		// Divide by a little number
+		TBigInteger biggest( 0x1000000, 0x00000000, 0x00000000, 0x00000000 );
+		k = biggest / 64;
+		j = biggest % 64;
+		log() << "64bit: " << biggest << " / 64 = " << k << " r " << j << endl;
+		// 0xffffffffdddddddd / 10 = 0x19999999962fc962 r 9
+		if( j != 0 || k != TBigInteger(0x40000,0x00000000,0x00000000,0x00000000) )
+			throw logic_error( "64bit divide incorrect" );
+
+		log() << dec;
+
 		log(TLog::Status) << "Testing that (x+1)-x is always 1" << endl;
 		// Test overflow handling
 		j = 1;
@@ -1470,8 +1516,8 @@ int main( int argc, char *argv[] )
 			k = j + 1;
 			if( (k-j) != 1 ) {
 				log(TLog::Error) << "[" << b << "] j = " << j
-					<< "; j+1 = " << k
-					<< "; diff = " << (k-j) << endl;
+					<< "; j+1 = " << hex << k << dec
+					<< "; diff = " << hex << (k-j) << dec << endl;
 				throw logic_error("Adding one didn't make numbers one apart");
 			}
 
@@ -1484,7 +1530,7 @@ int main( int argc, char *argv[] )
 			j += 1;
 		}
 		log() << "Finished overflow test" << endl;
-		log() << "k = " << k << "; k.highestBit() = " << k.highestBit()
+		log() << "k = " << hex << k << dec << "; k.highestBit() = " << k.highestBit()
 			<< "; k.lowestBit() = " << k.lowestBit() << endl;
 		if( k.highestBit() != k.lowestBit() || k.highestBit() != 4*1000 )
 			throw logic_error( "0xff..ff plus 1 should always contain only one bit" );
@@ -1496,6 +1542,50 @@ int main( int argc, char *argv[] )
 		if( j != 1 )
 			throw logic_error( "Right shift didn't undo left shift" );
 
+	} catch( exception &e ) {
+		log(TLog::Error) << e.what() << endl;
+		return 255;
+	}
+
+
+	try {
+		struct {
+			string Sample;
+			unsigned int Base;
+		} TestCases[] = {
+			{ string("56bc75e2d630fffff"), 16 },
+			{ string("99999999999999999999"), 10 },
+			{ string(), 0 }
+		}, *p = TestCases;
+
+		log(TLog::Status) << "Testing display" << endl;
+
+		while( p->Base != 0 ) {
+			TBigInteger test( p->Sample, p->Base );
+			string x;
+
+			if( p->Base == 16 ) {
+				ostringstream oss;
+				oss << hex << test << dec;
+				x = oss.str();
+			} else {
+				x = test.toString(p->Base);
+			}
+			log() << "\"" << p->Sample << "\" in base" << p->Base << " = " << x << endl;
+			if( x != p->Sample )
+				throw logic_error("Displaying as in custom base failed");
+
+			p++;
+		}
+
+		log(TLog::Status) << "Testing successive multiplication (in base 64)" << endl;
+		TBigInteger j = 1;
+		for( unsigned b = 0; b < 20; b++ ) {
+			j *= 64;
+		}
+		log() << "j_64 = " << j.toString(64) << " is 0x" << hex << j << dec << endl;
+		if( j.toString(64) != "BAAAAAAAAAAAAAAAAAAAA===" )
+			throw logic_error( "1*64^x should always begin with B in base64" );
 
 	} catch( exception &e ) {
 		log(TLog::Error) << e.what() << endl;
