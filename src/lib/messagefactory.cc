@@ -53,6 +53,19 @@ TMessageFactory::TMessageFactory() :
 }
 
 //
+// Function:	TMessageFactory :: ~TMessageFactory
+// Description:
+//
+TMessageFactory::~TMessageFactory()
+{
+	// Tidy up the template messages we made
+	while( !Templates.empty() ) {
+		delete Templates.front();
+		Templates.erase( Templates.begin() );
+	}
+}
+
+//
 // Function:	TMessageFactory :: answer
 // Description:
 //

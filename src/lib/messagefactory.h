@@ -72,7 +72,7 @@ class TMessageFactory
 {
   public:
 	TMessageFactory();
-	virtual ~TMessageFactory() {}
+	virtual ~TMessageFactory();
 	virtual const char *className() { return "TMessageFactory"; }
 
 	void receive( const string & );
