@@ -125,6 +125,8 @@ class TMessage
 
 	virtual unsigned int getMessageSize() { return 4 + 12 + 4 + MessageHeader.PayloadLength; }
 
+	void setTemplate( bool b ) const { TemplateMessage = b; }
+
   protected:
 	virtual bool acceptCommandCode( const string & ) const;
 	virtual const char *commandString() const = 0;
@@ -137,6 +139,8 @@ class TMessage
   protected:
 	TMessageHeaderElement MessageHeader;
 	string RawPayload;
+
+	mutable bool TemplateMessage;
 };
 
 //

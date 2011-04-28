@@ -106,6 +106,7 @@ TMessageTemplates::TMessageTemplates()
 	// Insert each template message into the master list
 	while( *p != NULL ) {
 		Templates.push_back( *p );
+		Templates.back()->setTemplate( true );
 		p++;
 	}
 }
@@ -124,7 +125,8 @@ TMessageTemplates::~TMessageTemplates()
 // Function:	TMessage :: TMessage
 // Description:
 //
-TMessage::TMessage()
+TMessage::TMessage() :
+	TemplateMessage( false )
 {
 }
 
