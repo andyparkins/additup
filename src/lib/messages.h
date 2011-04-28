@@ -57,6 +57,7 @@
 
 // -------------- Class pre-declarations
 class TMessageDigest;
+class TVersionedMessageFactory;
 
 
 // -------------- Function pre-class prototypes
@@ -217,6 +218,8 @@ class TMessage_version : public TMessageWithoutChecksum
 
 	istream &read( istream & );
 
+	virtual TVersionedMessageFactory *createMessageFactory() const = 0;
+
   protected:
 	const char *commandString() const { return "version"; }
 
@@ -249,6 +252,8 @@ class TMessage_version_0 : public TMessage_version
 
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
+
+	TVersionedMessageFactory *createMessageFactory() const;
 };
 
 //
@@ -263,6 +268,8 @@ class TMessage_version_10600 : public TMessage_version_0
 
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
+
+	TVersionedMessageFactory *createMessageFactory() const;
 
   protected:
 	uint32_t minimumAcceptedVersion() const { return 10600; }
@@ -280,6 +287,8 @@ class TMessage_version_20900 : public TMessage_version_10600
 
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
+
+	TVersionedMessageFactory *createMessageFactory() const;
 
   protected:
 	uint32_t minimumAcceptedVersion() const { return 20900; }

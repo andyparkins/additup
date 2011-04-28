@@ -25,6 +25,7 @@
 // --- OS
 // --- Project libs
 #include "crypto.h"
+#include "messagefactory.h"
 // --- Project
 
 
@@ -384,6 +385,15 @@ ostream &TMessage_version_0::write( ostream &os ) const
 }
 
 //
+// Function:	TMessage_version_0 :: createMessageFactory
+// Description:
+//
+TVersionedMessageFactory *TMessage_version_0::createMessageFactory() const
+{
+	return new TMessageFactory_0;
+}
+
+//
 // Function:	TMessage_version_10600 :: read
 // Description:
 //
@@ -419,6 +429,15 @@ ostream &TMessage_version_10600::write( ostream &os ) const
 }
 
 //
+// Function:	TMessage_version_10600 :: createMessageFactory
+// Description:
+//
+TVersionedMessageFactory *TMessage_version_10600::createMessageFactory() const
+{
+	return new TMessageFactory_10600;
+}
+
+//
 // Function:	TMessage_version_20900 :: read
 // Description:
 //
@@ -442,6 +461,21 @@ ostream &TMessage_version_20900::write( ostream &os ) const
 	os << StartingHeight;
 
 	return os;
+}
+
+//
+// Function:	TMessage_version_20900 :: createMessageFactory
+// Description:
+//
+TVersionedMessageFactory *TMessage_version_20900::createMessageFactory() const
+{
+	// There is no special TMessage_version_31402, so we'll handle the
+	// creation of 31402's message factory here
+	if( Version < 31402 ) {
+		return new TMessageFactory_20900;
+	} else {
+		return new TMessageFactory_31402;
+	}
 }
 
 // --------
