@@ -204,6 +204,125 @@ unsigned int TGenericBigInteger<tLittleInteger>::fromCharacter( unsigned int ch,
 }
 
 //
+// Function:	TGenericBigInteger :: toString
+// Description:
+//
+template <typename tLittleInteger>
+string TGenericBigInteger<tLittleInteger>::toString( unsigned int Base ) const
+{
+	unsigned int ch;
+	string output;
+
+	TGenericBigInteger quotient, remainder;
+
+	// Start with the whole number
+	quotient = *this;
+
+	// e.g.
+	// 1234567890123 / 10  = 123456789012 r 3
+	//  123456789012 / 10  = 12345678901 r 2
+	//   12345678901 / 10  = 1234567890 r 1
+	//    1234567890 / 10  = 123456789 r 0
+	//     123456789 / 10  = 12345678 r 9
+	//      12345678 / 10  = 1234567 r 8
+	//       1234567 / 10  = 123456 r 7
+	//        123456 / 10  = 12345 r 6
+	//         12345 / 10  = 1234 r 5
+	//          1234 / 10  = 123 r 4
+	//           123 / 10  = 12 r 3
+	//            12 / 10  = 1 r 2
+	//             1 / 10  = 0 r 1
+	// Read the remainder from bottom to top.  Each remainder is the
+	// "nth" symbol in base-N display.  We just look up what character
+	// should be displayed for that number and we have our conversion.
+
+//	cerr << hex << quotient << dec << endl;
+	while( !quotient.isZero() ) {
+		remainder = quotient;
+		remainder.divideWithRemainder( Base, quotient );
+
+//		cerr << hex << quotient << dec << " r " << remainder.getBlock(0) << endl;
+
+		// Remainder is guaranteed to be less than Base, and Base is an
+		// unsigned int, so we're safe using the zero block untouched
+		ch = toCharacter( remainder.getBlock(0), Base );
+
+		// Hitting an invalid conversion is a serious error
+		if( ch > 0xff )
+			logic_error("toCharacter() returned INVALID -- impossible");
+
+		// Prepend character
+		output = string() + static_cast<char>(ch) + output;
+	}
+
+	return stringPad( output, Base );
+//	return output;
+}
+
+//
+// Function:	TGenericBigInteger :: toCharacter
+// Description:
+//
+template <typename tLittleInteger>
+unsigned int TGenericBigInteger<tLittleInteger>::toCharacter( unsigned int ch, unsigned int Base ) const
+{
+	static const char Base64ToASCII[65] =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	static const unsigned int INVALID = static_cast<unsigned int>(-1);
+
+	if( Base <= 10 ) {
+		ch = '0' + ch;
+	} else if( Base <= 10 + 26 ) {
+		if( ch <= 9 ) {
+			ch = ch + '0';
+		} else if( ch <= 9 + ('z'-'a') ) {
+			ch = (ch - 0xa) + 'a';
+		} else {
+			ch = INVALID;
+		}
+	} else if( Base <= 10 + 26*2 ) {
+		if( ch <= 9 ) {
+			ch = ch + '0';
+		} else if( ch <= 9 + ('Z'-'A') ) {
+			ch = (ch - 0xa) + 'A';
+		} else if( ch <= 9 + ('Z'-'A') + ('z'-'a') ) {
+			ch = (ch-('Z'-'A')-0xa) + 'a';
+		} else {
+			ch = INVALID;
+		}
+	} else if( Base <= 64 ) {
+		if( ch <= sizeof(Base64ToASCII) )
+			ch = Base64ToASCII[ch];
+	} else {
+		ch = INVALID;
+	}
+
+	return ch;
+}
+
+//
+// Function:	TGenericBigInteger :: stringPad
+// Description:
+//
+template <typename tLittleInteger>
+string TGenericBigInteger<tLittleInteger>::stringPad( const string &s, unsigned int Base ) const
+{
+	static const char BASE64PAD = '=';
+	string output;
+
+	if( Base == 64 ) {
+		output = s;
+		// Pad to ensure we supply a multiple of four bytes
+		while( (output.length() & 0x03) != 0 )
+			output.append(1, BASE64PAD );
+	} else {
+		output = s;
+	}
+
+	return output;
+}
+
+//
 // Function:	TGenericBigInteger :: operator=
 // Description:
 //

@@ -163,6 +163,7 @@ class TGenericBigInteger
 	bool operator>=( const TGenericBigInteger &O ) const { return isValid() && O.isValid() && !(*this < O); }
 
 	virtual ostream &printOn( ostream & ) const;
+	string toString( unsigned int = 10 ) const;
 
   protected:
 	void normalise();
@@ -170,6 +171,8 @@ class TGenericBigInteger
 	TGenericBigInteger &fromString( const string &, unsigned int = 10 );
 
 	virtual unsigned int fromCharacter( unsigned int, unsigned int ) const;
+	virtual unsigned int toCharacter( unsigned int, unsigned int ) const;
+	virtual string stringPad( const string &, unsigned int ) const;
 
   protected:
 	tLittleDigitsVector LittleDigits;
