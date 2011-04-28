@@ -377,6 +377,52 @@ string TGenericBigInteger<tLittleInteger>::toBytes( unsigned int Minimum ) const
 }
 
 //
+// Function:	TGenericBigInteger :: fromBytes
+// Description:
+//
+template <typename tLittleInteger>
+void TGenericBigInteger<tLittleInteger>::fromBytes( const string &s )
+{
+	tLittleInteger Accumulator;
+	int pos = s.size();
+	LittleDigits.clear();
+
+	// We start at the right hand end of the string, because strings are
+	// stored big endian and our LittleDigits array is little endian
+
+	//           MSB---------------------LSB
+	// string    xx xxxx xxxx xxxx xxxx xxxx
+	// pos    -2    2    6    10   14   18
+	// offset  0123 0123 0123 0123 0123 0123
+	// Digits   [5]  [4]  [3]  [2]  [1]  [0]
+
+	while( pos > 0 ) {
+		Accumulator = 0;
+
+		// Move backwards one accumulator's worth
+		pos -= sizeof( tLittleInteger );
+
+		switch( sizeof( tLittleInteger ) ) {
+			case 4:
+				if( pos + 3 > 0 )
+					Accumulator |= static_cast<unsigned char>(s[pos+3]) << 0;
+				if( pos + 2 > 0 )
+					Accumulator |= static_cast<unsigned char>(s[pos+2]) << 8;
+			case 2:
+				if( pos + 1 > 0 )
+					Accumulator |= static_cast<unsigned char>(s[pos+1]) << 16;
+			case 1:
+				if( pos + 0 > 0 )
+					Accumulator |= static_cast<unsigned char>(s[pos+0]) << 24;
+		}
+
+		LittleDigits.push_back( Accumulator );
+	}
+
+	normalise();
+}
+
+//
 // Function:	TGenericBigInteger :: operator=
 // Description:
 //

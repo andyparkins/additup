@@ -167,6 +167,7 @@ class TGenericBigInteger
 	string toString( unsigned int = 10 ) const;
 
 	string toBytes(unsigned int = 0) const;
+	void fromBytes( const string & );
 
   protected:
 	void normalise();
