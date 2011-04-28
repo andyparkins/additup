@@ -1188,16 +1188,24 @@ ostream &TGenericBigInteger<tLittleInteger>::printOn( ostream &s ) const
 
 	it1 = LittleDigits.rbegin();
 
-	s << hex << "0x";
-	while( it1 != LittleDigits.rend() ) {
-		// There are four bits per hex digit, so ensure that every block
-		// (except the first) shows the appropriate zero padding.
-		if( it1 != LittleDigits.rbegin() )
-			s << setw( bitsPerBlock/4 ) << setfill('0');
-		s << (*it1);
-		it1++;
+	if( s.flags() & ostream::hex ) {
+		// We don't use toString() for hex conversion as we can do it
+		// faster directly, but also: how would we put debug output in
+		// toString() if it used itself to display that output?
+		while( it1 != LittleDigits.rend() ) {
+			// There are four bits per hex digit, so ensure that every block
+			// (except the first) shows the appropriate zero padding.
+			if( it1 != LittleDigits.rbegin() )
+				s << setw( bitsPerBlock/4 ) << setfill('0');
+			s << (*it1);
+			it1++;
+		}
+	} else if( s.flags() & ostream::oct ) {
+		s << toString(8);
+	} else if( s.flags() & ostream::dec ) {
+		s << toString(10);
+	} else {
 	}
-	s << dec;
 
 	return s;
 }
