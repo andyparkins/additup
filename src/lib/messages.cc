@@ -258,7 +258,10 @@ void TMessageWithChecksum::generatePayloadChecksum()
 	MessageHeader.Checksum = TMessageElement::littleEndian32FromString( digest, 0 );
 	MessageHeader.hasChecksum = true;
 
-	// XXX: This won't work
+	// XXX: This won't work, the message header gets written first,
+	// which contains the checksum, but we need the payload to be
+	// written in order that we can calculate the checksum.  Therefore
+	// -- this won't work.
 }
 
 //
