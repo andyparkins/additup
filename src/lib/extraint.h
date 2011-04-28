@@ -133,6 +133,7 @@ class TGenericBigInteger
 	TGenericBigInteger &operator >>=( tIndex );
 	TGenericBigInteger &blockShiftLeft( tIndex );
 	TGenericBigInteger &blockShiftRight( tIndex );
+	TGenericBigInteger &divideWithRemainder(const TGenericBigInteger &b, TGenericBigInteger &q);
 
 	TGenericBigInteger &operator++() { return (*this += 1);}
 	TGenericBigInteger &operator++( int ) { return (*this += 1);}
@@ -167,7 +168,6 @@ class TGenericBigInteger
 	void normalise();
 
 	TGenericBigInteger &fromString( const string &, unsigned int = 10 );
-	void divideWithRemainder(const TGenericBigInteger &b, TGenericBigInteger &q);
 
 	virtual unsigned int fromCharacter( unsigned int, unsigned int ) const;
 

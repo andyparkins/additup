@@ -335,23 +335,6 @@ void TGenericBigInteger<tLittleInteger>::normalise()
 }
 
 //
-// Macro:	TGEN_BIG_INT_SELF_CHECK
-// Description:
-/// Check for "this" as one of arguments
-//
-// The mathematical operators will fail if they operate directly on
-// themselves.  This macro detects a self operation and reruns the
-// operation using a temporary copy.
-//
-#define TGEN_BIG_INT_SELF_CHECK( ArgumentIsSelf, Operation ) \
-	if( ArgumentIsSelf ) { \
-		TGenericBigInteger<tLittleInteger> Temporary; \
-		Temporary.Operation; \
-		*this = Temporary; \
-		return; \
-	}
-
-//
 // Function:	TGenericBigInteger :: operator+=
 // Description:
 /// Implement A = A + B
@@ -683,9 +666,17 @@ void TGenericBigInteger<tLittleInteger>::blockMultiply(tLittleInteger &R1, tLitt
 // Description:
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::divideWithRemainder(const TGenericBigInteger<tLittleInteger> &d, TGenericBigInteger<tLittleInteger> &Q)
+TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::divideWithRemainder(const TGenericBigInteger<tLittleInteger> &d, TGenericBigInteger<tLittleInteger> &Q)
 {
-	TGEN_BIG_INT_SELF_CHECK( this == &d || this == &Q, divideWithRemainder(d,Q) );
+	// The mathematical operators will fail if they operate directly on
+	// themselves.  This macro detects a self operation and reruns the
+	// operation using a temporary copy.
+	if( this == &d || this == &Q ) {
+		TGenericBigInteger<tLittleInteger> Temporary;
+		Temporary.divideWithRemainder(d,Q);
+		*this = Temporary;
+		return *this;
+	}
 
 	// "this" is the numerator; D is the denominator, and we'll be
 	// storing the remainder in this and the quotient in Q.
@@ -731,7 +722,7 @@ void TGenericBigInteger<tLittleInteger>::divideWithRemainder(const TGenericBigIn
 		// The numerator is the remainder and the quotient is zero
 		// because the denominator is larger than the numerator
 		Q = 0;
-		return;
+		return *this;
 	}
 
 //	cerr << "NHB - DHB = " << numeratorHighBit << " - " << denominatorHighBit << endl;
@@ -768,6 +759,8 @@ void TGenericBigInteger<tLittleInteger>::divideWithRemainder(const TGenericBigIn
 		// Next denominator
 		D >>= 1;
 	}
+
+	return *this;
 }
 
 //
