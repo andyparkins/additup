@@ -100,6 +100,47 @@ TGenericBigInteger<tLittleInteger>::TGenericBigInteger( tLittleInteger r3, tLitt
 template <typename tLittleInteger>
 TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::fromString( const string &s, unsigned int Base )
 {
+	string::size_type pos;
+	unsigned int ch;
+
+	// Start at zero
+	(*this) = 0;
+
+	pos = 0;
+	while( pos < s.size() ) {
+		ch = static_cast<unsigned char>( s[pos] );
+
+//		cerr << "'" << (char)(ch) << "' ";
+
+		ch = fromCharacter( ch, Base );
+		if( ch > 0xff )
+			break;
+
+//		cerr << "shl, adding " << ch
+//			<< " to " << hex << *this << dec << "*" << Base;
+
+		// Shift left by base, and add the next digit
+		(*this) *= Base;
+		(*this) += TGenericBigInteger( ch );
+
+//		cerr << " = " << hex << *this << dec << endl;;
+//		cerr << " = " << toString(58) << endl;;
+
+		pos++;
+	}
+
+	normalise();
+
+	return *this;
+}
+
+//
+// Function:	TGenericBigInteger :: fromCharacter
+// Description:
+//
+template <typename tLittleInteger>
+unsigned int TGenericBigInteger<tLittleInteger>::fromCharacter( unsigned int ch, unsigned int Base ) const
+{
 	// 80 byte lookup table for reversing the above map.  It is the
 	// indexed by (ASCII_VALUE - '+') because '+' is the lowest ASCII
 	// value in the above map, and we rely on the user of the table to
@@ -119,57 +160,47 @@ TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::fromStri
 		0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,  // k l m n o p q r
 		0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33   // s t u v w x y z
 	};
+	static const unsigned int INVALID = static_cast<unsigned int>(-1);
 
-	string::size_type pos;
-	tLittleInteger ch;
-
-	// Start at zero
-	(*this) = 0;
-
-	pos = 0;
-	while( pos < s.size() ) {
-		ch = s[pos];
-
-		if( Base <= 10 ) {
-			if( !isdigit(s[pos]) )
-				break;
+	if( Base <= 10 ) {
+		if( isdigit(ch) ) {
 			ch = (ch - '0');
-		} else if( Base <= 10 + 26 ) {
-			if( !isalnum(s[pos]) )
-				break;
-			if( ch <= '9' ) {
-				ch = ch - '0';
-			} else if( ch <= 'Z' ) {
-				ch = ch - 'A' + 0xa;
-			} else if( ch <= 'z' ) {
-				ch = ch - 'a' + 0xa;
-			}
-		} else if( Base <= 10 + 26*2 ) {
-			if( !isalnum(s[pos]) )
-				break;
-			if( ch <= '9' ) {
-				ch = ch - '0';
-			} else if( ch <= 'Z' ) {
-				ch = ch - 'A' + 0xa;
-			} else if( ch <= 'z' ) {
-				ch = ch - 'a' + 10 + 26;
-			}
-		} else if( Base <= 64 ) {
-			if( ch < '+' || ch-'+' > sizeof(ASCIIToBase64) )
-				break;
-			ch = ASCIIToBase64[ch];
+		} else {
+			ch = INVALID;
 		}
-
-		// Shift left by base, and add the next digit
-		(*this) *= Base;
-		(*this) += TGenericBigInteger( ch );
-
-		pos++;
+	} else if( Base <= 10 + 26 ) {
+		if( ch <= '9' ) {
+			ch = ch - '0';
+		} else if( ch <= 'Z' ) {
+			ch = ch - 'A' + 0xa;
+		} else if( ch <= 'z' ) {
+			ch = ch - 'a' + 0xa;
+		} else {
+			ch = INVALID;
+		}
+	} else if( Base <= 10 + 26*2 ) {
+		if( ch <= '9' ) {
+			ch = ch - '0';
+		} else if( ch <= 'Z' ) {
+			ch = ch - 'A' + 0xa;
+		} else if( ch <= 'z' ) {
+			ch = ch - 'a' + 10 + 26;
+		} else {
+			ch = INVALID;
+		}
+	} else if( Base <= 64 ) {
+		if( ch >= '+' && ch-'+' <= sizeof(ASCIIToBase64) ) {
+			ch = ASCIIToBase64[ch-'+'];
+			if( ch == 0xff )
+				ch = INVALID;
+		} else {
+			ch = INVALID;
+		}
+	} else {
+		ch = INVALID;
 	}
 
-	normalise();
-
-	return *this;
+	return ch;
 }
 
 //

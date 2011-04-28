@@ -169,6 +169,8 @@ class TGenericBigInteger
 	TGenericBigInteger &fromString( const string &, unsigned int = 10 );
 	void divideWithRemainder(const TGenericBigInteger &b, TGenericBigInteger &q);
 
+	virtual unsigned int fromCharacter( unsigned int, unsigned int ) const;
+
   protected:
 	tLittleDigitsVector LittleDigits;
 
