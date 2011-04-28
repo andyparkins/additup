@@ -166,6 +166,8 @@ class TGenericBigInteger
 	virtual ostream &printOn( ostream & ) const;
 	string toString( unsigned int = 10 ) const;
 
+	string toBytes(unsigned int = 0) const;
+
   protected:
 	void normalise();
 

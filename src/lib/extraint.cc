@@ -323,6 +323,60 @@ string TGenericBigInteger<tLittleInteger>::stringPad( const string &s, unsigned 
 }
 
 //
+// Function:	TGenericBigInteger :: toBytes
+// Description:
+//
+template <typename tLittleInteger>
+string TGenericBigInteger<tLittleInteger>::toBytes( unsigned int Minimum ) const
+{
+	typename tLittleDigitsVector::const_reverse_iterator it;
+	string output;
+
+	// Byte streams are big-endian, so we traverse backwards
+	it = LittleDigits.rbegin();
+
+	// Warn string how much we're going to put in it
+	output.reserve( sizeof(tLittleInteger) * LittleDigits.size() );
+
+	while( it != LittleDigits.rend() ) {
+		// Getting hard to stay generic here; the compiler should
+		// optimise this as appropriate.
+		switch(sizeof(tLittleInteger)) {
+			// Big endian, so MSBs go first
+			case 4:
+				output += ((*it) & 0xff000000) >> 24;
+				output += ((*it) & 0xff0000) >> 16;
+			case 2:
+				output += ((*it) & 0xff00) >> 8;
+			case 1:
+				output += ((*it) & 0xff) >> 0;
+		}
+
+		it++;
+	}
+
+	string::size_type pos;
+
+	pos = output.find_first_not_of( '\0' );
+
+	if( pos != string::npos && output.size() > Minimum ) {
+		// If we would clip so many zeroes that we would shrink the
+		// string below the minimum size...
+		if( output.size() - pos < Minimum )
+			// ... then only reduce to the minimum size
+			pos = output.size() - Minimum;
+
+		// Strip leading zeroes
+		output.erase( 0, pos );
+	}
+	if( output.size() < Minimum )
+		output = string().assign( Minimum - output.size(), '\0' ) + output;
+
+	// Equal sizes, equal content
+	return output;
+}
+
+//
 // Function:	TGenericBigInteger :: operator=
 // Description:
 //
