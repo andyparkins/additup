@@ -1,0 +1,191 @@
+## Protocol
+
+ - "When a node receives an incoming connection, it will immediately
+   advertise its version.  No futher communication is possible until
+   both peers have exchanged their version."
+
+ - "If the emitter of the packet has version >= 209, a "verack" packet
+   shall be sent if the version packet was accepted."
+
+So, should the initial handshake be this (from the point of view of the
+client):
+
+    RX< version209
+    TX> verack
+    TX> version209
+    RX< verack
+
+Being that it's a peer-to-peer system, it's probable that either side
+can send a message.  There is no client-server relationship, regardless
+of who connected to whom.
+
+### Version handshake
+
+    TX> version
+    RX< verack
+    RX< version
+    TX> verack
+
+As already discussed, both sides must announce their version.
+
+### Bootstrapping the Peer-to-Peer Network
+
+Bitcoin nodes can come and go.  It's important therefore for any given
+node to maintain connections to multiple other nodes.  To facilitate
+this, the `getaddr` message can be used to ask a peer about all the
+other peers it knows.
+
+    TX> getaddr
+    RX< addr
+
+The response is contained in the `addr` message, which can contain
+multiple address records.
+
+Clearly then, all you need is to be able to connect to one live node,
+and you can get enough addresses to connect to others.  For that reason
+a client should maintain a cache of recent node addresses that it can
+use to reconnect to the network later.
+
+There is also the possibility of using IRC to prime the node list.
+Nodes connect to the `#bitcoin` channel on `irc.lfnet.org`.  The
+client's nick is set to an encoded form of their IP address.  By reading
+that list and decoding the nicks, a client can obtain a list of current
+Bitcoin nodes.
+
+
+### Advertise new information
+
+    RX< inv
+    TX> getdata
+    RX< block
+
+    RX< inv
+    TX> getdata
+    RX< tx
+
+`inv` can be received unsolicited.  It is used to announce the
+availability of data.  The "inventory" contains hashes of available
+items, with the items being one of:
+
+  - Blocks
+  - Transactions
+
+If the local node finds that there are items in the peer's inventory
+that it doesn't have then it can request them with `getdata`.
+
+Blocks contain confirmed transactions, but transactions announced with
+`inv` are those that haven't been confirmed and are up for queuing.
+There is no rule that a generator must accept any particular
+transaction, but if the transaction is out of balance (i.e. there are
+more input coins than output) the node that adds that transaction to a
+block is entitled to claim the imbalance (obviously this only applies if
+the inputs are greater than the outputs, the other way around, the
+transaction should just be dropped).
+
+
+### Request Missed Advertisements
+
+When a node connects to the network after a long period there have more
+than likely been `inv` messages that it missed.  It can get a peer to
+send it an updated `inv` with the `getblocks` message.  `getblocks`
+includes in it the hashes of all the blockchain tips that it currently
+has.  (I'm unclear about what the `getblocks` HashStop field would be
+for, and it seems zero is the best value for it).
+
+    TX> getblocks
+    RX< inv
+    TX> getdata
+    RX< block
+    RX< block
+     ...
+    RX< block
+
+The `getdata` message then requests whatever full blocks it might be
+missing; those will be sent back in `block` responses.
+
+It's not mentioned in the protocol spec, but presumably a zero hash in
+the `getblocks` message will be treated as meaning "from the genesis
+block".
+
+That's fine for blocks; but `inv` can also request transactions.
+However, there is no way to query missed transaction advertisements.
+(Although there probably should be to allow new nodes to look at
+transactions that are queued).  Therefore we don't expect `getdata` here
+to be used to request transactions.
+
+
+### Thin Requests
+
+A node doesn't necessarily want the entire block, it can construct a
+working chain with just the block headers.  The `getheaders` message can
+be used in place of `getdata` to request that only the (smaller) header
+be sent.
+
+    RX< inv
+    TX> getheaders
+    RX< headers
+
+That header is returned by the `headers` message.  The `getheaders`
+message is to `getdata` as the `headers` message is to `block`.  The
+main differences being:
+
+ - `getdata` can request blocks or transactions, `getheaders` only
+   requests block headers.
+ - `headers` can return multiple headers, whereas `block` returns a
+   single block.
+
+
+### IP Transactions
+
+    TX> submitorder
+    RX< reply
+
+    TX> checkorder
+    RX< reply
+
+
+### Keep Alive
+
+    TX> ping
+
+The `ping` message is a do-nothing message that is sent to ensure that
+the TCP connection to the peer is still alive if it hasn't communicated
+in a while.  An error received from the operating system when attempting
+to send a ping (or any other message for that matter) should be used to
+delist that node from any `addr` database being maintained.
+
+    RX< ping
+
+Ping receipts should be silently ignored.  The TCP connection will have
+been tested merely by the transmission of the message.
+
+If thirty minutes has passed with no message from a peer, then a `ping`
+should be transmitted.  If after ninety minutes, a peer has not
+communicated then that peer can be removed from the `addr` database
+regardless of any error messages from the operating system.
+
+
+### Trouble
+
+    RX< alert
+
+In the event of serious trouble on the Bitcoin network, an `alert`
+message is sent out.  Upon receipt of this message, the signature should
+be checked; and if valid
+
+The, as yet, only valid public key (ECDSA) is reported as:
+
+    04fc9702 847840aa f195de84 42ebeced
+    f5b095cd bb9bc716 bda91109 71b28a49
+    e0ead856 4ff0db22 209e0374 782c093b
+    b899692d 524e9d6a 6956e7c5 ecbcd682
+    84
+
+(is this correct? 65 bytes seems like a very non-signaturey size)
+
+Whose hash is
+
+    1AGRxqDa5WjUKBwHB9XYEjmkv1ucoUUy1s
+
+
+

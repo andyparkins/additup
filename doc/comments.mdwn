@@ -1,0 +1,181 @@
+## Bullet Points
+
+ - The ``official'' client is a mess.  It's monolithic and obtuse,
+   making very poor use of object orientation.  It's filled with
+   arbitrary, uncommented, literal constants.
+
+ - Why use little endian?  The rest of the world uses network byte order
+   in protocols.  The convenience functions provided in the C library
+   would have sorted all the cross-platform issues out for us (htons(),
+   ntohs(), htonl(), htonl()).  Worse, it's inconsistent as some fields
+   _are_ stored in network byte order (portnumber).
+
+ - Writing our own address and port anywhere in a packet (as in the addr
+   message) is a disaster.  Hosts behind NAT don't know their
+   public-facing address and port.  It's okay to forward other public
+   addresses that we have received, but when we start sending
+   192.168.1.1 as our address things will get nasty.  This lesson has
+   been learned from FTP onwards.  Why do it again?  The problem
+   obviously came to bite the Bitcoin author -- which has a function
+   called `GetMyExternalIP()`, which has hardcoded IP addresses for
+   `checkip.dyndns.org` and `www.showmyip.com` and uses hard coded
+   HTTP requests to get an externally valid IP.  It's all so
+   unnecessary, the peer already knows the IP of connecting hosts --
+   that's how to communicate back.  The peer knows this information and
+   yet a load of unstable, unreliable checking is used to find this out,
+   rather than just drop the field from the version message and have the
+   peer fill it in itself.
+
+ - Crazy variable size integer capable of storing 64-bit lengths in a
+   message that is limited by a 32-bit length field in the header.
+   Further, on what planet are we going to send multi-gigabyte sized
+   fields (32-bit) let alone 64-bit sized fields?  It's also not like
+   the rest of the protocol has tried hard to pack the bits together.
+   Wouldn't it have been easier just to make these variable sized
+   integer fields a single 32 bit number?
+
+ - Multiple hash types.  Was it really necessary to use RIPEMD-160 _and_
+   SHA256, and then to use them multiple times?  Does double hashing do
+   anything?  If the output of the first hash is the same for two
+   different inputs, hashing that hash again isn't going to give
+   anything different.  (I might be wrong about this, there seems to be
+   the suggestion that it multiplies up the work needed to brute force
+   the hash; I can't say that I see it).  Surely if SHA256(SHA256(x)) is
+   better, then it would have been built into SHA256 itself?  Total
+   hash types used: SHA-256, SHA-1; RIPEMD-160.
+
+ - Even if double hashing is important for cryptography; it's not for
+   generating checksums of data that is plaintext and available anyway.
+   The message checksum is the first four bytes of
+   SHA256(SHA256(Payload)).  This is a waste of CPU cycles.  It's
+   probably overkill to use SHA256; but it's certainly not necessary to
+   use it twice just to make a checksum.
+
+ - Similarly, the four byte checksum of a Bitcoin address is the first four
+   bytes of a double SHA256 of an (already double hashed) public key.  SHA256
+   wasn't necessary for this, and certainly double hashing wasn't.
+
+ - The protocol requires that the listening host announces itself to any
+   newly connected client.  This is the opposite of the traditional
+   method: the client sends a message and the server responds.  The
+   announcement also means that a sniffer's job is much easier as it can
+   tell what sort of server is at the other end simply by connecting --
+   it doesn't have to try every protocol in existence to get a response.
+
+ - In the version message, the timestamp is a uint64_t and is the
+   "standard UNIX timestamp in seconds".  64 bits worth of seconds is
+   18446744073709551616 seconds; which is 307445734561825860 minutes;
+   which is 5124095576030431 hours; which is 213503982334601 days; which
+   is 584,542,046,090 years; which is 584 billion years.
+   Inappropriately large?  Why not have declared it to be the UNIX
+   timestamp in microseconds?  That would have allowed more accurate
+   synchronisation of time between nodes (if it were wanted), and would
+   still cover 584,542 years.
+
+ - The version message version field is broken on base 10 boundaries
+   instead of base-2 boundaries.  So, 0x7c9c is 31900 is version 0.3.19.
+   Given four bytes for a version number, it would be far better to
+   store it as, say "a.b.c.d", as no mathematics is needed to operate on
+   it, bit masks and shifts are enough.
+
+ - The services field in the version message is woefully underused.
+   Here's some suggestions: is the node a generator; will the node
+   accept transactions; is the node maintaining a full block chain; is
+   the node maintaining a header-only block chain; is the node a
+   semi-permanent node willing to act as a directory (it seems the
+   concept of a node like this already exists, 'seednodes', but no flag
+   is set in the services field to identify them)?
+
+ - Space has been left for IPv4 to expand to IPv6; but it's still too
+   prescriptive.  Just like the sockaddr_t system on UNIX, no
+   assumptions should have been made about address format or size.
+   Instead the address data should have been a type indicator followed
+   by N bytes, where N was determined by the type.  So if type=0 that
+   could mean IPv4; type=2 would mean IPv6.
+
+ - Why pick units of "tens of nano BTC" for the transactions.  Couldn't
+   we have had a nice SI prefix compatible factor instead?  In fact it's
+   a 64-bit field, why couldn't we pick a power of two split?  This
+   would have been especially sensible given the problems of
+   representing base-10 fractions in base-2, and would have avoided a
+   whole load of rounding problems.  log_2(10^-8) is -26.5; so it
+   wouldn't have been unreasonable to use a fixed point integer with the
+   point at bit 27.
+
+ - The protocol message names are ambiguous.  "inv", "getdata", "reply".
+   What do they do... without looking at the protocol spec.   Better
+   names would have been things like "RequestBlockHeader",
+   "SendBlockHeader", etc.  Even if the short code that goes in the
+   message was some truncated version of these.
+
+ - It's perfectly possible to request only the header of a block; but
+   there is no way to request only the body of a block.  That means if a
+   thin client, which has already has a block header, needs the full
+   block, it has to receive the header again.  It's only a few bytes,
+   but why bother wasting bandwidth?
+
+ - An `alert` message contains a public key signature that is used to
+   confirm authenticity.  However, verifying a digital signature is a
+   non-trivial task, but sending an `alert` message _is_ a trivial task.
+   What stops a malicious node from broadcast `alert` messages as a
+   denial-of-service attack?
+
+ - It should be possible to request blocks backwards.  That is to say,
+   that knowing the hash of any particular block, it should be possible
+   to ask for the last X parents of that block -- this is much easier
+   for the peer because each block includes the hash of its parent.  The
+   current state of the block chain is always represented by the hash of
+   the tip (or tips).  Just like with git: branches are represented by
+   the hash of the last commit on them rather than having to record the
+   entire path from root commit upwards.
+
+ - There is not a fundamental reason why the entire block chain is
+   needed.  Once a block has had all the outputs on it spent, it could
+   be purged (or at least moved out of fast storage).  The above point
+   of asking for the block chain backwards would help with that -- the
+   most interesting blocks would be retrieved first, allowing the node
+   to be up and running quickly.
+
+ - For a reason I do not understand the `getblocks`, and `getheaders`
+   messages include the protocol version.  These aren't the version of
+   the message, they are the version of the protocol in use.  The peer
+   already knows this though because of the `version` messages they
+   exchanged early on.  Whatever the reason though: if they need it why
+   doesn't `getdata`?  `getdata` is analogous to `getheaders`, so they
+   should be similar.
+
+ - An intelligent node will know that a `getblocks` message with a block
+   hash that it doesn't have is as good as an `inv`.
+
+ - The seed nodes are hard coded.  Surely no one thinks that's a good
+   idea?  This would be better in a configuration file distributed with
+   the software.
+
+ - Distinguishing between testnet seed nodes and prodnet seed nodes is
+   presumably done by port number.  This is not reliable.  The default
+   port number is (or should be) a hint rather than a fixed value.  It's
+   perfectly possible to run a web server on a telnet port.  There is
+   even space in the `addr` message for port numbers, so bitcoin peers
+   can tell other peers exactly how to connect.  That means we shouldn't
+   be relying on port number to distinguish testnet and prodnet.
+
+ - Transactions by IP address would have worked, except it should be by
+   verifying a webserver certificate using SSL.
+
+ - Why did the coin generators started at a non-power-of-2 number?  To
+   keep the difficulty constant (or something), bitcoin automatically
+   reduces the reward for block generation by half every N blocks (or
+   something).  The start number was 100.  Why?  That means that it will
+   go: 100, 50, 25, 12.5, 6.25, 3.125, 1.5625.  Wouldn't it have been
+   better to start at 128 -- which is divisible by two all the way down to
+   1?  128, 64, 32, 16, 8, 4, 2, 1?
+
+ - If the version byte for addresses on the production network were anything
+   but zero, then addresses wouldn't be variable length.
+
+ - Why is the `sequence` field in the TxIn structure rather than the
+   transaction structure?  If we make a change to the inputs, surely we
+   will alter the outputs too?  The sequence number should be a
+   transaction field.
+
+

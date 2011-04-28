@@ -1,0 +1,20 @@
+## Modular Design
+
+The current system is far too tied together and monolithic.  Here's a
+key question: how would multiple users of a single system each operate
+their own Bitcoin wallet without sharing a wallet?  I don't see how at
+present.  However, I don't think it's a fundamental limitation; the
+problem is simply that the programs aren't split in the right places.
+To be a Bitcoin node means that you are willing to track the public
+block chain, and possible to generate your own blocks.  There is
+absolutely no requirement to keep a local wallet, or have and knowledge
+of private keys.  The more nodes in the Bitcoin network, the better.
+
+If I want to create a transaction, I don't need any knowledge of the
+live block chain, since I will not be deciding which block the
+transaction goes in.  Only the generating nodes can do that.
+
+If I am correct, a wallet-only node needs only support the
+`inv`-`getdata`-`tx` sequence to enable spending, and
+`inv`-`getdata`-`block` for confirming receipt.
+

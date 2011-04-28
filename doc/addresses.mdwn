@@ -1,0 +1,63 @@
+## Addresses
+
+A Bitcoin address, truely, is an ECDSA public key.  However, it's usually
+presented as a hash calculated as follows:
+
+    AddressVersionByte = 0 on prodnet; 111 on testnet
+    Keyhash = ripemd( sha256( ECDSA_Public_Key )
+    Checksum = left( sha256( sha256( AddressVersionByte CONCAT Keyhash ) ), 4 )
+    Bitcoin_Address = Base58Encode( AddressVersionByte CONCAT KeyHash CONCAT Checksum );
+
+The checksum ensures that the address is self consistent.  It was overkill to
+use a double SHA256.
+
+A Bitcoin-specific Base 58 encoding was chosen to shrink the 50 digit
+hash down to make it more human friendly.  The "58" is because certain
+easily confused characters have been removed.  It's not particularly
+pretty, and can vary from 27 to 34 characters.
+
+The base58 digits are (note that the number 0 is represented by the symbol
+"1"):
+
+    0-------------------------------------------------------57
+    123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz
+
+Note the absence of "0", "O", "l", "I".  Nine digits, 24 upper case
+letters and 25 lower case letters gives us 58 symbols.  Treating these
+symbols as representing the numbers 0 to 57, the method for converting
+base 16 to base 58 is fairly trivial (but needs a big integer type).
+
+The ECDSA encryption uses the "secp256k1" curve, which translates as:
+
+ - "sec" = the standard code; "sec" meaning the SEC2 standard.
+ - "p" = the curve coordinates are a "prime field"
+ - "256" = 256 bits in the prime
+ - "k" = it is a "Koblitz" curve
+ - "1" = it is the first (and only as it happens) curve of this type in
+   the standard.
+
+The hashed ECDSA_Public_Key is 160 bits which is 20 bytes:
+
+    bytes: "012345678901234567890"
+    hex:    0x00112233445566778899aabbccddeeff00112233
+
+You can see why representing it purely as a hex number is unwieldy for users.
+
+The version byte adds one byte at the front, the built in checksum adds another
+four bytes.  Bringing the grand total to 25 bytes.  If these 25 bytes were all
+0xff, then we get the longest base58 address possible.
+
+    hex:    ffffffffffffffffffffffffffffffffffffffffffffffffff
+    base58: 2mXR4oJkmBdJMxhBGQGb96gQ88xUzxLFyG
+
+This is 34 characters.  Just as a point of interest, we should note that this
+_isn't_ the largest base58 number that will fit in 34 characters.  Converting
+the other way:
+
+    base58: zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz
+    hex:    20a8469deca6b5a6d367cbc0907d07e6a5584778de27ffffffff
+    vs hex:   ffffffffffffffffffffffffffffffffffffffffffffffffff
+
+That's an extra few bits (5) of information if we really wanted it, in the same
+number of base58 characters.
+
