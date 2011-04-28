@@ -72,6 +72,7 @@ class TMessageFactory
   public:
 	TMessageFactory();
 	virtual ~TMessageFactory() {}
+	virtual const char *className() { return "TMessageFactory"; }
 
 	void receive( const string & );
 	void transmit( TMessage * );
@@ -109,6 +110,7 @@ class TMessageFactory
 class TVersioningMessageFactory : public TMessageFactory
 {
   public:
+	const char *className() { return "TVersioningMessageFactory"; }
 
   protected:
 	void init();
@@ -122,6 +124,7 @@ class TVersioningMessageFactory : public TMessageFactory
 class TVersionedMessageFactory : public TMessageFactory
 {
   public:
+	const char *className() { return "TVersionedMessageFactory"; }
 
   protected:
 //	void init();
@@ -137,6 +140,7 @@ class TVersionedMessageFactory : public TMessageFactory
 class TMessageFactory_0 : public TVersionedMessageFactory
 {
   public:
+	const char *className() { return "TMessageFactory_0"; }
 
   protected:
 	void init();
@@ -151,6 +155,7 @@ class TMessageFactory_0 : public TVersionedMessageFactory
 class TMessageFactory_10600 : public TVersionedMessageFactory
 {
   public:
+	const char *className() { return "TMessageFactory_10600"; }
 
   protected:
 	void init();
@@ -165,6 +170,7 @@ class TMessageFactory_10600 : public TVersionedMessageFactory
 class TMessageFactory_20900 : public TVersionedMessageFactory
 {
   public:
+	const char *className() { return "TMessageFactory_20900"; }
 
   protected:
 	void init();
@@ -179,6 +185,7 @@ class TMessageFactory_20900 : public TVersionedMessageFactory
 class TMessageFactory_31402 : public TVersionedMessageFactory
 {
   public:
+	const char *className() { return "TMessageFactory_31402"; }
 
   protected:
 	void init();
