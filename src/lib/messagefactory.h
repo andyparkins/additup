@@ -56,6 +56,7 @@
 
 // -------------- Class pre-declarations
 class TMessage;
+class TBitcoinPeer;
 
 
 // -------------- Function pre-class prototypes
@@ -90,6 +91,8 @@ class TMessageFactory
 		return IncomingQueue.back();
 	}
 
+	void setPeer( TBitcoinPeer *p ) { Peer = p; }
+
   protected:
 	virtual void init() { Initialised = true; }
 
@@ -101,6 +104,8 @@ class TMessageFactory
 	bool Initialised;
 
 	list<const TMessage *> Templates;
+
+	TBitcoinPeer *Peer;
 };
 
 //

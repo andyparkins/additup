@@ -47,7 +47,8 @@
 // Description:
 //
 TMessageFactory::TMessageFactory() :
-	Initialised( false )
+	Initialised( false ),
+	Peer( NULL )
 {
 }
 
