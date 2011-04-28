@@ -837,10 +837,11 @@ TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::divideWi
 	tIndex denominatorHighBit = D.highestBit();
 	tIndex numeratorHighBit = highestBit();
 
+	Q = 0;
+
 	if( denominatorHighBit > numeratorHighBit ) {
 		// The numerator is the remainder and the quotient is zero
 		// because the denominator is larger than the numerator
-		Q = 0;
 		return *this;
 	}
 
@@ -861,9 +862,9 @@ TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::divideWi
 		count--;
 		Q <<= 1;
 
-		// If the current denominator is less than the numerator, then
-		// it will divide...
-		if( D < *this ) {
+		// If the current denominator is less than or equal to the
+		// numerator, then it will divide...
+		if( D <= *this ) {
 			// ... so we push a one
 			Q |= 1;
 			// and subtract this denominator to leave a remainder for
