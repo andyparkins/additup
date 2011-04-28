@@ -202,6 +202,22 @@ void TMessageFactory::receive( const string &s )
 	}
 }
 
+//
+// Function:	TMessageFactory :: init
+// Description:
+//
+void TMessageFactory::init()
+{
+	list<const TMessage*>::const_iterator it;
+
+	// Set the template flag on any messages the child class created
+	for( it = Templates.begin(); it != Templates.end(); it++ ) {
+		(*it)->setTemplate( true );
+	}
+
+	Initialised = true;
+}
+
 // ---------
 
 //

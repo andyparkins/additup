@@ -94,7 +94,7 @@ class TMessageFactory
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
   protected:
-	virtual void init() { Initialised = true; }
+	virtual void init();
 
   protected:
 	string RXBuffer;
