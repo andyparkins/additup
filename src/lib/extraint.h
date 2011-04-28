@@ -82,6 +82,7 @@ class TGenericBigInteger
 		EqualTo = 0,
 		GreaterThan = 1
 	};
+	typedef tLittleInteger tStorageType;
 	typedef vector<tLittleInteger> tLittleDigitsVector;
 	typedef typename tLittleDigitsVector::size_type tIndex;
 	static const size_t bitsPerBlock;
