@@ -89,6 +89,7 @@ class TMessageFactory
 		return IncomingQueue.back();
 	}
 
+  protected:
 	virtual void init() { Initialised = true; }
 
   protected:
@@ -108,6 +109,8 @@ class TMessageFactory
 class TVersioningMessageFactory : public TMessageFactory
 {
   public:
+
+  protected:
 	void init();
 
 };
@@ -119,6 +122,8 @@ class TVersioningMessageFactory : public TMessageFactory
 class TVersionedMessageFactory : public TMessageFactory
 {
   public:
+
+  protected:
 //	void init();
 
   protected:
@@ -132,9 +137,10 @@ class TVersionedMessageFactory : public TMessageFactory
 class TMessageFactory_0 : public TVersionedMessageFactory
 {
   public:
-	void init();
 
   protected:
+	void init();
+
 	uint32_t minimumAcceptedVersion() const { return 0; }
 };
 
@@ -145,9 +151,10 @@ class TMessageFactory_0 : public TVersionedMessageFactory
 class TMessageFactory_10600 : public TVersionedMessageFactory
 {
   public:
-	void init();
 
   protected:
+	void init();
+
 	uint32_t minimumAcceptedVersion() const { return 10600; }
 };
 
@@ -158,9 +165,10 @@ class TMessageFactory_10600 : public TVersionedMessageFactory
 class TMessageFactory_20900 : public TVersionedMessageFactory
 {
   public:
-	void init();
 
   protected:
+	void init();
+
 	uint32_t minimumAcceptedVersion() const { return 20900; }
 };
 
@@ -171,9 +179,10 @@ class TMessageFactory_20900 : public TVersionedMessageFactory
 class TMessageFactory_31402 : public TVersionedMessageFactory
 {
   public:
-	void init();
 
   protected:
+	void init();
+
 	uint32_t minimumAcceptedVersion() const { return 31402; }
 };
 

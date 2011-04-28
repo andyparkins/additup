@@ -134,6 +134,10 @@ void TMessageFactory::receive( const string &s )
 
 	TMessage *potential = NULL;
 
+	// We should be initialised if we want the templates to be available
+	if( !Initialised )
+		init();
+
 	ios::streampos sp;
 
 	// Test against each template message
@@ -425,9 +429,7 @@ int main( int argc, char *argv[] )
 				, 282 ),
 			string()
 		};
-		TMessageFactory PF;
-		PF.init();
-
+		TVersioningMessageFactory PF;
 
 		const string *p = SampleMessages;
 		while( !p->empty() ) {
