@@ -845,21 +845,21 @@ TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::divideWi
 		return *this;
 	}
 
-//	cerr << "NHB - DHB = " << numeratorHighBit << " - " << denominatorHighBit << endl;
-//	cerr << "Numerator = " << *this << endl;
-//	cerr << "Denominator    = " << D << endl;
+//	cerr << "NHB - DHB      = " << numeratorHighBit << " - " << denominatorHighBit << endl;
+//	cerr << "Numerator      = " << hex << *this << endl;
+//	cerr << "Denominator    = " << D << dec << endl;
 
 	// First we shift the denominator up to have its high bit in the
 	// same place as the numerator high bit
 	D <<= numeratorHighBit - denominatorHighBit;
 
-	tIndex count = numeratorHighBit - denominatorHighBit + 1;
+	tIndex shifts = numeratorHighBit - denominatorHighBit + 1;
 
-//	cerr << "Denominator[0] = " << D << endl;
-//	cerr << "count = " << count << endl;
+//	cerr << "Denominator[0] = " << hex << D << dec << endl;
+//	cerr << "shifts         = " << shifts << endl;
 
-	while( count > 0 ) {
-		count--;
+	while( shifts > 0 ) {
+		shifts--;
 		Q <<= 1;
 
 		// If the current denominator is less than or equal to the
@@ -879,6 +879,12 @@ TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::divideWi
 		// Next denominator
 		D >>= 1;
 	}
+
+//	cerr << hex;
+//	cerr << "Remainder      = " << *this << endl;
+//	cerr << "Denominator    = " << D << endl;
+//	cerr << "Quotient       = " << Q << endl;
+//	cerr << dec;
 
 	return *this;
 }
