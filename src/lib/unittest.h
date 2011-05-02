@@ -21,6 +21,7 @@
 // -------------- Includes
 // --- C
 // --- C++
+#include <string>
 // --- Qt
 // --- OS
 // --- Project
@@ -167,6 +168,25 @@ static const string UNITTESTSampleMessages[] = {
 		"\x0E\xAB\x5B\xEA\x43\x6A\x04\x84\xCF\xAB\x12\x48\x5E\xFD\xA0\xB7"
 		"\x8B\x4E\xCC\x52\x88\xAC\x00\x00\x00\x00"
 		, 282 ),
+
+	string()
+};
+
+//
+// Global:	UNITTESTSampleScripts[]
+// Description:
+//
+static const string UNITTESTSampleScripts[] = {
+	//   76       A9             14
+	// OP_DUP OP_HASH160    Bytes to push
+	//
+	// 89 AB CD EF AB BA AB BA AB BA AB BA AB BA AB BA AB BA AB BA   88         AC
+	//                       Data to push                     OP_EQUALVERIFY OP_CHECKSIG
+	string("\x76\xa9"
+			"\x14"
+			"\x89\xAB\xCD\xEF\xAB\xBA\xAB\xBA\xAB\xBA\xAB\xBA\xAB\xBA\xAB\xBA\xAB\xBA\xAB\xBA"
+			"\x88\xAC"
+			, 25 ),
 
 	string()
 };
