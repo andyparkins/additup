@@ -57,6 +57,7 @@
 // -------------- Class pre-declarations
 class TMessage;
 class TBitcoinPeer;
+class TBitcoinScript;
 
 
 // -------------- Function pre-class prototypes
@@ -93,6 +94,8 @@ class TMessageFactory
 
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
+	virtual TBitcoinScript *createVersionedBitcoinScript() const = 0;
+
   protected:
 	virtual void init();
 
@@ -116,6 +119,8 @@ class TVersioningMessageFactory : public TMessageFactory
 {
   public:
 	const char *className() { return "TVersioningMessageFactory"; }
+
+	TBitcoinScript *createVersionedBitcoinScript() const { return NULL; }
 
   protected:
 	void init();
@@ -147,6 +152,8 @@ class TMessageFactory_0 : public TVersionedMessageFactory
   public:
 	const char *className() { return "TMessageFactory_0"; }
 
+	TBitcoinScript *createVersionedBitcoinScript() const;
+
   protected:
 	void init();
 
@@ -161,6 +168,8 @@ class TMessageFactory_10600 : public TVersionedMessageFactory
 {
   public:
 	const char *className() { return "TMessageFactory_10600"; }
+
+	TBitcoinScript *createVersionedBitcoinScript() const;
 
   protected:
 	void init();
@@ -177,6 +186,8 @@ class TMessageFactory_20900 : public TVersionedMessageFactory
   public:
 	const char *className() { return "TMessageFactory_20900"; }
 
+	TBitcoinScript *createVersionedBitcoinScript() const;
+
   protected:
 	void init();
 
@@ -191,6 +202,8 @@ class TMessageFactory_31402 : public TVersionedMessageFactory
 {
   public:
 	const char *className() { return "TMessageFactory_31402"; }
+
+	TBitcoinScript *createVersionedBitcoinScript() const;
 
   protected:
 	void init();

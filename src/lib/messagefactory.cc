@@ -26,6 +26,7 @@
 // --- Project libs
 // --- Project
 #include "messages.h"
+#include "script.h"
 
 
 // -------------- Namespace
@@ -274,6 +275,15 @@ void TMessageFactory_0::init()
 	TVersionedMessageFactory::init();
 }
 
+//
+// Function:	TMessageFactory_0 :: createVersionedBitcoinScript
+// Description:
+//
+TBitcoinScript *TMessageFactory_0::createVersionedBitcoinScript() const
+{
+	return new TBitcoinScript_0;
+}
+
 // ---------
 
 //
@@ -298,6 +308,15 @@ void TMessageFactory_10600::init()
 	Templates.push_back( new TMessage_alert() );
 
 	TVersionedMessageFactory::init();
+}
+
+//
+// Function:	TMessageFactory_10600 :: createVersionedBitcoinScript
+// Description:
+//
+TBitcoinScript *TMessageFactory_10600::createVersionedBitcoinScript() const
+{
+	return new TBitcoinScript_0;
 }
 
 // ---------
@@ -326,6 +345,15 @@ void TMessageFactory_20900::init()
 	TVersionedMessageFactory::init();
 }
 
+//
+// Function:	TMessageFactory_20900 :: createVersionedBitcoinScript
+// Description:
+//
+TBitcoinScript *TMessageFactory_20900::createVersionedBitcoinScript() const
+{
+	return new TBitcoinScript_0;
+}
+
 // ---------
 
 //
@@ -352,6 +380,15 @@ void TMessageFactory_31402::init()
 	Templates.push_back( new TMessage_alert() );
 
 	TVersionedMessageFactory::init();
+}
+
+//
+// Function:	TMessageFactory_31402 :: createVersionedBitcoinScript
+// Description:
+//
+TBitcoinScript *TMessageFactory_31402::createVersionedBitcoinScript() const
+{
+	return new TBitcoinScript_0;
 }
 
 
