@@ -252,14 +252,14 @@ class TExecutionStack
 };
 
 //
-// Class: TBitcoinProgram
+// Class: TBitcoinScript
 // Description:
 //
-class TBitcoinProgram
+class TBitcoinScript
 {
   public:
-	TBitcoinProgram();
-	virtual ~TBitcoinProgram();
+	TBitcoinScript();
+	virtual ~TBitcoinScript();
 
 	istream &read( istream & );
 
@@ -277,13 +277,13 @@ class TBitcoinProgram
 };
 
 //
-// Class: TBitcoinProgram_0
+// Class: TBitcoinScript_0
 // Description:
 //
-class TBitcoinProgram_0 : public TBitcoinProgram
+class TBitcoinScript_0 : public TBitcoinScript
 {
   public:
-	TBitcoinProgram_0();
+	TBitcoinScript_0();
 
 	uint32_t getMinimumAcceptedVersion() const;
 

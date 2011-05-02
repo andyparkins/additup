@@ -1151,19 +1151,19 @@ void TExecutionStack::push( const string & )
 // -----------
 
 //
-// Function:	TBitcoinProgram :: TBitcoinProgram
+// Function:	TBitcoinScript :: TBitcoinScript
 // Description:
 //
-TBitcoinProgram::TBitcoinProgram() :
+TBitcoinScript::TBitcoinScript() :
 	Initialised( false )
 {
 }
 
 //
-// Function:	TBitcoinProgram :: ~TBitcoinProgram
+// Function:	TBitcoinScript :: ~TBitcoinScript
 // Description:
 //
-TBitcoinProgram::~TBitcoinProgram()
+TBitcoinScript::~TBitcoinScript()
 {
 	while( !Program.empty() ) {
 		delete Program.front();
@@ -1176,19 +1176,19 @@ TBitcoinProgram::~TBitcoinProgram()
 }
 
 //
-// Function:	TBitcoinProgram :: init
+// Function:	TBitcoinScript :: init
 // Description:
 //
-void TBitcoinProgram::init()
+void TBitcoinScript::init()
 {
 	Initialised = true;
 }
 
 //
-// Function:	TBitcoinProgram :: read
+// Function:	TBitcoinScript :: read
 // Description:
 //
-istream &TBitcoinProgram::read( istream &is )
+istream &TBitcoinScript::read( istream &is )
 {
 	eScriptOp Opcode;
 	list<const TStackOperatorFromStream *>::const_iterator it;
@@ -1224,27 +1224,27 @@ istream &TBitcoinProgram::read( istream &is )
 // -----------
 
 //
-// Function:	TBitcoinProgram_0 :: TBitcoinProgram_0
+// Function:	TBitcoinScript_0 :: TBitcoinScript_0
 // Description:
 //
-TBitcoinProgram_0::TBitcoinProgram_0()
+TBitcoinScript_0::TBitcoinScript_0()
 {
 }
 
 //
-// Function:	TBitcoinProgram_0 :: getMinimumAcceptedVersion
+// Function:	TBitcoinScript_0 :: getMinimumAcceptedVersion
 // Description:
 //
-uint32_t TBitcoinProgram_0::getMinimumAcceptedVersion() const
+uint32_t TBitcoinScript_0::getMinimumAcceptedVersion() const
 {
 	return 0;
 }
 
 //
-// Function:	TBitcoinProgram_0 :: init
+// Function:	TBitcoinScript_0 :: init
 // Description:
 //
-void TBitcoinProgram_0::init()
+void TBitcoinScript_0::init()
 {
 	Templates.push_back( new TStackOperator_OP_FALSE );
 	Templates.push_back( new TStackOperator_OP_PUSHDATA1 );
@@ -1343,7 +1343,7 @@ void TBitcoinProgram_0::init()
 	// previously accepted by one of the above.
 	Templates.push_back( new TStackOperator_OP_INVALIDOPCODE );
 
-	TBitcoinProgram::init();
+	TBitcoinScript::init();
 }
 
 // -----------
@@ -2122,7 +2122,7 @@ int main( int argc, char *argv[] )
 		const string *p = UNITTESTSampleScripts;
 		while( !p->empty() ) {
 			istringstream iss(*p);
-			TBitcoinProgram_0 BCP;
+			TBitcoinScript_0 BCP;
 
 			BCP.read(iss);
 
