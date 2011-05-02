@@ -107,7 +107,7 @@ ostream &TLog::hexify(ostream &s, const string &Source)
 // Function:	log
 // Description:
 //
-ostream &log()
+ostream &log( TLog::eLogLevel )
 {
 	return TLog::instance().getStream();
 }

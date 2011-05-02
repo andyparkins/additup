@@ -61,6 +61,19 @@
 class TLog
 {
   public:
+	/// The log level enumeration is an ordered list, running from least
+	/// noisy to most noisy.
+	enum eLogLevel {
+		Noisy,     ///< Always emit this message (i.e. louder than silent)
+		Silent,    ///< Never emit any message
+		Error,     ///< Only fatal errors
+		Warning,   ///< Warnings - i.e. non fatal errors
+		Status,    ///< What the system is doing
+		Info,      ///< Informational messages
+		Verbose,   ///< Highly descriptive
+		Debug,     ///< Every possible message
+	};
+  public:
 	static TLog &instance();
 	static ostream &hexify( ostream &, const string & );
 	virtual ~TLog();
@@ -91,7 +104,7 @@ class TLog
 
 // -------------- Function prototypes
 
-ostream &log();
+ostream &log( TLog::eLogLevel = TLog::Info );
 
 
 // -------------- Template instantiations
