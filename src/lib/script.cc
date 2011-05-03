@@ -1837,7 +1837,7 @@ void TStackOperator_OP_PUSHDATAN::execute( TExecutionStack &Stack ) const
 //
 void TStackOperator_OP_1NEGATE::execute( TExecutionStack &Stack ) const
 {
-	Stack.give( new TStackElementInteger(-1) );
+	Stack.give( new TStackElementBigInteger(-1) );
 }
 
 //
@@ -1908,6 +1908,11 @@ void TStackOperator_OP_VERIFY::execute( TExecutionStack &Stack ) const
 	TStackElementInteger *I = dynamic_cast<TStackElementInteger*>(Back);
 	if( I != NULL ) {
 		Stack.Invalid = (I->Data == 0);
+	}
+
+	TStackElementBigInteger *BI = dynamic_cast<TStackElementBigInteger*>(Back);
+	if( BI != NULL ) {
+		Stack.Invalid = BI->Data.isZero();
 	}
 
 	TStackElementBoolean *B = dynamic_cast<TStackElementBoolean*>(Back);
@@ -1987,7 +1992,7 @@ void TStackOperator_OP_IFDUP::execute( TExecutionStack &Stack ) const
 // Operation: Puts the number of stack items onto the stack.
 void TStackOperator_OP_DEPTH::execute( TExecutionStack &Stack ) const
 {
-	Stack.give( new TStackElementInteger( Stack.Stack.size() ) );
+	Stack.give( new TStackElementBigInteger( Stack.Stack.size() ) );
 }
 
 //
@@ -2349,7 +2354,7 @@ void TStackOperator_OP_SIZE::execute( TExecutionStack &Stack ) const
 	if( IN == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( IN->Data.size() ) );
+	Stack.give( new TStackElementBigInteger( IN->Data.size() ) );
 }
 
 //
@@ -2360,12 +2365,12 @@ void TStackOperator_OP_SIZE::execute( TExecutionStack &Stack ) const
 void TStackOperator_OP_INVERT::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( ~A->Data ) );
+	Stack.give( new TStackElementBigInteger( ~A->Data ) );
 }
 
 //
@@ -2378,13 +2383,13 @@ void TStackOperator_OP_AND::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data & B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data & B->Data ) );
 }
 
 //
@@ -2397,13 +2402,13 @@ void TStackOperator_OP_OR::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data | B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data | B->Data ) );
 }
 
 //
@@ -2416,13 +2421,13 @@ void TStackOperator_OP_XOR::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data ^ B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data ^ B->Data ) );
 }
 
 //
@@ -2444,6 +2449,11 @@ void TStackOperator_OP_EQUAL::execute( TExecutionStack &Stack ) const
 			&& dynamic_cast<TStackElementInteger*>(x2.get()) != NULL ) {
 		TStackElementInteger *S1 = dynamic_cast<TStackElementInteger*>(x1.get());
 		TStackElementInteger *S2 = dynamic_cast<TStackElementInteger*>(x2.get());
+		Stack.give( new TStackElementBoolean(S1->Data == S2->Data) );
+	} else if( dynamic_cast<TStackElementBigInteger*>(x1.get()) != NULL
+			&& dynamic_cast<TStackElementBigInteger*>(x2.get()) != NULL ) {
+		TStackElementBigInteger *S1 = dynamic_cast<TStackElementBigInteger*>(x1.get());
+		TStackElementBigInteger *S2 = dynamic_cast<TStackElementBigInteger*>(x2.get());
 		Stack.give( new TStackElementBoolean(S1->Data == S2->Data) );
 	} else if( dynamic_cast<TStackElementBoolean*>(x1.get()) != NULL
 			&& dynamic_cast<TStackElementBoolean*>(x2.get()) != NULL ) {
@@ -2478,12 +2488,12 @@ istream &TStackOperator_OP_EQUALVERIFY::readAndAppend( TBitcoinScript *Script, i
 void TStackOperator_OP_1ADD::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
-	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
 
 	if( IN == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( IN->Data + 1 ) );
+	Stack.give( new TStackElementBigInteger( IN->Data + 1 ) );
 }
 
 //
@@ -2494,12 +2504,12 @@ void TStackOperator_OP_1ADD::execute( TExecutionStack &Stack ) const
 void TStackOperator_OP_1SUB::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
-	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
 
 	if( IN == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( IN->Data - 1 ) );
+	Stack.give( new TStackElementBigInteger( IN->Data - 1 ) );
 }
 
 //
@@ -2510,12 +2520,12 @@ void TStackOperator_OP_1SUB::execute( TExecutionStack &Stack ) const
 void TStackOperator_OP_2MUL::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
-	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
 
 	if( IN == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( IN->Data * 2 ) );
+	Stack.give( new TStackElementBigInteger( IN->Data * 2 ) );
 }
 
 //
@@ -2526,12 +2536,12 @@ void TStackOperator_OP_2MUL::execute( TExecutionStack &Stack ) const
 void TStackOperator_OP_2DIV::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
-	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
 
 	if( IN == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( IN->Data / 2 ) );
+	Stack.give( new TStackElementBigInteger( IN->Data / 2 ) );
 }
 
 //
@@ -2542,12 +2552,12 @@ void TStackOperator_OP_2DIV::execute( TExecutionStack &Stack ) const
 void TStackOperator_OP_NEGATE::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
-	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
 
 	if( IN == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( -IN->Data ) );
+	Stack.give( new TStackElementBigInteger( -IN->Data ) );
 }
 
 //
@@ -2558,17 +2568,17 @@ void TStackOperator_OP_NEGATE::execute( TExecutionStack &Stack ) const
 void TStackOperator_OP_ABS::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
-	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
 
 	if( IN == NULL )
 		throw script_run_parameter_type_error();
 
 	if( IN->Data < 0 ) {
-		Stack.give( new TStackElementInteger( -IN->Data ) );
+		Stack.give( new TStackElementBigInteger( -IN->Data ) );
 	} else {
 		// XXX: We could have saved ourselves the trouble by checking
 		// for this condition earlier
-		Stack.give( new TStackElementInteger( IN->Data ) );
+		Stack.give( new TStackElementBigInteger( IN->Data ) );
 	}
 }
 
@@ -2618,13 +2628,13 @@ void TStackOperator_OP_ADD::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data + B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data + B->Data ) );
 }
 
 //
@@ -2636,13 +2646,13 @@ void TStackOperator_OP_SUB::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data - B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data - B->Data ) );
 }
 
 //
@@ -2654,13 +2664,13 @@ void TStackOperator_OP_MUL::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data * B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data * B->Data ) );
 }
 
 //
@@ -2672,13 +2682,13 @@ void TStackOperator_OP_DIV::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL || B->Data == 0 )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data / B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data / B->Data ) );
 }
 
 //
@@ -2691,13 +2701,13 @@ void TStackOperator_OP_MOD::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL || B->Data == 0 )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data % B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data % B->Data ) );
 }
 
 //
@@ -2709,13 +2719,13 @@ void TStackOperator_OP_LSHIFT::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data << B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data << B->Data.getBlock(0) ) );
 }
 
 //
@@ -2727,13 +2737,13 @@ void TStackOperator_OP_RSHIFT::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
 
-	Stack.give( new TStackElementInteger( A->Data >> B->Data ) );
+	Stack.give( new TStackElementBigInteger( A->Data >> B->Data.getBlock(0) ) );
 }
 
 //
@@ -2813,8 +2823,8 @@ void TStackOperator_OP_NUMNOTEQUAL::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
@@ -2831,8 +2841,8 @@ void TStackOperator_OP_LESSTHAN::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
@@ -2849,8 +2859,8 @@ void TStackOperator_OP_GREATERTHAN::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
@@ -2867,8 +2877,8 @@ void TStackOperator_OP_LESSTHANOREQUAL::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
@@ -2885,8 +2895,8 @@ void TStackOperator_OP_GREATERTHANOREQUAL::execute( TExecutionStack &Stack ) con
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
@@ -2903,8 +2913,8 @@ void TStackOperator_OP_MIN::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
@@ -2912,9 +2922,9 @@ void TStackOperator_OP_MIN::execute( TExecutionStack &Stack ) const
 	// XXX: We can probably do this better by selectively deleting
 	// rather than copying
 	if( A->Data < B->Data ) {
-		Stack.give( new TStackElementInteger( A->Data ) );
+		Stack.give( new TStackElementBigInteger( A->Data ) );
 	} else {
-		Stack.give( new TStackElementInteger( B->Data ) );
+		Stack.give( new TStackElementBigInteger( B->Data ) );
 	}
 }
 
@@ -2927,8 +2937,8 @@ void TStackOperator_OP_MAX::execute( TExecutionStack &Stack ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
-	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
-	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+	TStackElementBigInteger *B = dynamic_cast<TStackElementBigInteger*>(b.get());
+	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
 
 	if( A == NULL || B == NULL )
 		throw script_run_parameter_type_error();
@@ -2936,9 +2946,9 @@ void TStackOperator_OP_MAX::execute( TExecutionStack &Stack ) const
 	// XXX: We can probably do this better by selectively deleting
 	// rather than copying
 	if( A->Data > B->Data ) {
-		Stack.give( new TStackElementInteger( A->Data ) );
+		Stack.give( new TStackElementBigInteger( A->Data ) );
 	} else {
-		Stack.give( new TStackElementInteger( B->Data ) );
+		Stack.give( new TStackElementBigInteger( B->Data ) );
 	}
 }
 
@@ -2953,9 +2963,9 @@ void TStackOperator_OP_WITHIN::execute( TExecutionStack &Stack ) const
 	auto_ptr<TStackElement> x( Stack.take() );
 	auto_ptr<TStackElement> min( Stack.take() );
 	auto_ptr<TStackElement> max( Stack.take() );
-	TStackElementInteger *X = dynamic_cast<TStackElementInteger*>(x.get());
-	TStackElementInteger *MIN = dynamic_cast<TStackElementInteger*>(min.get());
-	TStackElementInteger *MAX = dynamic_cast<TStackElementInteger*>(max.get());
+	TStackElementBigInteger *X = dynamic_cast<TStackElementBigInteger*>(x.get());
+	TStackElementBigInteger *MIN = dynamic_cast<TStackElementBigInteger*>(min.get());
+	TStackElementBigInteger *MAX = dynamic_cast<TStackElementBigInteger*>(max.get());
 
 	if( X == NULL || MIN == NULL || MAX == NULL )
 		throw script_run_parameter_type_error();
@@ -3157,7 +3167,7 @@ void TStackOperator_OP_INVALIDOPCODE::execute( TExecutionStack &Stack ) const
 // Function:  OP_N
 void TStackOperator_OP_N::execute( TExecutionStack &Stack ) const
 {
-	Stack.give( new TStackElementInteger( OP-OP_2 ) );
+	Stack.give( new TStackElementBigInteger( OP-OP_2 ) );
 }
 
 //
