@@ -1694,7 +1694,7 @@ void TBitcoinScript_0::init()
 //
 void TStackOperator_OP_FALSE::execute( TExecutionStack &Stack ) const
 {
-	Stack().push_back(0);
+	Stack().push_back( new TStackElementInteger(0) );
 }
 
 //
@@ -1705,7 +1705,7 @@ void TStackOperator_OP_FALSE::execute( TExecutionStack &Stack ) const
 //
 void TStackOperator_OP_PUSHDATAN::execute( TExecutionStack &Stack ) const
 {
-	Stack().push_back( Raw );
+	Stack().push_back( new TStackElementString(Raw) );
 }
 
 //
@@ -1716,7 +1716,7 @@ void TStackOperator_OP_PUSHDATAN::execute( TExecutionStack &Stack ) const
 //
 void TStackOperator_OP_1NEGATE::execute( TExecutionStack &Stack ) const
 {
-	Stack().push_back(-1);
+	Stack().push_back( new TStackElementInteger(-1) );
 }
 
 //
@@ -1727,7 +1727,7 @@ void TStackOperator_OP_1NEGATE::execute( TExecutionStack &Stack ) const
 //
 void TStackOperator_OP_TRUE::execute( TExecutionStack &Stack ) const
 {
-	Stack.push(1);
+	Stack().push_back( new TStackElementInteger(1) );
 }
 
 //
@@ -2444,14 +2444,14 @@ void TStackOperator_OP_INVALIDOPCODE::execute( TExecutionStack &Stack ) const
 // Function:  OP_N
 void TStackOperator_OP_N::execute( TExecutionStack &Stack ) const
 {
-	Stack.push( static_cast<uint8_t>( OP - OP_2 ) );
+	Stack().push_back( new TStackElementInteger( OP-OP_2 ) );
 }
 
 //
 // Function:  PUSH_N
 void TStackOperator_PUSH_N::execute( TExecutionStack &Stack ) const
 {
-	Stack.push( Raw );
+	Stack().push_back( new TStackElementString( Raw ) );
 }
 
 //

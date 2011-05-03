@@ -240,12 +240,25 @@ class script_parse_error_version : public script_parse_error
 class TStackElement
 {
   public:
-	TStackElement();
-	TStackElement( const string &d ) : Data(d) {}
-
-  protected:
-	string Data;
 };
+
+//
+// Class: TStackElement_t
+// Description:
+//
+template <typename t>
+class TStackElement_t : public TStackElement
+{
+  public:
+	TStackElement_t( const t &d ) : Data(d) {}
+
+	t Data;
+};
+typedef TStackElement_t<int> TStackElementInteger;
+typedef TStackElement_t<string> TStackElementString;
+
+
+// -------------
 
 //
 // Class: TExecutionStack
