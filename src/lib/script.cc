@@ -1620,6 +1620,20 @@ istream &TBitcoinScript::read( istream &is )
 	return is;
 }
 
+//
+// Function:	TBitcoinScript :: execute
+// Description:
+//
+void TBitcoinScript::execute( TExecutionStack &Stack ) const
+{
+	list<TStackOperator *>::const_iterator it;
+	for( it = Program.begin(); it != Program.end(); it++ ) {
+		(*it)->execute( Stack );
+		log() << (*it)->className() << " executed, stack now:" << endl;
+		Stack.printOn(log());
+	}
+}
+
 // -----------
 
 //
