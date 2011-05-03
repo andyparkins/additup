@@ -1973,6 +1973,7 @@ void TStackOperator_OP_DROP::execute( TExecutionStack &Stack ) const
 // Operation: Duplicates the top stack item.
 void TStackOperator_OP_DUP::execute( TExecutionStack &Stack ) const
 {
+	Stack.give( Stack().back()->clone() );
 }
 
 //
