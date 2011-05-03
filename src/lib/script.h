@@ -242,6 +242,20 @@ class script_run_error : public runtime_error
 		runtime_error(s) {}
 };
 
+class script_run_parameter_type_error : public script_run_error
+{
+  public:
+	script_run_parameter_type_error() :
+		script_run_error("an operator expected a parameter of a type that was not supplied") {}
+};
+
+class script_run_parameter_invalid : public script_run_error
+{
+  public:
+	script_run_parameter_invalid() :
+		script_run_error("an operator was given a parameter that would give invalid results") {}
+};
+
 class script_run_verify_error : public script_run_error
 {
   public:
