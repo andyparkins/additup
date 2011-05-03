@@ -320,6 +320,8 @@ class TExecutionStack
   public:
 	list<TStackElement*> Stack;
 	list<TStackElement*> AltStack;
+	typedef list<TStackElement*>::iterator iterator;
+	typedef list<TStackElement*>::const_iterator const_iterator;
 
 	bool Invalid;
 };
