@@ -281,6 +281,10 @@ class TExecutionStack
 
 	list<TStackElement*> &operator()() { return Stack; }
 
+	TStackElement *take() { TStackElement *x = Stack.back(); Stack.pop_back(); return x; }
+	void give( TStackElement *s ) { Stack.push_back(s); }
+
+  public:
 	list<TStackElement*> Stack;
 	list<TStackElement*> AltStack;
 
