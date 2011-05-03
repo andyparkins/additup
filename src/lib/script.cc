@@ -1756,7 +1756,7 @@ istream &TStackOperatorFromStream::readAndAppend( TBitcoinScript *Script, istrea
 //
 void TStackOperator_OP_FALSE::execute( TExecutionStack &Stack ) const
 {
-	Stack().push_back( new TStackElementInteger(0) );
+	Stack().push_back( new TStackElementBoolean(false) );
 }
 
 //
@@ -1789,7 +1789,7 @@ void TStackOperator_OP_1NEGATE::execute( TExecutionStack &Stack ) const
 //
 void TStackOperator_OP_TRUE::execute( TExecutionStack &Stack ) const
 {
-	Stack().push_back( new TStackElementInteger(1) );
+	Stack().push_back( new TStackElementBoolean(true) );
 }
 
 //

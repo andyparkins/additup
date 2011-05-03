@@ -261,6 +261,7 @@ class TStackElement_t : public TStackElement
   public:
 	t Data;
 };
+typedef TStackElement_t<bool> TStackElementBoolean;
 typedef TStackElement_t<int> TStackElementInteger;
 typedef TStackElement_t<string> TStackElementString;
 
