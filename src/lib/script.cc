@@ -1873,7 +1873,7 @@ void TStackOperator_OP_ENDIF::execute( TExecutionStack &Stack ) const
 }
 
 //
-// Function:  OP_RETURN
+// Function:  OP_VERIFY
 // Input:     True / false
 // Output:    Nothing / False
 // Operation: Marks transaction as invalid if top stack value is not
@@ -1881,6 +1881,33 @@ void TStackOperator_OP_ENDIF::execute( TExecutionStack &Stack ) const
 //
 void TStackOperator_OP_VERIFY::execute( TExecutionStack &Stack ) const
 {
+	TStackElement *Back = Stack().back();
+
+	TStackElementInteger *I = dynamic_cast<TStackElementInteger*>(Back);
+	if( I != NULL ) {
+		Stack.Invalid = (I->Data == 0);
+	}
+
+	TStackElementBoolean *B = dynamic_cast<TStackElementBoolean*>(Back);
+	if( B != NULL ) {
+		Stack.Invalid = (B->Data == false);
+	}
+
+	TStackElementString *S = dynamic_cast<TStackElementString*>(Back);
+	if( S != NULL ) {
+		Stack.Invalid = S->Data.empty();
+	}
+
+	if( !Stack.Invalid ) {
+		// True is removed
+		Stack.take();
+		delete Back;
+	} else {
+		// The specs say carry on, but as the subsequent commands are
+		// going to have a value on the stack that they didn't expect,
+		// what is the point?
+		throw script_run_verify_error();
+	}
 }
 
 //
