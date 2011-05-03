@@ -240,6 +240,8 @@ class script_parse_error_version : public script_parse_error
 class TStackElement
 {
   public:
+	virtual TStackElement *clone() const = 0;
+
 	virtual ostream &printOn( ostream & ) const = 0;
 };
 
@@ -252,6 +254,7 @@ class TStackElement_t : public TStackElement
 {
   public:
 	TStackElement_t( const t &d ) : Data(d) {}
+	TStackElement *clone() const { return new TStackElement_t<t>(*this); }
 
 	ostream &printOn( ostream &s ) const;
 
