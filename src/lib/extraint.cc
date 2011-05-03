@@ -237,7 +237,7 @@ string TGenericBigInteger<tLittleInteger>::toString( unsigned int Base ) const
 	// should be displayed for that number and we have our conversion.
 
 //	cerr << hex << quotient << dec << endl;
-	while( !quotient.isZero() ) {
+	do {
 		remainder = quotient;
 		remainder.divideWithRemainder( Base, quotient );
 
@@ -253,7 +253,7 @@ string TGenericBigInteger<tLittleInteger>::toString( unsigned int Base ) const
 
 		// Prepend character
 		output = string() + static_cast<char>(ch) + output;
-	}
+	} while( !quotient.isZero() );
 
 	return stringPad( output, Base );
 //	return output;
