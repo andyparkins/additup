@@ -20,6 +20,7 @@
 // --- C
 // --- C++
 #include <iostream>
+#include <memory>
 // --- Qt
 // --- OS
 // --- Project libs
@@ -2160,6 +2161,28 @@ void TStackOperator_OP_XOR::execute( TExecutionStack &Stack ) const
 // Operation: Returns 1 if the inputs are exactly equal, 0 otherwise.
 void TStackOperator_OP_EQUAL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> x1( Stack.take() );
+	auto_ptr<TStackElement> x2( Stack.take() );
+
+	if( dynamic_cast<TStackElementString*>(x1.get()) != NULL
+			&& dynamic_cast<TStackElementString*>(x2.get()) != NULL ) {
+		TStackElementString *S1 = dynamic_cast<TStackElementString*>(x1.get());
+		TStackElementString *S2 = dynamic_cast<TStackElementString*>(x2.get());
+		Stack.give( new TStackElementBoolean(S1->Data == S2->Data) );
+	} else if( dynamic_cast<TStackElementInteger*>(x1.get()) != NULL
+			&& dynamic_cast<TStackElementInteger*>(x2.get()) != NULL ) {
+		TStackElementInteger *S1 = dynamic_cast<TStackElementInteger*>(x1.get());
+		TStackElementInteger *S2 = dynamic_cast<TStackElementInteger*>(x2.get());
+		Stack.give( new TStackElementBoolean(S1->Data == S2->Data) );
+	} else if( dynamic_cast<TStackElementBoolean*>(x1.get()) != NULL
+			&& dynamic_cast<TStackElementBoolean*>(x2.get()) != NULL ) {
+		TStackElementBoolean *S1 = dynamic_cast<TStackElementBoolean*>(x1.get());
+		TStackElementBoolean *S2 = dynamic_cast<TStackElementBoolean*>(x2.get());
+		Stack.give( new TStackElementBoolean(S1->Data == S2->Data) );
+	} else {
+		throw script_run_error( "Invalid type mismatch in OP_EQUAL" );
+	}
+
 }
 
 //
