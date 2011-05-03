@@ -21,6 +21,7 @@
 // --- C++
 #include <iostream>
 #include <memory>
+#include <iterator>
 // --- Qt
 // --- OS
 // --- Project libs
@@ -1913,11 +1914,13 @@ void TStackOperator_OP_VERIFY::execute( TExecutionStack &Stack ) const
 //
 // Function:  OP_RETURN
 // Input:     Nothing
-// Outpu:     Nothing
+// Output:    Nothing
 // Operation: Marks transaction as invalid.
 //
 void TStackOperator_OP_RETURN::execute( TExecutionStack &Stack ) const
 {
+	Stack.Invalid = true;
+	throw script_run_verify_error();
 }
 
 // Function:  OP_TOALTSTACK
@@ -1927,6 +1930,10 @@ void TStackOperator_OP_RETURN::execute( TExecutionStack &Stack ) const
 // from the main stack.
 void TStackOperator_OP_TOALTSTACK::execute( TExecutionStack &Stack ) const
 {
+	// Copy the last thing on the real stack to the alternate stack
+	Stack.AltStack.push_back( Stack.Stack.back() );
+	// Remove the last element on the real stack
+	Stack.Stack.pop_back();
 }
 
 //
@@ -1937,6 +1944,10 @@ void TStackOperator_OP_TOALTSTACK::execute( TExecutionStack &Stack ) const
 // from the alt stack.
 void TStackOperator_OP_FROMALTSTACK::execute( TExecutionStack &Stack ) const
 {
+	// Copy the last thing on the alternate stack to the real stack
+	Stack.give( Stack.AltStack.back() );
+	// Remove the last element on the alternate stack
+	Stack.AltStack.pop_back();
 }
 
 //
@@ -1955,6 +1966,7 @@ void TStackOperator_OP_IFDUP::execute( TExecutionStack &Stack ) const
 // Operation: Puts the number of stack items onto the stack.
 void TStackOperator_OP_DEPTH::execute( TExecutionStack &Stack ) const
 {
+	Stack.give( new TStackElementInteger( Stack.Stack.size() ) );
 }
 
 //
@@ -1964,6 +1976,7 @@ void TStackOperator_OP_DEPTH::execute( TExecutionStack &Stack ) const
 // Operation: Removes the top stack item.
 void TStackOperator_OP_DROP::execute( TExecutionStack &Stack ) const
 {
+	delete Stack.take();
 }
 
 //
@@ -1983,6 +1996,14 @@ void TStackOperator_OP_DUP::execute( TExecutionStack &Stack ) const
 // Operation: Removes the second-to-top stack item.
 void TStackOperator_OP_NIP::execute( TExecutionStack &Stack ) const
 {
+	TExecutionStack::iterator it = Stack.Stack.end();
+
+	// Point at last element
+	it--;
+	// Point at second to last element
+	it--;
+
+	Stack.Stack.erase( it );
 }
 
 //
@@ -1992,6 +2013,15 @@ void TStackOperator_OP_NIP::execute( TExecutionStack &Stack ) const
 // Operation: Copies the second-to-top stack item to the top.
 void TStackOperator_OP_OVER::execute( TExecutionStack &Stack ) const
 {
+	TExecutionStack::iterator it = Stack.Stack.end();
+
+	// Point at last element
+	it--;
+	// Point at second to last element
+	it--;
+
+	// Copy it
+	Stack.give( (*it)->clone() );
 }
 
 //
@@ -2001,6 +2031,20 @@ void TStackOperator_OP_OVER::execute( TExecutionStack &Stack ) const
 // Operation: The item n back in the stack is copied to the top.
 void TStackOperator_OP_PICK::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> n( Stack.take() );
+	TStackElementInteger *N = dynamic_cast<TStackElementInteger*>(n.get());
+
+	if( N == NULL )
+		throw script_run_parameter_type_error();
+
+	TExecutionStack::iterator it = Stack.Stack.end();
+	// Point at the last element
+	it--;
+	// Point at the Nth to last element
+	advance( it, -N->Data );
+
+	// Copy it
+	Stack.give( (*it)->clone() );
 }
 
 //
@@ -2010,6 +2054,23 @@ void TStackOperator_OP_PICK::execute( TExecutionStack &Stack ) const
 // Operation: The item n back in the stack is moved to the top.
 void TStackOperator_OP_ROLL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> n( Stack.take() );
+	TStackElementInteger *N = dynamic_cast<TStackElementInteger*>(n.get());
+
+	if( N == NULL )
+		throw script_run_parameter_type_error();
+
+	TExecutionStack::iterator it = Stack.Stack.end();
+	// Point at the last element
+	it--;
+	// Point at the Nth to last element
+	advance( it, -N->Data );
+
+	TStackElement *Element = (*it);
+
+	// Move it
+	Stack.Stack.erase( it );
+	Stack.give( Element );
 }
 
 //
@@ -2019,6 +2080,13 @@ void TStackOperator_OP_ROLL::execute( TExecutionStack &Stack ) const
 // Operation: The top three items on the stack are rotated to the left.
 void TStackOperator_OP_ROT::execute( TExecutionStack &Stack ) const
 {
+	TStackElement *x3 = Stack.take();
+	TStackElement *x2 = Stack.take();
+	TStackElement *x1 = Stack.take();
+
+	Stack.give(x2);
+	Stack.give(x3);
+	Stack.give(x1);
 }
 
 //
@@ -2028,6 +2096,11 @@ void TStackOperator_OP_ROT::execute( TExecutionStack &Stack ) const
 // Operation: The top two items on the stack are swapped.
 void TStackOperator_OP_SWAP::execute( TExecutionStack &Stack ) const
 {
+	TStackElement *x2 = Stack.take();
+	TStackElement *x1 = Stack.take();
+
+	Stack.give(x2);
+	Stack.give(x1);
 }
 
 //
@@ -2038,6 +2111,15 @@ void TStackOperator_OP_SWAP::execute( TExecutionStack &Stack ) const
 // before the second-to-top item.
 void TStackOperator_OP_TUCK::execute( TExecutionStack &Stack ) const
 {
+	// XXX: Total cheat, this should be done with an iterator, but I
+	// suspect it wouldn't be that much quicker, as we're only
+	// manipulating pointers
+	TStackElement *x2 = Stack.take();
+	TStackElement *x1 = Stack.take();
+
+	Stack.give(x2);
+	Stack.give(x1);
+	Stack.give(x2->clone());
 }
 
 //
@@ -2047,6 +2129,8 @@ void TStackOperator_OP_TUCK::execute( TExecutionStack &Stack ) const
 // Operation: Removes the top two stack items.
 void TStackOperator_OP_2DROP::execute( TExecutionStack &Stack ) const
 {
+	delete Stack.take();
+	delete Stack.take();
 }
 
 //
@@ -2056,6 +2140,15 @@ void TStackOperator_OP_2DROP::execute( TExecutionStack &Stack ) const
 // Operation: Duplicates the top two stack items.
 void TStackOperator_OP_2DUP::execute( TExecutionStack &Stack ) const
 {
+	TExecutionStack::iterator it = Stack.Stack.end();
+
+	// Point at second to last element
+	advance( it, -2 );
+
+	// Copy them
+	Stack.give( (*it)->clone() );
+	it++;
+	Stack.give( (*it)->clone() );
 }
 
 //
@@ -2065,6 +2158,17 @@ void TStackOperator_OP_2DUP::execute( TExecutionStack &Stack ) const
 // Operation: Duplicates the top three stack items.
 void TStackOperator_OP_3DUP::execute( TExecutionStack &Stack ) const
 {
+	TExecutionStack::iterator it = Stack.Stack.end();
+
+	// Point at second to last element
+	advance( it, -3 );
+
+	// Copy them
+	Stack.give( (*it)->clone() );
+	it++;
+	Stack.give( (*it)->clone() );
+	it++;
+	Stack.give( (*it)->clone() );
 }
 
 //
@@ -2075,6 +2179,15 @@ void TStackOperator_OP_3DUP::execute( TExecutionStack &Stack ) const
 // the front.
 void TStackOperator_OP_2OVER::execute( TExecutionStack &Stack ) const
 {
+	TExecutionStack::iterator it = Stack.Stack.end();
+
+	// Point at fourth from last element
+	advance( it, -4 );
+
+	// Copy them
+	Stack.give( (*it)->clone() );
+	it++;
+	Stack.give( (*it)->clone() );
 }
 
 //
@@ -2085,6 +2198,16 @@ void TStackOperator_OP_2OVER::execute( TExecutionStack &Stack ) const
 // stack.
 void TStackOperator_OP_2ROT::execute( TExecutionStack &Stack ) const
 {
+	TExecutionStack::iterator it = Stack.Stack.end();
+
+	// Point at sixth from last element
+	advance( it, -6 );
+
+	// Move them
+	Stack.give( (*it)->clone() );
+	it = Stack.Stack.erase(it);
+	Stack.give( (*it)->clone() );
+	Stack.Stack.erase(it);
 }
 
 //
@@ -2094,6 +2217,16 @@ void TStackOperator_OP_2ROT::execute( TExecutionStack &Stack ) const
 // Operation: Swaps the top two pairs of items.
 void TStackOperator_OP_2SWAP::execute( TExecutionStack &Stack ) const
 {
+	TExecutionStack::iterator it = Stack.Stack.end();
+
+	// Point at fourth from last element
+	advance( it, -4 );
+
+	// Move them
+	Stack.give( (*it)->clone() );
+	it = Stack.Stack.erase(it);
+	Stack.give( (*it)->clone() );
+	Stack.Stack.erase(it);
 }
 
 //
@@ -2103,6 +2236,16 @@ void TStackOperator_OP_2SWAP::execute( TExecutionStack &Stack ) const
 // Operation: Concatenates two strings. Currently disabled.
 void TStackOperator_OP_CAT::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> x2( Stack.take() );
+	auto_ptr<TStackElement> x1( Stack.take() );
+	TStackElementString *S2 = dynamic_cast<TStackElementString*>(x2.get());
+	TStackElementString *S1 = dynamic_cast<TStackElementString*>(x1.get());
+
+	if( S1 == NULL || S2 == NULL )
+		throw script_run_parameter_type_error();
+
+	// XXX: S1+S2 or S2+S1?
+	Stack.give( new TStackElementString( S2->Data + S1->Data ) );
 }
 
 //
@@ -2112,6 +2255,20 @@ void TStackOperator_OP_CAT::execute( TExecutionStack &Stack ) const
 // Operation: Returns a section of a string. Currently disabled.
 void TStackOperator_OP_SUBSTR::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> size( Stack.take() );
+	auto_ptr<TStackElement> begin( Stack.take() );
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *SIZE = dynamic_cast<TStackElementInteger*>(size.get());
+	TStackElementInteger *BEGIN = dynamic_cast<TStackElementInteger*>(begin.get());
+	TStackElementString *IN = dynamic_cast<TStackElementString*>(in.get());
+
+	if( IN == NULL || BEGIN == NULL || SIZE == NULL )
+		throw script_run_parameter_type_error();
+
+	if( BEGIN->Data + SIZE->Data > IN->Data.size() )
+		throw script_run_parameter_invalid();
+
+	Stack.give( new TStackElementString( IN->Data.substr(BEGIN->Data, SIZE->Data) ) );
 }
 
 //
@@ -2122,6 +2279,18 @@ void TStackOperator_OP_SUBSTR::execute( TExecutionStack &Stack ) const
 // string. Currently disabled.
 void TStackOperator_OP_LEFT::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> size( Stack.take() );
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *SIZE = dynamic_cast<TStackElementInteger*>(size.get());
+	TStackElementString *IN = dynamic_cast<TStackElementString*>(in.get());
+
+	if( IN == NULL || SIZE == NULL )
+		throw script_run_parameter_type_error();
+
+	if( SIZE->Data > IN->Data.size() )
+		throw script_run_parameter_invalid();
+
+	Stack.give( new TStackElementString( IN->Data.substr(0, SIZE->Data) ) );
 }
 
 //
@@ -2132,6 +2301,18 @@ void TStackOperator_OP_LEFT::execute( TExecutionStack &Stack ) const
 // string. Currently disabled.
 void TStackOperator_OP_RIGHT::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> size( Stack.take() );
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *SIZE = dynamic_cast<TStackElementInteger*>(size.get());
+	TStackElementString *IN = dynamic_cast<TStackElementString*>(in.get());
+
+	if( IN == NULL || SIZE == NULL )
+		throw script_run_parameter_type_error();
+
+	if( SIZE->Data > IN->Data.size() )
+		throw script_run_parameter_invalid();
+
+	Stack.give( new TStackElementString( IN->Data.substr(IN->Data.size() - SIZE->Data, SIZE->Data) ) );
 }
 
 //
@@ -2141,6 +2322,13 @@ void TStackOperator_OP_RIGHT::execute( TExecutionStack &Stack ) const
 // Operation: Returns the length of the input string.
 void TStackOperator_OP_SIZE::execute( TExecutionStack &Stack ) const
 {
+	TStackElement *in( Stack.Stack.back() );
+	TStackElementString *IN = dynamic_cast<TStackElementString*>(in);
+
+	if( IN == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( IN->Data.size() ) );
 }
 
 //
@@ -2150,6 +2338,13 @@ void TStackOperator_OP_SIZE::execute( TExecutionStack &Stack ) const
 // Operation: Flips all of the bits in the input. Currently disabled.
 void TStackOperator_OP_INVERT::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( ~A->Data ) );
 }
 
 //
@@ -2160,6 +2355,15 @@ void TStackOperator_OP_INVERT::execute( TExecutionStack &Stack ) const
 // disabled.
 void TStackOperator_OP_AND::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data & B->Data ) );
 }
 
 //
@@ -2170,6 +2374,15 @@ void TStackOperator_OP_AND::execute( TExecutionStack &Stack ) const
 // disabled.
 void TStackOperator_OP_OR::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data | B->Data ) );
 }
 
 //
@@ -2180,6 +2393,15 @@ void TStackOperator_OP_OR::execute( TExecutionStack &Stack ) const
 // Currently disabled.
 void TStackOperator_OP_XOR::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data ^ B->Data ) );
 }
 
 //
@@ -2234,6 +2456,13 @@ istream &TStackOperator_OP_EQUALVERIFY::readAndAppend( TBitcoinScript *Script, i
 // Operation: 1 is added to the input.
 void TStackOperator_OP_1ADD::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+
+	if( IN == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( IN->Data + 1 ) );
 }
 
 //
@@ -2243,6 +2472,13 @@ void TStackOperator_OP_1ADD::execute( TExecutionStack &Stack ) const
 // Operation: 1 is subtracted from the input.
 void TStackOperator_OP_1SUB::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+
+	if( IN == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( IN->Data - 1 ) );
 }
 
 //
@@ -2252,6 +2488,13 @@ void TStackOperator_OP_1SUB::execute( TExecutionStack &Stack ) const
 // Operation: The input is multiplied by 2. Currently disabled.
 void TStackOperator_OP_2MUL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+
+	if( IN == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( IN->Data * 2 ) );
 }
 
 //
@@ -2261,6 +2504,13 @@ void TStackOperator_OP_2MUL::execute( TExecutionStack &Stack ) const
 // Operation: The input is divided by 2. Currently disabled.
 void TStackOperator_OP_2DIV::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+
+	if( IN == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( IN->Data / 2 ) );
 }
 
 //
@@ -2270,6 +2520,13 @@ void TStackOperator_OP_2DIV::execute( TExecutionStack &Stack ) const
 // Operation: The sign of the input is flipped.
 void TStackOperator_OP_NEGATE::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+
+	if( IN == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( -IN->Data ) );
 }
 
 //
@@ -2279,6 +2536,19 @@ void TStackOperator_OP_NEGATE::execute( TExecutionStack &Stack ) const
 // Operation: The input is made positive.
 void TStackOperator_OP_ABS::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+
+	if( IN == NULL )
+		throw script_run_parameter_type_error();
+
+	if( IN->Data < 0 ) {
+		Stack.give( new TStackElementInteger( -IN->Data ) );
+	} else {
+		// XXX: We could have saved ourselves the trouble by checking
+		// for this condition earlier
+		Stack.give( new TStackElementInteger( IN->Data ) );
+	}
 }
 
 //
@@ -2289,6 +2559,14 @@ void TStackOperator_OP_ABS::execute( TExecutionStack &Stack ) const
 // output will be 0.
 void TStackOperator_OP_NOT::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementBoolean *IN = dynamic_cast<TStackElementBoolean*>(in.get());
+
+	if( IN != NULL && IN->Data == false ) {
+		Stack.give( new TStackElementBoolean( true ) );
+	} else {
+		Stack.give( new TStackElementBoolean( false ) );
+	}
 }
 
 //
@@ -2298,6 +2576,16 @@ void TStackOperator_OP_NOT::execute( TExecutionStack &Stack ) const
 // Operation: Returns 1 if the input is 0. 0 otherwise.
 void TStackOperator_OP_0NOTEQUAL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
+
+	// This is identical to OP_NOT isn't it?
+
+	if( IN != NULL && IN->Data == 0 ) {
+		Stack.give( new TStackElementBoolean( true ) );
+	} else {
+		Stack.give( new TStackElementBoolean( false ) );
+	}
 }
 
 //
@@ -2307,6 +2595,15 @@ void TStackOperator_OP_0NOTEQUAL::execute( TExecutionStack &Stack ) const
 // Operation: a is added to b.
 void TStackOperator_OP_ADD::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data + B->Data ) );
 }
 
 //
@@ -2316,6 +2613,15 @@ void TStackOperator_OP_ADD::execute( TExecutionStack &Stack ) const
 // Operation: b is subtracted from a.
 void TStackOperator_OP_SUB::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data - B->Data ) );
 }
 
 //
@@ -2325,6 +2631,15 @@ void TStackOperator_OP_SUB::execute( TExecutionStack &Stack ) const
 // Operation: a is multiplied by b. Currently disabled.
 void TStackOperator_OP_MUL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data * B->Data ) );
 }
 
 //
@@ -2334,6 +2649,15 @@ void TStackOperator_OP_MUL::execute( TExecutionStack &Stack ) const
 // Operation: a is divided by b. Currently disabled.
 void TStackOperator_OP_DIV::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL || B->Data == 0 )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data / B->Data ) );
 }
 
 //
@@ -2344,6 +2668,15 @@ void TStackOperator_OP_DIV::execute( TExecutionStack &Stack ) const
 // disabled.
 void TStackOperator_OP_MOD::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL || B->Data == 0 )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data % B->Data ) );
 }
 
 //
@@ -2353,6 +2686,15 @@ void TStackOperator_OP_MOD::execute( TExecutionStack &Stack ) const
 // Operation: Shifts a left b bits, preserving sign. Currently disabled.
 void TStackOperator_OP_LSHIFT::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data << B->Data ) );
 }
 
 //
@@ -2362,6 +2704,15 @@ void TStackOperator_OP_LSHIFT::execute( TExecutionStack &Stack ) const
 // Operation: Shifts a right b bits, preserving sign. Currently disabled.
 void TStackOperator_OP_RSHIFT::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementInteger( A->Data >> B->Data ) );
 }
 
 //
@@ -2371,6 +2722,15 @@ void TStackOperator_OP_RSHIFT::execute( TExecutionStack &Stack ) const
 // Operation: If both a and b are not 0, the output is 1. Otherwise 0.
 void TStackOperator_OP_BOOLAND::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementBoolean *B = dynamic_cast<TStackElementBoolean*>(b.get());
+	TStackElementBoolean *A = dynamic_cast<TStackElementBoolean*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( A->Data && B->Data ) );
 }
 
 //
@@ -2380,6 +2740,15 @@ void TStackOperator_OP_BOOLAND::execute( TExecutionStack &Stack ) const
 // Operation: If a or b is not 0, the output is 1. Otherwise 0.
 void TStackOperator_OP_BOOLOR::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementBoolean *B = dynamic_cast<TStackElementBoolean*>(b.get());
+	TStackElementBoolean *A = dynamic_cast<TStackElementBoolean*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( A->Data || B->Data ) );
 }
 
 //
@@ -2389,6 +2758,15 @@ void TStackOperator_OP_BOOLOR::execute( TExecutionStack &Stack ) const
 // Operation: Returns 1 if the numbers are equal, 0 otherwise.
 void TStackOperator_OP_NUMEQUAL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( A->Data == B->Data ) );
 }
 
 //
@@ -2412,6 +2790,15 @@ istream &TStackOperator_OP_NUMEQUALVERIFY::readAndAppend( TBitcoinScript *Script
 // Operation: Returns 1 if the numbers are not equal, 0 otherwise.
 void TStackOperator_OP_NUMNOTEQUAL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( A->Data != B->Data ) );
 }
 
 //
@@ -2421,6 +2808,15 @@ void TStackOperator_OP_NUMNOTEQUAL::execute( TExecutionStack &Stack ) const
 // Operation: Returns 1 if a is less than b, 0 otherwise.
 void TStackOperator_OP_LESSTHAN::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( A->Data < B->Data ) );
 }
 
 //
@@ -2430,6 +2826,15 @@ void TStackOperator_OP_LESSTHAN::execute( TExecutionStack &Stack ) const
 // Operation: Returns 1 if a is greater than b, 0 otherwise.
 void TStackOperator_OP_GREATERTHAN::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( A->Data > B->Data ) );
 }
 
 //
@@ -2439,6 +2844,15 @@ void TStackOperator_OP_GREATERTHAN::execute( TExecutionStack &Stack ) const
 // Operation: Returns 1 if a is less than or equal to b, 0 otherwise.
 void TStackOperator_OP_LESSTHANOREQUAL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( A->Data <= B->Data ) );
 }
 
 //
@@ -2448,6 +2862,15 @@ void TStackOperator_OP_LESSTHANOREQUAL::execute( TExecutionStack &Stack ) const
 // Operation: Returns 1 if a is greater than or equal to b, 0 otherwise.
 void TStackOperator_OP_GREATERTHANOREQUAL::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( A->Data >= B->Data ) );
 }
 
 //
@@ -2457,6 +2880,21 @@ void TStackOperator_OP_GREATERTHANOREQUAL::execute( TExecutionStack &Stack ) con
 // Operation: Returns the smaller of a and b.
 void TStackOperator_OP_MIN::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	// XXX: We can probably do this better by selectively deleting
+	// rather than copying
+	if( A->Data < B->Data ) {
+		Stack.give( new TStackElementInteger( A->Data ) );
+	} else {
+		Stack.give( new TStackElementInteger( B->Data ) );
+	}
 }
 
 //
@@ -2466,6 +2904,21 @@ void TStackOperator_OP_MIN::execute( TExecutionStack &Stack ) const
 // Operation: Returns the larger of a and b.
 void TStackOperator_OP_MAX::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> b( Stack.take() );
+	auto_ptr<TStackElement> a( Stack.take() );
+	TStackElementInteger *B = dynamic_cast<TStackElementInteger*>(b.get());
+	TStackElementInteger *A = dynamic_cast<TStackElementInteger*>(a.get());
+
+	if( A == NULL || B == NULL )
+		throw script_run_parameter_type_error();
+
+	// XXX: We can probably do this better by selectively deleting
+	// rather than copying
+	if( A->Data > B->Data ) {
+		Stack.give( new TStackElementInteger( A->Data ) );
+	} else {
+		Stack.give( new TStackElementInteger( B->Data ) );
+	}
 }
 
 //
@@ -2476,6 +2929,17 @@ void TStackOperator_OP_MAX::execute( TExecutionStack &Stack ) const
 // (left-inclusive), 0 otherwise.
 void TStackOperator_OP_WITHIN::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> x( Stack.take() );
+	auto_ptr<TStackElement> min( Stack.take() );
+	auto_ptr<TStackElement> max( Stack.take() );
+	TStackElementInteger *X = dynamic_cast<TStackElementInteger*>(x.get());
+	TStackElementInteger *MIN = dynamic_cast<TStackElementInteger*>(min.get());
+	TStackElementInteger *MAX = dynamic_cast<TStackElementInteger*>(max.get());
+
+	if( X == NULL || MIN == NULL || MAX == NULL )
+		throw script_run_parameter_type_error();
+
+	Stack.give( new TStackElementBoolean( X->Data >= MIN->Data && X->Data < MAX->Data ) );
 }
 
 
@@ -2647,6 +3111,8 @@ void TStackOperator_OP_PUBKEY::execute( TExecutionStack &Stack ) const
 // Operation: Matches any opcode that is not yet assigned.
 void TStackOperator_OP_INVALIDOPCODE::execute( TExecutionStack &Stack ) const
 {
+	Stack.Invalid = true;
+	throw script_run_verify_error();
 }
 
 //
@@ -2668,6 +3134,8 @@ void TStackOperator_PUSH_N::execute( TExecutionStack &Stack ) const
 // Operation: Transaction is invalid
 void TStackOperator_OP_RESERVED::execute( TExecutionStack &Stack ) const
 {
+	Stack.Invalid = true;
+	throw script_run_verify_error();
 }
 
 //
@@ -2675,6 +3143,8 @@ void TStackOperator_OP_RESERVED::execute( TExecutionStack &Stack ) const
 // Operation: Transaction is invalid
 void TStackOperator_OP_VER::execute( TExecutionStack &Stack ) const
 {
+	Stack.Invalid = true;
+	throw script_run_verify_error();
 }
 
 //
@@ -2682,6 +3152,8 @@ void TStackOperator_OP_VER::execute( TExecutionStack &Stack ) const
 // Operation: Transaction is invalid
 void TStackOperator_OP_VERIF::execute( TExecutionStack &Stack ) const
 {
+	Stack.Invalid = true;
+	throw script_run_verify_error();
 }
 
 //
@@ -2689,6 +3161,8 @@ void TStackOperator_OP_VERIF::execute( TExecutionStack &Stack ) const
 // Transaction is invalid
 void TStackOperator_OP_VERNOTIF::execute( TExecutionStack &Stack ) const
 {
+	Stack.Invalid = true;
+	throw script_run_verify_error();
 }
 
 //
@@ -2696,6 +3170,8 @@ void TStackOperator_OP_VERNOTIF::execute( TExecutionStack &Stack ) const
 // Operation: Transaction is invalid
 void TStackOperator_OP_RESERVED1::execute( TExecutionStack &Stack ) const
 {
+	Stack.Invalid = true;
+	throw script_run_verify_error();
 }
 
 //
@@ -2703,6 +3179,8 @@ void TStackOperator_OP_RESERVED1::execute( TExecutionStack &Stack ) const
 // Operation: Transaction is invalid
 void TStackOperator_OP_RESERVED2::execute( TExecutionStack &Stack ) const
 {
+	Stack.Invalid = true;
+	throw script_run_verify_error();
 }
 
 
