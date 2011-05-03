@@ -2546,15 +2546,46 @@ void TStackOperator_OP_CODESEPARATOR::execute( TExecutionStack &Stack ) const
 }
 
 //
-// Function:  OP_CHECKSIG
-// Input:     sig pubkey
-// Output:    True / false
-// Operation: The entire transaction's outputs, inputs, and script (from
-// the most recently-executed OP_CODESEPARATOR to the end) are hashed.
-// The signature used by OP_CHECKSIG must be a valid signature for this
-// hash and public key. If it is, 1 is returned, 0 otherwise.
+// Function:	OP_CHECKSIG
+// Description:
+//
+//  - Input:  sig pubkey
+//  - Output: True / false
+//
+// The entire transaction's outputs, inputs, and script (from the most
+// recently-executed OP_CODESEPARATOR to the end) are hashed.  The
+// signature used by OP_CHECKSIG must be a valid signature for this hash
+// and public key. If it is, 1 is returned, 0 otherwise.
+//
+// 1. The public key and the signature are popped from the stack, in
+//    that order.
+// 2. A new subscript is created from the instruction from the most
+//    recent OP_CODESEPARATOR to the end of the script. If there is no
+//    OP_CODESEPARATOR the entire script becomes the subscript (hereby
+//    referred to as subScript)
+// 3. The sig is deleted from subScript.
+// 4. The hashtype is removed from the last byte of the sig and stored
+// 5. A deep copy is made of the current transaction (hereby referred to
+//    txCopy)
+// 6. All OP_CODESEPARATORS are removed from subScript
+// 7. The scripts for all transaction inputs in txCopy are set to empty
+//    scripts
+// 8. The script for the current transaction input in txCopy is set to
+//    subScript
+//
 void TStackOperator_OP_CHECKSIG::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> pk( Stack.take() );
+	auto_ptr<TStackElement> s( Stack.take() );
+	TStackElementString *PublicKey = dynamic_cast<TStackElementString*>(pk.get());
+	TStackElementString *Signature = dynamic_cast<TStackElementString*>(s.get());
+
+	if( PublicKey == NULL || Signature == NULL )
+		throw script_run_error( "Invalid parameter type given to OP_CHECKSIG" );
+
+	bool Verified = false;
+
+	Stack.give( new TStackElementBoolean( Verified ) );
 }
 
 //
