@@ -231,6 +231,25 @@ class script_parse_error_version : public script_parse_error
 		script_parse_error("script version too old") {}
 };
 
+//
+// Class: script_run_error
+// Description:
+//
+class script_run_error : public runtime_error
+{
+  public:
+	explicit script_run_error( const string &s ) :
+		runtime_error(s) {}
+};
+
+class script_run_verify_error : public script_run_error
+{
+  public:
+	script_run_verify_error() :
+		script_run_error("an OP_VERIFY based command failed") {}
+};
+
+
 // -------------
 
 //
