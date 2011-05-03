@@ -1608,14 +1608,20 @@ istream &TBitcoinScript::read( istream &is )
 			break;
 		}
 		if( it == Templates.end() ) {
-			log() << "script opcode (" << Opcode << ") found" << endl;
+//			log() << "script opcode (" << Opcode << ") read but not recognised" << endl;
 			throw script_parse_error_not_found();
 		}
-		log() << "Reading " << (*it)->className() << endl;
+//		log() << "Reading " << (*it)->className() << endl;
 		(*it)->readAndAppend( this, is );
 
 		// Should leave us pointing at next character
 	}
+
+//	list<TStackOperator *>::iterator it2;
+//	log() << "Read script:" << endl;
+//	for( it2 = Program.begin(); it2 != Program.end(); it2++ ) {
+//		log() << " - " << (*it2)->className() << endl;
+//	}
 
 	return is;
 }
