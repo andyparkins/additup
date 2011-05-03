@@ -287,11 +287,13 @@ class TBitcoinScript
 	TBitcoinScript();
 	virtual ~TBitcoinScript();
 
-	istream &read( TBitcoinScript &, istream & );
+	istream &read( istream & );
 
 	void execute( TExecutionStack & ) const;
 
 	virtual uint32_t getMinimumAcceptedVersion() const = 0;
+
+	void append( TStackOperator *op ) { Program.push_back(op); }
 
   protected:
 	virtual void init();

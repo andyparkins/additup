@@ -66,6 +66,7 @@ class TStackOperatorFromStream : public TStackOperator
   public:
 	const char *className() const { return "TStackOperatorFromStream"; }
 	virtual TStackOperatorFromStream *clone() const = 0;
+	virtual istream &readAndAppend( TBitcoinScript *, istream & ) const;
 	virtual istream &read( istream & ) = 0;
 
 	virtual bool acceptOpcode( eScriptOp ) const = 0;
@@ -89,6 +90,29 @@ class TStackOperatorFromOpcode : public TStackOperatorFromStream
 		return is;
 	}
 
+};
+
+//
+// Class: TStackOperatorFromCompoundOpcode
+// Description:
+//
+class TStackOperatorFromCompoundOpcode : public TStackOperatorFromOpcode
+{
+  public:
+	const char *className() const { return "TStackOperatorFromCompoundOpcode"; }
+	istream &readAndAppend( TBitcoinScript *, istream &is ) const {
+		// Discard the Opcode, we already know it's getOpcode()
+		is.get();
+		return is;
+	}
+
+	// Deny read() and execute()
+	istream &read( istream & ) {
+		throw logic_error("TStackOperatorFromCompoundOpcode should never be read()");
+	}
+	void execute( TExecutionStack & ) const {
+		throw logic_error("TStackOperatorFromCompoundOpcode should never be execute()d");
+	}
 };
 
 //
@@ -731,14 +755,14 @@ class TStackOperator_OP_EQUAL : public TStackOperatorFromOpcode
 // Class: TStackOperator_OP_EQUALVERIFY
 // Desciption:
 //
-class TStackOperator_OP_EQUALVERIFY : public TStackOperatorFromOpcode
+class TStackOperator_OP_EQUALVERIFY : public TStackOperatorFromCompoundOpcode
 {
   public:
 	const char *className() const { return "TStackOperator_OP_EQUALVERIFY"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_EQUALVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_EQUALVERIFY; }
 
-	void execute( TExecutionStack &Stack ) const;
+	istream &readAndAppend( TBitcoinScript *, istream & ) const;
 };
 
 //
@@ -997,14 +1021,14 @@ class TStackOperator_OP_NUMEQUAL : public TStackOperatorFromOpcode
 // Class: TStackOperator_OP_NUMEQUALVERIFY
 // Desciption:
 //
-class TStackOperator_OP_NUMEQUALVERIFY : public TStackOperatorFromOpcode
+class TStackOperator_OP_NUMEQUALVERIFY : public TStackOperatorFromCompoundOpcode
 {
   public:
 	const char *className() const { return "TStackOperator_OP_NUMEQUALVERIFY"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NUMEQUALVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_NUMEQUALVERIFY; }
 
-	void execute( TExecutionStack &Stack ) const;
+	istream &readAndAppend( TBitcoinScript *, istream & ) const;
 };
 
 //
@@ -1221,14 +1245,14 @@ class TStackOperator_OP_CHECKSIG : public TStackOperatorFromOpcode
 // Class: TStackOperator_OP_CHECKSIGVERIFY
 // Desciption:
 //
-class TStackOperator_OP_CHECKSIGVERIFY : public TStackOperatorFromOpcode
+class TStackOperator_OP_CHECKSIGVERIFY : public TStackOperatorFromCompoundOpcode
 {
   public:
 	const char *className() const { return "TStackOperator_OP_CHECKSIGVERIFY"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKSIGVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKSIGVERIFY; }
 
-	void execute( TExecutionStack &Stack ) const;
+	istream &readAndAppend( TBitcoinScript *, istream & ) const;
 };
 
 //
@@ -1249,14 +1273,14 @@ class TStackOperator_OP_CHECKMULTISIG : public TStackOperatorFromOpcode
 // Class: TStackOperator_OP_CHECKMULTISIGVERIFY
 // Desciption:
 //
-class TStackOperator_OP_CHECKMULTISIGVERIFY : public TStackOperatorFromOpcode
+class TStackOperator_OP_CHECKMULTISIGVERIFY : public TStackOperatorFromCompoundOpcode
 {
   public:
 	const char *className() const { return "TStackOperator_OP_CHECKMULTISIGVERIFY"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKMULTISIGVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKMULTISIGVERIFY; }
 
-	void execute( TExecutionStack &Stack ) const;
+	istream &readAndAppend( TBitcoinScript *, istream & ) const;
 };
 
 //
@@ -1548,12 +1572,10 @@ istream &TBitcoinScript::read( istream &is )
 			log() << "script opcode (" << Opcode << ") found" << endl;
 			throw script_parse_error_not_found();
 		}
+		log() << "Reading " << (*it)->className() << endl;
+		(*it)->readAndAppend( this, is );
 
-		log() << (*it)->className() << " script opcode ("
-			<< Opcode << ") found" << endl;
-		TStackOperatorFromStream *Operator = (*it)->clone();
-
-		Operator->read( is );
+		// Should leave us pointing at next character
 	}
 
 	return is;
@@ -1682,6 +1704,23 @@ void TBitcoinScript_0::init()
 	Templates.push_back( new TStackOperator_OP_INVALIDOPCODE );
 
 	TBitcoinScript::init();
+}
+
+// -----------
+
+//
+// Function:	TStackOperatorFromStream :: readAndAppend
+// Description:
+//
+// We are the template, called because our acceptOpcode() returned true
+//
+// By default we simply clone ourself and get the clone to read itself.
+//
+istream &TStackOperatorFromStream::readAndAppend( TBitcoinScript *Script, istream &is ) const
+{
+	TStackOperatorFromStream *Operator = clone();
+	Script->append( Operator );
+	return Operator->read(is);
 }
 
 // -----------
@@ -2069,8 +2108,13 @@ void TStackOperator_OP_EQUAL::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2
 // Output:    True / false
 // Operation: Same as OP_EQUAL, but runs OP_VERIFY afterward.
-void TStackOperator_OP_EQUALVERIFY::execute( TExecutionStack &Stack ) const
+istream &TStackOperator_OP_EQUALVERIFY::readAndAppend( TBitcoinScript *Script, istream &is ) const
 {
+	// Read the opcode
+	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
+	Script->append( new TStackOperator_OP_EQUAL );
+	Script->append( new TStackOperator_OP_VERIFY );
+	return is;
 }
 
 //
@@ -2242,8 +2286,13 @@ void TStackOperator_OP_NUMEQUAL::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Same as OP_NUMEQUAL, but runs OP_VERIFY afterward.
-void TStackOperator_OP_NUMEQUALVERIFY::execute( TExecutionStack &Stack ) const
+istream &TStackOperator_OP_NUMEQUALVERIFY::readAndAppend( TBitcoinScript *Script, istream &is ) const
 {
+	// Read the opcode
+	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
+	Script->append( new TStackOperator_OP_NUMEQUAL );
+	Script->append( new TStackOperator_OP_VERIFY );
+	return is;
 }
 
 //
@@ -2394,8 +2443,13 @@ void TStackOperator_OP_CHECKSIG::execute( TExecutionStack &Stack ) const
 // Input:     sig pubkey
 // Output:    True / false
 // Operation: Same as OP_CHECKSIG, but OP_VERIFY is executed afterward.
-void TStackOperator_OP_CHECKSIGVERIFY::execute( TExecutionStack &Stack ) const
+istream &TStackOperator_OP_CHECKSIGVERIFY::readAndAppend( TBitcoinScript *Script, istream &is ) const
 {
+	// Read the opcode
+	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
+	Script->append( new TStackOperator_OP_CHECKSIG );
+	Script->append( new TStackOperator_OP_VERIFY );
+	return is;
 }
 
 //
@@ -2415,8 +2469,13 @@ void TStackOperator_OP_CHECKMULTISIG::execute( TExecutionStack &Stack ) const
 // Input:     sig1 sig2 ... <number of signatures> pub1 pub2 ... <number of public keys>
 // Output:    True / False
 // Operation: Same as OP_CHECKMULTISIG, but OP_VERIFY is executed afterward.
-void TStackOperator_OP_CHECKMULTISIGVERIFY::execute( TExecutionStack &Stack ) const
+istream &TStackOperator_OP_CHECKMULTISIGVERIFY::readAndAppend( TBitcoinScript *Script, istream &is ) const
 {
+	// Read the opcode
+	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
+	Script->append( new TStackOperator_OP_CHECKMULTISIGVERIFY );
+	Script->append( new TStackOperator_OP_VERIFY );
+	return is;
 }
 
 //
