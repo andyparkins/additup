@@ -900,7 +900,7 @@ TGenericBigInteger<tLittleInteger> &TGenericBigInteger<tLittleInteger>::divideWi
 	// "this" is the numerator; D is the denominator, and we'll be
 	// storing the remainder in this and the quotient in Q.
 
-	TBigInteger D(d);
+	TGenericBigInteger<tLittleInteger> D(d);
 
 	// Binary division goes like this:
 	//
