@@ -2728,9 +2728,12 @@ int main( int argc, char *argv[] )
 		const string *p = UNITTESTSampleScripts;
 		while( !p->empty() ) {
 			istringstream iss(*p);
+			TExecutionStack S;
 			TBitcoinScript_0 BCP;
 
 			BCP.read(iss);
+
+			BCP.execute( S );
 
 			p++;
 		}
