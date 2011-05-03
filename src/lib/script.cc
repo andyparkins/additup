@@ -2514,6 +2514,15 @@ void TStackOperator_OP_SHA256::execute( TExecutionStack &Stack ) const
 // with RIPEMD-160.
 void TStackOperator_OP_HASH160::execute( TExecutionStack &Stack ) const
 {
+	auto_ptr<TStackElement> Back( Stack.take() );
+
+	// If it's not a string, exception
+	if( dynamic_cast<TStackElementString*>(Back.get()) == NULL )
+		throw script_run_error( "Invalid parameter type given to OP_HASH160" );
+
+	// XXX; Fake HASH160 for now
+	Stack().push_back( new TStackElementString(
+		string("\x89\xab\xcd\xef\xab\xba\xab\xba\xab\xba\xab\xba\xab\xba\xab\xba\xab\xba\xab\xba",20)) );
 }
 
 //
