@@ -1502,6 +1502,29 @@ class TStackOperator_OP_NOP_N : public TStackOperatorFromOpcodes
 // -------------- Class declarations
 
 //
+// Function:	TStackElement_t :: printOn
+// Description:
+//
+template <typename t>
+ostream &TStackElement_t<t>::printOn( ostream &s ) const
+{
+	s << Data;
+	return s;
+}
+
+//
+// Function:	TStackElement_t :: printOn
+// Description:
+//
+template <>
+ostream &TStackElement_t<string>::printOn( ostream &s ) const
+{
+	TLog::hexify( s, Data );
+	return s;
+}
+
+// -----------
+//
 // Function:	TExecutionStack :: TExecutionStack
 // Description:
 //

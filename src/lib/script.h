@@ -240,6 +240,7 @@ class script_parse_error_version : public script_parse_error
 class TStackElement
 {
   public:
+	virtual ostream &printOn( ostream & ) const = 0;
 };
 
 //
@@ -252,6 +253,9 @@ class TStackElement_t : public TStackElement
   public:
 	TStackElement_t( const t &d ) : Data(d) {}
 
+	ostream &printOn( ostream &s ) const;
+
+  public:
 	t Data;
 };
 typedef TStackElement_t<int> TStackElementInteger;
