@@ -43,6 +43,7 @@
 
 // -------------- Template instantiations
 template class TGenericBigInteger<unsigned int>;
+template class TGenericBigSignedInteger<unsigned int>;
 
 
 // -------------- Class member definitions
@@ -1310,6 +1311,424 @@ ostream &TGenericBigInteger<tLittleInteger>::printOn( ostream &s ) const
 	return s;
 }
 
+// ----------
+
+//
+// Function:	TGenericBigSignedInteger :: TGenericBigSignedInteger
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>::TGenericBigSignedInteger( tLittleInteger r1, tLittleInteger r0 ) :
+	TGenericBigInteger<tLittleInteger>(r1,r0),
+	Negative(false)
+{
+}
+
+//
+// Function:	TGenericBigSignedInteger :: TGenericBigSignedInteger
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>::TGenericBigSignedInteger( tLittleInteger r2, tLittleInteger r1, tLittleInteger r0 ) :
+	TGenericBigInteger<tLittleInteger>(r2,r1,r0),
+	Negative(false)
+{
+}
+
+//
+// Function:	TGenericBigSignedInteger :: TGenericBigSignedInteger
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>::TGenericBigSignedInteger( tLittleInteger r3, tLittleInteger r2, tLittleInteger r1, tLittleInteger r0 ) :
+	TGenericBigInteger<tLittleInteger>(r3,r2,r1,r0),
+	Negative(false)
+{
+}
+
+//
+// Function:	TGenericBigSignedInteger :: fromString
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &TGenericBigSignedInteger<tLittleInteger>::fromString( const string &s, unsigned int Base )
+{
+	string::size_type pos;
+
+	pos = s.find('-', 0);
+	if( pos != string::npos ) {
+		TGenericBigInteger<tLittleInteger>::fromString(
+				s.substr(pos,s.size()-pos), Base);
+		Negative = true;
+	} else {
+		TGenericBigInteger<tLittleInteger>::fromString(s, Base);
+		Negative = false;
+	}
+
+	normalise();
+
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: toString
+// Description:
+//
+template <typename tLittleInteger>
+string TGenericBigSignedInteger<tLittleInteger>::toString( unsigned int Base ) const
+{
+	if( Negative ) {
+		return string("-") + TGenericBigInteger<tLittleInteger>::toString( Base );
+	} else {
+		return TGenericBigInteger<tLittleInteger>::toString( Base );
+	}
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator=
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &TGenericBigSignedInteger<tLittleInteger>::operator=( long long t )
+{
+	if( t < 0 ) {
+		TGenericBigInteger<tLittleInteger>::operator=(-t);
+		Negative = true;
+	} else {
+		TGenericBigInteger<tLittleInteger>::operator=(t);
+		Negative = false;
+	}
+
+	normalise();
+
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: compareTo
+// Description:
+// The sign of each of the values can flip the result, so we do the
+// unsigned comparison and then adjust for sign.
+//
+template <typename tLittleInteger>
+typename TGenericBigSignedInteger<tLittleInteger>::eComparisonResult
+TGenericBigSignedInteger<tLittleInteger>::compareTo( const TGenericBigSignedInteger<tLittleInteger> &C ) const
+{
+	switch( TGenericBigInteger<tLittleInteger>::compareTo(C) ) {
+		case TGenericBigInteger<tLittleInteger>::LessThan:
+			if( C.isNegative() ) {
+				return TGenericBigInteger<tLittleInteger>::GreaterThan;
+			} else {
+				return TGenericBigInteger<tLittleInteger>::LessThan;
+			}
+			break;
+		case TGenericBigInteger<tLittleInteger>::EqualTo:
+			if( isNegative() != C.isNegative() ) {
+				if( isNegative() ) {
+					return TGenericBigInteger<tLittleInteger>::LessThan;
+				} else {
+					return TGenericBigInteger<tLittleInteger>::GreaterThan;
+				}
+			} else {
+				return TGenericBigInteger<tLittleInteger>::EqualTo;
+			}
+			break;
+		case TGenericBigInteger<tLittleInteger>::GreaterThan:
+			if( isNegative() ) {
+				return TGenericBigInteger<tLittleInteger>::LessThan;
+			} else {
+				return TGenericBigInteger<tLittleInteger>::GreaterThan;
+			}
+			break;
+	}
+	throw logic_error("How did we get here (TGenericBigSignedInteger<tLittleInteger>()");
+}
+
+//
+// Function:	TGenericBigSignedInteger :: normalise
+// Description:
+/// Remove sign on zeroes.
+//
+template <typename tLittleInteger>
+void TGenericBigSignedInteger<tLittleInteger>::normalise()
+{
+	// We'll define zero as positive
+	if( isZero() )
+		Negative = false;
+	TGenericBigInteger<tLittleInteger>::normalise();
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator+=
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::operator+=(
+		const TGenericBigSignedInteger<tLittleInteger> &B)
+{
+	if( isNegative() == B.isNegative() ) {
+		// If both are negative or both are positive then simple
+		// addition will do, and our sign can stay as it is
+		TGenericBigInteger<tLittleInteger>::operator+=(B);
+	} else {
+		// We're negative and we want to add a positive number, that is
+		// the same as reducing us by that positive number, but we must
+		// be careful not to ask the base class to provide a negative
+		// number, which we do by comparing absolutes to find the right
+		// way round to do the subtraction.
+		if( TGenericBigInteger<tLittleInteger>::compareTo(B) == TGenericBigInteger<tLittleInteger>::LessThan ) {
+			// Our absolute is smaller than the subtractand absolute.
+			//   e.g.  -5 + 10 = 5
+			// We'll have to do the subtraction we can do and invert our
+			// sign
+			TGenericBigSignedInteger<tLittleInteger> X( *this );
+			*this = B;
+			TGenericBigInteger<tLittleInteger>::operator-=(X);
+			setNegative( !X.isNegative() );
+		} else {
+			// Our absolute is larger than the subtractand absolute.
+			//   e.g.  -10 + 5 = -5
+			// Just do it and leave our sign as it is
+			TGenericBigInteger<tLittleInteger>::operator-=(B);
+		}
+	}
+
+	normalise();
+
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator-=
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::operator-=(
+		const TGenericBigSignedInteger<tLittleInteger> &B)
+{
+	if( isNegative() != B.isNegative() ) {
+		// Negative minus positive is addition with sign left as it is
+		// Positive minus negative is addition with sign left as it is
+		TGenericBigInteger<tLittleInteger>::operator+=(B);
+	} else {
+		// Find out which is the bigger
+		if( TGenericBigInteger<tLittleInteger>::compareTo(B) == TGenericBigInteger<tLittleInteger>::LessThan ) {
+			// Our absolute is less than the subtractand absolute
+			//  e.g.  -5 - -10 = 5
+			// Do the subtraction we can do and negate
+			TGenericBigInteger<tLittleInteger> X( *this );
+			*this = B;
+			TGenericBigInteger<tLittleInteger>::operator-=(X);
+			negate();
+		} else {
+			// Our absolute is larger than the subtractand absolute
+			//  e.g. -10 - -5 = -5
+			TGenericBigInteger<tLittleInteger>::operator-=(B);
+			// Sign correct
+		}
+	}
+
+	normalise();
+
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator*=
+// Description:
+/// Implement A = A * B
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::operator*=(
+		const TGenericBigSignedInteger<tLittleInteger> &B)
+{
+	// Base class multiply will be fine, and we'll special case the sign
+	TGenericBigInteger<tLittleInteger>::operator*=(B);
+	Negative = (isNegative() != B.isNegative());
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: divideWithRemainder
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &TGenericBigSignedInteger<tLittleInteger>::divideWithRemainder(const TGenericBigSignedInteger<tLittleInteger> &d, TGenericBigSignedInteger<tLittleInteger> &Q)
+{
+	// The sign of the quotient is determined by the sign of the
+	// numerator and denominator
+	Q.setNegative( isNegative() != d.isNegative() );
+	// C++ doesn't define the sign of the remainder, C 1999 defines the
+	// remainder as having the same sign as the dividend; I prefer a
+	// standardised result; and when C++ does standardise it's more
+	// likely to be the same as C than not.  *this is the dividend so we
+	// simply leave the sign as it is
+//	Negative = isNegative();
+	// Base class divide will be fine, and we'll special case the sign
+	TGenericBigInteger<tLittleInteger>::divideWithRemainder(d, Q);
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator&=
+// Description:
+/// Implement A = A & B
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::operator&=(
+		const TGenericBigSignedInteger<tLittleInteger> &B)
+{
+	TGenericBigInteger<tLittleInteger>::operator&=(B);
+	// Bitwise AND, so we'll treat the negative flag as just another bit
+	Negative = (isNegative() && B.isNegative());
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator|=
+// Description:
+/// Implement A = A | B
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::operator|=(
+		const TGenericBigSignedInteger<tLittleInteger> &B)
+{
+	TGenericBigInteger<tLittleInteger>::operator|=(B);
+	// Bitwise, so we'll treat the negative flag as just another bit
+	Negative = (isNegative() || B.isNegative());
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator^=
+// Description:
+/// Implement A = A ^ B
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::operator^=(
+		const TGenericBigSignedInteger<tLittleInteger> &B)
+{
+	TGenericBigInteger<tLittleInteger>::operator^=(B);
+	// Bitwise, so we'll treat the negative flag as just another bit
+	Negative = (isNegative() != B.isNegative());
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator~
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>::operator~() const
+{
+	TGenericBigSignedInteger<tLittleInteger> X( TGenericBigInteger<tLittleInteger>::operator~() );
+	// Bitwise, so we'll treat the negative flag as just another bit
+	X.setNegative( !isNegative() );
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator-
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>::operator-() const
+{
+	TGenericBigSignedInteger<tLittleInteger> X( *this );
+	X.setNegative( !isNegative() );
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator<<=
+// Description:
+/// Implement A = A << B
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::operator<<=( tIndex b )
+{
+	TGenericBigInteger<tLittleInteger>::operator<<=(b);
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: operator>>=
+// Description:
+/// Implement A = A >> B
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::operator>>=( tIndex b )
+{
+	TGenericBigInteger<tLittleInteger>::operator>>=(b);
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: blockShiftLeft
+// Description:
+// xxx yyy zzz -> xxx yyy zzz 0
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::blockShiftLeft( tIndex b )
+{
+	TGenericBigInteger<tLittleInteger>::blockShiftLeft(b);
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: blockShiftRight
+// Description:
+// xxx yyy zzz -> xxx yyy
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::blockShiftRight( tIndex b )
+{
+	TGenericBigInteger<tLittleInteger>::blockShiftRight(b);
+	normalise();
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: printOn
+// Description:
+//
+template <typename tLittleInteger>
+ostream &TGenericBigSignedInteger<tLittleInteger>::printOn( ostream &s ) const
+{
+	if( s.flags() & ostream::hex ) {
+		if( Negative )
+			s << "-";
+		TGenericBigInteger<tLittleInteger>::printOn(s);
+	} else if( s.flags() & ostream::oct ) {
+		s << toString(8);
+	} else if( s.flags() & ostream::dec ) {
+		s << toString(10);
+	} else {
+	}
+
+	return s;
+}
+
 
 // -------------- Function definitions
 
@@ -1547,6 +1966,112 @@ int main( int argc, char *argv[] )
 		return 255;
 	}
 
+	try {
+		log() << "Testing signed arithmetic" << endl;
+
+		TBigInteger neg1(-1), pos1(neg1.negated());
+		TBigInteger pos10(10), neg10(pos10.negated());
+
+		log() << "neg1  = " << neg1 << " (negated: " << neg1.negated() << ")" << endl
+			<< "pos1  = " << pos1 << " (negated: " << pos1.negated() << ")" << endl
+			<< "neg10 = " << neg10 << " (negated: " << neg10.negated() << ")" << endl
+			<< "pos10 = " << pos10 << " (negated: " << pos10.negated() << ")" << endl;
+		if( !neg1.isNegative() || pos1.isNegative() )
+			throw logic_error("Positive numbers are !isNegative(), negative numbers are isNegative()" );
+
+		if( neg1 > 0 )
+			throw logic_error("Negative numbers should be less than zero");
+		if( pos1 < 0 )
+			throw logic_error("Positive numbers should be greater than zero");
+
+		if( (neg1 * neg1).isNegative() )
+			throw logic_error("Negative times negative should be positive");
+		if( !(neg1 * pos1).isNegative() )
+			throw logic_error("Negative times positive should be positive");
+		if( !(pos1 * neg1).isNegative() )
+			throw logic_error("Positive times negative should be positive");
+
+		log() << "neg1 + pos1 = " << (neg1 + pos1) << endl;
+		log() << "pos1 + neg1 = " << (pos1 + neg1) << endl;
+		log() << "neg1 - pos1 = " << (neg1 - pos1) << endl;
+		log() << "pos1 - neg1 = " << (pos1 - neg1) << endl;
+
+		if( neg1 + pos1 != 0 )
+			throw logic_error("Negative plus positive should cancel");
+		if( pos1 + neg1 != 0 )
+			throw logic_error("Positive plus negative should cancel");
+		if( neg1 - pos1 != -2 )
+			throw logic_error("Negative minus positive should be negative");
+		if( pos1 - neg1 != 2 )
+			throw logic_error("Positive minus negative should be positive");
+		if( neg1 + neg1 != -2 )
+			throw logic_error("Negative plus positive should be negative");
+		if( neg1 - neg1 != 0 )
+			throw logic_error("Negative minus positive should cancel");
+
+		log() << "neg1 + pos10 = " << (neg1 + pos10) << endl;
+		log() << "pos1 + neg10 = " << (pos1 + neg10) << endl;
+		log() << "neg1 - pos10 = " << (neg1 - pos10) << endl;
+		log() << "pos1 - neg10 = " << (pos1 - neg10) << endl;
+
+		if( neg1 + pos10 != 9 )
+			throw logic_error("Small negative plus large positive should be positive");
+		if( pos1 + neg10 != -9 )
+			throw logic_error("Small positive plus large negative should be negative");
+		if( neg1 - pos10 != -11 )
+			throw logic_error("Small negative minus large positive should be negative");
+		if( pos1 - neg10 != 11 )
+			throw logic_error("Small positive minus large negative should be positive");
+
+		if( neg1.abs() != pos1 )
+			throw logic_error("Absolute part of a negative number should be positive" );
+
+		log() << "neg1 * pos1 = " << (neg1 * pos1) << endl;
+		log() << "neg1 * neg1 = " << (neg1 * neg1) << endl;
+		log() << "pos1 * pos1 = " << (pos1 * neg1) << endl;
+		log() << "pos1 * pos1 = " << (pos1 * pos1) << endl;
+
+		if( neg1 * pos1 != -1 )
+			throw logic_error("Negative times positive should be negative");
+		if( neg1 * neg1 != 1 )
+			throw logic_error("Negative times negative should be positive");
+		if( pos1 * neg1 != -1 )
+			throw logic_error("Positive times negative should be negative");
+		if( pos1 * pos1 != 1 )
+			throw logic_error("Positive times positive should be positive");
+
+		log() << "neg1 / pos1 = " << (neg1 / pos1) << endl;
+		log() << "neg1 / neg1 = " << (neg1 / neg1) << endl;
+		log() << "pos1 / pos1 = " << (pos1 / neg1) << endl;
+		log() << "pos1 / pos1 = " << (pos1 / pos1) << endl;
+
+		if( neg1 / pos1 != -1 )
+			throw logic_error("Negative divided by positive should be negative");
+		if( neg1 / neg1 != 1 )
+			throw logic_error("Negative divided by negative should be positive");
+		if( pos1 / neg1 != -1 )
+			throw logic_error("Positive divided by negative should be negative");
+		if( pos1 / pos1 != 1 )
+			throw logic_error("Positive divided by positive should be positive");
+
+		log() << "neg1 % pos10 = " << (neg1 % pos10) << endl;
+		log() << "neg1 % neg10 = " << (neg1 % neg10) << endl;
+		log() << "pos1 % pos10 = " << (pos1 % neg10) << endl;
+		log() << "pos1 % pos10 = " << (pos1 % pos10) << endl;
+
+		if( neg1 % pos10 != -1 )
+			throw logic_error("Negative mod positive should be negative");
+		if( neg1 % neg10 != -1 )
+			throw logic_error("Negative mod negative should be negative");
+		if( pos1 % neg10 != 1 )
+			throw logic_error("Positive mod negative should be positive");
+		if( pos1 % pos10 != 1 )
+			throw logic_error("Positive mod positive should be positive");
+
+	} catch( exception &e ) {
+		log(TLog::Error) << e.what() << endl;
+		return 255;
+	}
 
 	try {
 		struct {
@@ -1573,7 +2098,7 @@ int main( int argc, char *argv[] )
 			}
 			log() << "\"" << p->Sample << "\" in base" << p->Base << " = " << x << endl;
 			if( x != p->Sample )
-				throw logic_error("Displaying as in custom base failed");
+				throw logic_error("Displaying in custom base failed");
 
 			p++;
 		}

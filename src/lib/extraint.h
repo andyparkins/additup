@@ -23,6 +23,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <iostream>
 // --- Qt
 // --- OS
 // --- Project
@@ -187,6 +188,99 @@ class TGenericBigInteger
 
 };
 
+//
+// Class:	TGenericBigSignedInteger
+// Description:
+//
+template <typename tLittleInteger>
+class TGenericBigSignedInteger : public TGenericBigInteger<tLittleInteger>
+{
+  public:
+	// Import from base class
+	typedef typename TGenericBigInteger<tLittleInteger>::tIndex tIndex;
+	typedef typename TGenericBigInteger<tLittleInteger>::eComparisonResult eComparisonResult;
+
+	using TGenericBigInteger<tLittleInteger>::isValid;
+	using TGenericBigInteger<tLittleInteger>::isZero;
+
+  public:
+	TGenericBigSignedInteger() : Negative(false) {}
+	TGenericBigSignedInteger( const TGenericBigSignedInteger &O ) { operator=(O); }
+	explicit TGenericBigSignedInteger( const TGenericBigInteger<tLittleInteger> &O ) { operator=(O); }
+	TGenericBigSignedInteger( const string &s, unsigned int b = 10 ) { fromString(s,b); }
+	TGenericBigSignedInteger( int t ) { operator=(t); }
+	TGenericBigSignedInteger( tLittleInteger r0 ) { operator=(r0); }
+	TGenericBigSignedInteger( tLittleInteger r1, tLittleInteger r0 );
+	TGenericBigSignedInteger( tLittleInteger r2, tLittleInteger r1, tLittleInteger r0 );
+	TGenericBigSignedInteger( tLittleInteger r3, tLittleInteger r2, tLittleInteger r1, tLittleInteger r0 );
+	TGenericBigSignedInteger( unsigned long long t ) { operator=(t); }
+
+	bool isNegative() const { return Negative; }
+	void setNegative( bool b ) { Negative = b; }
+	TGenericBigSignedInteger negated() const { return TGenericBigSignedInteger(*this).negate(); }
+	TGenericBigSignedInteger &negate() { Negative = !Negative; return *this; }
+	TGenericBigSignedInteger abs() const { TGenericBigSignedInteger x(*this); return x.isNegative() ? x.negate() : x; }
+
+	// Assignment
+	TGenericBigSignedInteger &operator=( const string &s ) { return fromString(s, 10); }
+	TGenericBigSignedInteger &operator=( long long t );
+	TGenericBigSignedInteger &operator=( const TGenericBigSignedInteger &O ) { TGenericBigInteger<tLittleInteger>::operator=(O); Negative=O.Negative; return *this; }
+	TGenericBigSignedInteger &operator=( const TGenericBigInteger<tLittleInteger> &O ) { TGenericBigInteger<tLittleInteger>::operator=(O); Negative=false; return *this; }
+
+	// Arithmetic - Compound
+	TGenericBigSignedInteger &operator +=(const TGenericBigSignedInteger &x);
+	TGenericBigSignedInteger &operator -=(const TGenericBigSignedInteger &x);
+	TGenericBigSignedInteger &operator *=(const TGenericBigSignedInteger &x);
+	TGenericBigSignedInteger &operator /=(const TGenericBigSignedInteger &x) { TGenericBigSignedInteger q; divideWithRemainder(x,q); *this = q; return *this; }
+	TGenericBigSignedInteger &operator %=(const TGenericBigSignedInteger &x) { TGenericBigSignedInteger q; divideWithRemainder(x,q); return *this; }
+	TGenericBigSignedInteger &operator &=(const TGenericBigSignedInteger &x);
+	TGenericBigSignedInteger &operator |=(const TGenericBigSignedInteger &x);
+	TGenericBigSignedInteger &operator ^=(const TGenericBigSignedInteger &x);
+	TGenericBigSignedInteger &operator <<=( tIndex );
+	TGenericBigSignedInteger &operator >>=( tIndex );
+	TGenericBigSignedInteger &blockShiftLeft( tIndex );
+	TGenericBigSignedInteger &blockShiftRight( tIndex );
+	TGenericBigSignedInteger &divideWithRemainder(const TGenericBigSignedInteger &b, TGenericBigSignedInteger &q);
+
+	TGenericBigSignedInteger &operator++() { return (*this += 1);}
+	TGenericBigSignedInteger &operator++( int ) { return (*this += 1);}
+	TGenericBigSignedInteger &operator--() { return (*this -= 1); }
+	TGenericBigSignedInteger &operator--( int ) { return (*this -= 1); }
+
+	// Arithmetic - non compound
+	TGenericBigSignedInteger operator+( const TGenericBigSignedInteger &x ) const { return TGenericBigSignedInteger(*this) += x; }
+	TGenericBigSignedInteger operator-( const TGenericBigSignedInteger &x ) const { return TGenericBigSignedInteger(*this) -= x; };
+	TGenericBigSignedInteger operator*( const TGenericBigSignedInteger &x ) const { return TGenericBigSignedInteger(*this) *= x; };
+	TGenericBigSignedInteger operator/( const TGenericBigSignedInteger &x ) const { return TGenericBigSignedInteger(*this) /= x; };
+	TGenericBigSignedInteger operator%( const TGenericBigSignedInteger &x ) const { return TGenericBigSignedInteger(*this) %= x; };
+	TGenericBigSignedInteger operator&( const TGenericBigSignedInteger &x ) const { return TGenericBigSignedInteger(*this) &= x; };
+	TGenericBigSignedInteger operator|( const TGenericBigSignedInteger &x ) const { return TGenericBigSignedInteger(*this) |= x; };
+	TGenericBigSignedInteger operator^( const TGenericBigSignedInteger &x ) const { return TGenericBigSignedInteger(*this) ^= x; };
+	TGenericBigSignedInteger operator~() const;
+	TGenericBigSignedInteger operator-() const;
+	TGenericBigSignedInteger operator<<( tIndex b ) const { return TGenericBigSignedInteger(*this) <<= b; };
+	TGenericBigSignedInteger operator>>( tIndex b ) const { return TGenericBigSignedInteger(*this) >>= b; };
+
+	// Comparison
+	eComparisonResult compareTo( const TGenericBigSignedInteger & ) const;
+	bool operator<( const TGenericBigSignedInteger &O ) const { return isValid() && O.isValid() && compareTo(O) == TGenericBigInteger<tLittleInteger>::LessThan; }
+	bool operator>( const TGenericBigSignedInteger &O ) const { return isValid() && O.isValid() && compareTo(O) == TGenericBigInteger<tLittleInteger>::GreaterThan; }
+	bool operator==( const TGenericBigSignedInteger &O ) const { return isValid() && O.isValid() && compareTo(O) == TGenericBigInteger<tLittleInteger>::EqualTo; }
+	bool operator!=( const TGenericBigSignedInteger &O ) const { return isValid() && O.isValid() && !(*this == O); }
+	bool operator<=( const TGenericBigSignedInteger &O ) const { return isValid() && O.isValid() && !(*this > O); }
+	bool operator>=( const TGenericBigSignedInteger &O ) const { return isValid() && O.isValid() && !(*this < O); }
+
+	ostream &printOn( ostream & ) const;
+	string toString( unsigned int = 10 ) const;
+
+  protected:
+	void normalise();
+
+	TGenericBigSignedInteger &fromString( const string &, unsigned int = 10 );
+
+  protected:
+	bool Negative;
+};
 
 // -------------- Constants
 
@@ -204,7 +298,8 @@ inline ostream &operator<<( ostream &s, const TGenericBigInteger<tLittleInteger>
 
 
 // -------------- Template instantiations
-typedef TGenericBigInteger<unsigned int> TBigInteger;
+extern template class TGenericBigSignedInteger<unsigned int>;
+typedef TGenericBigSignedInteger<unsigned int> TBigInteger;
 
 
 
