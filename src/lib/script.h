@@ -277,6 +277,8 @@ class TExecutionStack
   public:
 	TExecutionStack();
 
+	ostream &printOn( ostream &s ) const;
+
 	list<TStackElement*> &operator()() { return Stack; }
 
 	list<TStackElement*> Stack;

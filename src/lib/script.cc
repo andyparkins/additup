@@ -1533,6 +1533,22 @@ TExecutionStack::TExecutionStack() :
 {
 }
 
+//
+// Function:	TExecutionStack :: printOn
+// Description:
+//
+ostream &TExecutionStack::printOn( ostream &s ) const
+{
+	list<TStackElement*>::const_iterator it;
+	for( it = Stack.begin(); it != Stack.end(); it++ ) {
+		s << " - ";
+		(*it)->printOn(s);
+		s << endl;
+	}
+
+	return s;
+}
+
 // -----------
 
 //
