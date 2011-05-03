@@ -178,6 +178,7 @@ enum eScriptOp {
 class TStackElement;
 class TStackOperator;
 class TStackOperatorFromStream;
+class TMessageDigest;
 
 
 // -------------- Function pre-class prototypes

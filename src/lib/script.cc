@@ -27,6 +27,7 @@
 // --- Project libs
 // --- Project
 #include "logstream.h"
+#include "crypto.h"
 
 
 // -------------- Namespace
@@ -1146,73 +1147,93 @@ class TStackOperator_OP_WITHIN : public TStackOperatorFromOpcode
 };
 
 //
+// Class: TStackOperator_CryptographicDigest
+// Desciption:
+//
+class TStackOperator_CryptographicDigest : public TStackOperatorFromOpcode
+{
+  public:
+	const char *className() const { return "TStackOperator_CryptographicDigest"; }
+
+	void execute( TExecutionStack &Stack ) const;
+
+  protected:
+	virtual TMessageDigest *createHasher() const = 0;
+};
+
+//
 // Class: TStackOperator_OP_RIPEMD160
 // Desciption:
 //
-class TStackOperator_OP_RIPEMD160 : public TStackOperatorFromOpcode
+class TStackOperator_OP_RIPEMD160 : public TStackOperator_CryptographicDigest
 {
   public:
 	const char *className() const { return "TStackOperator_OP_RIPEMD160"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RIPEMD160(*this); }
 	eScriptOp getOpcode() const { return OP_RIPEMD160; }
 
-	void execute( TExecutionStack &Stack ) const;
+  protected:
+	virtual TMessageDigest *createHasher() const;
 };
 
 //
 // Class: TStackOperator_OP_SHA1
 // Desciption:
 //
-class TStackOperator_OP_SHA1 : public TStackOperatorFromOpcode
+class TStackOperator_OP_SHA1 : public TStackOperator_CryptographicDigest
 {
   public:
 	const char *className() const { return "TStackOperator_OP_SHA1"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SHA1(*this); }
 	eScriptOp getOpcode() const { return OP_SHA1; }
 
-	void execute( TExecutionStack &Stack ) const;
+  protected:
+	virtual TMessageDigest *createHasher() const;
 };
 
 //
 // Class: TStackOperator_OP_SHA256
 // Desciption:
 //
-class TStackOperator_OP_SHA256 : public TStackOperatorFromOpcode
+class TStackOperator_OP_SHA256 : public TStackOperator_CryptographicDigest
 {
   public:
 	const char *className() const { return "TStackOperator_OP_SHA256"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SHA256(*this); }
 	eScriptOp getOpcode() const { return OP_SHA256; }
 
-	void execute( TExecutionStack &Stack ) const;
+  protected:
+	virtual TMessageDigest *createHasher() const;
 };
 
 //
 // Class: TStackOperator_OP_HASH160
 // Desciption:
 //
-class TStackOperator_OP_HASH160 : public TStackOperatorFromOpcode
+class TStackOperator_OP_HASH160 : public TStackOperator_CryptographicDigest
 {
   public:
 	const char *className() const { return "TStackOperator_OP_HASH160"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_HASH160(*this); }
 	eScriptOp getOpcode() const { return OP_HASH160; }
 
-	void execute( TExecutionStack &Stack ) const;
+  protected:
+	virtual TMessageDigest *createHasher() const;
 };
 
 //
 // Class: TStackOperator_OP_HASH256
 // Desciption:
 //
-class TStackOperator_OP_HASH256 : public TStackOperatorFromOpcode
+class TStackOperator_OP_HASH256 : public TStackOperator_CryptographicDigest
 {
   public:
 	const char *className() const { return "TStackOperator_OP_HASH256"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_HASH256(*this); }
 	eScriptOp getOpcode() const { return OP_HASH256; }
 
-	void execute( TExecutionStack &Stack ) const;
+  protected:
+	virtual TMessageDigest *createHasher() const;
 };
 
 //
@@ -2942,14 +2963,36 @@ void TStackOperator_OP_WITHIN::execute( TExecutionStack &Stack ) const
 	Stack.give( new TStackElementBoolean( X->Data >= MIN->Data && X->Data < MAX->Data ) );
 }
 
+//
+// Function:	TStackOperator_CryptographicDigest
+// Description:
+// The hashing operators are all identical except in the hash function
+// they use, rather than implement the same code multiple times, this
+// class implements the common code and simply asks the child class what
+// hash it wants us to use.
+//
+void TStackOperator_CryptographicDigest::execute( TExecutionStack &Stack ) const
+{
+	auto_ptr<TStackElement> in( Stack.take() );
+	TStackElementString *IN = dynamic_cast<TStackElementString*>(in.get());
+
+	if( IN == NULL )
+		throw script_run_parameter_type_error();
+
+	// Push the hashed version back onto the stack
+	TMessageDigest *Hasher = createHasher();
+	Stack.give( new TStackElementString(Hasher->transform( IN->Data ) ) );
+	delete Hasher;
+}
 
 //
 // Function:  OP_RIPEMD160
 // Input:     in
 // Output:    hash
 // Operation: The input is hashed using RIPEMD-160.
-void TStackOperator_OP_RIPEMD160::execute( TExecutionStack &Stack ) const
+TMessageDigest *TStackOperator_OP_RIPEMD160::createHasher() const
 {
+	return new THash_ripemd160;
 }
 
 //
@@ -2957,8 +3000,9 @@ void TStackOperator_OP_RIPEMD160::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    hash
 // Operation: The input is hashed using SHA-1.
-void TStackOperator_OP_SHA1::execute( TExecutionStack &Stack ) const
+TMessageDigest *TStackOperator_OP_SHA1::createHasher() const
 {
+	return new THash_sha1;
 }
 
 //
@@ -2966,8 +3010,9 @@ void TStackOperator_OP_SHA1::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    hash
 // Operation: The input is hashed using SHA-256.
-void TStackOperator_OP_SHA256::execute( TExecutionStack &Stack ) const
+TMessageDigest *TStackOperator_OP_SHA256::createHasher() const
 {
+	return new THash_sha256;
 }
 
 //
@@ -2976,17 +3021,9 @@ void TStackOperator_OP_SHA256::execute( TExecutionStack &Stack ) const
 // Output:    hash
 // Operation: The input is hashed twice: first with SHA-256 and then
 // with RIPEMD-160.
-void TStackOperator_OP_HASH160::execute( TExecutionStack &Stack ) const
+TMessageDigest *TStackOperator_OP_HASH160::createHasher() const
 {
-	auto_ptr<TStackElement> Back( Stack.take() );
-
-	// If it's not a string, exception
-	if( dynamic_cast<TStackElementString*>(Back.get()) == NULL )
-		throw script_run_error( "Invalid parameter type given to OP_HASH160" );
-
-	// XXX; Fake HASH160 for now
-	Stack().push_back( new TStackElementString(
-		string("\x89\xab\xcd\xef\xab\xba\xab\xba\xab\xba\xab\xba\xab\xba\xab\xba\xab\xba\xab\xba",20)) );
+	return new TDoubleHash( new THash_ripemd160, new THash_sha256 );
 }
 
 //
@@ -2994,8 +3031,9 @@ void TStackOperator_OP_HASH160::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    hash
 // Operation: The input is hashed two times with SHA-256.
-void TStackOperator_OP_HASH256::execute( TExecutionStack &Stack ) const
+TMessageDigest *TStackOperator_OP_HASH256::createHasher() const
 {
+	return new TDoubleHash( new THash_sha256, new THash_sha256 );
 }
 
 //
