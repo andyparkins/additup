@@ -102,6 +102,8 @@ TBitcoinPeer::~TBitcoinPeer()
 //
 const TNetworkParameters *TBitcoinPeer::getNetworkParameters() const
 {
+	if( Network == NULL )
+		return NULL;
 	return Network->getNetworkParameters();
 }
 
