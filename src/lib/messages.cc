@@ -395,7 +395,10 @@ ostream &TMessage_version_0::write( ostream &os ) const
 //
 TVersionedMessageFactory *TMessage_version_0::createMessageFactory() const
 {
-	return new TMessageFactory_0;
+	TMessageFactory_0 *factory = new TMessageFactory_0;
+	// The factory has the same peer as us
+	factory->setPeer( Peer );
+	return factory;
 }
 
 //
@@ -439,7 +442,10 @@ ostream &TMessage_version_10600::write( ostream &os ) const
 //
 TVersionedMessageFactory *TMessage_version_10600::createMessageFactory() const
 {
-	return new TMessageFactory_10600;
+	TMessageFactory_10600 *factory = new TMessageFactory_10600;
+	// The factory has the same peer as us
+	factory->setPeer( Peer );
+	return factory;
 }
 
 //
@@ -474,13 +480,17 @@ ostream &TMessage_version_20900::write( ostream &os ) const
 //
 TVersionedMessageFactory *TMessage_version_20900::createMessageFactory() const
 {
+	TVersionedMessageFactory *factory;
 	// There is no special TMessage_version_31402, so we'll handle the
 	// creation of 31402's message factory here
 	if( Version < 31402 ) {
-		return new TMessageFactory_20900;
+		factory = new TMessageFactory_20900;
 	} else {
-		return new TMessageFactory_31402;
+		factory = new TMessageFactory_31402;
 	}
+	// The factory has the same peer as us
+	factory->setPeer( Peer );
+	return factory;
 }
 
 // --------
