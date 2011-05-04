@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Project: bitcoin
+// Project: additup
 /// @file   script.cc
 /// @author Andy Parkins
 //

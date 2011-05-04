@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Project: bitcoin
+// Project: additup
 /// @file   bitcoinnetwork.cc
 /// @author Andy Parkins
 //

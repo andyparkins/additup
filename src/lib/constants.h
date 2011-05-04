@@ -1,5 +1,5 @@
 // ----------------------------------------------------------------------------
-// Project: bitcoin
+// Project: additup
 /// @file   constants.h
 /// @author Andy Parkins
 //
