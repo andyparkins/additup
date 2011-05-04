@@ -56,6 +56,8 @@
 
 
 // -------------- Class pre-declarations
+class TTransactionPool;
+class TBlockPool;
 
 
 // -------------- Function pre-class prototypes
@@ -109,6 +111,9 @@ class TBitcoinNetwork
 	weak_ptr<TBitcoinPeer> Self;
 
 	list<shared_ptr<TNodeInfo> > Directory;
+
+	TTransactionPool *TransactionPool;
+	TBlockPool *BlockPool;
 };
 
 
