@@ -104,6 +104,7 @@ class TBitcoinNetwork
 	void connect( TNodeInfo * );
 
 	const TNetworkParameters *getNetworkParameters() const { return Parameters; }
+	void setNetworkParameters( const TNetworkParameters *p ) { Parameters = p; }
 
   protected:
 	const TNetworkParameters *Parameters;
