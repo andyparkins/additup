@@ -53,7 +53,7 @@ class TTestnetNetworkParameters : public TNetworkParameters
   public:
 	TTestnetNetworkParameters() {
 		DefaultTCPPort = 18333;
-		Magic = 0xfabfb5da;
+		Magic = 0xdab5bffa;
 		BitcoinAddressPrefix = 111;
 		// 33 bytes of ones = 264 bits
 		ProofOfWorkLimit = (TBigInteger(1) << (33*8)) - 1;
@@ -71,6 +71,7 @@ class TTestnetNetworkParameters : public TNetworkParameters
 		// String genesisHash = n.genesisBlock.getHashAsString();
 		// assert genesisHash.equals("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008");
 	}
+	const char *className() const { return "TTestnetNetworkParameters"; }
 };
 
 //
@@ -82,7 +83,7 @@ class TProdnetNetworkParameters : public TNetworkParameters
   public:
 	TProdnetNetworkParameters() {
 		DefaultTCPPort = 8333;
-		Magic = 0xf9beb4d9;
+		Magic = 0xd9b4bef9;
 		BitcoinAddressPrefix = 0;
 		// 33 bytes of ones = 264 bits
 		ProofOfWorkLimit = (TBigInteger(1) << (33*8)) - 1;
@@ -101,6 +102,7 @@ class TProdnetNetworkParameters : public TNetworkParameters
 		// String genesisHash = n.genesisBlock.getHashAsString();
 		// assert genesisHash.equals("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f") : genesisHash;
 	}
+	const char *className() const { return "TProdnetNetworkParameters"; }
 };
 
 // -------------- Class member definitions

@@ -74,6 +74,7 @@ class TNetworkParameters
 {
   public:
 	TNetworkParameters();
+	virtual const char *className() const { return "TNetworkParameters"; }
 
 	uint32_t ProtocolVersion;
 	// Block GenesisBlock;
