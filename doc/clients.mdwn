@@ -1,0 +1,53 @@
+## Clients
+
+Satoshi, the original designer of the Bitcoin protocol and client said
+this:
+
+> I don't believe a second, compatible implementation of Bitcoin will ever
+> be a good idea.  So much of the design depends on all nodes getting
+> exactly identical results in lockstep that a second implementation would
+> be a menace to the network.  The MIT license is compatible with all
+> other licenses and commercial uses, so there is no need to rewrite it
+> from a licensing standpoint.
+
+Gavin, the current lead developer said this:
+
+> Good idea or not, SOMEBODY will try to mess up the network (or co-opt
+> it for their own use) sooner or later.  They'll either hack the
+> existing code or write their own version, and will be a menace to the
+> network.
+
+I suppose then that what I'm doing will meet with broad displeasure.
+
+In my defence, here are some arguments against Satoshi's position:
+
+ - The license is not the issue.
+ - A monoculture in software is bad.  All software has bugs.  One day,
+   one of those bugs in the official Bitcoin client will be exploitable.
+ - It is the protocol that should be locked, not the software.  I'm
+   quite certain that the designers of SMTP, FTP, SSH, Telnet, HTTP,
+   SSL, BitTorrent, etc, etc would all think that multiple clients made
+   life more complicated... tough.  A robust design will cope.
+ - The current Bitcoin client is a monolithic monster.  Even if we
+   accepted that it should be the only client, does anyone think that
+   same code should be running on embedded devices?  Being monolithic
+   it's damned near impossible to separate out the bits you are
+   interested in.
+ - What if I don't like wxWidgets?  Which I don't.  How can I make a Qt
+   version of Bitcoin?  At present I can't, without effectively forking
+   bitcoin.  The solution should have been strong separation between the
+   bitcoin protocol code and the GUI.
+ - What if I don't like the format of the wallet store?  Which I don't.
+   How can I store my wallet as one file of public keys, and one
+   encrypted file of private keys?  How can I make a wallet that
+   keeps some recently used private keys unencrypted, then moves older,
+   more valuable ones to long term storage?  Fork?
+ - How do I write a multi-user Bitcoin server application, so multiple
+   users on a single system can have separate wallets?
+ - "Menace" is a ridiculous thing to say.  It's only a menance if it
+   doesn't behave properly.  Further, if a rogue client could be a
+   menance, then an attack vector exists for a malicious attacker.  It's
+   better that those holes are closed; and a second client will help
+   with that.
+
+
