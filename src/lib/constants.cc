@@ -91,7 +91,6 @@ class TProdnetNetworkParameters : public TNetworkParameters
 		TargetDifficultyIncreaseTime = TARGET_TIMESPAN;
 
 //		Block GenesisBlock;
-//		BigInteger ProofOfWorkLimit;
 
 		// From Android BitCoin client:
 		//
@@ -194,7 +193,7 @@ const TNetworkParameters *NETWORK_TESTNET = &localTESTNET;
 // Global:	NETWORK_PRODNET
 // Description:
 //
-TTestnetNetworkParameters localPRODNET;
+TProdnetNetworkParameters localPRODNET;
 const TNetworkParameters *NETWORK_PRODNET = &localPRODNET;
 
 //
