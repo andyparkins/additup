@@ -1,0 +1,115 @@
+## Economy
+
+These aren't technical comments, they are observations about the Bitcoin
+economy.
+
+### Bootstrapping
+
+ - Stage 1: Bitcoins worth effectively nothing.  Easy to generate, but
+   no one will accept them.  Used as a hobby for the developers.
+ - Stage 2: Bitcoins gain small implicit value.  Cost to generate is
+   still small, but value is small.  Very few will accept.  Their very
+   small value makes any increase significant though, and some start
+   hoarding large quantities in the hopes of future payout.
+ - Stage 3: Merchant trading begins.  Bitcoins are used as a means of
+   transferring more established currencies.  Their very attractive
+   movement characteristics (being able to move money anywhere in the
+   world, near instantly) gives them their appeal.  Most traders will
+   want them merely to turn back into their local currency.  However,
+   that does mean that their value is real and fixed.  It is only
+   because that value is real that a currency conversion is possible.
+ - Stage 4: Big guns arrive.  Large investors notice Bitcoins.  Like
+   merchants, they don't want Bitcoins themselves, they want them to
+   increase in value over time and be turned back into more established
+   currencies.  This will probably happen a few times, with the price
+   being highly volatile.  If that volatility doesn't lead to collapse,
+   then their will be a series of price jumps and stability will be
+   achieved at some particular value.
+ - Stage 5: Merchants still don't want Bitcoins for themselves, they
+   want them for the facilities they enable.  Merchants will for all
+   intents, instantly convert between local currency and Bitcoins.
+   Probably with automatic software that takes a fixed (say) dollar
+   price and converts to Bitcoins for the checkout, and then converts
+   the received Bitcoins straight back to dollars.  The trader _has_ to
+   do this, all of their running costs will be in the established
+   currency, they cannot purchase in dollars and sell in bitcoins and
+   not convert instantly back to dollars.
+ - Stage 6: Prices in Bitcoins.  Rather than pricing in the established
+   currency and converting, merchants will price in Bitcoins and convert.
+   This stage will therefore be the longest and hardest to achieve; it
+   needs traders to be able to both buy and sell in Bitcoins, and for
+   that to happen it needs to be possible right to the bottom of their
+   supply chain.  It's unlikely that large companies will change in any
+   reasonable time frame.  The electricity company, gas company,
+   telephone company, etc have no incentive at all to change.  On the
+   other hand, they are large enough to be able to accept multiple
+   currencies as payment.
+ - Stage 7: Banking in Bitcoins.  The first bank to offer a bank account
+   denominated in Bitcoins will be the beginning of the end.  Given that
+   many of the traditional banking services are not needed with
+   Bitcoins, Bitcoin bank accounts will be for depositors to invest in
+   lenders.  Bitcoins are sufficiently flexible that it's possible we
+   would see the first community bank.
+ - Stage 8: Wages in Bitcoins.  Bitcoins become so useful and so widely
+   accepted that employers start paying in Bitcoins.  Pensions.
+ - Stage 9: Stock markets measured in Bitcoins.
+ - Stage 10: Governments accept taxes in Bitcoins.  Ha.  That'll be the
+   day.
+
+I think we're at stage 4 now; few merchants, big(ger) investors are
+starting to notice the potential for profit should Bitcoin take off.  I
+suspect stage 5 will be easy to get to, electronic trading is inevitable
+and Bitcoins are an appealing way of doing it.  Stage 6 could
+potentially take decades to reach.  It requires a fundamental
+restructuring of the economies of the world.  It's possible that a
+developing country might seize on Bitcoins and get there much faster
+because they have nothing to restructure at present.
+
+
+### Deflation
+
+A lot is made of the fact that Bitcoins, once they hit their 21 million
+limit, will be naturally deflationary.  That is to say that their
+purchasing ability will go up.
+
+Deflation is a problem (supposedly) because it will be cheaper to buy
+something tomorrow than it is to buy today, so you will always defer
+your purchase.  However, that ignores the fact that you don't have use
+of whatever it is you would purchase as well.  If you were a builder
+wanting a new hammer, well you want that hammer because it will enable
+you to do work that you could not do without it.  The hammer is worth
+more to you than the money you use to purchase it (as is the case with
+all free trade everywhere).  When currency is deflating, it simply
+balances the equation in a different place.  Before you purchase your
+hammer you would have to be sure that you can earn more with the hammer
+than you would have gained by holding onto your currency.
+
+Even if you find it advantageous to horde currency, what will you be
+doing with that horde?  It gives you nothing while it is sat under your
+mattress.  So we must assume that you are hording it in the hopes of one
+day having more value, and spending it.  Oops -- but if you are spending
+it you can't be hording it can you?
+
+The only result really is that people will keep more savings of a
+deflationary currency than they do of an inflationary currency; which is
+no bad thing anyway.  Further, once they find that they are sitting on a
+big pile of currency, it might occur to them that they can make even
+more from it by investing it.  Investments will not have to be as
+profitable since they do not have to keep up with inflation, instead
+they must lose no more than deflation replaces.  Therefore investment
+will be more likely when using a deflationary currency.
+
+Finally; a stack of money in a cupboard and never used is no different
+from the rest of the world's perspective than money that never existed.
+Since the number on the paper is irrelevant, only what can be purchased
+with that number, the rest of the economy will eventually rebalance to
+take account of the horded money, which, on average will be a function
+of population.  No disaster there.
+
+Better minds than mine, in the form of the Nobel winning Austrian school
+economists thought that currency was better for more people when it was
+commodity backed.  Primarily because the supply was fixed.  Bitcoins
+share that property and remove the need to keep some arbitrarily chosen
+rare mineral in a vault.  It's also far easier to get one millionth of a
+Bitcoin than it is to get one millionth of a gram of gold.
+
