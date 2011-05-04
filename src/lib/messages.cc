@@ -27,6 +27,8 @@
 #include "crypto.h"
 #include "messagefactory.h"
 #include "logstream.h"
+#include "peer.h"
+#include "bitcoinnetwork.h"
 // --- Project
 
 
@@ -156,11 +158,21 @@ bool TMessage::acceptCommandCode( const string &d ) const
 //
 istream &TMessage::read( istream &is )
 {
+	streampos p = is.tellg();
 	try {
 		is >> MessageHeader;
 	} catch( ios::failure &e ) {
 		is.clear();
 		throw message_parse_error_underflow();
+	}
+
+	// If the network parameters are available, then confirm the magic
+	// number
+	if( Peer != NULL && Peer->getNetworkParameters() != NULL ) {
+		if( MessageHeader.Magic.getValue() != Peer->getNetworkParameters()->Magic ) {
+			is.seekg(p);
+			throw message_parse_error_magic();
+		}
 	}
 
 	if( !acceptCommandCode( MessageHeader.Command.getValue() ) )

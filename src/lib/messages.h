@@ -105,6 +105,13 @@ class message_parse_error_version : public message_parse_error
 		message_parse_error("message version too old") {}
 };
 
+class message_parse_error_magic : public message_parse_error
+{
+  public:
+	message_parse_error_magic() :
+		message_parse_error("message magic is wrong") {}
+};
+
 //
 // Class: TMessage
 // Description:
