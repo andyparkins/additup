@@ -103,9 +103,11 @@ class TStackOperatorFromCompoundOpcode : public TStackOperatorFromOpcode
 {
   public:
 	const char *className() const { return "TStackOperatorFromCompoundOpcode"; }
-	istream &readAndAppend( TBitcoinScript *, istream &is ) const {
+	istream &readAndAppend( TBitcoinScript *S, istream &is ) const {
 		// Discard the Opcode, we already know it's getOpcode()
 		is.get();
+		// Perform the append
+		explode(S);
 		return is;
 	}
 
@@ -116,6 +118,8 @@ class TStackOperatorFromCompoundOpcode : public TStackOperatorFromOpcode
 	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer & ) const {
 		throw logic_error("TStackOperatorFromCompoundOpcode should never be execute()d");
 	}
+
+	virtual void explode( TBitcoinScript * ) const = 0;
 };
 
 //
@@ -765,7 +769,7 @@ class TStackOperator_OP_EQUALVERIFY : public TStackOperatorFromCompoundOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_EQUALVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_EQUALVERIFY; }
 
-	istream &readAndAppend( TBitcoinScript *, istream & ) const;
+	void explode( TBitcoinScript * ) const;
 };
 
 //
@@ -1031,7 +1035,7 @@ class TStackOperator_OP_NUMEQUALVERIFY : public TStackOperatorFromCompoundOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NUMEQUALVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_NUMEQUALVERIFY; }
 
-	istream &readAndAppend( TBitcoinScript *, istream & ) const;
+	void explode( TBitcoinScript * ) const;
 };
 
 //
@@ -1261,7 +1265,7 @@ class TStackOperator_OP_CHECKSIG : public TStackOperatorFromCompoundOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKSIG(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKSIG; }
 
-	istream &readAndAppend( TBitcoinScript *, istream & ) const;
+	void explode( TBitcoinScript * ) const;
 };
 
 //
@@ -1275,7 +1279,7 @@ class TStackOperator_OP_CHECKSIGVERIFY : public TStackOperatorFromCompoundOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKSIGVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKSIGVERIFY; }
 
-	istream &readAndAppend( TBitcoinScript *, istream & ) const;
+	void explode( TBitcoinScript * ) const;
 };
 
 //
@@ -1303,7 +1307,7 @@ class TStackOperator_OP_CHECKMULTISIGVERIFY : public TStackOperatorFromCompoundO
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKMULTISIGVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKMULTISIGVERIFY; }
 
-	istream &readAndAppend( TBitcoinScript *, istream & ) const;
+	void explode( TBitcoinScript * ) const;
 };
 
 //
@@ -1788,6 +1792,21 @@ void TBitcoinScript::execute( TExecutionStack &Stack ) const
 	}
 }
 
+//
+// Function:	TBitcoinScript :: append
+// Description:
+//
+void TBitcoinScript::append( TStackOperator *op )
+{
+	if( dynamic_cast<TStackOperatorFromCompoundOpcode*>(op) != NULL ) {
+		// Don't append this operator, it's a compound code, instead
+		// explode it, which will in turn call us again.
+		dynamic_cast<TStackOperatorFromCompoundOpcode*>(op)->explode( this );
+	} else {
+		Program.push_back(op);
+	}
+}
+
 // -----------
 
 //
@@ -1925,9 +1944,13 @@ void TBitcoinScript_0::init()
 //
 istream &TStackOperatorFromStream::readAndAppend( TBitcoinScript *Script, istream &is ) const
 {
+	// While we have matched the type, we haven't actually created an
+	// operator that we can read to yet.
 	TStackOperatorFromStream *Operator = clone();
+	Operator->read(is);
+	// Now we can push what's been created to the script
 	Script->append( Operator );
-	return Operator->read(is);
+	return is;
 }
 
 // -----------
@@ -2710,13 +2733,10 @@ TStackOperator_OP_EQUAL::execute( TExecutionStack &Stack, const TBitcoinScript::
 // Input:     x1 x2
 // Output:    True / false
 // Operation: Same as OP_EQUAL, but runs OP_VERIFY afterward.
-istream &TStackOperator_OP_EQUALVERIFY::readAndAppend( TBitcoinScript *Script, istream &is ) const
+void TStackOperator_OP_EQUALVERIFY::explode( TBitcoinScript *Script ) const
 {
-	// Read the opcode
-	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
 	Script->append( new TStackOperator_OP_EQUAL );
 	Script->append( new TStackOperator_OP_VERIFY );
-	return is;
 }
 
 //
@@ -3098,13 +3118,10 @@ TStackOperator_OP_NUMEQUAL::execute( TExecutionStack &Stack, const TBitcoinScrip
 // Input:     a b
 // Output:    out
 // Operation: Same as OP_NUMEQUAL, but runs OP_VERIFY afterward.
-istream &TStackOperator_OP_NUMEQUALVERIFY::readAndAppend( TBitcoinScript *Script, istream &is ) const
+void TStackOperator_OP_NUMEQUALVERIFY::explode( TBitcoinScript *Script ) const
 {
-	// Read the opcode
-	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
 	Script->append( new TStackOperator_OP_NUMEQUAL );
 	Script->append( new TStackOperator_OP_VERIFY );
-	return is;
 }
 
 //
@@ -3408,10 +3425,8 @@ TStackOperator_OP_CODESEPARATOR::execute( TExecutionStack &Stack, const TBitcoin
 // 8. The script for the current transaction input in txCopy is set to
 //    subScript
 //
-istream &TStackOperator_OP_CHECKSIG::readAndAppend( TBitcoinScript *Script, istream &is ) const
+void TStackOperator_OP_CHECKSIG::explode( TBitcoinScript *Script ) const
 {
-	// Read the opcode
-	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
 	Script->append( new TStackOperator_INTOP_PUSHSUBSCRIPT );
 	Script->append( new TStackOperator_INTOP_DELETESIG );
 	Script->append( new TStackOperator_INTOP_REMOVEHASHTYPE );
@@ -3421,7 +3436,6 @@ istream &TStackOperator_OP_CHECKSIG::readAndAppend( TBitcoinScript *Script, istr
 	Script->append( new TStackOperator_INTOP_REPLACETXSCRIPT );
 	Script->append( new TStackOperator_INTOP_SIGHASH );
 	Script->append( new TStackOperator_INTOP_FINALSIGNATURE );
-	return is;
 }
 
 //
@@ -3429,13 +3443,10 @@ istream &TStackOperator_OP_CHECKSIG::readAndAppend( TBitcoinScript *Script, istr
 // Input:     sig pubkey
 // Output:    True / false
 // Operation: Same as OP_CHECKSIG, but OP_VERIFY is executed afterward.
-istream &TStackOperator_OP_CHECKSIGVERIFY::readAndAppend( TBitcoinScript *Script, istream &is ) const
+void TStackOperator_OP_CHECKSIGVERIFY::explode( TBitcoinScript *Script ) const
 {
-	// Read the opcode
-	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
 	Script->append( new TStackOperator_OP_CHECKSIG );
 	Script->append( new TStackOperator_OP_VERIFY );
-	return is;
 }
 
 //
@@ -3458,13 +3469,10 @@ TStackOperator_OP_CHECKMULTISIG::execute( TExecutionStack &Stack, const TBitcoin
 // Input:     sig1 sig2 ... <number of signatures> pub1 pub2 ... <number of public keys>
 // Output:    True / False
 // Operation: Same as OP_CHECKMULTISIG, but OP_VERIFY is executed afterward.
-istream &TStackOperator_OP_CHECKMULTISIGVERIFY::readAndAppend( TBitcoinScript *Script, istream &is ) const
+void TStackOperator_OP_CHECKMULTISIGVERIFY::explode( TBitcoinScript *Script ) const
 {
-	// Read the opcode
-	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
 	Script->append( new TStackOperator_OP_CHECKMULTISIGVERIFY );
 	Script->append( new TStackOperator_OP_VERIFY );
-	return is;
 }
 
 //

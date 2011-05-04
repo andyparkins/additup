@@ -345,7 +345,7 @@ class TBitcoinScript
 
 	virtual uint32_t getMinimumAcceptedVersion() const = 0;
 
-	void append( TStackOperator *op ) { Program.push_back(op); }
+	void append( TStackOperator *op );
 
 	typedef list<TStackOperator*>::const_iterator tInstructionPointer;
 
