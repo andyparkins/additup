@@ -52,7 +52,7 @@ class TStackOperator
 	TStackOperator() {}
 	virtual const char *className() const { return "TStackOperator"; }
 
-	virtual TBitcoinProgram::tInstructionPointer &execute( TExecutionStack & ) const = 0;
+	virtual TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer & ) const = 0;
 };
 
 //
@@ -113,7 +113,7 @@ class TStackOperatorFromCompoundOpcode : public TStackOperatorFromOpcode
 	istream &read( istream & ) {
 		throw logic_error("TStackOperatorFromCompoundOpcode should never be read()");
 	}
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack & ) const {
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer & ) const {
 		throw logic_error("TStackOperatorFromCompoundOpcode should never be execute()d");
 	}
 };
@@ -129,7 +129,7 @@ class TStackOperator_OP_FALSE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_FALSE(*this); }
 	eScriptOp getOpcode() const { return OP_FALSE; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -152,7 +152,7 @@ class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 		return is;
 	}
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 
   protected:
 	virtual streamsize getRawReadCount( istream & ) const = 0;
@@ -233,7 +233,7 @@ class TStackOperator_OP_1NEGATE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_1NEGATE(*this); }
 	eScriptOp getOpcode() const { return OP_1NEGATE; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -247,7 +247,7 @@ class TStackOperator_OP_TRUE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_TRUE(*this); }
 	eScriptOp getOpcode() const { return OP_TRUE; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -261,7 +261,7 @@ class TStackOperator_OP_NOP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NOP(*this); }
 	eScriptOp getOpcode() const { return OP_NOP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const {}
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const { return ip; }
 };
 
 //
@@ -275,7 +275,7 @@ class TStackOperator_OP_IF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_IF(*this); }
 	eScriptOp getOpcode() const { return OP_IF; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -289,7 +289,7 @@ class TStackOperator_OP_NOTIF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NOTIF(*this); }
 	eScriptOp getOpcode() const { return OP_NOTIF; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -303,7 +303,7 @@ class TStackOperator_OP_ELSE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ELSE(*this); }
 	eScriptOp getOpcode() const { return OP_ELSE; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -317,7 +317,7 @@ class TStackOperator_OP_ENDIF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ENDIF(*this); }
 	eScriptOp getOpcode() const { return OP_ENDIF; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -331,7 +331,7 @@ class TStackOperator_OP_VERIFY : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_VERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_VERIFY; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -345,7 +345,7 @@ class TStackOperator_OP_RETURN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RETURN(*this); }
 	eScriptOp getOpcode() const { return OP_RETURN; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -359,7 +359,7 @@ class TStackOperator_OP_TOALTSTACK : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_TOALTSTACK(*this); }
 	eScriptOp getOpcode() const { return OP_TOALTSTACK; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -373,7 +373,7 @@ class TStackOperator_OP_FROMALTSTACK : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_FROMALTSTACK(*this); }
 	eScriptOp getOpcode() const { return OP_FROMALTSTACK; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -387,7 +387,7 @@ class TStackOperator_OP_IFDUP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_IFDUP(*this); }
 	eScriptOp getOpcode() const { return OP_IFDUP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -401,7 +401,7 @@ class TStackOperator_OP_DEPTH : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_DEPTH(*this); }
 	eScriptOp getOpcode() const { return OP_DEPTH; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -415,7 +415,7 @@ class TStackOperator_OP_DROP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_DROP(*this); }
 	eScriptOp getOpcode() const { return OP_DROP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -429,7 +429,7 @@ class TStackOperator_OP_DUP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_DUP(*this); }
 	eScriptOp getOpcode() const { return OP_DUP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -443,7 +443,7 @@ class TStackOperator_OP_NIP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NIP(*this); }
 	eScriptOp getOpcode() const { return OP_NIP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -457,7 +457,7 @@ class TStackOperator_OP_OVER : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_OVER(*this); }
 	eScriptOp getOpcode() const { return OP_OVER; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -471,7 +471,7 @@ class TStackOperator_OP_PICK : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PICK(*this); }
 	eScriptOp getOpcode() const { return OP_PICK; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -485,7 +485,7 @@ class TStackOperator_OP_ROLL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ROLL(*this); }
 	eScriptOp getOpcode() const { return OP_ROLL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -499,7 +499,7 @@ class TStackOperator_OP_ROT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ROT(*this); }
 	eScriptOp getOpcode() const { return OP_ROT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -513,7 +513,7 @@ class TStackOperator_OP_SWAP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SWAP(*this); }
 	eScriptOp getOpcode() const { return OP_SWAP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -527,7 +527,7 @@ class TStackOperator_OP_TUCK : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_TUCK(*this); }
 	eScriptOp getOpcode() const { return OP_TUCK; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -541,7 +541,7 @@ class TStackOperator_OP_2DROP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2DROP(*this); }
 	eScriptOp getOpcode() const { return OP_2DROP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -555,7 +555,7 @@ class TStackOperator_OP_2DUP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2DUP(*this); }
 	eScriptOp getOpcode() const { return OP_2DUP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -569,7 +569,7 @@ class TStackOperator_OP_3DUP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_3DUP(*this); }
 	eScriptOp getOpcode() const { return OP_3DUP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -583,7 +583,7 @@ class TStackOperator_OP_2OVER : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2OVER(*this); }
 	eScriptOp getOpcode() const { return OP_2OVER; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -597,7 +597,7 @@ class TStackOperator_OP_2ROT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2ROT(*this); }
 	eScriptOp getOpcode() const { return OP_2ROT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -611,7 +611,7 @@ class TStackOperator_OP_2SWAP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2SWAP(*this); }
 	eScriptOp getOpcode() const { return OP_2SWAP; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -625,7 +625,7 @@ class TStackOperator_OP_CAT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CAT(*this); }
 	eScriptOp getOpcode() const { return OP_CAT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -639,7 +639,7 @@ class TStackOperator_OP_SUBSTR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SUBSTR(*this); }
 	eScriptOp getOpcode() const { return OP_SUBSTR; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -653,7 +653,7 @@ class TStackOperator_OP_LEFT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_LEFT(*this); }
 	eScriptOp getOpcode() const { return OP_LEFT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -667,7 +667,7 @@ class TStackOperator_OP_RIGHT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RIGHT(*this); }
 	eScriptOp getOpcode() const { return OP_RIGHT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -681,7 +681,7 @@ class TStackOperator_OP_SIZE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SIZE(*this); }
 	eScriptOp getOpcode() const { return OP_SIZE; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -695,7 +695,7 @@ class TStackOperator_OP_INVERT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_INVERT(*this); }
 	eScriptOp getOpcode() const { return OP_INVERT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -709,7 +709,7 @@ class TStackOperator_OP_AND : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_AND(*this); }
 	eScriptOp getOpcode() const { return OP_AND; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -723,7 +723,7 @@ class TStackOperator_OP_OR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_OR(*this); }
 	eScriptOp getOpcode() const { return OP_OR; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -737,7 +737,7 @@ class TStackOperator_OP_XOR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_XOR(*this); }
 	eScriptOp getOpcode() const { return OP_XOR; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -751,7 +751,7 @@ class TStackOperator_OP_EQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_EQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_EQUAL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -779,7 +779,7 @@ class TStackOperator_OP_1ADD : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_1ADD(*this); }
 	eScriptOp getOpcode() const { return OP_1ADD; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -793,7 +793,7 @@ class TStackOperator_OP_1SUB : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_1SUB(*this); }
 	eScriptOp getOpcode() const { return OP_1SUB; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -807,7 +807,7 @@ class TStackOperator_OP_2MUL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2MUL(*this); }
 	eScriptOp getOpcode() const { return OP_2MUL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -821,7 +821,7 @@ class TStackOperator_OP_2DIV : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2DIV(*this); }
 	eScriptOp getOpcode() const { return OP_2DIV; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -835,7 +835,7 @@ class TStackOperator_OP_NEGATE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NEGATE(*this); }
 	eScriptOp getOpcode() const { return OP_NEGATE; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -849,7 +849,7 @@ class TStackOperator_OP_ABS : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ABS(*this); }
 	eScriptOp getOpcode() const { return OP_ABS; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -863,7 +863,7 @@ class TStackOperator_OP_NOT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NOT(*this); }
 	eScriptOp getOpcode() const { return OP_NOT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -877,7 +877,7 @@ class TStackOperator_OP_0NOTEQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_0NOTEQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_0NOTEQUAL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -891,7 +891,7 @@ class TStackOperator_OP_ADD : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ADD(*this); }
 	eScriptOp getOpcode() const { return OP_ADD; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -905,7 +905,7 @@ class TStackOperator_OP_SUB : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SUB(*this); }
 	eScriptOp getOpcode() const { return OP_SUB; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -919,7 +919,7 @@ class TStackOperator_OP_MUL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_MUL(*this); }
 	eScriptOp getOpcode() const { return OP_MUL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -933,7 +933,7 @@ class TStackOperator_OP_DIV : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_DIV(*this); }
 	eScriptOp getOpcode() const { return OP_DIV; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -947,7 +947,7 @@ class TStackOperator_OP_MOD : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_MOD(*this); }
 	eScriptOp getOpcode() const { return OP_MOD; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -961,7 +961,7 @@ class TStackOperator_OP_LSHIFT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_LSHIFT(*this); }
 	eScriptOp getOpcode() const { return OP_LSHIFT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -975,7 +975,7 @@ class TStackOperator_OP_RSHIFT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RSHIFT(*this); }
 	eScriptOp getOpcode() const { return OP_RSHIFT; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -989,7 +989,7 @@ class TStackOperator_OP_BOOLAND : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_BOOLAND(*this); }
 	eScriptOp getOpcode() const { return OP_BOOLAND; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1003,7 +1003,7 @@ class TStackOperator_OP_BOOLOR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_BOOLOR(*this); }
 	eScriptOp getOpcode() const { return OP_BOOLOR; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1017,7 +1017,7 @@ class TStackOperator_OP_NUMEQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NUMEQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_NUMEQUAL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1045,7 +1045,7 @@ class TStackOperator_OP_NUMNOTEQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NUMNOTEQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_NUMNOTEQUAL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1059,7 +1059,7 @@ class TStackOperator_OP_LESSTHAN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_LESSTHAN(*this); }
 	eScriptOp getOpcode() const { return OP_LESSTHAN; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1073,7 +1073,7 @@ class TStackOperator_OP_GREATERTHAN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_GREATERTHAN(*this); }
 	eScriptOp getOpcode() const { return OP_GREATERTHAN; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1087,7 +1087,7 @@ class TStackOperator_OP_LESSTHANOREQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_LESSTHANOREQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_LESSTHANOREQUAL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1101,7 +1101,7 @@ class TStackOperator_OP_GREATERTHANOREQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_GREATERTHANOREQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_GREATERTHANOREQUAL; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1115,7 +1115,7 @@ class TStackOperator_OP_MIN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_MIN(*this); }
 	eScriptOp getOpcode() const { return OP_MIN; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1129,7 +1129,7 @@ class TStackOperator_OP_MAX : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_MAX(*this); }
 	eScriptOp getOpcode() const { return OP_MAX; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1143,7 +1143,7 @@ class TStackOperator_OP_WITHIN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_WITHIN(*this); }
 	eScriptOp getOpcode() const { return OP_WITHIN; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1155,7 +1155,7 @@ class TStackOperator_CryptographicDigest : public TStackOperatorFromOpcode
   public:
 	const char *className() const { return "TStackOperator_CryptographicDigest"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 
   protected:
 	virtual TMessageDigest *createHasher() const = 0;
@@ -1247,7 +1247,7 @@ class TStackOperator_OP_CODESEPARATOR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CODESEPARATOR(*this); }
 	eScriptOp getOpcode() const { return OP_CODESEPARATOR; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1289,7 +1289,7 @@ class TStackOperator_OP_CHECKMULTISIG : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKMULTISIG(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKMULTISIG; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1317,7 +1317,7 @@ class TStackOperator_OP_PUBKEYHASH : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUBKEYHASH(*this); }
 	eScriptOp getOpcode() const { return OP_PUBKEYHASH; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1331,7 +1331,7 @@ class TStackOperator_OP_PUBKEY : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUBKEY(*this); }
 	eScriptOp getOpcode() const { return OP_PUBKEY; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1345,7 +1345,7 @@ class TStackOperator_OP_RESERVED : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RESERVED(*this); }
 	eScriptOp getOpcode() const { return OP_RESERVED; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1359,7 +1359,7 @@ class TStackOperator_OP_VER : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_VER(*this); }
 	eScriptOp getOpcode() const { return OP_VER; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1373,7 +1373,7 @@ class TStackOperator_OP_VERIF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_VERIF(*this); }
 	eScriptOp getOpcode() const { return OP_VERIF; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1387,7 +1387,7 @@ class TStackOperator_OP_VERNOTIF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_VERNOTIF(*this); }
 	eScriptOp getOpcode() const { return OP_VERNOTIF; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1401,7 +1401,7 @@ class TStackOperator_OP_RESERVED1 : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RESERVED1(*this); }
 	eScriptOp getOpcode() const { return OP_RESERVED1; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1415,7 +1415,7 @@ class TStackOperator_OP_RESERVED2 : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RESERVED2(*this); }
 	eScriptOp getOpcode() const { return OP_RESERVED2; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1453,7 +1453,7 @@ class TStackOperator_OP_INVALIDOPCODE : public TStackOperatorFromOpcodes
 	eScriptOp getOpcode() const { return OP_INVALIDOPCODE; }
 	bool acceptOpcode( eScriptOp op ) const { return true; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1468,7 +1468,7 @@ class TStackOperator_OP_N : public TStackOperatorFromOpcodes
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_N(*this); }
 	bool acceptOpcode( eScriptOp op ) const { return op >= OP_2 && op <= OP_16; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1498,7 +1498,7 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 		return is;
 	}
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 
   protected:
 	string Raw;
@@ -1516,7 +1516,7 @@ class TStackOperator_OP_NOP_N : public TStackOperatorFromOpcodes
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NOP_N(*this); }
 	bool acceptOpcode( eScriptOp op ) const { return op >= OP_NOP1 && op <= OP_NOP10; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const {}
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const { return ip; }
 };
 
 //
@@ -1538,7 +1538,7 @@ class TStackOperator_INTOP_PUSHSUBSCRIPT : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_PUSHSUBSCRIPT"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1550,7 +1550,7 @@ class TStackOperator_INTOP_DELETESIG : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_DELETESIG"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1562,7 +1562,7 @@ class TStackOperator_INTOP_REMOVEHASHTYPE : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_REMOVEHASHTYPE"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1574,7 +1574,7 @@ class TStackOperator_INTOP_PUSHCOPYTRANSACTION : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_PUSHCOPYTRANSACTION"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1586,7 +1586,7 @@ class TStackOperator_INTOP_REMOVECODESEPARATORS : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_REMOVECODESEPARATORS"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1598,7 +1598,7 @@ class TStackOperator_INTOP_REMOVETXSCRIPTS : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_REMOVETXSCRIPTS"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1610,7 +1610,7 @@ class TStackOperator_INTOP_REPLACETXSCRIPT : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_REPLACETXSCRIPT"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1622,7 +1622,7 @@ class TStackOperator_INTOP_SIGHASH : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_SIGHASH"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1634,7 +1634,7 @@ class TStackOperator_INTOP_FINALSIGNATURE : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_FINALSIGNATURE"; }
 
-	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 
@@ -1777,7 +1777,14 @@ void TBitcoinScript::execute( TExecutionStack &Stack ) const
 		itn = (*it)->execute( Stack, it );
 		log() << (*it)->className() << " executed, stack now:" << endl;
 		Stack.printOn(log());
-		it = itn;
+
+		// Catch infinite loop
+		if( it == itn ) {
+			it = itn;
+			it++;
+		} else {
+			it = itn;
+		}
 	}
 }
 
@@ -1931,9 +1938,12 @@ istream &TStackOperatorFromStream::readAndAppend( TBitcoinScript *Script, istrea
 // Output:    False
 // Operation:
 //
-void TStackOperator_OP_FALSE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_FALSE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.give( new TStackElementBoolean(false) );
+
+	return ip;
 }
 
 //
@@ -1942,9 +1952,12 @@ void TStackOperator_OP_FALSE::execute( TExecutionStack &Stack ) const
 // Output:    
 // Operation:
 //
-void TStackOperator_OP_PUSHDATAN::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_PUSHDATAN::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.give( new TStackElementString(Raw) );
+
+	return ip;
 }
 
 //
@@ -1953,9 +1966,12 @@ void TStackOperator_OP_PUSHDATAN::execute( TExecutionStack &Stack ) const
 // Output:    
 // Operation:
 //
-void TStackOperator_OP_1NEGATE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_1NEGATE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.give( new TStackElementBigInteger(-1) );
+
+	return ip;
 }
 
 //
@@ -1964,9 +1980,12 @@ void TStackOperator_OP_1NEGATE::execute( TExecutionStack &Stack ) const
 // Output:    
 // Operation:
 //
-void TStackOperator_OP_TRUE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_TRUE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.give( new TStackElementBoolean(true) );
+
+	return ip;
 }
 
 //
@@ -1976,8 +1995,11 @@ void TStackOperator_OP_TRUE::execute( TExecutionStack &Stack ) const
 // Operation: If the top stack value is 1, the statements are executed.
 // The top stack value is removed.
 //
-void TStackOperator_OP_IF::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_IF::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
@@ -1987,8 +2009,11 @@ void TStackOperator_OP_IF::execute( TExecutionStack &Stack ) const
 // If the top stack value is 0, the statements are executed. The top
 // stack value is removed.
 //
-void TStackOperator_OP_NOTIF::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_NOTIF::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
@@ -1998,8 +2023,11 @@ void TStackOperator_OP_NOTIF::execute( TExecutionStack &Stack ) const
 // If the preceding OP_IF or OP_NOTIF was not executed then these
 // statements are.
 //
-void TStackOperator_OP_ELSE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_ELSE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
@@ -2008,8 +2036,11 @@ void TStackOperator_OP_ELSE::execute( TExecutionStack &Stack ) const
 //
 // Ends an if/else block.
 //
-void TStackOperator_OP_ENDIF::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_ENDIF::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
@@ -2019,7 +2050,8 @@ void TStackOperator_OP_ENDIF::execute( TExecutionStack &Stack ) const
 // Operation: Marks transaction as invalid if top stack value is not
 // true. True is removed, but false is not.
 //
-void TStackOperator_OP_VERIFY::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_VERIFY::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TStackElement *Back = Stack().back();
 
@@ -2053,6 +2085,8 @@ void TStackOperator_OP_VERIFY::execute( TExecutionStack &Stack ) const
 		// what is the point?
 		throw script_run_verify_error();
 	}
+
+	return ip;
 }
 
 //
@@ -2061,7 +2095,8 @@ void TStackOperator_OP_VERIFY::execute( TExecutionStack &Stack ) const
 // Output:    Nothing
 // Operation: Marks transaction as invalid.
 //
-void TStackOperator_OP_RETURN::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_RETURN::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
@@ -2072,12 +2107,15 @@ void TStackOperator_OP_RETURN::execute( TExecutionStack &Stack ) const
 // Output:    (alt)x1
 // Operation: Puts the input onto the top of the alt stack. Removes it
 // from the main stack.
-void TStackOperator_OP_TOALTSTACK::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_TOALTSTACK::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	// Copy the last thing on the real stack to the alternate stack
 	Stack.AltStack.push_back( Stack.Stack.back() );
 	// Remove the last element on the real stack
 	Stack.Stack.pop_back();
+
+	return ip;
 }
 
 //
@@ -2086,12 +2124,15 @@ void TStackOperator_OP_TOALTSTACK::execute( TExecutionStack &Stack ) const
 // Output:    x1
 // Operation: Puts the input onto the top of the main stack. Removes it
 // from the alt stack.
-void TStackOperator_OP_FROMALTSTACK::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_FROMALTSTACK::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	// Copy the last thing on the alternate stack to the real stack
 	Stack.give( Stack.AltStack.back() );
 	// Remove the last element on the alternate stack
 	Stack.AltStack.pop_back();
+
+	return ip;
 }
 
 //
@@ -2099,8 +2140,11 @@ void TStackOperator_OP_FROMALTSTACK::execute( TExecutionStack &Stack ) const
 // Input:     x
 // Output:    x / x x
 // Operation: If the input is true or false, duplicate it.
-void TStackOperator_OP_IFDUP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_IFDUP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
@@ -2108,9 +2152,12 @@ void TStackOperator_OP_IFDUP::execute( TExecutionStack &Stack ) const
 // Input:     Nothing
 // Output:    <Stack size>
 // Operation: Puts the number of stack items onto the stack.
-void TStackOperator_OP_DEPTH::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_DEPTH::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.give( new TStackElementBigInteger( Stack.Stack.size() ) );
+
+	return ip;
 }
 
 //
@@ -2118,9 +2165,12 @@ void TStackOperator_OP_DEPTH::execute( TExecutionStack &Stack ) const
 // Input:     x
 // Output:    Nothing
 // Operation: Removes the top stack item.
-void TStackOperator_OP_DROP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_DROP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	delete Stack.take();
+
+	return ip;
 }
 
 //
@@ -2128,9 +2178,12 @@ void TStackOperator_OP_DROP::execute( TExecutionStack &Stack ) const
 // Input:     x
 // Output:    x x
 // Operation: Duplicates the top stack item.
-void TStackOperator_OP_DUP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_DUP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.give( Stack().back()->clone() );
+
+	return ip;
 }
 
 //
@@ -2138,7 +2191,8 @@ void TStackOperator_OP_DUP::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2
 // Output:    x2
 // Operation: Removes the second-to-top stack item.
-void TStackOperator_OP_NIP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_NIP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TExecutionStack::iterator it = Stack.Stack.end();
 
@@ -2148,6 +2202,8 @@ void TStackOperator_OP_NIP::execute( TExecutionStack &Stack ) const
 	it--;
 
 	Stack.Stack.erase( it );
+
+	return ip;
 }
 
 //
@@ -2155,7 +2211,8 @@ void TStackOperator_OP_NIP::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2
 // Output:    x1 x2 x1
 // Operation: Copies the second-to-top stack item to the top.
-void TStackOperator_OP_OVER::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_OVER::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TExecutionStack::iterator it = Stack.Stack.end();
 
@@ -2166,6 +2223,8 @@ void TStackOperator_OP_OVER::execute( TExecutionStack &Stack ) const
 
 	// Copy it
 	Stack.give( (*it)->clone() );
+
+	return ip;
 }
 
 //
@@ -2173,7 +2232,8 @@ void TStackOperator_OP_OVER::execute( TExecutionStack &Stack ) const
 // Input:     xn ... x2 x1 x0 <n>
 // Output:    xn ... x2 x1 x0 xn
 // Operation: The item n back in the stack is copied to the top.
-void TStackOperator_OP_PICK::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_PICK::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> n( Stack.take() );
 	TStackElementInteger *N = dynamic_cast<TStackElementInteger*>(n.get());
@@ -2189,6 +2249,8 @@ void TStackOperator_OP_PICK::execute( TExecutionStack &Stack ) const
 
 	// Copy it
 	Stack.give( (*it)->clone() );
+
+	return ip;
 }
 
 //
@@ -2196,7 +2258,8 @@ void TStackOperator_OP_PICK::execute( TExecutionStack &Stack ) const
 // Input:     xn ... x2 x1 x0 <n>
 // Output:    ... x2 x1 x0 xn
 // Operation: The item n back in the stack is moved to the top.
-void TStackOperator_OP_ROLL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_ROLL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> n( Stack.take() );
 	TStackElementInteger *N = dynamic_cast<TStackElementInteger*>(n.get());
@@ -2215,6 +2278,8 @@ void TStackOperator_OP_ROLL::execute( TExecutionStack &Stack ) const
 	// Move it
 	Stack.Stack.erase( it );
 	Stack.give( Element );
+
+	return ip;
 }
 
 //
@@ -2222,7 +2287,8 @@ void TStackOperator_OP_ROLL::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2 x3
 // Output:    x2 x3 x1
 // Operation: The top three items on the stack are rotated to the left.
-void TStackOperator_OP_ROT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_ROT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TStackElement *x3 = Stack.take();
 	TStackElement *x2 = Stack.take();
@@ -2231,6 +2297,8 @@ void TStackOperator_OP_ROT::execute( TExecutionStack &Stack ) const
 	Stack.give(x2);
 	Stack.give(x3);
 	Stack.give(x1);
+
+	return ip;
 }
 
 //
@@ -2238,13 +2306,16 @@ void TStackOperator_OP_ROT::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2
 // Output:    x2 x1
 // Operation: The top two items on the stack are swapped.
-void TStackOperator_OP_SWAP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_SWAP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TStackElement *x2 = Stack.take();
 	TStackElement *x1 = Stack.take();
 
 	Stack.give(x2);
 	Stack.give(x1);
+
+	return ip;
 }
 
 //
@@ -2253,7 +2324,8 @@ void TStackOperator_OP_SWAP::execute( TExecutionStack &Stack ) const
 // Output:    x2 x1 x2
 // Operation: The item at the top of the stack is copied and inserted
 // before the second-to-top item.
-void TStackOperator_OP_TUCK::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_TUCK::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	// XXX: Total cheat, this should be done with an iterator, but I
 	// suspect it wouldn't be that much quicker, as we're only
@@ -2264,6 +2336,8 @@ void TStackOperator_OP_TUCK::execute( TExecutionStack &Stack ) const
 	Stack.give(x2);
 	Stack.give(x1);
 	Stack.give(x2->clone());
+
+	return ip;
 }
 
 //
@@ -2271,10 +2345,13 @@ void TStackOperator_OP_TUCK::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2
 // Output:    Nothing
 // Operation: Removes the top two stack items.
-void TStackOperator_OP_2DROP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_2DROP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	delete Stack.take();
 	delete Stack.take();
+
+	return ip;
 }
 
 //
@@ -2282,7 +2359,8 @@ void TStackOperator_OP_2DROP::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2
 // Output:    x1 x2 x1 x2
 // Operation: Duplicates the top two stack items.
-void TStackOperator_OP_2DUP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_2DUP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TExecutionStack::iterator it = Stack.Stack.end();
 
@@ -2293,6 +2371,8 @@ void TStackOperator_OP_2DUP::execute( TExecutionStack &Stack ) const
 	Stack.give( (*it)->clone() );
 	it++;
 	Stack.give( (*it)->clone() );
+
+	return ip;
 }
 
 //
@@ -2300,7 +2380,8 @@ void TStackOperator_OP_2DUP::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2 x3
 // Output:    x1 x2 x3 x1 x2 x3
 // Operation: Duplicates the top three stack items.
-void TStackOperator_OP_3DUP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_3DUP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TExecutionStack::iterator it = Stack.Stack.end();
 
@@ -2313,6 +2394,8 @@ void TStackOperator_OP_3DUP::execute( TExecutionStack &Stack ) const
 	Stack.give( (*it)->clone() );
 	it++;
 	Stack.give( (*it)->clone() );
+
+	return ip;
 }
 
 //
@@ -2321,7 +2404,8 @@ void TStackOperator_OP_3DUP::execute( TExecutionStack &Stack ) const
 // Output:    x1 x2 x3 x4 x1 x2
 // Operation: Copies the pair of items two spaces back in the stack to
 // the front.
-void TStackOperator_OP_2OVER::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_2OVER::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TExecutionStack::iterator it = Stack.Stack.end();
 
@@ -2332,6 +2416,8 @@ void TStackOperator_OP_2OVER::execute( TExecutionStack &Stack ) const
 	Stack.give( (*it)->clone() );
 	it++;
 	Stack.give( (*it)->clone() );
+
+	return ip;
 }
 
 //
@@ -2340,7 +2426,8 @@ void TStackOperator_OP_2OVER::execute( TExecutionStack &Stack ) const
 // Output:    x3 x4 x5 x6 x1 x2
 // Operation: The fifth and sixth items back are moved to the top of the
 // stack.
-void TStackOperator_OP_2ROT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_2ROT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TExecutionStack::iterator it = Stack.Stack.end();
 
@@ -2352,6 +2439,8 @@ void TStackOperator_OP_2ROT::execute( TExecutionStack &Stack ) const
 	it = Stack.Stack.erase(it);
 	Stack.give( (*it)->clone() );
 	Stack.Stack.erase(it);
+
+	return ip;
 }
 
 //
@@ -2359,7 +2448,8 @@ void TStackOperator_OP_2ROT::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2 x3 x4
 // Output:    x3 x4 x1 x2
 // Operation: Swaps the top two pairs of items.
-void TStackOperator_OP_2SWAP::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_2SWAP::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TExecutionStack::iterator it = Stack.Stack.end();
 
@@ -2371,6 +2461,8 @@ void TStackOperator_OP_2SWAP::execute( TExecutionStack &Stack ) const
 	it = Stack.Stack.erase(it);
 	Stack.give( (*it)->clone() );
 	Stack.Stack.erase(it);
+
+	return ip;
 }
 
 //
@@ -2378,7 +2470,8 @@ void TStackOperator_OP_2SWAP::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2
 // Output:    out
 // Operation: Concatenates two strings. Currently disabled.
-void TStackOperator_OP_CAT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_CAT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> x2( Stack.take() );
 	auto_ptr<TStackElement> x1( Stack.take() );
@@ -2390,6 +2483,8 @@ void TStackOperator_OP_CAT::execute( TExecutionStack &Stack ) const
 
 	// XXX: S1+S2 or S2+S1?
 	Stack.give( new TStackElementString( S2->Data + S1->Data ) );
+
+	return ip;
 }
 
 //
@@ -2397,7 +2492,8 @@ void TStackOperator_OP_CAT::execute( TExecutionStack &Stack ) const
 // Input:     in begin size
 // Output:    out
 // Operation: Returns a section of a string. Currently disabled.
-void TStackOperator_OP_SUBSTR::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_SUBSTR::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> size( Stack.take() );
 	auto_ptr<TStackElement> begin( Stack.take() );
@@ -2413,6 +2509,8 @@ void TStackOperator_OP_SUBSTR::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_invalid();
 
 	Stack.give( new TStackElementString( IN->Data.substr(BEGIN->Data, SIZE->Data) ) );
+
+	return ip;
 }
 
 //
@@ -2421,7 +2519,8 @@ void TStackOperator_OP_SUBSTR::execute( TExecutionStack &Stack ) const
 // Output:    out
 // Operation: Keeps only characters left of the specified point in a
 // string. Currently disabled.
-void TStackOperator_OP_LEFT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_LEFT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> size( Stack.take() );
 	auto_ptr<TStackElement> in( Stack.take() );
@@ -2435,6 +2534,8 @@ void TStackOperator_OP_LEFT::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_invalid();
 
 	Stack.give( new TStackElementString( IN->Data.substr(0, SIZE->Data) ) );
+
+	return ip;
 }
 
 //
@@ -2443,7 +2544,8 @@ void TStackOperator_OP_LEFT::execute( TExecutionStack &Stack ) const
 // Output:    out
 // Operation: Keeps only characters right of the specified point in a
 // string. Currently disabled.
-void TStackOperator_OP_RIGHT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_RIGHT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> size( Stack.take() );
 	auto_ptr<TStackElement> in( Stack.take() );
@@ -2457,6 +2559,8 @@ void TStackOperator_OP_RIGHT::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_invalid();
 
 	Stack.give( new TStackElementString( IN->Data.substr(IN->Data.size() - SIZE->Data, SIZE->Data) ) );
+
+	return ip;
 }
 
 //
@@ -2464,7 +2568,8 @@ void TStackOperator_OP_RIGHT::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    in size
 // Operation: Returns the length of the input string.
-void TStackOperator_OP_SIZE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_SIZE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	TStackElement *in( Stack.Stack.back() );
 	TStackElementString *IN = dynamic_cast<TStackElementString*>(in);
@@ -2473,6 +2578,8 @@ void TStackOperator_OP_SIZE::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( IN->Data.size() ) );
+
+	return ip;
 }
 
 //
@@ -2480,7 +2587,8 @@ void TStackOperator_OP_SIZE::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    out
 // Operation: Flips all of the bits in the input. Currently disabled.
-void TStackOperator_OP_INVERT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_INVERT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> a( Stack.take() );
 	TStackElementBigInteger *A = dynamic_cast<TStackElementBigInteger*>(a.get());
@@ -2489,6 +2597,8 @@ void TStackOperator_OP_INVERT::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( ~A->Data ) );
+
+	return ip;
 }
 
 //
@@ -2497,7 +2607,8 @@ void TStackOperator_OP_INVERT::execute( TExecutionStack &Stack ) const
 // Output:    out
 // Operation: Boolean and between each bit in the inputs. Currently
 // disabled.
-void TStackOperator_OP_AND::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_AND::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2508,6 +2619,8 @@ void TStackOperator_OP_AND::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data & B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2516,7 +2629,8 @@ void TStackOperator_OP_AND::execute( TExecutionStack &Stack ) const
 // Output:    out
 // Operation: Boolean or between each bit in the inputs. Currently
 // disabled.
-void TStackOperator_OP_OR::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_OR::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2527,6 +2641,8 @@ void TStackOperator_OP_OR::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data | B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2535,7 +2651,8 @@ void TStackOperator_OP_OR::execute( TExecutionStack &Stack ) const
 // Output:    out
 // Operation: Boolean exclusive or between each bit in the inputs.
 // Currently disabled.
-void TStackOperator_OP_XOR::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_XOR::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2546,6 +2663,8 @@ void TStackOperator_OP_XOR::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data ^ B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2553,7 +2672,8 @@ void TStackOperator_OP_XOR::execute( TExecutionStack &Stack ) const
 // Input:     x1 x2
 // Output:    True / false
 // Operation: Returns 1 if the inputs are exactly equal, 0 otherwise.
-void TStackOperator_OP_EQUAL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_EQUAL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> x1( Stack.take() );
 	auto_ptr<TStackElement> x2( Stack.take() );
@@ -2582,6 +2702,7 @@ void TStackOperator_OP_EQUAL::execute( TExecutionStack &Stack ) const
 		throw script_run_error( "Invalid type mismatch in OP_EQUAL" );
 	}
 
+	return ip;
 }
 
 //
@@ -2603,7 +2724,8 @@ istream &TStackOperator_OP_EQUALVERIFY::readAndAppend( TBitcoinScript *Script, i
 // Input:     in
 // Output:    out
 // Operation: 1 is added to the input.
-void TStackOperator_OP_1ADD::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_1ADD::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
@@ -2612,6 +2734,8 @@ void TStackOperator_OP_1ADD::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( IN->Data + 1 ) );
+
+	return ip;
 }
 
 //
@@ -2619,7 +2743,8 @@ void TStackOperator_OP_1ADD::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    out
 // Operation: 1 is subtracted from the input.
-void TStackOperator_OP_1SUB::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_1SUB::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
@@ -2628,6 +2753,8 @@ void TStackOperator_OP_1SUB::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( IN->Data - 1 ) );
+
+	return ip;
 }
 
 //
@@ -2635,7 +2762,8 @@ void TStackOperator_OP_1SUB::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    out
 // Operation: The input is multiplied by 2. Currently disabled.
-void TStackOperator_OP_2MUL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_2MUL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
@@ -2644,6 +2772,8 @@ void TStackOperator_OP_2MUL::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( IN->Data * 2 ) );
+
+	return ip;
 }
 
 //
@@ -2651,7 +2781,8 @@ void TStackOperator_OP_2MUL::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    out
 // Operation: The input is divided by 2. Currently disabled.
-void TStackOperator_OP_2DIV::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_2DIV::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
@@ -2660,6 +2791,8 @@ void TStackOperator_OP_2DIV::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( IN->Data / 2 ) );
+
+	return ip;
 }
 
 //
@@ -2667,7 +2800,8 @@ void TStackOperator_OP_2DIV::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    out
 // Operation: The sign of the input is flipped.
-void TStackOperator_OP_NEGATE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_NEGATE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
@@ -2676,6 +2810,8 @@ void TStackOperator_OP_NEGATE::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( -IN->Data ) );
+
+	return ip;
 }
 
 //
@@ -2683,7 +2819,8 @@ void TStackOperator_OP_NEGATE::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    out
 // Operation: The input is made positive.
-void TStackOperator_OP_ABS::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_ABS::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementBigInteger *IN = dynamic_cast<TStackElementBigInteger*>(in.get());
@@ -2698,6 +2835,8 @@ void TStackOperator_OP_ABS::execute( TExecutionStack &Stack ) const
 		// for this condition earlier
 		Stack.give( new TStackElementBigInteger( IN->Data ) );
 	}
+
+	return ip;
 }
 
 //
@@ -2706,7 +2845,8 @@ void TStackOperator_OP_ABS::execute( TExecutionStack &Stack ) const
 // Output:    out
 // Operation: If the input is 0 or 1, it is flipped. Otherwise the
 // output will be 0.
-void TStackOperator_OP_NOT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_NOT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementBoolean *IN = dynamic_cast<TStackElementBoolean*>(in.get());
@@ -2716,6 +2856,8 @@ void TStackOperator_OP_NOT::execute( TExecutionStack &Stack ) const
 	} else {
 		Stack.give( new TStackElementBoolean( false ) );
 	}
+
+	return ip;
 }
 
 //
@@ -2723,7 +2865,8 @@ void TStackOperator_OP_NOT::execute( TExecutionStack &Stack ) const
 // Input:     in
 // Output:    out
 // Operation: Returns 1 if the input is 0. 0 otherwise.
-void TStackOperator_OP_0NOTEQUAL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_0NOTEQUAL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementInteger *IN = dynamic_cast<TStackElementInteger*>(in.get());
@@ -2735,6 +2878,8 @@ void TStackOperator_OP_0NOTEQUAL::execute( TExecutionStack &Stack ) const
 	} else {
 		Stack.give( new TStackElementBoolean( false ) );
 	}
+
+	return ip;
 }
 
 //
@@ -2742,7 +2887,8 @@ void TStackOperator_OP_0NOTEQUAL::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: a is added to b.
-void TStackOperator_OP_ADD::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_ADD::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2753,6 +2899,8 @@ void TStackOperator_OP_ADD::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data + B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2760,7 +2908,8 @@ void TStackOperator_OP_ADD::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: b is subtracted from a.
-void TStackOperator_OP_SUB::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_SUB::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2771,6 +2920,8 @@ void TStackOperator_OP_SUB::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data - B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2778,7 +2929,8 @@ void TStackOperator_OP_SUB::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: a is multiplied by b. Currently disabled.
-void TStackOperator_OP_MUL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_MUL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2789,6 +2941,8 @@ void TStackOperator_OP_MUL::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data * B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2796,7 +2950,8 @@ void TStackOperator_OP_MUL::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: a is divided by b. Currently disabled.
-void TStackOperator_OP_DIV::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_DIV::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2807,6 +2962,8 @@ void TStackOperator_OP_DIV::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data / B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2815,7 +2972,8 @@ void TStackOperator_OP_DIV::execute( TExecutionStack &Stack ) const
 // Output:    out
 // Operation: Returns the remainder after dividing a by b. Currently
 // disabled.
-void TStackOperator_OP_MOD::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_MOD::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2826,6 +2984,8 @@ void TStackOperator_OP_MOD::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data % B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2833,7 +2993,8 @@ void TStackOperator_OP_MOD::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Shifts a left b bits, preserving sign. Currently disabled.
-void TStackOperator_OP_LSHIFT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_LSHIFT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2844,6 +3005,8 @@ void TStackOperator_OP_LSHIFT::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data << B->Data.getBlock(0) ) );
+
+	return ip;
 }
 
 //
@@ -2851,7 +3014,8 @@ void TStackOperator_OP_LSHIFT::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Shifts a right b bits, preserving sign. Currently disabled.
-void TStackOperator_OP_RSHIFT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_RSHIFT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2862,6 +3026,8 @@ void TStackOperator_OP_RSHIFT::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBigInteger( A->Data >> B->Data.getBlock(0) ) );
+
+	return ip;
 }
 
 //
@@ -2869,7 +3035,8 @@ void TStackOperator_OP_RSHIFT::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: If both a and b are not 0, the output is 1. Otherwise 0.
-void TStackOperator_OP_BOOLAND::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_BOOLAND::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2880,6 +3047,8 @@ void TStackOperator_OP_BOOLAND::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( A->Data && B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2887,7 +3056,8 @@ void TStackOperator_OP_BOOLAND::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: If a or b is not 0, the output is 1. Otherwise 0.
-void TStackOperator_OP_BOOLOR::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_BOOLOR::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2898,6 +3068,8 @@ void TStackOperator_OP_BOOLOR::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( A->Data || B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2905,7 +3077,8 @@ void TStackOperator_OP_BOOLOR::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Returns 1 if the numbers are equal, 0 otherwise.
-void TStackOperator_OP_NUMEQUAL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_NUMEQUAL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2916,6 +3089,8 @@ void TStackOperator_OP_NUMEQUAL::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( A->Data == B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2937,7 +3112,8 @@ istream &TStackOperator_OP_NUMEQUALVERIFY::readAndAppend( TBitcoinScript *Script
 // Input:     a b
 // Output:    out
 // Operation: Returns 1 if the numbers are not equal, 0 otherwise.
-void TStackOperator_OP_NUMNOTEQUAL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_NUMNOTEQUAL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2948,6 +3124,8 @@ void TStackOperator_OP_NUMNOTEQUAL::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( A->Data != B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2955,7 +3133,8 @@ void TStackOperator_OP_NUMNOTEQUAL::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Returns 1 if a is less than b, 0 otherwise.
-void TStackOperator_OP_LESSTHAN::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_LESSTHAN::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2966,6 +3145,8 @@ void TStackOperator_OP_LESSTHAN::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( A->Data < B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2973,7 +3154,8 @@ void TStackOperator_OP_LESSTHAN::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Returns 1 if a is greater than b, 0 otherwise.
-void TStackOperator_OP_GREATERTHAN::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_GREATERTHAN::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -2984,6 +3166,8 @@ void TStackOperator_OP_GREATERTHAN::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( A->Data > B->Data ) );
+
+	return ip;
 }
 
 //
@@ -2991,7 +3175,8 @@ void TStackOperator_OP_GREATERTHAN::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Returns 1 if a is less than or equal to b, 0 otherwise.
-void TStackOperator_OP_LESSTHANOREQUAL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_LESSTHANOREQUAL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -3002,6 +3187,8 @@ void TStackOperator_OP_LESSTHANOREQUAL::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( A->Data <= B->Data ) );
+
+	return ip;
 }
 
 //
@@ -3009,7 +3196,8 @@ void TStackOperator_OP_LESSTHANOREQUAL::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Returns 1 if a is greater than or equal to b, 0 otherwise.
-void TStackOperator_OP_GREATERTHANOREQUAL::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_GREATERTHANOREQUAL::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -3020,6 +3208,8 @@ void TStackOperator_OP_GREATERTHANOREQUAL::execute( TExecutionStack &Stack ) con
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( A->Data >= B->Data ) );
+
+	return ip;
 }
 
 //
@@ -3027,7 +3217,8 @@ void TStackOperator_OP_GREATERTHANOREQUAL::execute( TExecutionStack &Stack ) con
 // Input:     a b
 // Output:    out
 // Operation: Returns the smaller of a and b.
-void TStackOperator_OP_MIN::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_MIN::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -3044,6 +3235,8 @@ void TStackOperator_OP_MIN::execute( TExecutionStack &Stack ) const
 	} else {
 		Stack.give( new TStackElementBigInteger( B->Data ) );
 	}
+
+	return ip;
 }
 
 //
@@ -3051,7 +3244,8 @@ void TStackOperator_OP_MIN::execute( TExecutionStack &Stack ) const
 // Input:     a b
 // Output:    out
 // Operation: Returns the larger of a and b.
-void TStackOperator_OP_MAX::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_MAX::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> b( Stack.take() );
 	auto_ptr<TStackElement> a( Stack.take() );
@@ -3068,6 +3262,8 @@ void TStackOperator_OP_MAX::execute( TExecutionStack &Stack ) const
 	} else {
 		Stack.give( new TStackElementBigInteger( B->Data ) );
 	}
+
+	return ip;
 }
 
 //
@@ -3076,7 +3272,8 @@ void TStackOperator_OP_MAX::execute( TExecutionStack &Stack ) const
 // Output:    out
 // Operation: Returns 1 if x is within the specified range
 // (left-inclusive), 0 otherwise.
-void TStackOperator_OP_WITHIN::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_WITHIN::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> x( Stack.take() );
 	auto_ptr<TStackElement> min( Stack.take() );
@@ -3089,6 +3286,8 @@ void TStackOperator_OP_WITHIN::execute( TExecutionStack &Stack ) const
 		throw script_run_parameter_type_error();
 
 	Stack.give( new TStackElementBoolean( X->Data >= MIN->Data && X->Data < MAX->Data ) );
+
+	return ip;
 }
 
 //
@@ -3099,7 +3298,8 @@ void TStackOperator_OP_WITHIN::execute( TExecutionStack &Stack ) const
 // class implements the common code and simply asks the child class what
 // hash it wants us to use.
 //
-void TStackOperator_CryptographicDigest::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_CryptographicDigest::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	auto_ptr<TStackElement> in( Stack.take() );
 	TStackElementString *IN = dynamic_cast<TStackElementString*>(in.get());
@@ -3111,6 +3311,8 @@ void TStackOperator_CryptographicDigest::execute( TExecutionStack &Stack ) const
 	TMessageDigest *Hasher = createHasher();
 	Stack.give( new TStackElementString(Hasher->transform( IN->Data ) ) );
 	delete Hasher;
+
+	return ip;
 }
 
 //
@@ -3171,8 +3373,11 @@ TMessageDigest *TStackOperator_OP_HASH256::createHasher() const
 // Operation: All of the signature checking words will only match
 // signatures to the data after the most recently-executed
 // OP_CODESEPARATOR.
-void TStackOperator_OP_CODESEPARATOR::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_CODESEPARATOR::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
@@ -3241,8 +3446,11 @@ istream &TStackOperator_OP_CHECKSIGVERIFY::readAndAppend( TBitcoinScript *Script
 // executed. If more public keys than signatures are listed, some
 // key/sig pairs can fail. All signatures need to match a public key. If
 // all signatures are valid, 1 is returned, 0 otherwise.
-void TStackOperator_OP_CHECKMULTISIG::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_CHECKMULTISIG::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
@@ -3262,21 +3470,28 @@ istream &TStackOperator_OP_CHECKMULTISIGVERIFY::readAndAppend( TBitcoinScript *S
 //
 // Function:  OP_PUBKEYHASH
 // Operation: Represents a public key hashed with OP_HASH160.
-void TStackOperator_OP_PUBKEYHASH::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_PUBKEYHASH::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  OP_PUBKEY
 // Operation: Represents a public key compatible with OP_CHECKSIG.
-void TStackOperator_OP_PUBKEY::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_PUBKEY::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  OP_INVALIDOPCODE
 // Operation: Matches any opcode that is not yet assigned.
-void TStackOperator_OP_INVALIDOPCODE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_INVALIDOPCODE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
@@ -3284,22 +3499,29 @@ void TStackOperator_OP_INVALIDOPCODE::execute( TExecutionStack &Stack ) const
 
 //
 // Function:  OP_N
-void TStackOperator_OP_N::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_N::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.give( new TStackElementBigInteger( OP-OP_2 ) );
+
+	return ip;
 }
 
 //
 // Function:  PUSH_N
-void TStackOperator_PUSH_N::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_PUSH_N::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.give( new TStackElementString( Raw ) );
+
+	return ip;
 }
 
 //
 // Function:  OP_RESERVED
 // Operation: Transaction is invalid
-void TStackOperator_OP_RESERVED::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_RESERVED::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
@@ -3308,7 +3530,8 @@ void TStackOperator_OP_RESERVED::execute( TExecutionStack &Stack ) const
 //
 // Function:  OP_VER
 // Operation: Transaction is invalid
-void TStackOperator_OP_VER::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_VER::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
@@ -3317,7 +3540,8 @@ void TStackOperator_OP_VER::execute( TExecutionStack &Stack ) const
 //
 // Function:  OP_VERIF
 // Operation: Transaction is invalid
-void TStackOperator_OP_VERIF::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_VERIF::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
@@ -3326,7 +3550,8 @@ void TStackOperator_OP_VERIF::execute( TExecutionStack &Stack ) const
 //
 // OP_VERNOTIF
 // Transaction is invalid
-void TStackOperator_OP_VERNOTIF::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_VERNOTIF::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
@@ -3335,7 +3560,8 @@ void TStackOperator_OP_VERNOTIF::execute( TExecutionStack &Stack ) const
 //
 // Function:  OP_RESERVED1
 // Operation: Transaction is invalid
-void TStackOperator_OP_RESERVED1::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_RESERVED1::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
@@ -3344,7 +3570,8 @@ void TStackOperator_OP_RESERVED1::execute( TExecutionStack &Stack ) const
 //
 // Function:  OP_RESERVED2
 // Operation: Transaction is invalid
-void TStackOperator_OP_RESERVED2::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_OP_RESERVED2::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
@@ -3355,63 +3582,88 @@ void TStackOperator_OP_RESERVED2::execute( TExecutionStack &Stack ) const
 //
 // Function:  TStackOperator_INTOP_PUSHSUBSCRIPT
 // Operation:
-void TStackOperator_INTOP_PUSHSUBSCRIPT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_PUSHSUBSCRIPT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  TStackOperator_INTOP_DELETESIG
 // Operation:
-void TStackOperator_INTOP_DELETESIG::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_DELETESIG::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  TStackOperator_INTOP_REMOVEHASHTYPE
 // Operation:
-void TStackOperator_INTOP_REMOVEHASHTYPE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_REMOVEHASHTYPE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  TStackOperator_INTOP_PUSHCOPYTRANSACTION
 // Operation:
-void TStackOperator_INTOP_PUSHCOPYTRANSACTION::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_PUSHCOPYTRANSACTION::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  TStackOperator_INTOP_REMOVECODESEPARATORS
 // Operation:
-void TStackOperator_INTOP_REMOVECODESEPARATORS::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_REMOVECODESEPARATORS::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  TStackOperator_INTOP_REMOVETXSCRIPTS
 // Operation:
-void TStackOperator_INTOP_REMOVETXSCRIPTS::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_REMOVETXSCRIPTS::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  TStackOperator_INTOP_REPLACETXSCRIPT
 // Operation:
-void TStackOperator_INTOP_REPLACETXSCRIPT::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_REPLACETXSCRIPT::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  TStackOperator_INTOP_SIGHASH
 // Operation:
-void TStackOperator_INTOP_SIGHASH::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_SIGHASH::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
+
+	return ip;
 }
 
 //
 // Function:  TStackOperator_INTOP_FINALSIGNATURE
 // Operation:
-void TStackOperator_INTOP_FINALSIGNATURE::execute( TExecutionStack &Stack ) const
+TBitcoinScript::tInstructionPointer
+TStackOperator_INTOP_FINALSIGNATURE::execute( TExecutionStack &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
 {
 	// XXX: COMPLETELY WRONG
 
@@ -3426,6 +3678,8 @@ void TStackOperator_INTOP_FINALSIGNATURE::execute( TExecutionStack &Stack ) cons
 	bool Verified = false;
 
 	Stack.give( new TStackElementBoolean( Verified ) );
+
+	return ip;
 }
 
 
