@@ -91,6 +91,10 @@ class TStackOperatorFromOpcode : public TStackOperatorFromStream
 
 };
 
+//
+// Class: TStackOperator_OP_FALSE
+// Desciption:
+//
 class TStackOperator_OP_FALSE : public TStackOperatorFromOpcode
 {
   public:
@@ -98,9 +102,13 @@ class TStackOperator_OP_FALSE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_FALSE(*this); }
 	eScriptOp getOpcode() const { return OP_FALSE; }
 
-	void execute( TExecutionStack &Stack ) const { Stack.push(0); }
+	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_PUSHDATAN
+// Desciption:
+//
 class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 {
   public:
@@ -117,7 +125,7 @@ class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 		return is;
 	}
 
-	void execute( TExecutionStack &Stack ) const { Stack.push( Raw ); }
+	void execute( TExecutionStack &Stack ) const;
 
   protected:
 	virtual streamsize getRawReadCount( istream & ) const = 0;
@@ -126,6 +134,10 @@ class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 	string Raw;
 };
 
+//
+// Class: TStackOperator_OP_PUSHDATA1
+// Desciption:
+//
 class TStackOperator_OP_PUSHDATA1 : public TStackOperator_OP_PUSHDATAN
 {
   public:
@@ -139,6 +151,10 @@ class TStackOperator_OP_PUSHDATA1 : public TStackOperator_OP_PUSHDATAN
 	}
 };
 
+//
+// Class: TStackOperator_OP_PUSHDATA2
+// Desciption:
+//
 class TStackOperator_OP_PUSHDATA2 : public TStackOperator_OP_PUSHDATAN
 {
   public:
@@ -156,6 +172,10 @@ class TStackOperator_OP_PUSHDATA2 : public TStackOperator_OP_PUSHDATAN
 	}
 };
 
+//
+// Class: TStackOperator_OP_PUSHDATA4
+// Desciption:
+//
 class TStackOperator_OP_PUSHDATA4 : public TStackOperator_OP_PUSHDATAN
 {
   public:
@@ -175,6 +195,10 @@ class TStackOperator_OP_PUSHDATA4 : public TStackOperator_OP_PUSHDATAN
 	}
 };
 
+//
+// Class: TStackOperator_OP_1NEGATE
+// Desciption:
+//
 class TStackOperator_OP_1NEGATE : public TStackOperatorFromOpcode
 {
   public:
@@ -182,9 +206,13 @@ class TStackOperator_OP_1NEGATE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_1NEGATE(*this); }
 	eScriptOp getOpcode() const { return OP_1NEGATE; }
 
-	void execute( TExecutionStack &Stack ) const { Stack.push(-1); }
+	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_TRUE
+// Desciption:
+//
 class TStackOperator_OP_TRUE : public TStackOperatorFromOpcode
 {
   public:
@@ -192,9 +220,13 @@ class TStackOperator_OP_TRUE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_TRUE(*this); }
 	eScriptOp getOpcode() const { return OP_TRUE; }
 
-	void execute( TExecutionStack &Stack ) const { Stack.push(1); }
+	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_NOP
+// Desciption:
+//
 class TStackOperator_OP_NOP : public TStackOperatorFromOpcode
 {
   public:
@@ -205,6 +237,10 @@ class TStackOperator_OP_NOP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const {}
 };
 
+//
+// Class: TStackOperator_OP_IF
+// Desciption:
+//
 class TStackOperator_OP_IF : public TStackOperatorFromOpcode
 {
   public:
@@ -215,6 +251,10 @@ class TStackOperator_OP_IF : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_NOTIF
+// Desciption:
+//
 class TStackOperator_OP_NOTIF : public TStackOperatorFromOpcode
 {
   public:
@@ -225,6 +265,10 @@ class TStackOperator_OP_NOTIF : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_ELSE
+// Desciption:
+//
 class TStackOperator_OP_ELSE : public TStackOperatorFromOpcode
 {
   public:
@@ -235,6 +279,10 @@ class TStackOperator_OP_ELSE : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_ENDIF
+// Desciption:
+//
 class TStackOperator_OP_ENDIF : public TStackOperatorFromOpcode
 {
   public:
@@ -245,6 +293,10 @@ class TStackOperator_OP_ENDIF : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_VERIFY
+// Desciption:
+//
 class TStackOperator_OP_VERIFY : public TStackOperatorFromOpcode
 {
   public:
@@ -255,6 +307,10 @@ class TStackOperator_OP_VERIFY : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_RETURN
+// Desciption:
+//
 class TStackOperator_OP_RETURN : public TStackOperatorFromOpcode
 {
   public:
@@ -265,6 +321,10 @@ class TStackOperator_OP_RETURN : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_TOALTSTACK
+// Desciption:
+//
 class TStackOperator_OP_TOALTSTACK : public TStackOperatorFromOpcode
 {
   public:
@@ -275,6 +335,10 @@ class TStackOperator_OP_TOALTSTACK : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_FROMALTSTACK
+// Desciption:
+//
 class TStackOperator_OP_FROMALTSTACK : public TStackOperatorFromOpcode
 {
   public:
@@ -285,6 +349,10 @@ class TStackOperator_OP_FROMALTSTACK : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_IFDUP
+// Desciption:
+//
 class TStackOperator_OP_IFDUP : public TStackOperatorFromOpcode
 {
   public:
@@ -295,6 +363,10 @@ class TStackOperator_OP_IFDUP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_DEPTH
+// Desciption:
+//
 class TStackOperator_OP_DEPTH : public TStackOperatorFromOpcode
 {
   public:
@@ -305,6 +377,10 @@ class TStackOperator_OP_DEPTH : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_DROP
+// Desciption:
+//
 class TStackOperator_OP_DROP : public TStackOperatorFromOpcode
 {
   public:
@@ -315,6 +391,10 @@ class TStackOperator_OP_DROP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_DUP
+// Desciption:
+//
 class TStackOperator_OP_DUP : public TStackOperatorFromOpcode
 {
   public:
@@ -325,6 +405,10 @@ class TStackOperator_OP_DUP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_NIP
+// Desciption:
+//
 class TStackOperator_OP_NIP : public TStackOperatorFromOpcode
 {
   public:
@@ -335,6 +419,10 @@ class TStackOperator_OP_NIP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_OVER
+// Desciption:
+//
 class TStackOperator_OP_OVER : public TStackOperatorFromOpcode
 {
   public:
@@ -345,6 +433,10 @@ class TStackOperator_OP_OVER : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_PICK
+// Desciption:
+//
 class TStackOperator_OP_PICK : public TStackOperatorFromOpcode
 {
   public:
@@ -355,6 +447,10 @@ class TStackOperator_OP_PICK : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_ROLL
+// Desciption:
+//
 class TStackOperator_OP_ROLL : public TStackOperatorFromOpcode
 {
   public:
@@ -365,6 +461,10 @@ class TStackOperator_OP_ROLL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_ROT
+// Desciption:
+//
 class TStackOperator_OP_ROT : public TStackOperatorFromOpcode
 {
   public:
@@ -375,6 +475,10 @@ class TStackOperator_OP_ROT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_SWAP
+// Desciption:
+//
 class TStackOperator_OP_SWAP : public TStackOperatorFromOpcode
 {
   public:
@@ -385,6 +489,10 @@ class TStackOperator_OP_SWAP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_TUCK
+// Desciption:
+//
 class TStackOperator_OP_TUCK : public TStackOperatorFromOpcode
 {
   public:
@@ -395,6 +503,10 @@ class TStackOperator_OP_TUCK : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_2DROP
+// Desciption:
+//
 class TStackOperator_OP_2DROP : public TStackOperatorFromOpcode
 {
   public:
@@ -405,6 +517,10 @@ class TStackOperator_OP_2DROP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_2DUP
+// Desciption:
+//
 class TStackOperator_OP_2DUP : public TStackOperatorFromOpcode
 {
   public:
@@ -415,6 +531,10 @@ class TStackOperator_OP_2DUP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_3DUP
+// Desciption:
+//
 class TStackOperator_OP_3DUP : public TStackOperatorFromOpcode
 {
   public:
@@ -425,6 +545,10 @@ class TStackOperator_OP_3DUP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_2OVER
+// Desciption:
+//
 class TStackOperator_OP_2OVER : public TStackOperatorFromOpcode
 {
   public:
@@ -435,6 +559,10 @@ class TStackOperator_OP_2OVER : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_2ROT
+// Desciption:
+//
 class TStackOperator_OP_2ROT : public TStackOperatorFromOpcode
 {
   public:
@@ -445,6 +573,10 @@ class TStackOperator_OP_2ROT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_2SWAP
+// Desciption:
+//
 class TStackOperator_OP_2SWAP : public TStackOperatorFromOpcode
 {
   public:
@@ -455,6 +587,10 @@ class TStackOperator_OP_2SWAP : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_CAT
+// Desciption:
+//
 class TStackOperator_OP_CAT : public TStackOperatorFromOpcode
 {
   public:
@@ -465,6 +601,10 @@ class TStackOperator_OP_CAT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_SUBSTR
+// Desciption:
+//
 class TStackOperator_OP_SUBSTR : public TStackOperatorFromOpcode
 {
   public:
@@ -475,6 +615,10 @@ class TStackOperator_OP_SUBSTR : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_LEFT
+// Desciption:
+//
 class TStackOperator_OP_LEFT : public TStackOperatorFromOpcode
 {
   public:
@@ -485,6 +629,10 @@ class TStackOperator_OP_LEFT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_RIGHT
+// Desciption:
+//
 class TStackOperator_OP_RIGHT : public TStackOperatorFromOpcode
 {
   public:
@@ -495,6 +643,10 @@ class TStackOperator_OP_RIGHT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_SIZE
+// Desciption:
+//
 class TStackOperator_OP_SIZE : public TStackOperatorFromOpcode
 {
   public:
@@ -505,6 +657,10 @@ class TStackOperator_OP_SIZE : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_INVERT
+// Desciption:
+//
 class TStackOperator_OP_INVERT : public TStackOperatorFromOpcode
 {
   public:
@@ -515,6 +671,10 @@ class TStackOperator_OP_INVERT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_AND
+// Desciption:
+//
 class TStackOperator_OP_AND : public TStackOperatorFromOpcode
 {
   public:
@@ -525,6 +685,10 @@ class TStackOperator_OP_AND : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_OR
+// Desciption:
+//
 class TStackOperator_OP_OR : public TStackOperatorFromOpcode
 {
   public:
@@ -535,6 +699,10 @@ class TStackOperator_OP_OR : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_XOR
+// Desciption:
+//
 class TStackOperator_OP_XOR : public TStackOperatorFromOpcode
 {
   public:
@@ -545,6 +713,10 @@ class TStackOperator_OP_XOR : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_EQUAL
+// Desciption:
+//
 class TStackOperator_OP_EQUAL : public TStackOperatorFromOpcode
 {
   public:
@@ -555,6 +727,10 @@ class TStackOperator_OP_EQUAL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_EQUALVERIFY
+// Desciption:
+//
 class TStackOperator_OP_EQUALVERIFY : public TStackOperatorFromOpcode
 {
   public:
@@ -565,6 +741,10 @@ class TStackOperator_OP_EQUALVERIFY : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_1ADD
+// Desciption:
+//
 class TStackOperator_OP_1ADD : public TStackOperatorFromOpcode
 {
   public:
@@ -575,6 +755,10 @@ class TStackOperator_OP_1ADD : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_1SUB
+// Desciption:
+//
 class TStackOperator_OP_1SUB : public TStackOperatorFromOpcode
 {
   public:
@@ -585,6 +769,10 @@ class TStackOperator_OP_1SUB : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_2MUL
+// Desciption:
+//
 class TStackOperator_OP_2MUL : public TStackOperatorFromOpcode
 {
   public:
@@ -595,6 +783,10 @@ class TStackOperator_OP_2MUL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_2DIV
+// Desciption:
+//
 class TStackOperator_OP_2DIV : public TStackOperatorFromOpcode
 {
   public:
@@ -605,6 +797,10 @@ class TStackOperator_OP_2DIV : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_NEGATE
+// Desciption:
+//
 class TStackOperator_OP_NEGATE : public TStackOperatorFromOpcode
 {
   public:
@@ -615,6 +811,10 @@ class TStackOperator_OP_NEGATE : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_ABS
+// Desciption:
+//
 class TStackOperator_OP_ABS : public TStackOperatorFromOpcode
 {
   public:
@@ -625,6 +825,10 @@ class TStackOperator_OP_ABS : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_NOT
+// Desciption:
+//
 class TStackOperator_OP_NOT : public TStackOperatorFromOpcode
 {
   public:
@@ -635,6 +839,10 @@ class TStackOperator_OP_NOT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_0NOTEQUAL
+// Desciption:
+//
 class TStackOperator_OP_0NOTEQUAL : public TStackOperatorFromOpcode
 {
   public:
@@ -645,6 +853,10 @@ class TStackOperator_OP_0NOTEQUAL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_ADD
+// Desciption:
+//
 class TStackOperator_OP_ADD : public TStackOperatorFromOpcode
 {
   public:
@@ -655,6 +867,10 @@ class TStackOperator_OP_ADD : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_SUB
+// Desciption:
+//
 class TStackOperator_OP_SUB : public TStackOperatorFromOpcode
 {
   public:
@@ -665,6 +881,10 @@ class TStackOperator_OP_SUB : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_MUL
+// Desciption:
+//
 class TStackOperator_OP_MUL : public TStackOperatorFromOpcode
 {
   public:
@@ -675,6 +895,10 @@ class TStackOperator_OP_MUL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_DIV
+// Desciption:
+//
 class TStackOperator_OP_DIV : public TStackOperatorFromOpcode
 {
   public:
@@ -685,6 +909,10 @@ class TStackOperator_OP_DIV : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_MOD
+// Desciption:
+//
 class TStackOperator_OP_MOD : public TStackOperatorFromOpcode
 {
   public:
@@ -695,6 +923,10 @@ class TStackOperator_OP_MOD : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_LSHIFT
+// Desciption:
+//
 class TStackOperator_OP_LSHIFT : public TStackOperatorFromOpcode
 {
   public:
@@ -705,6 +937,10 @@ class TStackOperator_OP_LSHIFT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_RSHIFT
+// Desciption:
+//
 class TStackOperator_OP_RSHIFT : public TStackOperatorFromOpcode
 {
   public:
@@ -715,6 +951,10 @@ class TStackOperator_OP_RSHIFT : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_BOOLAND
+// Desciption:
+//
 class TStackOperator_OP_BOOLAND : public TStackOperatorFromOpcode
 {
   public:
@@ -725,6 +965,10 @@ class TStackOperator_OP_BOOLAND : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_BOOLOR
+// Desciption:
+//
 class TStackOperator_OP_BOOLOR : public TStackOperatorFromOpcode
 {
   public:
@@ -735,6 +979,10 @@ class TStackOperator_OP_BOOLOR : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_NUMEQUAL
+// Desciption:
+//
 class TStackOperator_OP_NUMEQUAL : public TStackOperatorFromOpcode
 {
   public:
@@ -745,6 +993,10 @@ class TStackOperator_OP_NUMEQUAL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_NUMEQUALVERIFY
+// Desciption:
+//
 class TStackOperator_OP_NUMEQUALVERIFY : public TStackOperatorFromOpcode
 {
   public:
@@ -755,6 +1007,10 @@ class TStackOperator_OP_NUMEQUALVERIFY : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_NUMNOTEQUAL
+// Desciption:
+//
 class TStackOperator_OP_NUMNOTEQUAL : public TStackOperatorFromOpcode
 {
   public:
@@ -765,6 +1021,10 @@ class TStackOperator_OP_NUMNOTEQUAL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_LESSTHAN
+// Desciption:
+//
 class TStackOperator_OP_LESSTHAN : public TStackOperatorFromOpcode
 {
   public:
@@ -775,6 +1035,10 @@ class TStackOperator_OP_LESSTHAN : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_GREATERTHAN
+// Desciption:
+//
 class TStackOperator_OP_GREATERTHAN : public TStackOperatorFromOpcode
 {
   public:
@@ -785,6 +1049,10 @@ class TStackOperator_OP_GREATERTHAN : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_LESSTHANOREQUAL
+// Desciption:
+//
 class TStackOperator_OP_LESSTHANOREQUAL : public TStackOperatorFromOpcode
 {
   public:
@@ -795,6 +1063,10 @@ class TStackOperator_OP_LESSTHANOREQUAL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_GREATERTHANOREQUAL
+// Desciption:
+//
 class TStackOperator_OP_GREATERTHANOREQUAL : public TStackOperatorFromOpcode
 {
   public:
@@ -805,6 +1077,10 @@ class TStackOperator_OP_GREATERTHANOREQUAL : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_MIN
+// Desciption:
+//
 class TStackOperator_OP_MIN : public TStackOperatorFromOpcode
 {
   public:
@@ -815,6 +1091,10 @@ class TStackOperator_OP_MIN : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_MAX
+// Desciption:
+//
 class TStackOperator_OP_MAX : public TStackOperatorFromOpcode
 {
   public:
@@ -825,6 +1105,10 @@ class TStackOperator_OP_MAX : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_WITHIN
+// Desciption:
+//
 class TStackOperator_OP_WITHIN : public TStackOperatorFromOpcode
 {
   public:
@@ -835,6 +1119,10 @@ class TStackOperator_OP_WITHIN : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_RIPEMD160
+// Desciption:
+//
 class TStackOperator_OP_RIPEMD160 : public TStackOperatorFromOpcode
 {
   public:
@@ -845,6 +1133,10 @@ class TStackOperator_OP_RIPEMD160 : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_SHA1
+// Desciption:
+//
 class TStackOperator_OP_SHA1 : public TStackOperatorFromOpcode
 {
   public:
@@ -855,6 +1147,10 @@ class TStackOperator_OP_SHA1 : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_SHA256
+// Desciption:
+//
 class TStackOperator_OP_SHA256 : public TStackOperatorFromOpcode
 {
   public:
@@ -865,6 +1161,10 @@ class TStackOperator_OP_SHA256 : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_HASH160
+// Desciption:
+//
 class TStackOperator_OP_HASH160 : public TStackOperatorFromOpcode
 {
   public:
@@ -875,6 +1175,10 @@ class TStackOperator_OP_HASH160 : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_HASH256
+// Desciption:
+//
 class TStackOperator_OP_HASH256 : public TStackOperatorFromOpcode
 {
   public:
@@ -885,6 +1189,10 @@ class TStackOperator_OP_HASH256 : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_CODESEPARATOR
+// Desciption:
+//
 class TStackOperator_OP_CODESEPARATOR : public TStackOperatorFromOpcode
 {
   public:
@@ -895,6 +1203,10 @@ class TStackOperator_OP_CODESEPARATOR : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_CHECKSIG
+// Desciption:
+//
 class TStackOperator_OP_CHECKSIG : public TStackOperatorFromOpcode
 {
   public:
@@ -905,6 +1217,10 @@ class TStackOperator_OP_CHECKSIG : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_CHECKSIGVERIFY
+// Desciption:
+//
 class TStackOperator_OP_CHECKSIGVERIFY : public TStackOperatorFromOpcode
 {
   public:
@@ -915,6 +1231,10 @@ class TStackOperator_OP_CHECKSIGVERIFY : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_CHECKMULTISIG
+// Desciption:
+//
 class TStackOperator_OP_CHECKMULTISIG : public TStackOperatorFromOpcode
 {
   public:
@@ -925,6 +1245,10 @@ class TStackOperator_OP_CHECKMULTISIG : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_CHECKMULTISIGVERIFY
+// Desciption:
+//
 class TStackOperator_OP_CHECKMULTISIGVERIFY : public TStackOperatorFromOpcode
 {
   public:
@@ -935,6 +1259,10 @@ class TStackOperator_OP_CHECKMULTISIGVERIFY : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_PUBKEYHASH
+// Desciption:
+//
 class TStackOperator_OP_PUBKEYHASH : public TStackOperatorFromOpcode
 {
   public:
@@ -945,6 +1273,10 @@ class TStackOperator_OP_PUBKEYHASH : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_PUBKEY
+// Desciption:
+//
 class TStackOperator_OP_PUBKEY : public TStackOperatorFromOpcode
 {
   public:
@@ -955,6 +1287,10 @@ class TStackOperator_OP_PUBKEY : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_RESERVED
+// Desciption:
+//
 class TStackOperator_OP_RESERVED : public TStackOperatorFromOpcode
 {
   public:
@@ -965,6 +1301,10 @@ class TStackOperator_OP_RESERVED : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_VER
+// Desciption:
+//
 class TStackOperator_OP_VER : public TStackOperatorFromOpcode
 {
   public:
@@ -975,6 +1315,10 @@ class TStackOperator_OP_VER : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_VERIF
+// Desciption:
+//
 class TStackOperator_OP_VERIF : public TStackOperatorFromOpcode
 {
   public:
@@ -985,6 +1329,10 @@ class TStackOperator_OP_VERIF : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_VERNOTIF
+// Desciption:
+//
 class TStackOperator_OP_VERNOTIF : public TStackOperatorFromOpcode
 {
   public:
@@ -995,6 +1343,10 @@ class TStackOperator_OP_VERNOTIF : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_RESERVED1
+// Desciption:
+//
 class TStackOperator_OP_RESERVED1 : public TStackOperatorFromOpcode
 {
   public:
@@ -1005,6 +1357,10 @@ class TStackOperator_OP_RESERVED1 : public TStackOperatorFromOpcode
 	void execute( TExecutionStack &Stack ) const;
 };
 
+//
+// Class: TStackOperator_OP_RESERVED2
+// Desciption:
+//
 class TStackOperator_OP_RESERVED2 : public TStackOperatorFromOpcode
 {
   public:
@@ -1065,9 +1421,7 @@ class TStackOperator_OP_N : public TStackOperatorFromOpcodes
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_N(*this); }
 	bool acceptOpcode( eScriptOp op ) const { return op >= OP_2 && op <= OP_16; }
 
-	void execute( TExecutionStack &Stack ) const {
-		Stack.push( static_cast<uint8_t>( OP - OP_2 ) );
-	}
+	void execute( TExecutionStack &Stack ) const;
 };
 
 //
@@ -1097,7 +1451,7 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 		return is;
 	}
 
-	void execute( TExecutionStack &Stack ) const { Stack.push( Raw ); }
+	void execute( TExecutionStack &Stack ) const;
 
   protected:
 	string Raw;
@@ -1129,22 +1483,6 @@ class TStackOperator_OP_NOP_N : public TStackOperatorFromOpcodes
 //
 TExecutionStack::TExecutionStack() :
 	Invalid( false )
-{
-}
-
-//
-// Function:	TExecutionStack :: push
-// Description:
-//
-void TExecutionStack::push( int )
-{
-}
-
-//
-// Function:	TExecutionStack :: push
-// Description:
-//
-void TExecutionStack::push( const string & )
 {
 }
 
@@ -1347,6 +1685,50 @@ void TBitcoinScript_0::init()
 }
 
 // -----------
+
+//
+// Function:  OP_FALSE
+// Input:     Nothing
+// Output:    False
+// Operation:
+//
+void TStackOperator_OP_FALSE::execute( TExecutionStack &Stack ) const
+{
+	Stack().push_back(0);
+}
+
+//
+// Function:  OP_PUSHDATAN
+// Input:     
+// Output:    
+// Operation:
+//
+void TStackOperator_OP_PUSHDATAN::execute( TExecutionStack &Stack ) const
+{
+	Stack().push_back( Raw );
+}
+
+//
+// Function:  OP_1NEGATE
+// Input:     
+// Output:    
+// Operation:
+//
+void TStackOperator_OP_1NEGATE::execute( TExecutionStack &Stack ) const
+{
+	Stack().push_back(-1);
+}
+
+//
+// Function:  OP_TRUE
+// Input:     
+// Output:    
+// Operation:
+//
+void TStackOperator_OP_TRUE::execute( TExecutionStack &Stack ) const
+{
+	Stack.push(1);
+}
 
 //
 // Function:  OP_IF
@@ -2056,6 +2438,20 @@ void TStackOperator_OP_PUBKEY::execute( TExecutionStack &Stack ) const
 // Operation: Matches any opcode that is not yet assigned.
 void TStackOperator_OP_INVALIDOPCODE::execute( TExecutionStack &Stack ) const
 {
+}
+
+//
+// Function:  OP_N
+void TStackOperator_OP_N::execute( TExecutionStack &Stack ) const
+{
+	Stack.push( static_cast<uint8_t>( OP - OP_2 ) );
+}
+
+//
+// Function:  PUSH_N
+void TStackOperator_PUSH_N::execute( TExecutionStack &Stack ) const
+{
+	Stack.push( Raw );
 }
 
 //

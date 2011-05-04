@@ -234,6 +234,20 @@ class script_parse_error_version : public script_parse_error
 // -------------
 
 //
+// Class: TStackElement
+// Description:
+//
+class TStackElement
+{
+  public:
+	TStackElement();
+	TStackElement( const string &d ) : Data(d) {}
+
+  protected:
+	string Data;
+};
+
+//
 // Class: TExecutionStack
 // Description:
 //
@@ -242,11 +256,10 @@ class TExecutionStack
   public:
 	TExecutionStack();
 
-	void push( int );
-	void push( const string & );
+	list<TStackElement*> &operator()() { return Stack; }
 
-	list<TStackElement *> Stack;
-	list<TStackElement *> AltStack;
+	list<TStackElement*> Stack;
+	list<TStackElement*> AltStack;
 
 	bool Invalid;
 };
@@ -261,7 +274,7 @@ class TBitcoinScript
 	TBitcoinScript();
 	virtual ~TBitcoinScript();
 
-	istream &read( istream & );
+	istream &read( TBitcoinScript &, istream & );
 
 	void execute( TExecutionStack & ) const;
 
