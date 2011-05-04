@@ -188,6 +188,7 @@ ostream &TAutoSizeIntegerElement::write( ostream &os ) const
 #ifdef UNITTEST
 #include <iostream>
 #include <sstream>
+#include "logstream.h"
 
 // -------------- main()
 
@@ -210,7 +211,7 @@ int main( int argc, char *argv[] )
 			TAutoSizeIntegerElement x;
 			iss >> x;
 
-			cerr << p->size() << " bytes input; output = " << x.getValue() << endl;
+			log() << p->size() << " bytes input; output = " << x.getValue() << endl;
 
 			ostringstream oss;
 			oss << x;
@@ -227,7 +228,7 @@ int main( int argc, char *argv[] )
 		}
 
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 
@@ -244,7 +245,7 @@ int main( int argc, char *argv[] )
 
 			while( !iss.eof() ) {
 				iss >> x;
-				cerr << "Got string \"" << x.getValue() << "\" from "
+				log() << "Got string \"" << x.getValue() << "\" from "
 					<< p->size() << " byte input string" << endl;
 			}
 
@@ -252,7 +253,7 @@ int main( int argc, char *argv[] )
 		}
 
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 

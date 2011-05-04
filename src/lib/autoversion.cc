@@ -57,6 +57,7 @@ const char *VCSID_CONST = "VCSID-unavailable";
 
 #include <iostream>
 #include <cstring>
+#include "logstream.h"
 
 // -------------- main()
 
@@ -67,7 +68,7 @@ const char *VCSID_CONST = "VCSID-unavailable";
 //
 int main( int argc, char *argv[] )
 {
-	cerr << "Version: " << VCSID_CONST << endl;
+	log() << "Version: " << VCSID_CONST << endl;
 	if( strcmp( VCSID_CONST, "VCSID-unavailable" ) == 0 )
 		return 1;
 	return 0;

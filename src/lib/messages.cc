@@ -26,6 +26,7 @@
 // --- Project libs
 #include "crypto.h"
 #include "messagefactory.h"
+#include "logstream.h"
 // --- Project
 
 
@@ -602,6 +603,7 @@ const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
 #ifdef UNITTEST
 #include <iostream>
 #include <typeinfo>
+#include "logstream.h"
 #include "unittest.h"
 
 // -------------- main()
@@ -611,21 +613,21 @@ int main( int argc, char *argv[] )
 	try {
 		TMessageTemplates::container::iterator it;
 
-		cerr << "--- Available TMessage templates" << endl;
+		log() << "--- Available TMessage templates" << endl;
 
 		for( it = TMessageTemplates::t.Templates.begin();
 				it != TMessageTemplates::t.Templates.end(); it++ ) {
-			cerr << (*it)->className() << endl;
+			log() << (*it)->className() << endl;
 		}
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 
 	try {
 		TMessageTemplates::container::iterator it;
 
-		cerr << "--- Testing parser" << endl;
+		log() << "--- Testing parser" << endl;
 
 		const string *p = UNITTESTSampleMessages;
 		while( !p->empty() ) {
@@ -634,7 +636,7 @@ int main( int argc, char *argv[] )
 			iss.exceptions( ios::eofbit | ios::failbit | ios::badbit );
 			ios::streampos sp;
 
-			cerr << "* Attempting to parse " << p << endl;
+			log() << "* Attempting to parse " << p << endl;
 			for( it = TMessageTemplates::t.Templates.begin();
 					it != TMessageTemplates::t.Templates.end(); it++ ) {
 				potential = (*it)->clone();
@@ -642,7 +644,7 @@ int main( int argc, char *argv[] )
 					sp = iss.tellg();
 					potential->read( iss );
 				} catch( ios::failure &e ) {
-					cerr << " - message parse by " << potential->className()
+					log() << " - message parse by " << potential->className()
 						<< " failed with I/O error.  Message is likely too short." << endl;
 					delete potential;
 					potential = NULL;
@@ -653,7 +655,7 @@ int main( int argc, char *argv[] )
 					iss.seekg( sp, ios::beg );
 					continue;
 				} catch( exception &e ) {
-					cerr << " - message parse by " << potential->className()
+					log() << " - message parse by " << potential->className()
 						<< " failed, " << e.what()
 #ifdef _TYPEINFO
 						<< " (" << typeid(e).name() << ")"
@@ -668,9 +670,9 @@ int main( int argc, char *argv[] )
 				break;
 			}
 			if( potential != NULL ) {
-				cerr << " - is a " << *potential << endl;
+				log() << " - is a " << *potential << endl;
 			} else {
-				cerr << " - is not a message" << endl;
+				log() << " - is not a message" << endl;
 				p++;
 				continue;
 			}
@@ -679,7 +681,7 @@ int main( int argc, char *argv[] )
 			ostringstream oss;
 			potential->write( oss );
 			if( oss.str() != *p ) {
-				cerr << "Original message was " << p->size()
+				log() << "Original message was " << p->size()
 					<< " bytes; generated was " << oss.str().size() << endl;
 				throw runtime_error("message didn't invert");
 			}
@@ -689,7 +691,7 @@ int main( int argc, char *argv[] )
 			p++;
 		}
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 

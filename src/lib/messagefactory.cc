@@ -27,6 +27,7 @@
 // --- Project
 #include "messages.h"
 #include "script.h"
+#include "logstream.h"
 
 
 // -------------- Namespace
@@ -413,15 +414,15 @@ int main( int argc, char *argv[] )
 		while( !p->empty() ) {
 			PF.receive( *p );
 			if( PF.newestIncoming() != NULL ) {
-				cerr << "PF.queue() = " << *PF.newestIncoming() << endl;
+				log() << "PF.queue() = " << *PF.newestIncoming() << endl;
 			} else {
-				cerr << "no packet yet" << endl;
+				log() << "no packet yet" << endl;
 			}
 			p++;
 		}
 
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 

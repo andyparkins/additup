@@ -48,6 +48,7 @@
 
 #ifdef UNITTEST
 #include <iostream>
+#include "logstream.h"
 
 // -------------- main()
 
@@ -55,7 +56,7 @@ int main( int argc, char *argv[] )
 {
 	try {
 	} catch( std::exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 

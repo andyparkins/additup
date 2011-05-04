@@ -214,8 +214,10 @@ void netdb_error::appendErrorStringTo( int e, string &s ) const throw()
 // ----- Function definitions
 
 #ifdef UNITTEST
-// -------------- main()
 #include <iostream>
+#include "logstream.h"
+
+// -------------- main()
 
 int main( int argc, char *argv[] )
 {
@@ -223,14 +225,14 @@ int main( int argc, char *argv[] )
 		try {
 			throw libc_error("libc()", i);
 		} catch( exception &e ) {
-			cerr << e.what() << endl;
+			log() << e.what() << endl;
 		} catch( ... ) {
 			return 1;
 		}
 		try {
 			throw netdb_error("netdb()", i);
 		} catch( exception &e ) {
-			cerr << e.what() << endl;
+			log() << e.what() << endl;
 		} catch( ... ) {
 			return 1;
 		}

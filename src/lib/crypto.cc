@@ -397,6 +397,7 @@ string TSSLMessageDigest::final()
 #ifdef UNITTEST
 #include <iostream>
 #include <iomanip>
+#include "logstream.h"
 
 //
 // Function:	hexify
@@ -453,16 +454,16 @@ int main( int argc, char *argv[] )
 		ECKEY.generate();
 
 		signature = ECKEY.sign( digest );
-		cerr << "EC: Signature of \"" << digest << "\" is ";
-		hexify( cerr, signature );
+		log() << "EC: Signature of \"" << digest << "\" is ";
+		hexify( log(), signature );
 
 		if( ECKEY.verify( digest, signature ) ) {
-			cerr << " : verifies" << endl;
+			log() << " : verifies" << endl;
 		} else {
-			cerr << " : does not verify" << endl;
+			log() << " : does not verify" << endl;
 		}
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 
@@ -473,7 +474,7 @@ int main( int argc, char *argv[] )
 			const string ExpectedDigest;
 		};
 
-		cerr << "MD: Creating message digest engines" << endl;
+		log() << "MD: Creating message digest engines" << endl;
 		THash_sha1 SHA1;
 		THash_sha256 SHA256;
 		THash_ripemd160 RIPEMD160;
@@ -518,23 +519,23 @@ int main( int argc, char *argv[] )
 		};
 		const sTestSample *p = Samples;
 
-		cerr << "MD: Checking samples hash as expected" << endl;
+		log() << "MD: Checking samples hash as expected" << endl;
 		while( p->Hasher != NULL ) {
 			string ct;
 
-			cerr << "MD: Hashing \"" << safe(p->Plaintext) << "\" (" << p->Plaintext.size() << ")" << endl;
+			log() << "MD: Hashing \"" << safe(p->Plaintext) << "\" (" << p->Plaintext.size() << ")" << endl;
 			ct = p->Hasher->transform( p->Plaintext );
-			cerr << "MD: Hash is ";
-			hexify(cerr, ct);
-			cerr << " (" << ct.size() << ")" << endl;
+			log() << "MD: Hash is ";
+			hexify(log(), ct);
+			log() << " (" << ct.size() << ")" << endl;
 			if( ct != p->ExpectedDigest )
 				throw runtime_error( "Hash is wrong" );
 
 			p++;
 		}
-		cerr << "MD: All samples completed successfully" << endl;
+		log() << "MD: All samples completed successfully" << endl;
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 

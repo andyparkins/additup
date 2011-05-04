@@ -233,6 +233,7 @@ const TNetworkParameters *KNOWN_NETWORKS[] = {
 
 #ifdef UNITTEST
 #include <iostream>
+#include "logstream.h"
 
 // -------------- main()
 
@@ -242,12 +243,12 @@ int main( int argc, char *argv[] )
 		const TOfficialSeedNode *pSeed = SEED_NODES;
 
 		while( *pSeed ) {
-			 pSeed->write(cerr);
-			 cerr << endl;
+			 pSeed->write(log());
+			 log() << endl;
 			 pSeed++;
 		}
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 

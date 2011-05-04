@@ -2110,6 +2110,7 @@ void TStackOperator_OP_RESERVED2::execute( TExecutionStack &Stack ) const
 #ifdef UNITTEST
 #include <iostream>
 #include <sstream>
+#include "logstream.h"
 #include "unittest.h"
 
 // -------------- main()
@@ -2117,7 +2118,7 @@ void TStackOperator_OP_RESERVED2::execute( TExecutionStack &Stack ) const
 int main( int argc, char *argv[] )
 {
 	try {
-		cerr << "--- Testing parser" << endl;
+		log() << "--- Testing parser" << endl;
 
 		const string *p = UNITTESTSampleScripts;
 		while( !p->empty() ) {
@@ -2129,7 +2130,7 @@ int main( int argc, char *argv[] )
 			p++;
 		}
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 
