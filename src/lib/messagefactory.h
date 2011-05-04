@@ -94,8 +94,6 @@ class TMessageFactory
 
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
-	virtual TBitcoinScript *createVersionedBitcoinScript() const = 0;
-
   protected:
 	virtual void init();
 
@@ -120,8 +118,6 @@ class TVersioningMessageFactory : public TMessageFactory
   public:
 	const char *className() { return "TVersioningMessageFactory"; }
 
-	TBitcoinScript *createVersionedBitcoinScript() const { return NULL; }
-
   protected:
 	void init();
 
@@ -135,6 +131,8 @@ class TVersionedMessageFactory : public TMessageFactory
 {
   public:
 	const char *className() { return "TVersionedMessageFactory"; }
+
+	virtual TBitcoinScript *createVersionedBitcoinScript() const = 0;
 
   protected:
 //	void init();
