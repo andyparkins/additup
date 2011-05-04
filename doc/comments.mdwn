@@ -178,4 +178,44 @@
    will alter the outputs too?  The sequence number should be a
    transaction field.
 
+ - Why do `OP_HASH160` and `OP_HASH256` even exist; they can be implemented as
+   <`OP_SHA256`, `OP_RIPEMD160`> and <`OP_SHA256`,`OP_SHA256`>.  Compound operations
+   just complicate the script language and promote inflexibility.  (Update: I
+   suspect the docs are lying, I suspect that `OP_HASH160` actually converts a
+   public key to an bitcoin address hash, which is more than just double
+   hashing)
+
+ - Similarly, `OP_EQUALVERIFY` is simply <`OP_EQUAL`,`OP_VERIFY`>.
+
+ - `OP_CHECKSIG`: seriously... WTF?  The script is copied, filtered and truncated
+   using an entirely arbitrary set of operations.  Even though the script is
+   part of only a single transaction input element, it makes use of the whole
+   of the transaction, which includes all the other inputs -- that means each
+   input signs all the other inputs as well.  Then in the copy of the
+   transaction, the input being processed is patched to use the filtered
+   version of the current script.  Having gone to the trouble of creating a
+   miniature programming language, it is completely abandoned and the
+   complexity of verifying a transaction is hidden away in one script
+   operation.  If the point was to make the signature valid only as part of the
+   transaction as a whole then it has to be part of the whole transaction.
+   Making it part of the inputs breaks structural boundaries.  Inputs are no
+   longer elements in themselves.
+
+ - The problem being solved in `OP_CHECKSIG` was obviously this: every
+   owner of every input must agree to the whole transaction.  The
+   signature has to be like this otherwise it would be possible for an
+   evil generator to simply rewrite all the transaction outputs to point
+   at their own address.  So, each input signature is from a potentially
+   different person but must sign all the transactions.  The signatures
+   don't necessarily need to sign each other, but they do in
+   `OP_CHECKSIG`.  Signing is made more difficult as is because the
+   signature is part of the script.  It shouldn't have been.  The
+   signature should be in a separate field of the transaction inputs.
+   `OP_CHECKSIG` is already willing to use out-of-stack parameters, so
+   moving the signature outside would have made life far easier.  The
+   messing around with `OP_CODESEPARATOR` allows parts of the script to
+   be unsigned.  I don't know what use that is, but surely the better
+   method would have been to have a script array and only sign the last
+   one?
+
 
