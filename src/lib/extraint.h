@@ -297,7 +297,12 @@ inline ostream &operator<<( ostream &s, const TGenericBigInteger<tLittleInteger>
 
 
 // -------------- Template instantiations
+
+// Forward declarations explicitly instantiated templates
+extern template class TGenericBigInteger<unsigned int>;
 extern template class TGenericBigSignedInteger<unsigned int>;
+
+// Shortnames
 typedef TGenericBigSignedInteger<unsigned int> TBigInteger;
 
 

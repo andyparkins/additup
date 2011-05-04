@@ -34,44 +34,6 @@
 // -------------- World Globals (need "extern"s in header)
 
 
-// -------------- Template instantiations
-
-#define TEMPLATE_INSTANCE( fulltype, shorttype ) \
-	template class fulltype;
-
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_md_null>, THash_md_null );
-#ifndef OPENSSL_NO_MD2
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_md2>, THash_md2 );
-#endif
-#ifndef OPENSSL_NO_MD4
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_md4>, THash_md4 );
-#endif
-#ifndef OPENSSL_NO_MD5
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_md5>, THash_md5 );
-#endif
-#ifndef OPENSSL_NO_SHA
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha>, THash_sha );
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha1>, THash_sha1 );
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_dss>, THash_dss );
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_dss1>, THash_dss1 );
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_ecdsa>, THash_ecdsa );
-#endif
-#ifndef OPENSSL_NO_SHA256
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha224>, THash_sha224 );
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha256>, THash_sha256 );
-#endif
-#ifndef OPENSSL_NO_SHA512
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha384>, THash_sha384 );
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha512>, THash_sha512 );
-#endif
-#ifndef OPENSSL_NO_MDC2
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_mdc2>, THash_mdc2 );
-#endif
-#ifndef OPENSSL_NO_RIPEMD
-TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_ripemd160>, THash_ripemd160 );
-#endif
-#undef TEMPLATE_INSTANCE
-
 // -------------- Class declarations
 
 //
@@ -389,6 +351,44 @@ string TSSLMessageDigest::final()
 	return result;
 }
 
+
+// -------------- Explicit template instantiations
+
+#define TEMPLATE_INSTANCE( fulltype, shorttype ) \
+	template class fulltype;
+
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_md_null>, THash_md_null );
+#ifndef OPENSSL_NO_MD2
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_md2>, THash_md2 );
+#endif
+#ifndef OPENSSL_NO_MD4
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_md4>, THash_md4 );
+#endif
+#ifndef OPENSSL_NO_MD5
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_md5>, THash_md5 );
+#endif
+#ifndef OPENSSL_NO_SHA
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha>, THash_sha );
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha1>, THash_sha1 );
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_dss>, THash_dss );
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_dss1>, THash_dss1 );
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_ecdsa>, THash_ecdsa );
+#endif
+#ifndef OPENSSL_NO_SHA256
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha224>, THash_sha224 );
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha256>, THash_sha256 );
+#endif
+#ifndef OPENSSL_NO_SHA512
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha384>, THash_sha384 );
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_sha512>, THash_sha512 );
+#endif
+#ifndef OPENSSL_NO_MDC2
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_mdc2>, THash_mdc2 );
+#endif
+#ifndef OPENSSL_NO_RIPEMD
+TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_ripemd160>, THash_ripemd160 );
+#endif
+#undef TEMPLATE_INSTANCE
 
 
 // -------------- Function definitions

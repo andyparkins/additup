@@ -41,11 +41,6 @@
 // -------------- World Globals (need "extern"s in header)
 
 
-// -------------- Template instantiations
-template class TGenericBigInteger<unsigned int>;
-template class TGenericBigSignedInteger<unsigned int>;
-
-
 // -------------- Class member definitions
 
 //
@@ -1726,6 +1721,11 @@ ostream &TGenericBigSignedInteger<tLittleInteger>::printOn( ostream &s ) const
 
 	return s;
 }
+
+
+// -------------- Explicit template instantiations
+template class TGenericBigInteger<unsigned int>;
+template class TGenericBigSignedInteger<unsigned int>;
 
 
 // -------------- Function definitions
