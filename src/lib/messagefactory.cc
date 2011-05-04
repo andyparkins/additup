@@ -140,6 +140,8 @@ TMessage *TMessageFactory::answer( TMessage *Message )
 //
 // Function:	TMessageFactory :: receive
 // Description:
+// receive() handles the conversion of raw bytes from the peer to a
+// TMessage child.
 //
 void TMessageFactory::receive( const string &s )
 {

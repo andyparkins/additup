@@ -68,6 +68,12 @@ class TBitcoinScript;
 //
 // Class:	TMessageFactory
 // Description:
+// TMessageFactory builds TMessages from incoming bytes.
+//
+// TMessageFactorys are owned (typically) by a TBitcoinPeer, which uses
+// TVersioningMessageFactory to read initial version messages, and then
+// TMessage_version::createMessageFactory() to create a
+// TVersionedMessageFactory to read messages.
 //
 class TMessageFactory
 {
@@ -112,6 +118,13 @@ class TMessageFactory
 //
 // Class:	TVersioningMessageFactory
 // Description:
+// TVersioningMessageFactory builds TMessage_version children only.
+//
+// The special property of TMessage_version children is that they supply
+// the createMessageFactory() member function, which creates a
+// TVersionedMessageFactory child.  That is to say, that the unversioned
+// version message creates the appropriate factory for the version
+// specified in that version message.
 //
 class TVersioningMessageFactory : public TMessageFactory
 {
@@ -124,8 +137,21 @@ class TVersioningMessageFactory : public TMessageFactory
 };
 
 //
-// Class:	TMessageFactory
+// Class:	TVersionedMessageFactory
 // Description:
+// TVersionedMessageFactory builds coherently versioned TMessages
+//
+// Not all versions of the protocol support all TMessages; and some
+// messages have different implementations in different protocol
+// versions, TVersionedMessageFactory supplies the appropriate set for a
+// given protocol version.
+//
+// Or rather, it's children do.  By implementing minimumAcceptedVersion()
+// and supplying an init() that creates the correct TMessage templates.
+//
+// If a new message type is added by the bitcoin developers, then it
+// gets a TVersionedMessageFactory child to define where it goes, and a
+// new TVersion_message child to create that factory.
 //
 class TVersionedMessageFactory : public TMessageFactory
 {
@@ -159,7 +185,7 @@ class TMessageFactory_0 : public TVersionedMessageFactory
 };
 
 //
-// Class:	TMessageFactory_0
+// Class:	TMessageFactory_10600
 // Description:
 //
 class TMessageFactory_10600 : public TVersionedMessageFactory
@@ -176,7 +202,7 @@ class TMessageFactory_10600 : public TVersionedMessageFactory
 };
 
 //
-// Class:	TMessageFactory_0
+// Class:	TMessageFactory_20900
 // Description:
 //
 class TMessageFactory_20900 : public TVersionedMessageFactory
@@ -193,7 +219,7 @@ class TMessageFactory_20900 : public TVersionedMessageFactory
 };
 
 //
-// Class:	TMessageFactory_0
+// Class:	TMessageFactory_31402
 // Description:
 //
 class TMessageFactory_31402 : public TVersionedMessageFactory
