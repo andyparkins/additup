@@ -106,7 +106,7 @@ class TBitcoinNetwork
 	const TNetworkParameters *getNetworkParameters() const { return Parameters; }
 
   protected:
-	TNetworkParameters *Parameters;
+	const TNetworkParameters *Parameters;
 
 	list<shared_ptr<TBitcoinPeer> > Peers;
 	weak_ptr<TBitcoinPeer> Self;
