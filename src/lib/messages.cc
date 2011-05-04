@@ -128,6 +128,7 @@ TMessageTemplates::~TMessageTemplates()
 // Description:
 //
 TMessage::TMessage() :
+	Peer( NULL ),
 	TemplateMessage( false )
 {
 }

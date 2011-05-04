@@ -58,6 +58,7 @@
 // -------------- Class pre-declarations
 class TMessageDigest;
 class TVersionedMessageFactory;
+class TBitcoinPeer;
 
 
 // -------------- Function pre-class prototypes
@@ -127,6 +128,7 @@ class TMessage
 	virtual unsigned int getMessageSize() { return 4 + 12 + 4 + MessageHeader.PayloadLength; }
 
 	void setTemplate( bool b ) const { TemplateMessage = b; }
+	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
   protected:
 	virtual bool acceptCommandCode( const string & ) const;
@@ -140,6 +142,8 @@ class TMessage
   protected:
 	TMessageHeaderElement MessageHeader;
 	string RawPayload;
+
+	TBitcoinPeer *Peer;
 
 	mutable bool TemplateMessage;
 };
