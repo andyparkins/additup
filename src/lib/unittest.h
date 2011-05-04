@@ -77,7 +77,7 @@
 // -------------- World globals ("extern"s only)
 
 //
-// Global:	SampleMessages[]
+// Global:	UNITTESTSampleMessages[]
 // Description:
 //
 static const string UNITTESTSampleMessages[] = {
