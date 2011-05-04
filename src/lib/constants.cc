@@ -25,12 +25,18 @@
 // --- OS
 // --- Project libs
 // --- Project
+#include "extraint.h"
 
 
 // -------------- Namespace
 
 
 // -------------- Module Globals
+
+// From Android bitcoin client:
+const unsigned int TARGET_TIMESPAN = 14 * 24 * 60 * 60;
+const unsigned int TARGET_SPACING = 10 * 60;
+const unsigned int INTERVAL = TARGET_TIMESPAN / TARGET_SPACING;
 
 
 // -------------- Template instantiations
@@ -49,18 +55,15 @@ class TTestnetNetworkParameters : public TNetworkParameters
 		DefaultTCPPort = 18333;
 		Magic = 0xfabfb5da;
 		BitcoinAddressPrefix = 111;
+		// 33 bytes of ones = 264 bits
+		ProofOfWorkLimit = (TBigInteger(1) << (33*8)) - 1;
+		DifficultyIncreaseSpacing = INTERVAL;
+		TargetDifficultyIncreaseTime = TARGET_TIMESPAN;
 
 //		Block GenesisBlock;
-//		BigInteger ProofOfWorkLimit;
 
 		// From Android BitCoin client:
 		//
-		// n.proofOfWorkLimit = new BigInteger("0000000fffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
-		// n.packetMagic = 0xfabfb5daL;
-		// n.port = 18333;
-		// n.addressHeader = 111;
-		// n.interval = INTERVAL;
-		// n.targetTimespan = TARGET_TIMESPAN;
 		// n.genesisBlock = createGenesis(n);
 		// n.genesisBlock.setTime(1296688602L);
 		// n.genesisBlock.setDifficultyTarget(0x1d07fff8L);
@@ -81,18 +84,16 @@ class TProdnetNetworkParameters : public TNetworkParameters
 		DefaultTCPPort = 8333;
 		Magic = 0xf9beb4d9;
 		BitcoinAddressPrefix = 0;
+		// 33 bytes of ones = 264 bits
+		ProofOfWorkLimit = (TBigInteger(1) << (33*8)) - 1;
+		DifficultyIncreaseSpacing = INTERVAL;
+		TargetDifficultyIncreaseTime = TARGET_TIMESPAN;
 
 //		Block GenesisBlock;
 //		BigInteger ProofOfWorkLimit;
 
 		// From Android BitCoin client:
 		//
-		// n.proofOfWorkLimit = new BigInteger("00000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
-		// n.port = 8333;
-		// n.packetMagic = 0xf9beb4d9L;
-		// n.addressHeader = 0;
-		// n.interval = INTERVAL;
-		// n.targetTimespan = TARGET_TIMESPAN;
 		// n.genesisBlock = createGenesis(n);
 		// n.genesisBlock.setDifficultyTarget(0x1d00ffffL);
 		// n.genesisBlock.setTime(1231006505L);
