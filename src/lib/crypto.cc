@@ -400,28 +400,6 @@ TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_ripemd160>, THash_ripemd160 );
 #include "logstream.h"
 
 //
-// Function:	hexify
-// Description:
-//
-ostream &hexify( ostream &s, const string &Source )
-{
-	unsigned int i;
-	const unsigned char *p = (unsigned char *) Source.data();
-
-	s << setfill('0') << hex;
-	for( i = 0; i < Source.size(); i++ ) {
-		if( i != 0 )
-			s << " ";
-
-		s << setw(2) << (unsigned int)*p;
-		p++;
-	}
-	s << setfill(' ') << dec;
-
-	return s;
-}
-
-//
 // Function:	safe
 // Description:
 //
@@ -455,7 +433,7 @@ int main( int argc, char *argv[] )
 
 		signature = ECKEY.sign( digest );
 		log() << "EC: Signature of \"" << digest << "\" is ";
-		hexify( log(), signature );
+		TLog::hexify( log(), signature );
 
 		if( ECKEY.verify( digest, signature ) ) {
 			log() << " : verifies" << endl;
@@ -526,7 +504,7 @@ int main( int argc, char *argv[] )
 			log() << "MD: Hashing \"" << safe(p->Plaintext) << "\" (" << p->Plaintext.size() << ")" << endl;
 			ct = p->Hasher->transform( p->Plaintext );
 			log() << "MD: Hash is ";
-			hexify(log(), ct);
+			TLog::hexify(log(), ct);
 			log() << " (" << ct.size() << ")" << endl;
 			if( ct != p->ExpectedDigest )
 				throw runtime_error( "Hash is wrong" );
