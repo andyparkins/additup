@@ -275,7 +275,7 @@ void TMessageFactory_0::init()
 	Templates.push_back( new TMessage_ping() );
 	Templates.push_back( new TMessage_alert() );
 
-	TVersionedMessageFactory::init();
+	TMessageFactory::init();
 }
 
 //
@@ -310,7 +310,7 @@ void TMessageFactory_10600::init()
 	Templates.push_back( new TMessage_ping() );
 	Templates.push_back( new TMessage_alert() );
 
-	TVersionedMessageFactory::init();
+	TMessageFactory::init();
 }
 
 //
@@ -345,7 +345,7 @@ void TMessageFactory_20900::init()
 	Templates.push_back( new TMessage_ping() );
 	Templates.push_back( new TMessage_alert() );
 
-	TVersionedMessageFactory::init();
+	TMessageFactory::init();
 }
 
 //
@@ -382,7 +382,7 @@ void TMessageFactory_31402::init()
 	Templates.push_back( new TMessage_ping() );
 	Templates.push_back( new TMessage_alert() );
 
-	TVersionedMessageFactory::init();
+	TMessageFactory::init();
 }
 
 //

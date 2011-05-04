@@ -161,7 +161,7 @@ class TVersionedMessageFactory : public TMessageFactory
 	virtual TBitcoinScript *createVersionedBitcoinScript() const = 0;
 
   protected:
-//	void init();
+	void init() = 0;
 
   protected:
 	virtual uint32_t minimumAcceptedVersion() const = 0;
