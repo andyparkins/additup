@@ -1647,9 +1647,7 @@ template <typename tLittleInteger>
 TGenericBigSignedInteger<tLittleInteger>
 TGenericBigSignedInteger<tLittleInteger>::operator-() const
 {
-	TGenericBigSignedInteger<tLittleInteger> X( *this );
-	X.setNegative( !isNegative() );
-	return *this;
+	return TGenericBigSignedInteger(*this).negate();
 }
 
 //
@@ -1969,13 +1967,13 @@ int main( int argc, char *argv[] )
 	try {
 		log() << "Testing signed arithmetic" << endl;
 
-		TBigInteger neg1(-1), pos1(neg1.negated());
-		TBigInteger pos10(10), neg10(pos10.negated());
+		TBigInteger neg1(-1), pos1(-neg1);
+		TBigInteger pos10(10), neg10(-pos10);
 
-		log() << "neg1  = " << neg1 << " (negated: " << neg1.negated() << ")" << endl
-			<< "pos1  = " << pos1 << " (negated: " << pos1.negated() << ")" << endl
-			<< "neg10 = " << neg10 << " (negated: " << neg10.negated() << ")" << endl
-			<< "pos10 = " << pos10 << " (negated: " << pos10.negated() << ")" << endl;
+		log() << "neg1  = " << neg1 << " (negated: " << -neg1 << ")" << endl
+			<< "pos1  = " << pos1 << " (negated: " << -pos1 << ")" << endl
+			<< "neg10 = " << neg10 << " (negated: " << -neg10 << ")" << endl
+			<< "pos10 = " << pos10 << " (negated: " << -pos10 << ")" << endl;
 		if( !neg1.isNegative() || pos1.isNegative() )
 			throw logic_error("Positive numbers are !isNegative(), negative numbers are isNegative()" );
 

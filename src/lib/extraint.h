@@ -217,7 +217,6 @@ class TGenericBigSignedInteger : public TGenericBigInteger<tLittleInteger>
 
 	bool isNegative() const { return Negative; }
 	void setNegative( bool b ) { Negative = b; }
-	TGenericBigSignedInteger negated() const { return TGenericBigSignedInteger(*this).negate(); }
 	TGenericBigSignedInteger &negate() { Negative = !Negative; return *this; }
 	TGenericBigSignedInteger abs() const { TGenericBigSignedInteger x(*this); return x.isNegative() ? x.negate() : x; }
 
