@@ -22,6 +22,7 @@
 #include <stdint.h>
 // --- C++
 #include <iostream>
+#include <memory>
 // --- Qt
 // --- OS
 // --- Project lib
@@ -56,6 +57,7 @@
 // -------------- Class pre-declarations
 class TBitcoinNetwork;
 class TMessageFactory;
+class TNetworkParameters;
 
 
 // -------------- Function pre-class prototypes
@@ -89,13 +91,34 @@ class TNodeInfo
 class TBitcoinPeer
 {
   public:
-	TBitcoinPeer( TNodeInfo *, TBitcoinNetwork * );
+	enum eState {
+		// Not yet connected
+		Unconnected,
+		// Connection wanted but not established yet
+		Connecting,
+		// Establish network
+		Parameters,
+		// Exchanging versions
+		Handshaking,
+		// Normal operation, versioned factory loaded
+		Connected,
+		// Unintentionally disconnected
+		Disconnected
+	};
+  public:
+	TBitcoinPeer( TNodeInfo * = NULL, TBitcoinNetwork * = NULL );
+	~TBitcoinPeer();
+
+	void receive( const string & );
+
+	const TNetworkParameters *getNetworkParameters() const;
 
   protected:
-	TBitcoinNetwork *Network;
-	TMessageFactory *Factory;
-
 	TNodeInfo *Info;
+	TBitcoinNetwork *Network;
+	auto_ptr<TMessageFactory> Factory;
+
+	eState State;
 };
 
 
