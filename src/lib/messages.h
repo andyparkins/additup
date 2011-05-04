@@ -603,6 +603,8 @@ class TMessage_block : public TMessageWithChecksum
 		return os;
 	}
 
+	virtual string calculateHash() const;
+
   protected:
 	const char *commandString() const { return "block"; }
 

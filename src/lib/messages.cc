@@ -581,6 +581,36 @@ ostream &TMessage_tx::printOn( ostream &s ) const
 // --------
 
 //
+// Function:	TMessage_block :: calculateHash
+// Description:
+//
+string TMessage_block::calculateHash() const
+{
+	string hash;
+	ostringstream oss;
+
+	// "The SHA256 hash that identifies each block (and which must have
+	// a run of 0 bits) is calculated from the first 6 fields of this
+	// structure (version, prev_block, merkle_root, timestamp, bits,
+	// nonce, and standard SHA256 padding, making two 64-byte chunks in
+	// all) and not from the complete block. To calculate the hash, only
+	// two chunks need to be processed by the SHA256 algorithm. Since
+	// the nonce  field is in the second chunk, the first chunk stays
+	// constant during mining and therefore only the second chunk needs
+	// to be processed. However, a Bitcoin hash is the hash of the hash,
+	// so two SHA256 rounds are needed for each mining iteration."
+	BlockHeader.write(oss);
+
+	// Field sizes: 4 + 32 + 32 + 4 + 4 + 4 = 80
+	// OpenSSL should pad on its own...
+
+	// Conveniently, PayloadHasher is already double SHA256
+	hash = PayloadHasher->transform( oss.str() );
+
+	return hash;
+}
+
+//
 // Function:	TMessage_block :: printOn
 // Description:
 //
