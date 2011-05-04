@@ -109,6 +109,7 @@ class TBitcoinPeer
 	TBitcoinPeer( TNodeInfo * = NULL, TBitcoinNetwork * = NULL );
 	~TBitcoinPeer();
 
+	void setState( eState s ) { State = s; }
 	void receive( const string & );
 
 	const TNetworkParameters *getNetworkParameters() const;
