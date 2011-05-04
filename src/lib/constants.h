@@ -28,6 +28,7 @@
 // --- Project lib
 // --- Project
 #include "peer.h"
+#include "bitcoinnetwork.h"
 
 
 // -------------- Namespace
@@ -69,24 +70,6 @@ class TOfficialSeedNode : public TNodeInfo
 	TOfficialSeedNode( uint32_t );
 };
 
-//
-// Class:	TNetworkParameters
-// Description:
-//
-class TNetworkParameters
-{
-  public:
-	TNetworkParameters();
-
-	uint32_t ProtocolVersion;
-	// Block GenesisBlock;
-	// BigInteger ProofOfWorkLimit;
-	uint16_t DefaultTCPPort;
-	uint32_t Magic;
-	uint8_t BitcoinAddressPrefix;
-	unsigned int DifficultyIncreaseSpacing;
-	unsigned int TargetDifficultyIncreaseTime;
-};
 
 
 // -------------- Function pre-class prototypes

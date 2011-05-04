@@ -26,7 +26,6 @@
 // --- OS
 // --- Project lib
 // --- Project
-#include "constants.h"
 #include "peer.h"
 
 
@@ -65,6 +64,25 @@
 // -------------- Class declarations
 
 //
+// Class:	TNetworkParameters
+// Description:
+//
+class TNetworkParameters
+{
+  public:
+	TNetworkParameters();
+
+	uint32_t ProtocolVersion;
+	// Block GenesisBlock;
+	// BigInteger ProofOfWorkLimit;
+	uint16_t DefaultTCPPort;
+	uint32_t Magic;
+	uint8_t BitcoinAddressPrefix;
+	unsigned int DifficultyIncreaseSpacing;
+	unsigned int TargetDifficultyIncreaseTime;
+};
+
+//
 // Class:	TBitcoinNetwork
 // Description:
 /// Object representing the entire bitcoin network.
@@ -81,6 +99,8 @@ class TBitcoinNetwork
 
 	void connect();
 	void connect( TNodeInfo * );
+
+	const TNetworkParameters *getNetworkParameters() const { return Parameters; }
 
   protected:
 	TNetworkParameters *Parameters;
