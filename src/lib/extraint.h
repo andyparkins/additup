@@ -303,6 +303,7 @@ extern template class TGenericBigInteger<unsigned int>;
 extern template class TGenericBigSignedInteger<unsigned int>;
 
 // Shortnames
+typedef TGenericBigInteger<unsigned int> TBigUnsignedInteger;
 typedef TGenericBigSignedInteger<unsigned int> TBigInteger;
 
 
