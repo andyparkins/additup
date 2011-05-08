@@ -672,7 +672,7 @@ int main( int argc, char *argv[] )
 				it != TMessageTemplates::t.Templates.end(); it++ ) {
 			log() << (*it)->className() << endl;
 		}
-	} catch( exception &e ) {
+	} catch( std::exception &e ) {
 		log() << e.what() << endl;
 		return 255;
 	}
@@ -707,7 +707,7 @@ int main( int argc, char *argv[] )
 					// Try next template
 					iss.seekg( sp, ios::beg );
 					continue;
-				} catch( exception &e ) {
+				} catch( std::exception &e ) {
 					log() << " - message parse by " << potential->className()
 						<< " failed, " << e.what()
 #ifdef _TYPEINFO
@@ -743,7 +743,7 @@ int main( int argc, char *argv[] )
 
 			p++;
 		}
-	} catch( exception &e ) {
+	} catch( std::exception &e ) {
 		log() << e.what() << endl;
 		return 255;
 	}
