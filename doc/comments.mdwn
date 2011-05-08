@@ -218,4 +218,13 @@
    method would have been to have a script array and only sign the last
    one?
 
+ - The definition for converting the difficulty field in the block
+   header to a difficulty target wastes bits.  It is defined as
+        target = mantissa * 2^(8*(exponent-3))
+   With mantissa being 24 bits, and exponent being 8.  The target is for
+   a SHA256 hash, which is 256 bits.  The maximum exponent is 256,
+   therefore the maximum shift left is 2024 bits.  Why?  Exponent is
+   always going to be less than or equal to 0x23 in this definition.
+   Some possible precision has therefore been wasted.
+
 
