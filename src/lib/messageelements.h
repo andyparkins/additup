@@ -28,6 +28,7 @@
 // --- OS
 // --- Project
 // --- Project lib
+#include "extraint.h"
 
 
 // -------------- Namespace
@@ -506,6 +507,34 @@ class TNElementsElement : public TMessageElement
 };
 
 //
+// Class:	TDifficultyTargetElement
+// Description:
+//
+class TDifficultyTargetElement : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		is >> Mantissa >> Exponent;
+		return is;
+	}
+	ostream &write( ostream &os ) const {
+		os << Mantissa << Exponent;
+		return os;
+	}
+
+	TBigUnsignedInteger getTarget() const {
+		TBigUnsignedInteger t( Mantissa.getValue() );
+		t <<= (Exponent - 3) * 8;
+		return t;
+	}
+	void setTarget( uint32_t m, uint8_t e ) { Mantissa = m; Exponent = e; }
+
+  public:
+	TLittleEndian24Element Mantissa;
+	TByteElement Exponent;
+};
+
+//
 // Class:	TBlockHeaderElement
 // Description:
 //
@@ -529,7 +558,7 @@ class TBlockHeaderElement : public TMessageElement
 	THashElement PreviousBlock;
 	THashElement MerkleRoot;
 	TTimestampElement Timestamp;
-	TLittleEndian32Element DifficultyBits;
+	TDifficultyTargetElement DifficultyBits;
 	TLittleEndian32Element Nonce;
 };
 
