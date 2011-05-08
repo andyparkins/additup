@@ -236,6 +236,33 @@ class TLittleEndian16Element : public TMessageElement
 };
 
 //
+// Class:	TLittleEndian24Element
+// Description:
+//
+class TLittleEndian24Element : public TMessageElement
+{
+  public:
+	istream &read( istream &is ) {
+		Value = static_cast<uint8_t>(is.get()) << 0
+			| static_cast<uint8_t>(is.get()) << 8
+			| static_cast<uint8_t>(is.get()) << 16;
+		return is;
+	}
+	ostream &write( ostream &os ) const {
+		os.put( (Value & 0xff) >> 0 );
+		os.put( (Value & 0xff00) >> 8 );
+		return os.put( (Value & 0xff0000) >> 16 );
+	}
+
+	operator uint32_t() const { return Value; }
+	uint32_t getValue() const { return Value; }
+	TLittleEndian24Element &operator=( uint32_t s ) { Value = s; return *this; }
+
+  protected:
+	uint32_t Value;
+};
+
+//
 // Class:	TLittleEndian32Element
 // Description:
 //
