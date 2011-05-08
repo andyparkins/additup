@@ -77,8 +77,8 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 		DefaultTCPPort = 18333;
 		Magic = 0xdab5bffa;
 		BitcoinAddressPrefix = 111;
-		// 33 bytes of ones = 264 bits
-		ProofOfWorkLimit = (TBigInteger(1) << (33*8)) - 1;
+		// 228 bits of 1
+		ProofOfWorkLimit = (TBigInteger(1) << 228) - 1
 
 //		Block GenesisBlock;
 
@@ -105,8 +105,8 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		DefaultTCPPort = 8333;
 		Magic = 0xd9b4bef9;
 		BitcoinAddressPrefix = 0;
-		// 33 bytes of ones = 264 bits
-		ProofOfWorkLimit = (TBigInteger(1) << (33*8)) - 1;
+		// 228 bits of 1
+		ProofOfWorkLimit = (TBigInteger(1) << 228) - 1
 
 //		Block GenesisBlock;
 
