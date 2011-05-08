@@ -23,6 +23,7 @@
 // --- OS
 // --- Project libs
 // --- Project
+#include "extraint.h"
 
 
 // -------------- Namespace
@@ -46,8 +47,19 @@
 // Function:	TNetworkParameters
 // Description:
 //
-TNetworkParameters::TNetworkParameters()
+TNetworkParameters::TNetworkParameters() :
+	ProtocolVersion(0),
+	DefaultTCPPort(0),
+	Magic(0),
+	BitcoinAddressPrefix(0),
+	DifficultyIncreaseSpacing(0),
+	TargetDifficultyIncreaseTime(0)
 {
+	// Zero for proof of work limit is actually the hardest possible
+	// difficulty (if not impossible, as SHA256 won't produce a zero
+	// hash).  Therefore we'll default the proof of work limit to the
+	// easiest, which is 256 bits of ones.
+	ProofOfWorkLimit = (TBigInteger(1) << (256)) - 1;
 }
 
 
