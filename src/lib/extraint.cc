@@ -1094,6 +1094,8 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 	TGenericBigInteger<tLittleInteger> R;
 	typename tLittleDigitsVector::const_iterator itA;
 
+	R.LittleDigits.clear();
+
 	// Start at least significant end of source
 	itA = LittleDigits.begin();
 
@@ -1108,7 +1110,7 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 
 	R.normalise();
 
-	return *this;
+	return R;
 }
 
 //
@@ -1631,7 +1633,7 @@ TGenericBigSignedInteger<tLittleInteger>::operator~() const
 	TGenericBigSignedInteger<tLittleInteger> X( TGenericBigInteger<tLittleInteger>::operator~() );
 	// Bitwise, so we'll treat the negative flag as just another bit
 	X.setNegative( !isNegative() );
-	return *this;
+	return X;
 }
 
 //
