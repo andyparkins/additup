@@ -1114,6 +1114,47 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 }
 
 //
+// Function:	TGenericBigInteger :: reversedBytes
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigInteger<tLittleInteger>
+TGenericBigInteger<tLittleInteger>::reversedBytes() const
+{
+	TGenericBigInteger<tLittleInteger> R;
+	typename tLittleDigitsVector::const_reverse_iterator it;
+
+	R.LittleDigits.clear();
+
+	// Start at most significant end of source
+	it = LittleDigits.rbegin();
+
+	while( it != LittleDigits.rend() ) {
+		tLittleInteger Hold = (*it);
+		switch( sizeof(Hold) ) {
+			case 4:
+				// x0 x1 x2 x3 -> x3 x2 x1 x0
+				Hold = (Hold & 0xff000000) >> 24
+					| (Hold & 0x00ff0000) >> 8
+					| (Hold & 0x0000ff00) << 8
+					| (Hold & 0x000000ff) << 24;
+				break;
+			case 2:
+				// x0 x1 -> x1 x0
+				Hold = (Hold & 0xff00) >> 8
+					| (Hold & 0x00ff) << 8;
+		}
+		// Write out to the least significant end first
+		R.LittleDigits.push_back( Hold );
+		it++;
+	}
+
+	R.normalise();
+
+	return R;
+}
+
+//
 // Function:	TGenericBigInteger :: operator<<=
 // Description:
 /// Implement A = A << B
@@ -1864,6 +1905,9 @@ int main( int argc, char *argv[] )
 		log() << "64bit: NOT " << sixtyFourB << " = " << k << endl;
 		// 0xffffffffdddddddd NOT 0xeeeeeeeecccccccc =
 		log() << dec;
+		// reverse
+		k = TBigInteger("0102030405060708090a0b0c0d0e0f10", 16);
+		log() << "64bit: reverse 0x" << hex << k << " = 0x" << k.reversedBytes() << dec << endl;
 
 
 		log(TLog::Status) << "Testing arithmetic operators on large numbers" << endl;

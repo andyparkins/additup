@@ -154,6 +154,7 @@ class TGenericBigInteger
 	TGenericBigInteger operator~() const;
 	TGenericBigInteger operator<<( tIndex b ) const { return TGenericBigInteger(*this) <<= b; };
 	TGenericBigInteger operator>>( tIndex b ) const { return TGenericBigInteger(*this) >>= b; };
+	TGenericBigInteger reversedBytes() const;
 
 	// Comparison
 	eComparisonResult compareTo( const TGenericBigInteger & ) const;
