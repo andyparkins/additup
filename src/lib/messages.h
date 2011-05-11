@@ -59,6 +59,7 @@
 class TMessageDigest;
 class TVersionedMessageFactory;
 class TBitcoinPeer;
+class TMessageFactory;
 
 
 // -------------- Function pre-class prototypes
@@ -131,6 +132,7 @@ class TMessage
 	virtual ostream &write( ostream & ) const;
 
 	const TMessageHeaderElement &header() const { return MessageHeader; }
+	const TMessageFactory *factory() const;
 
 	virtual unsigned int getMessageSize() { return 4 + 12 + 4 + MessageHeader.PayloadLength; }
 

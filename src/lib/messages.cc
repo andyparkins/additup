@@ -136,6 +136,15 @@ TMessage::TMessage() :
 }
 
 //
+// Function:	TMessage :: factory
+// Description:
+//
+const TMessageFactory *TMessage::factory() const
+{
+	return Peer->factory();
+}
+
+//
 // Function:	TMessage :: acceptCommandCode
 // Description:
 //
