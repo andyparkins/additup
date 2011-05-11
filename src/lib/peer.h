@@ -115,6 +115,8 @@ class TBitcoinPeer
 
 	const TNetworkParameters *getNetworkParameters() const;
 
+	const TMessageFactory *factory() const { return Factory; }
+
   protected:
 	TNodeInfo *Info;
 	TBitcoinNetwork *Network;
