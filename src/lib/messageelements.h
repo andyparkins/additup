@@ -519,6 +519,9 @@ class TNElementsElement : public TMessageElement
 		return os;
 	}
 
+	void append( const Element &e ) { Array.push_back( e ); }
+	Element &back() { return Array.back(); }
+
 	unsigned int size() const { return Array.size(); }
 	Element &operator[]( unsigned int i ) { return Array[i]; }
 	const Element &operator[]( unsigned int i ) const { return Array[i]; }
