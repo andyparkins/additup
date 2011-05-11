@@ -375,10 +375,29 @@ class TVariableSizedStringElement : public TSizedStringElement
 };
 
 //
-// Typedef:    THashElement
+// Class:	THashElement
 // Description:
 //
-typedef TFixedStringElement<32> THashElement;
+class THashElement : public TFixedStringElement<32>
+{
+  public:
+	THashElement() { zero(); }
+
+	istream &read( istream &is ) {
+		// XXX: COMPLETELY WRONG
+		// Hashes are stored little endian
+		return TFixedStringElement<32>::read(is);
+	}
+	ostream &write( ostream &os ) const {
+		// XXX: COMPLETELY WRONG
+		// Hashes are stored little endian
+		return TFixedStringElement<32>::write(os);
+	}
+
+	void zero() { Value.assign(N, '\0'); }
+
+	using TSizedStringElement::operator=;
+};
 
 //
 // Typedef:	TTimestampElement
