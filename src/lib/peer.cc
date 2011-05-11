@@ -94,6 +94,7 @@ TBitcoinPeer::TBitcoinPeer( TNodeInfo *info, TBitcoinNetwork *network ) :
 //
 TBitcoinPeer::~TBitcoinPeer()
 {
+	delete Factory;
 }
 
 //
@@ -132,11 +133,12 @@ void TBitcoinPeer::receive( const string &s )
 
 	if( State == Connecting ) {
 		log() << "[PEER] State: Connecting" << endl;
-		if( Factory.get() != NULL )
+		if( Factory != NULL )
 			throw logic_error( "TBitcoinPeer::receive() can't have a factory while unconnected" );
 
 		// The versioning factory only understands version messages
-		Factory.reset( new TVersioningMessageFactory );
+		delete Factory;
+		Factory = new TVersioningMessageFactory;
 
 		// The TVersioningMessageFactory is told we are the peer it
 		// should use; TVersioningMessageFactory tells its created
@@ -205,7 +207,7 @@ void TBitcoinPeer::receive( const string &s )
 
 	if( State == Handshaking ) {
 		log() << "[PEER] State: Handshaking" << endl;
-		if( Factory.get() == NULL )
+		if( Factory == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in handshaking mode" );
 
 		Factory->receive(s);
@@ -220,7 +222,8 @@ void TBitcoinPeer::receive( const string &s )
 			// query the message
 			TMessage_version *VersionMessage = dynamic_cast<TMessage_version*>( Message.get() );
 
-			Factory.reset( VersionMessage->createMessageFactory() );
+			delete Factory;
+			Factory = VersionMessage->createMessageFactory();
 
 			log() << "[PEER] Factory is now " << Factory->className() << endl;
 		} else if( dynamic_cast<TMessage_verack*>( Message.get() ) != NULL ) {
@@ -239,7 +242,7 @@ void TBitcoinPeer::receive( const string &s )
 
 	if( State == Connected ) {
 		log() << "[PEER] State: Connected" << endl;
-		if( Factory.get() == NULL )
+		if( Factory == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in connected mode" );
 
 		Factory->receive(s);

@@ -118,7 +118,7 @@ class TBitcoinPeer
   protected:
 	TNodeInfo *Info;
 	TBitcoinNetwork *Network;
-	auto_ptr<TMessageFactory> Factory;
+	TMessageFactory *Factory;
 
 	eState State;
 };
