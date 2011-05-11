@@ -370,6 +370,8 @@ class TVariableSizedStringElement : public TSizedStringElement
 		// Write the string
 		return TSizedStringElement::write(os);
 	}
+
+	using TSizedStringElement::operator=;
 };
 
 //
