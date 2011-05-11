@@ -709,6 +709,8 @@ class TOutputTransactionReferenceElement : public TMessageElement
 class TInputSplitElement : public TMessageElement
 {
   public:
+	TInputSplitElement() { Sequence = 0xffffffff; }
+
 	istream &read( istream &is ) {
 		is >> OutPoint >> SignatureScript >> Sequence;
 		return is;
@@ -755,6 +757,8 @@ class TOutputSplitElement : public TMessageElement
 class TTransactionElement : public TMessageElement
 {
   public:
+	TTransactionElement() { Version = 1; LockTime = 0; }
+
 	istream &read( istream &is ) {
 		is >> Version
 			>> Inputs
