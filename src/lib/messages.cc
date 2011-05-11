@@ -571,7 +571,7 @@ ostream &TMessage_tx::printOn( ostream &s ) const
 		<< "; No=" << Transaction.Outputs.size();
 	s << "; Outputs=[";
 	for( unsigned int i = 0; i < Transaction.Outputs.size(); i++ ) {
-		s << " Value=" << (Transaction.Outputs[i].HundredsOfNanoCoins.getValue()/100000000.0);
+		s << " Value=" << (Transaction.Outputs[i].getValue());
 	}
 	s << " ]";
 	s << " }";

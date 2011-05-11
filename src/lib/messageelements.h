@@ -658,6 +658,30 @@ class TInventoryElement : public TMessageElement
 };
 
 //
+// Class:	TCoinsElement
+// Description:
+//
+//    5000000  =  0.05 Coins
+// 3354000000  = 33.54 Coins
+//  100000000x =  x    Coins
+// Annoyingly the bitcoin client and java bitcoin library refer to
+// these as NanoCoins -- they are manifestly not.
+//
+class TCoinsElement : public TLittleEndian64Element
+{
+  public:
+	void setValue( uint64_t Coins, unsigned int Cents = 0 ) {
+		Value = Coins * COIN + Cents * CENT;
+	}
+	double getValue() const {
+		return (Value / 1.0 / COIN);
+	}
+
+	static const uint64_t COIN = 100000000LL;
+	static const uint64_t CENT = 1000000LL;
+};
+
+//
 // Class:	TOutputTransactionReferenceElement
 // Description:
 //
@@ -708,19 +732,19 @@ class TOutputSplitElement : public TMessageElement
 {
   public:
 	istream &read( istream &is ) {
-		is >> HundredsOfNanoCoins >> Script;
+		is >> Coins >> Script;
 		return is;
 	}
 	ostream &write( ostream &os ) const {
-		os << HundredsOfNanoCoins << Script;
+		os << Coins << Script;
 		return os;
 	}
 
-  public:
-	//    5000000  =  0.05 Coins
-	// 3354000000  = 33.54 Coins
-	//  100000000x =  x    Coins
-	TLittleEndian64Element HundredsOfNanoCoins;
+	void setValue( uint64_t a, unsigned int b = 0 ) { Coins.setValue(a,b); }
+	double getValue() const { return Coins.getValue(); }
+
+  protected:
+	TCoinsElement Coins;
 	TVariableSizedStringElement Script;
 };
 
