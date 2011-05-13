@@ -22,10 +22,12 @@
 // --- C++
 #include <stdexcept>
 #include <limits>
+#include <sstream>
 // --- Qt
 // --- OS
 // --- Project libs
 // --- Project
+#include "crypto.h"
 
 
 // -------------- Namespace
@@ -179,6 +181,27 @@ ostream &TAutoSizeIntegerElement::write( ostream &os ) const
 	os.write( buffer, n );
 
 	return os;
+}
+
+// --------
+
+TMessageDigest *TTransactionElement::Hasher = new TDoubleHash( new THash_sha256, new THash_sha256 );
+
+//
+// Function:	TTransactionElement :: getHash
+// Description:
+//
+const TBigInteger &TTransactionElement::getHash() const
+{
+	if( !cachedHash.isZero() )
+		return cachedHash;
+
+	ostringstream oss;
+	write(oss);
+
+	cachedHash.fromBytes( Hasher->transform(oss.str()) );
+
+	return cachedHash;
 }
 
 

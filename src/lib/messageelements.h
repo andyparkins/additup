@@ -58,6 +58,7 @@
 
 // -------------- Class pre-declarations
 class TMessageElement;
+class TMessageDigest;
 
 
 // -------------- Function pre-class prototypes
@@ -757,7 +758,7 @@ class TOutputSplitElement : public TMessageElement
 class TTransactionElement : public TMessageElement
 {
   public:
-	TTransactionElement() { Version = 1; LockTime = 0; }
+	TTransactionElement() { Version = 1; LockTime = 0; cachedHash = 0; }
 
 	istream &read( istream &is ) {
 		is >> Version
@@ -774,11 +775,18 @@ class TTransactionElement : public TMessageElement
 		return os;
 	}
 
+	const TBigInteger &getHash() const;
+
   public:
 	TLittleEndian32Element Version;
 	TNElementsElement<TInputSplitElement> Inputs;
 	TNElementsElement<TOutputSplitElement> Outputs;
 	TLittleEndian32Element LockTime;
+
+	mutable TBigInteger cachedHash;
+
+  protected:
+	static TMessageDigest *Hasher;
 };
 
 
