@@ -620,6 +620,117 @@ string TMessage_block::calculateHash() const
 }
 
 //
+// Function:	TMessage_block :: calculateMerkleTree
+// Description:
+//
+// From Bitcoin Java library:
+// "The merkle hash is based on a tree of hashes calculated from the
+// transactions:
+//
+//          merkleHash
+//             /\               (ignore--not multiline comment)
+//            /  \              (ignore--not multiline comment)
+//          A      B
+//         / \    / \           (ignore--not multiline comment)
+//       tx1 tx2 tx3 tx4
+//
+// Basically transactions are hashed, then the hashes of the
+// transactions are hashed again and so on upwards into the tree. The
+// point of this scheme is to allow for disk space savings later on."
+//
+// This is a transalation of Block::buildMerkleTree(), which claims to
+// be a translation of CBlock::BuildMerkleTree().
+//
+void TMessage_block::calculateMerkleTree()
+{
+	MerkleTree.clear();
+	MerkleTree.reserve( Transactions.size() * 2 );
+
+	// The tree is primed using the hashes of the transactions
+	ostringstream oss;
+	for( unsigned int i = 0; i < Transactions.size(); i++ ) {
+		MerkleTree.push_back( Transactions[i].getHash() );
+	}
+
+	// We run two loops, the first of which is going to iterate through
+	// the leaves, like this (using an 8 transaction input as an
+	// example)
+	//
+	//  size = {8, 4, 2, 1}
+	//
+	// For each of these, a loop from 0 to size is iterated through, two
+	// at a time.  Further, a second index is calculated, being the
+	// first offset by one:
+	//
+	//   size == 8  ->  i = {0, 2, 4, 6}   i2 = {1, 3, 5, 7}
+	//   size == 4  ->  i = {0, 2}         i2 = (1, 3}
+	//   size == 2  ->  i = {0}            i2 = {1}
+	//   size == 1  ->  i = {0}            i2 = {1}
+	//
+	// Finally, the two array indexes for the two hashes being in turn
+	// hashed are calculated as offsets from a final iterator, j.
+	//
+	//   size == 8  ->  j = 0   i = {0, 2, 4, 6}   i2 = {1, 3, 5, 7}
+	//   size == 4  ->  j = 8   i = {0, 2}         i2 = (1, 3}
+	//   size == 2  ->  j = 12  i = {0}            i2 = {1}
+	//   size == 1  ->  j = 14  i = {0}            i2 = {1}
+	//
+	// indexes are therefore
+	//
+	//   size == 8  ->  pairs = { {0,1}, {2,3}, {4,5}, {6,7} }  size() = 12
+	//   size == 4  ->  pairs = { {8,9}, {10,11} }              size() = 14
+	//   size == 2  ->  pairs = { {12, 13} }                    size() = 15
+	//   size == 1  ->  pairs = { {14, 15} }                    size() = 16
+	//
+	// Bug note: The above is what I think the algorithm _should_ do,
+	// but there is a misuse of a protective condition that means what
+	// it actually does is this:
+	//
+	//   size == 8  ->  pairs = { {0,1}, {2,3}, {4,5}, {6,7} }  size() = 12
+	//   size == 4  ->  pairs = { {8,3}, {10,3} }               size() = 14
+	//   size == 2  ->  pairs = { {12, 1} }                     size() = 15
+	//   size == 1  ->  pairs = { {14, 0} }                     size() = 16
+	//
+	// Note that the second in each pair is limited to (size-1), when I
+	// suspect it should be limited to (tree.size()-1).
+	//
+
+	unsigned int j = 0;
+	for( unsigned int size = Transactions.size(); size > 1; size = (size + 1) / 2 ) {
+		for( unsigned int i = 0; i < size; i += 2 ) {
+			// XXX: suspect this is wrong; should be tree.size()
+			// not size itself.
+			unsigned int i2 = (i + 1 < size - 1) ? (i + 1) : (size - 1);
+
+			string Buffer;
+			Buffer = MerkleTree[j + i].toBytes()
+				+ MerkleTree[j + i2].toBytes();
+
+			// The PayloadHasher is fine for creating the Merkle hashes
+			Buffer = PayloadHasher->transform( Buffer );
+
+			MerkleTree.push_back( TBigInteger().fromBytes( Buffer ) );
+		}
+		j += size;
+	}
+}
+
+//
+// Function:	TMessage_block :: setMerkleRoot
+// Description:
+//
+void TMessage_block::setMerkleRoot()
+{
+	if( MerkleTree.empty() )
+		calculateMerkleTree();
+
+	// The last item in the merkle tree is the root.  We simply copy it
+	// to the block header
+
+	blockHeader().MerkleRoot = MerkleTree.back().reversedBytes().toBytes();
+}
+
+//
 // Function:	TMessage_block :: printOn
 // Description:
 //

@@ -615,6 +615,9 @@ class TMessage_block : public TMessageWithChecksum
 		return Transactions.back();
 	}
 
+	void calculateMerkleTree();
+	void setMerkleRoot();
+
   protected:
 	const char *commandString() const { return "block"; }
 
@@ -622,6 +625,8 @@ class TMessage_block : public TMessageWithChecksum
   protected:
 	TBlockHeaderElement BlockHeader;
 	TNElementsElement<TTransactionElement> Transactions;
+
+	vector<TBigInteger> MerkleTree;
 };
 
 //
