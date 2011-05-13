@@ -775,6 +775,9 @@ class TTransactionElement : public TMessageElement
 		return os;
 	}
 
+	TInputSplitElement &createInput() { cachedHash = 0; Inputs.append(TInputSplitElement()); return Inputs.back(); }
+	TOutputSplitElement &createOutput() { cachedHash = 0; Outputs.append(TOutputSplitElement()); return Outputs.back(); }
+
 	const TBigInteger &getHash() const;
 
   public:
