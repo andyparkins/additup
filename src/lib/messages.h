@@ -610,6 +610,11 @@ class TMessage_block : public TMessageWithChecksum
 	const TBlockHeaderElement &blockHeader() const { return BlockHeader; }
 	TBlockHeaderElement &blockHeader() { return BlockHeader; }
 
+	TTransactionElement &createTransaction() {
+		Transactions.append( TTransactionElement() );
+		return Transactions.back();
+	}
+
   protected:
 	const char *commandString() const { return "block"; }
 
