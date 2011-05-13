@@ -377,7 +377,8 @@ string TGenericBigInteger<tLittleInteger>::toBytes( unsigned int Minimum ) const
 // Description:
 //
 template <typename tLittleInteger>
-void TGenericBigInteger<tLittleInteger>::fromBytes( const string &s )
+TGenericBigInteger<tLittleInteger> &
+TGenericBigInteger<tLittleInteger>::fromBytes( const string &s )
 {
 	tLittleInteger Accumulator;
 	int pos = s.size();
@@ -416,6 +417,8 @@ void TGenericBigInteger<tLittleInteger>::fromBytes( const string &s )
 	}
 
 	normalise();
+
+	return *this;
 }
 
 //
@@ -1439,6 +1442,20 @@ TGenericBigSignedInteger<tLittleInteger> &TGenericBigSignedInteger<tLittleIntege
 
 	normalise();
 
+	return *this;
+}
+
+//
+// Function:	TGenericBigSignedInteger :: fromBytes
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger> &
+TGenericBigSignedInteger<tLittleInteger>::fromBytes( const string &s )
+{
+	// fromBytes() can only create positive numbers
+	Negative = false;
+	TGenericBigInteger<tLittleInteger>::fromBytes(s);
 	return *this;
 }
 

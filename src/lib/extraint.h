@@ -108,6 +108,7 @@ class TGenericBigInteger
 //	TGenericBigInteger &operator=( unsigned int t ) { LittleDigits.clear(); LittleDigits.push_back(t); return *this; }
 	TGenericBigInteger &operator=( unsigned long long t );
 	TGenericBigInteger &operator=( const TGenericBigInteger &O ) { LittleDigits = O.LittleDigits; return *this; }
+	TGenericBigInteger &fromBytes( const string & );
 
 	// Access
 	bool getBit( tIndex bi ) const {
@@ -169,7 +170,6 @@ class TGenericBigInteger
 	string toString( unsigned int = 10 ) const;
 
 	string toBytes(unsigned int = 0) const;
-	void fromBytes( const string & );
 
   protected:
 	void normalise();
@@ -226,6 +226,7 @@ class TGenericBigSignedInteger : public TGenericBigInteger<tLittleInteger>
 	TGenericBigSignedInteger &operator=( long long t );
 	TGenericBigSignedInteger &operator=( const TGenericBigSignedInteger &O ) { TGenericBigInteger<tLittleInteger>::operator=(O); Negative=O.Negative; return *this; }
 	TGenericBigSignedInteger &operator=( const TGenericBigInteger<tLittleInteger> &O ) { TGenericBigInteger<tLittleInteger>::operator=(O); Negative=false; return *this; }
+	TGenericBigSignedInteger &fromBytes( const string & );
 
 	// Arithmetic - Compound
 	TGenericBigSignedInteger &operator +=(const TGenericBigSignedInteger &x);
