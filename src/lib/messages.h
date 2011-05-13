@@ -608,6 +608,7 @@ class TMessage_block : public TMessageWithChecksum
 	virtual string calculateHash() const;
 
 	const TBlockHeaderElement &blockHeader() const { return BlockHeader; }
+	TBlockHeaderElement &blockHeader() { return BlockHeader; }
 
   protected:
 	const char *commandString() const { return "block"; }
