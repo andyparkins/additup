@@ -401,15 +401,15 @@ TGenericBigInteger<tLittleInteger>::fromBytes( const string &s )
 
 		switch( sizeof( tLittleInteger ) ) {
 			case 4:
-				if( pos + 3 > 0 )
+				if( pos + 3 >= 0 )
 					Accumulator |= static_cast<unsigned char>(s[pos+3]) << 0;
-				if( pos + 2 > 0 )
+				if( pos + 2 >= 0 )
 					Accumulator |= static_cast<unsigned char>(s[pos+2]) << 8;
 			case 2:
-				if( pos + 1 > 0 )
+				if( pos + 1 >= 0 )
 					Accumulator |= static_cast<unsigned char>(s[pos+1]) << 16;
 			case 1:
-				if( pos + 0 > 0 )
+				if( pos + 0 >= 0 )
 					Accumulator |= static_cast<unsigned char>(s[pos+0]) << 24;
 		}
 
@@ -1836,7 +1836,7 @@ int main( int argc, char *argv[] )
 		log() << "k = " << hex << k << dec << endl;
 		log() << "l = " << hex << l << dec << endl;
 
-		m.fromBytes( string("\x00\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",10) );
+		m.fromBytes( string("\x05\x6b\xC7\x5E\x2D\x63\x0f\xfF\xFF",9) );
 		if( m != j ) {
 			log() << "m = " << hex << m << dec << endl;
 			throw logic_error("Assignment from bytes failed");
