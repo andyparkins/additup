@@ -174,10 +174,12 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 		message.setMerkleRoot();
 		message.setHeader();
 
-		string GenesisHash( "\x00\x00\x00\x07\x19\x95\x08\xe3"
+		TBitcoinHash GenesisHash;
+		GenesisHash.fromBytes(
+			string("\x00\x00\x00\x07\x19\x95\x08\xe3"
 				"\x4a\x9f\xf8\x1e\x6e\xc0\xc4\x77"
 				"\xa4\xcc\xcf\xf2\xa4\x76\x7a\x8e"
-				"\xee\x39\xc1\x1d\xb3\x67\xb0\x08", 32 );
+				"\xee\x39\xc1\x1d\xb3\x67\xb0\x08", 32) );
 
 		// We've created the genesis transaction, wrapped it in a
 		// TMessage_block, now we wrap that message in a TBlock, so that
@@ -214,10 +216,12 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		message.setMerkleRoot();
 		message.setHeader();
 
-		string GenesisHash( "\x00\x00\x00\x00\x00\x19\xd6\x68"
+		TBitcoinHash GenesisHash;
+		GenesisHash.fromBytes(
+			string( "\x00\x00\x00\x00\x00\x19\xd6\x68"
 				"\x9c\x08\x5a\xe1\x65\x83\x1e\x93"
 				"\x4f\xf7\x63\xae\x46\xa2\xa6\xc1"
-				"\x72\xb3\xf1\xb6\x0a\x8c\xe2\x6f" , 32 );
+				"\x72\xb3\xf1\xb6\x0a\x8c\xe2\x6f" , 32 ) );
 
 		// From http://blockexplorer.com/b/0
 		// {
