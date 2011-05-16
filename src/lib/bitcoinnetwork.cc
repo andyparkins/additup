@@ -59,6 +59,10 @@ TNetworkParameters::TNetworkParameters() :
 	// hash).  Therefore we'll default the proof of work limit to the
 	// easiest, which is 256 bits of ones.
 	ProofOfWorkLimit = (TBitcoinHash(1) << (256)) - 1;
+
+	// Default to something sensible
+	COINBASE_MATURITY = 1;
+	MAX_BLOCK_SIZE = 1 << 31;
 }
 
 

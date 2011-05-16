@@ -83,6 +83,14 @@ class TNetworkParameters
 	uint8_t BitcoinAddressPrefix;
 	unsigned int DifficultyIncreaseSpacing;
 	unsigned int TargetDifficultyIncreaseTime;
+
+	// The official client defines these as constants, I think they're
+	// better as network parameters, as they are pretty much arbitrarily
+	// chosen.  They take up no more space and allow flexibility.  I've
+	// kept the names to allow ease of understanding for those familiar
+	// with the offical constants.
+	unsigned int COINBASE_MATURITY;
+	unsigned int MAX_BLOCK_SIZE;
 };
 
 //
