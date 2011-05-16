@@ -654,6 +654,12 @@ TBigInteger TMessage_block::calculateHash() const
 //	TLog::hexify( log(), oss.str() );
 //	log() << endl;
 	hash.fromBytes( PayloadHasher->transform( oss.str() ) );
+
+	// For an unknown reason, bitcoin calculates the hash, then reverses
+	// the byte order, and that reversed form is then treated as the
+	// hash
+	hash = hash.reversedBytes();
+
 //	log() << "TMessage_block.hash = ";
 //	TLog::hexify( log(), hash );
 //	log() << endl;

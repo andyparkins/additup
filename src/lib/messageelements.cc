@@ -269,6 +269,11 @@ const TBigInteger &TTransactionElement::getHash() const
 
 	cachedHash.fromBytes( digest );
 
+	// For an unknown reason, bitcoin calculates the hash, then reverses
+	// the byte order, and that reversed form is then treated as the
+	// hash
+	cachedHash = cachedHash.reversedBytes();
+
 	// e.g. as a number, should stay the same
 	// 9f3fa3b08b823707
 	// 3237838899a13f91

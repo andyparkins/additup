@@ -238,4 +238,16 @@
    Java version in Block::buildMerkleTree() is wrong, and it says it
    copied the original.
 
+ - Hashes and endianness.  Hashes are stored and displayed in fairly
+   arbitrary endianness.  As far as I can tell (and it's not clear),
+   they are written big endian to streams; but displayed little endian
+   (which is the opposite of what it should be).  I glean this from the
+   fact that I can only recreate the genesis block hashes when I store
+   the hashes big endian.  But when I show those hashes, their zeroes
+   are all at the little endian end.  The solution I've chosen then is
+   to calculate the hash then instantly reverse the bytes and treat that
+   as if it were the big-endian result as normal.  Then, that big endian
+   result is written to the streams little-endian.  It is merely a
+   modification of the hash algorithm which is, in truth,
+   REVERSE(SHA256(SHA256())), not simply SHA256(SHA256()) as specified.
 
