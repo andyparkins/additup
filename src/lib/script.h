@@ -455,7 +455,6 @@ class TStackOperatorFromStream : public TStackOperator
 //
 // Class: TStackOperatorFromOpcode
 // Description:
-// T
 //
 class TStackOperatorFromOpcode : public TStackOperatorFromStream
 {
@@ -1725,31 +1724,45 @@ class TStackOperator_OP_CHECKMULTISIGVERIFY : public TStackOperatorFromCompoundO
 };
 
 //
+// Class: TStackOperatorTemplate
+// Description:
+//
+class TStackOperatorTemplate : public TStackOperatorFromOpcode
+{
+  public:
+	const char *className() const { return "TStackOperatorTemplate"; }
+
+	// Deny read() and execute()
+	istream &read( istream & ) {
+		throw logic_error("TStackOperatorTemplate should never be read()");
+	}
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer & ) const {
+		throw logic_error("TStackOperatorTemplate should never be execute()d");
+	}
+};
+
+//
 // Class: TStackOperator_OP_PUBKEYHASH
 // Desciption:
 //
-class TStackOperator_OP_PUBKEYHASH : public TStackOperatorFromOpcode
+class TStackOperator_OP_PUBKEYHASH : public TStackOperatorTemplate
 {
   public:
 	const char *className() const { return "TStackOperator_OP_PUBKEYHASH"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUBKEYHASH(*this); }
 	eScriptOp getOpcode() const { return OP_PUBKEYHASH; }
-
-	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
 // Class: TStackOperator_OP_PUBKEY
 // Desciption:
 //
-class TStackOperator_OP_PUBKEY : public TStackOperatorFromOpcode
+class TStackOperator_OP_PUBKEY : public TStackOperatorTemplate
 {
   public:
 	const char *className() const { return "TStackOperator_OP_PUBKEY"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUBKEY(*this); }
 	eScriptOp getOpcode() const { return OP_PUBKEY; }
-
-	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //

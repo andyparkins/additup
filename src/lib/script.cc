@@ -2066,26 +2066,6 @@ void TStackOperator_OP_CHECKMULTISIGVERIFY::explode( TBitcoinScriptBase *Script 
 }
 
 //
-// Function:  OP_PUBKEYHASH
-// Operation: Represents a public key hashed with OP_HASH160.
-TBitcoinScript::tInstructionPointer
-TStackOperator_OP_PUBKEYHASH::execute( TExecutionContext &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
-{
-
-	return ip;
-}
-
-//
-// Function:  OP_PUBKEY
-// Operation: Represents a public key compatible with OP_CHECKSIG.
-TBitcoinScript::tInstructionPointer
-TStackOperator_OP_PUBKEY::execute( TExecutionContext &Stack, const TBitcoinScript::tInstructionPointer &ip ) const
-{
-
-	return ip;
-}
-
-//
 // Function:  OP_INVALIDOPCODE
 // Operation: Matches any opcode that is not yet assigned.
 TBitcoinScript::tInstructionPointer
