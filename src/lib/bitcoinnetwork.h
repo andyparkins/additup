@@ -91,6 +91,11 @@ class TNetworkParameters
 	// with the offical constants.
 	unsigned int COINBASE_MATURITY;
 	unsigned int MAX_BLOCK_SIZE;
+
+	// I am treating these following values as constants, as I think
+	// they are fundamental rather than arbitrary choices.
+	static const TBitcoinHash COINBASE_REFERENCE_HASH;
+	static const unsigned int COINBASE_REFERENCE_INDEX;
 };
 
 //
