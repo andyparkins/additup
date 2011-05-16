@@ -20,7 +20,6 @@
 // -------------- Includes
 // --- C
 // --- C++
-#include <boost/smart_ptr.hpp>
 #include <list>
 // --- Qt
 // --- OS
@@ -33,7 +32,6 @@
 // -------------- Namespace
 	// --- Imported namespaces
 	using namespace std;
-	using namespace boost;
 
 
 // -------------- Defines
@@ -111,10 +109,10 @@ class TBitcoinNetwork
   protected:
 	const TNetworkParameters *Parameters;
 
-	list<shared_ptr<TBitcoinPeer> > Peers;
-	weak_ptr<TBitcoinPeer> Self;
+	list<TBitcoinPeer* > Peers;
+	TBitcoinPeer *Self;
 
-	list<shared_ptr<TNodeInfo> > Directory;
+	list<TNodeInfo *> Directory;
 
 	TTransactionPool *TransactionPool;
 	TBlockPool *BlockPool;
