@@ -609,7 +609,7 @@ class TMessage_block : public TMessageWithChecksum
 		return os;
 	}
 
-	virtual TBigInteger calculateHash() const;
+	virtual TBitcoinHash calculateHash() const;
 
 	const TBlockHeaderElement &blockHeader() const { return BlockHeader; }
 	TBlockHeaderElement &blockHeader() { return BlockHeader; }
@@ -630,7 +630,7 @@ class TMessage_block : public TMessageWithChecksum
 	TBlockHeaderElement BlockHeader;
 	TNElementsElement<TTransactionElement> Transactions;
 
-	vector<TBigInteger> MerkleTree;
+	vector<TBitcoinHash> MerkleTree;
 };
 
 //

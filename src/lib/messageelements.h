@@ -28,7 +28,7 @@
 // --- OS
 // --- Project
 // --- Project lib
-#include "extraint.h"
+#include "hashtypes.h"
 
 
 // -------------- Namespace
@@ -399,14 +399,14 @@ class THashElement : public TMessageElement
 		return os;
 	}
 
-	operator TBigInteger() const { return Hash; }
-	operator const TBigInteger&() const { return Hash; }
-	TBigInteger &get() { return Hash; }
-	const TBigInteger &get() const { return Hash; }
-	THashElement &operator=( const TBigInteger &s ) { Hash = s; return *this; }
+	operator TBitcoinHash() const { return Hash; }
+	operator const TBitcoinHash&() const { return Hash; }
+	TBitcoinHash &get() { return Hash; }
+	const TBitcoinHash &get() const { return Hash; }
+	THashElement &operator=( const TBitcoinHash &s ) { Hash = s; return *this; }
 
   protected:
-	TBigInteger Hash;
+	TBitcoinHash Hash;
 };
 
 //
@@ -556,8 +556,8 @@ class TDifficultyTargetElement : public TMessageElement
 		return os;
 	}
 
-	TBigUnsignedInteger getTarget() const {
-		TBigUnsignedInteger t( Mantissa.getValue() );
+	TBitcoinHash getTarget() const {
+		TBitcoinHash t( Mantissa.getValue() );
 		t <<= (Exponent - 3) * 8;
 		return t;
 	}
@@ -791,7 +791,7 @@ class TTransactionElement : public TMessageElement
 	TInputSplitElement &createInput() { cachedHash = 0; Inputs.append(TInputSplitElement()); return Inputs.back(); }
 	TOutputSplitElement &createOutput() { cachedHash = 0; Outputs.append(TOutputSplitElement()); return Outputs.back(); }
 
-	const TBigInteger &getHash() const;
+	const TBitcoinHash &getHash() const;
 
   public:
 	TLittleEndian32Element Version;
@@ -799,7 +799,7 @@ class TTransactionElement : public TMessageElement
 	TNElementsElement<TOutputSplitElement> Outputs;
 	TLittleEndian32Element LockTime;
 
-	mutable TBigInteger cachedHash;
+	mutable TBitcoinHash cachedHash;
 
   protected:
 	static TMessageDigest *Hasher;

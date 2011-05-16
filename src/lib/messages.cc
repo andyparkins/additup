@@ -629,9 +629,9 @@ ostream &TMessage_tx::printOn( ostream &s ) const
 // Function:	TMessage_block :: calculateHash
 // Description:
 //
-TBigInteger TMessage_block::calculateHash() const
+TBitcoinHash TMessage_block::calculateHash() const
 {
-	TBigInteger hash;
+	TBitcoinHash hash;
 	ostringstream oss;
 
 	// "The SHA256 hash that identifies each block (and which must have
@@ -744,7 +744,7 @@ void TMessage_block::calculateMerkleTree()
 			// The PayloadHasher is fine for creating the Merkle hashes
 			Buffer = PayloadHasher->transform( Buffer );
 
-			MerkleTree.push_back( TBigInteger().fromBytes( Buffer ) );
+			MerkleTree.push_back( TBitcoinHash().fromBytes( Buffer ) );
 		}
 		depthIndex += depthSize;
 	}
@@ -774,7 +774,7 @@ ostream &TMessage_block::printOn( ostream &s ) const
 	TMessageWithChecksum::printOn(s);
 	s << "{ N=" << Transactions.size();
 	s << "; Merkle=[";
-	vector<TBigInteger>::const_iterator it;
+	vector<TBitcoinHash>::const_iterator it;
 	for( it = MerkleTree.begin(); it != MerkleTree.end(); it++ )
 		s << hex << (*it) << dec << ", ";
 	s << "]";

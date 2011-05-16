@@ -215,7 +215,7 @@ TMessageDigest *TTransactionElement::Hasher = new TDoubleHash( new THash_sha256,
 // Function:	TTransactionElement :: getHash
 // Description:
 //
-const TBigInteger &TTransactionElement::getHash() const
+const TBitcoinHash &TTransactionElement::getHash() const
 {
 	if( !cachedHash.isZero() )
 		return cachedHash;

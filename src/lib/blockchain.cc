@@ -120,7 +120,7 @@ TMessageBasedBlock::~TMessageBasedBlock()
 // Function:	TMessageBasedBlock :: setMessage
 // Description:
 //
-void TMessageBasedBlock::updateFromMessage( const TBigInteger &hash, const TMessage_block *m )
+void TMessageBasedBlock::updateFromMessage( const TBitcoinHash &hash, const TMessage_block *m )
 {
 	if( Message != NULL ) {
 		// XXX: Merge incoming message into existing message?
@@ -153,7 +153,7 @@ void TMessageBasedBlock::updateFromMessage( const TBigInteger &hash, const TMess
 // Function:	TMessageBasedBlock :: getHash
 // Description:
 //
-const TBigInteger &TMessageBasedBlock::getHash() const
+const TBitcoinHash &TMessageBasedBlock::getHash() const
 {
 	// If we've already calculated it, then return that
 	if( cachedHash.isValid() )
@@ -175,7 +175,7 @@ const TBigInteger &TMessageBasedBlock::getHash() const
 // Function:	TMessageBasedBlock :: getParentHash
 // Description:
 //
-const TBigInteger &TMessageBasedBlock::getParentHash() const
+const TBitcoinHash &TMessageBasedBlock::getParentHash() const
 {
 	return Message->blockHeader().PreviousBlock;
 }
@@ -218,7 +218,7 @@ TDatabaseBlock::~TDatabaseBlock()
 // Function:	TDatabaseBlock :: setMessage
 // Description:
 //
-void TDatabaseBlock::updateFromMessage( const TBigInteger &hash, const TMessage_block *m )
+void TDatabaseBlock::updateFromMessage( const TBitcoinHash &hash, const TMessage_block *m )
 {
 	if( m == NULL ) {
 		// XXX: Delete existing record?
@@ -251,7 +251,7 @@ TBlockPool::~TBlockPool()
 // Function:	TBlockPool :: receiveBlock
 // Description:
 //
-void TBlockPool::receiveBlock( const TBigInteger &NetworkHash, const TMessage_block *message )
+void TBlockPool::receiveBlock( const TBitcoinHash &NetworkHash, const TMessage_block *message )
 {
 	// Create a new block
 	TBlock *thisBlock = createBlock();
@@ -333,7 +333,7 @@ TBlock *TBlockMemoryPool::createBlock()
 // Function:	TBlockMemoryPool :: putBlock
 // Description:
 //
-void TBlockMemoryPool::putBlock( const TBigInteger &Hash, TBlock *Block )
+void TBlockMemoryPool::putBlock( const TBitcoinHash &Hash, TBlock *Block )
 {
 	iterator it;
 
@@ -353,7 +353,7 @@ void TBlockMemoryPool::putBlock( const TBigInteger &Hash, TBlock *Block )
 // Function:	TBlockMemoryPool :: getBlock
 // Description:
 //
-TBlock *TBlockMemoryPool::getBlock( const TBigInteger &hash ) const
+TBlock *TBlockMemoryPool::getBlock( const TBitcoinHash &hash ) const
 {
 	const_iterator it;
 
@@ -369,7 +369,7 @@ TBlock *TBlockMemoryPool::getBlock( const TBigInteger &hash ) const
 // Function:	TBlockMemoryPool :: blockExists
 // Description:
 //
-bool TBlockMemoryPool::blockExists( const TBigInteger &hash ) const
+bool TBlockMemoryPool::blockExists( const TBitcoinHash &hash ) const
 {
 	const_iterator it;
 

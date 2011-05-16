@@ -25,7 +25,7 @@
 // --- OS
 // --- Project libs
 // --- Project
-#include "extraint.h"
+#include "hashtypes.h"
 #include "blockchain.h"
 #include "messages.h"
 #include "script.h"
@@ -159,7 +159,7 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 		Magic = 0xdab5bffa;
 		BitcoinAddressPrefix = 111;
 		// 228 bits of 1
-		ProofOfWorkLimit = (TBigInteger(1) << 228) - 1;
+		ProofOfWorkLimit = (TBitcoinHash(1) << 228) - 1;
 
 		// Genesis block
 		TMessage_block message;
@@ -201,7 +201,7 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		Magic = 0xd9b4bef9;
 		BitcoinAddressPrefix = 0;
 		// 228 bits of 1
-		ProofOfWorkLimit = (TBigInteger(1) << 228) - 1;
+		ProofOfWorkLimit = (TBitcoinHash(1) << 228) - 1;
 
 		// Genesis block
 		TMessage_block message;

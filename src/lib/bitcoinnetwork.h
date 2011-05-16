@@ -27,7 +27,7 @@
 // --- Project lib
 // --- Project
 #include "peer.h"
-#include "extraint.h"
+#include "hashtypes.h"
 
 
 // -------------- Namespace
@@ -79,7 +79,7 @@ class TNetworkParameters
 
 	uint32_t ProtocolVersion;
 	TBlock *GenesisBlock;
-	TBigInteger ProofOfWorkLimit;
+	TBitcoinHash ProofOfWorkLimit;
 	uint16_t DefaultTCPPort;
 	uint32_t Magic;
 	uint8_t BitcoinAddressPrefix;

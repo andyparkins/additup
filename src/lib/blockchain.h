@@ -27,7 +27,7 @@
 // --- OS
 // --- Project lib
 // --- Project
-#include "extraint.h"
+#include "hashtypes.h"
 
 
 // -------------- Namespace
@@ -78,10 +78,10 @@ class TBlock
 	TBlock( TBlockPool * );
 	virtual ~TBlock();
 
-	virtual void updateFromMessage( const TBigInteger &, const TMessage_block * ) = 0;
+	virtual void updateFromMessage( const TBitcoinHash &, const TMessage_block * ) = 0;
 
-	virtual const TBigInteger &getHash() const = 0;
-	virtual const TBigInteger &getParentHash() const = 0;
+	virtual const TBitcoinHash &getHash() const = 0;
+	virtual const TBitcoinHash &getParentHash() const = 0;
 	virtual void registerChild( TBlock * );
 
 	void fit();
@@ -96,7 +96,7 @@ class TBlock
 	TBlockPool *Pool;
 
 	TBlock *Parent;
-	set<TBigInteger> ChildHashes;
+	set<TBitcoinHash> ChildHashes;
 };
 
 //
@@ -109,10 +109,10 @@ class TMessageBasedBlock : public TBlock
 	TMessageBasedBlock( TBlockPool * );
 	~TMessageBasedBlock();
 
-	void updateFromMessage( const TBigInteger &, const TMessage_block * );
+	void updateFromMessage( const TBitcoinHash &, const TMessage_block * );
 
-	const TBigInteger &getHash() const;
-	const TBigInteger &getParentHash() const;
+	const TBitcoinHash &getHash() const;
+	const TBitcoinHash &getParentHash() const;
 
 	void flush() { cachedHash.invalidate(); }
 
@@ -120,7 +120,7 @@ class TMessageBasedBlock : public TBlock
 
   protected:
 	TMessage_block *Message;
-	mutable TBigInteger cachedHash;
+	mutable TBitcoinHash cachedHash;
 };
 
 #if 0
@@ -134,10 +134,10 @@ class TDatabaseBlock : public TBlock
 	TDatabaseBlock( TDatabaseBlockPool * );
 	~TDatabaseBlock();
 
-	void updateFromMessage( const TBigInteger &, const TMessage_block * );
+	void updateFromMessage( const TBitcoinHash &, const TMessage_block * );
 
-	const TBigInteger &getHash() const;
-	const TBigInteger &getParentHash() const;
+	const TBitcoinHash &getHash() const;
+	const TBitcoinHash &getParentHash() const;
 
   protected:
 	TDatabaseBlockPool *Pool;
@@ -156,20 +156,20 @@ class TBlockPool
 	TBlockPool();
 	virtual ~TBlockPool();
 
-	void receiveBlock( const TBigInteger &, const TMessage_inv * );
-	void receiveBlock( const TBigInteger &, const TMessage_block * );
-	void receiveBlock( const TBigInteger &, const TMessage_headers * );
+	void receiveBlock( const TBitcoinHash &, const TMessage_inv * );
+	void receiveBlock( const TBitcoinHash &, const TMessage_block * );
+	void receiveBlock( const TBitcoinHash &, const TMessage_headers * );
 
-	virtual void putBlock( const TBigInteger &, TBlock * ) = 0;
-	virtual TBlock *getBlock( const TBigInteger & ) const = 0;
-	virtual bool blockExists( const TBigInteger & ) const = 0;
+	virtual void putBlock( const TBitcoinHash &, TBlock * ) = 0;
+	virtual TBlock *getBlock( const TBitcoinHash & ) const = 0;
+	virtual bool blockExists( const TBitcoinHash & ) const = 0;
 
 	virtual void scanForNewChildLinks() = 0;
 
 	virtual TBlock *createBlock() = 0;
 
   protected:
-	set<TBigInteger> Tips;
+	set<TBitcoinHash> Tips;
 };
 
 //
@@ -182,18 +182,18 @@ class TBlockMemoryPool : public TBlockPool
 	TBlockMemoryPool();
 	~TBlockMemoryPool();
 
-	void putBlock( const TBigInteger &, TBlock * );
-	TBlock *getBlock( const TBigInteger & ) const;
-	bool blockExists( const TBigInteger & ) const;
+	void putBlock( const TBitcoinHash &, TBlock * );
+	TBlock *getBlock( const TBitcoinHash & ) const;
+	bool blockExists( const TBitcoinHash & ) const;
 
 	void scanForNewChildLinks();
 
 	TBlock *createBlock();
 
   protected:
-	map<TBigInteger, TBlock*> Pool;
-	typedef map<TBigInteger, TBlock*>::iterator iterator;
-	typedef map<TBigInteger, TBlock*>::const_iterator const_iterator;
+	map<TBitcoinHash, TBlock*> Pool;
+	typedef map<TBitcoinHash, TBlock*>::iterator iterator;
+	typedef map<TBitcoinHash, TBlock*>::const_iterator const_iterator;
 };
 
 #if 0
@@ -207,9 +207,9 @@ class TDatabaseBlockPool : public TBlockPool
 	TDatabaseBlockPool();
 	~TDatabaseBlockPool();
 
-	void putBlock( const TBigInteger &, TBlock * );
-	TBlock *getBlock( const TBigInteger & ) const;
-	bool blockExists( const TBigInteger & ) const;
+	void putBlock( const TBitcoinHash &, TBlock * );
+	TBlock *getBlock( const TBitcoinHash & ) const;
+	bool blockExists( const TBitcoinHash & ) const;
 
 	void scanForNewChildLinks();
 

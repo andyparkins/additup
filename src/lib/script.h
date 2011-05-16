@@ -30,6 +30,7 @@
 // --- Project lib
 // --- Project
 #include "extraint.h"
+#include "hashtypes.h"
 
 
 // -------------- Namespace
@@ -299,6 +300,7 @@ class TStackElement_t : public TStackElement
 typedef TStackElement_t<bool> TStackElementBoolean;
 typedef TStackElement_t<int> TStackElementInteger;
 typedef TStackElement_t<TBigInteger> TStackElementBigInteger;
+typedef TStackElement_t<TBitcoinHash> TStackElementHash;
 typedef TStackElement_t<string> TStackElementString;
 
 
