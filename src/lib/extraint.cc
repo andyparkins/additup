@@ -1936,8 +1936,9 @@ int main( int argc, char *argv[] )
 		log() << dec;
 		// reverse
 		k = TBigInteger("0102030405060708090a0b0c0d0e0f10", 16);
-		log() << "64bit: reverse 0x" << hex << k << " = 0x" << k.reversedBytes() << dec << endl;
-		if( k.reversedBytes() != TBigInteger("100f0e0d0c0b0a090807060504030201",16) )
+		j = k.reversedBytes();
+		log() << "64bit: reverse 0x" << hex << k << " = 0x" << j << dec << endl;
+		if( j != TBigInteger("100f0e0d0c0b0a090807060504030201",16) )
 			throw logic_error( "reversedBytes() failed" );
 
 		log(TLog::Status) << "Testing arithmetic operators on large numbers" << endl;
