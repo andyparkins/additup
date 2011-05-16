@@ -372,17 +372,24 @@ class TBitcoinScriptBase
 class TBitcoinScript : public TBitcoinScriptBase
 {
   public:
+	enum eReadMode {
+		AuthorisationScript,
+		ClaimantScript
+	};
+
+  public:
 	TBitcoinScript() {};
 	TBitcoinScript( const TStackOperator **, unsigned int );
-	TBitcoinScript( const string & );
+	TBitcoinScript( const string &, eReadMode );
 	~TBitcoinScript();
 	virtual uint32_t getMinimumAcceptedVersion() const = 0;
 
-	istream &read( istream & );
+	istream &read( istream &, eReadMode );
 	ostream &write( ostream & ) const;
 
   protected:
-	list<const TStackOperatorFromStream *> Templates;
+	list<const TStackOperatorFromStream *> ClaimantTemplates;
+	list<const TStackOperatorFromStream *> AuthorisationTemplates;
 };
 
 //
@@ -394,7 +401,7 @@ class TBitcoinScript_0 : public TBitcoinScript
   public:
 	TBitcoinScript_0();
 	TBitcoinScript_0( const TStackOperator **, unsigned int );
-	TBitcoinScript_0( const string & );
+	TBitcoinScript_0( const string &, eReadMode );
 
 	uint32_t getMinimumAcceptedVersion() const;
 

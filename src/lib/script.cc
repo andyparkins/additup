@@ -228,10 +228,10 @@ TBitcoinScript::TBitcoinScript( const TStackOperator **a, unsigned int n ) :
 // Function:	TBitcoinScript :: TBitcoinScript
 // Description:
 //
-TBitcoinScript::TBitcoinScript( const string &s )
+TBitcoinScript::TBitcoinScript( const string &s, eReadMode a )
 {
 	istringstream iss(s);
-	read(iss);
+	read(iss, a);
 }
 
 //
@@ -240,9 +240,13 @@ TBitcoinScript::TBitcoinScript( const string &s )
 //
 TBitcoinScript::~TBitcoinScript()
 {
-	while( !Templates.empty() ) {
-		delete Templates.front();
-		Templates.erase( Templates.begin() );
+	while( !ClaimantTemplates.empty() ) {
+		delete ClaimantTemplates.front();
+		ClaimantTemplates.erase( ClaimantTemplates.begin() );
+	}
+	while( !AuthorisationTemplates.empty() ) {
+		delete AuthorisationTemplates.front();
+		AuthorisationTemplates.erase( AuthorisationTemplates.begin() );
 	}
 }
 
@@ -250,10 +254,11 @@ TBitcoinScript::~TBitcoinScript()
 // Function:	TBitcoinScript :: read
 // Description:
 //
-istream &TBitcoinScript::read( istream &is )
+istream &TBitcoinScript::read( istream &is, eReadMode ReadMode )
 {
 	eScriptOp Opcode;
 	list<const TStackOperatorFromStream *>::const_iterator it;
+	list<const TStackOperatorFromStream *> *Templates;
 
 	// Load the template list
 	if( !Initialised )
@@ -263,12 +268,27 @@ istream &TBitcoinScript::read( istream &is )
 	// that opcode.  Finding one that does, we clone it and let it read
 	// itself from the stream.
 	while( (Opcode = static_cast<eScriptOp>(is.peek()) ) != ios::traits_type::eof() ) {
-		for( it = Templates.begin(); it != Templates.end(); it++ ) {
+		switch( ReadMode ) {
+			case AuthorisationScript:
+				Templates = &AuthorisationTemplates;
+				break;
+			case ClaimantScript:
+				Templates = &ClaimantTemplates;
+				break;
+			default:
+				Templates = NULL;
+		}
+
+		// We refuse to read
+		if( Templates == NULL )
+			break;
+
+		for( it = Templates->begin(); it != Templates->end(); it++ ) {
 			if( !(*it)->acceptOpcode( Opcode ) )
 				continue;
 			break;
 		}
-		if( it == Templates.end() ) {
+		if( it == Templates->end() ) {
 //			log() << "script opcode (" << Opcode << ") read but not recognised" << endl;
 			throw script_parse_error_not_found();
 		}
@@ -336,8 +356,8 @@ TBitcoinScript_0::TBitcoinScript_0( const TStackOperator **a, unsigned int n ) :
 // Function:	TBitcoinScript_0 :: TBitcoinScript_0
 // Description:
 //
-TBitcoinScript_0::TBitcoinScript_0( const string &s ) :
-	TBitcoinScript(s)
+TBitcoinScript_0::TBitcoinScript_0( const string &s, eReadMode a ) :
+	TBitcoinScript(s, a)
 {
 }
 
@@ -356,102 +376,116 @@ uint32_t TBitcoinScript_0::getMinimumAcceptedVersion() const
 //
 void TBitcoinScript_0::init()
 {
-	Templates.push_back( new TStackOperator_OP_FALSE );
-	Templates.push_back( new TStackOperator_OP_PUSHDATA1 );
-	Templates.push_back( new TStackOperator_OP_PUSHDATA2 );
-	Templates.push_back( new TStackOperator_OP_PUSHDATA4 );
-	Templates.push_back( new TStackOperator_OP_1NEGATE );
-	Templates.push_back( new TStackOperator_OP_TRUE );
-	Templates.push_back( new TStackOperator_OP_NOP );
-	Templates.push_back( new TStackOperator_OP_IF );
-	Templates.push_back( new TStackOperator_OP_NOTIF );
-	Templates.push_back( new TStackOperator_OP_ELSE );
-	Templates.push_back( new TStackOperator_OP_ENDIF );
-	Templates.push_back( new TStackOperator_OP_VERIFY );
-	Templates.push_back( new TStackOperator_OP_RETURN );
-	Templates.push_back( new TStackOperator_OP_TOALTSTACK );
-	Templates.push_back( new TStackOperator_OP_FROMALTSTACK );
-	Templates.push_back( new TStackOperator_OP_IFDUP );
-	Templates.push_back( new TStackOperator_OP_DEPTH );
-	Templates.push_back( new TStackOperator_OP_DROP );
-	Templates.push_back( new TStackOperator_OP_DUP );
-	Templates.push_back( new TStackOperator_OP_NIP );
-	Templates.push_back( new TStackOperator_OP_OVER );
-	Templates.push_back( new TStackOperator_OP_PICK );
-	Templates.push_back( new TStackOperator_OP_ROLL );
-	Templates.push_back( new TStackOperator_OP_ROT );
-	Templates.push_back( new TStackOperator_OP_SWAP );
-	Templates.push_back( new TStackOperator_OP_TUCK );
-	Templates.push_back( new TStackOperator_OP_2DROP );
-	Templates.push_back( new TStackOperator_OP_2DUP );
-	Templates.push_back( new TStackOperator_OP_3DUP );
-	Templates.push_back( new TStackOperator_OP_2OVER );
-	Templates.push_back( new TStackOperator_OP_2ROT );
-	Templates.push_back( new TStackOperator_OP_2SWAP );
-//	Templates.push_back( new TStackOperator_OP_CAT );
-//	Templates.push_back( new TStackOperator_OP_SUBSTR );
-//	Templates.push_back( new TStackOperator_OP_LEFT );
-//	Templates.push_back( new TStackOperator_OP_RIGHT );
-	Templates.push_back( new TStackOperator_OP_SIZE );
-//	Templates.push_back( new TStackOperator_OP_INVERT );
-//	Templates.push_back( new TStackOperator_OP_AND );
-//	Templates.push_back( new TStackOperator_OP_OR );
-//	Templates.push_back( new TStackOperator_OP_XOR );
-	Templates.push_back( new TStackOperator_OP_EQUAL );
-	Templates.push_back( new TStackOperator_OP_EQUALVERIFY );
-	Templates.push_back( new TStackOperator_OP_1ADD );
-	Templates.push_back( new TStackOperator_OP_1SUB );
-//	Templates.push_back( new TStackOperator_OP_2MUL );
-//	Templates.push_back( new TStackOperator_OP_2DIV );
-	Templates.push_back( new TStackOperator_OP_NEGATE );
-	Templates.push_back( new TStackOperator_OP_ABS );
-	Templates.push_back( new TStackOperator_OP_NOT );
-	Templates.push_back( new TStackOperator_OP_0NOTEQUAL );
-	Templates.push_back( new TStackOperator_OP_ADD );
-	Templates.push_back( new TStackOperator_OP_SUB );
-//	Templates.push_back( new TStackOperator_OP_MUL );
-//	Templates.push_back( new TStackOperator_OP_DIV );
-//	Templates.push_back( new TStackOperator_OP_MOD );
-//	Templates.push_back( new TStackOperator_OP_LSHIFT );
-//	Templates.push_back( new TStackOperator_OP_RSHIFT );
-	Templates.push_back( new TStackOperator_OP_BOOLAND );
-	Templates.push_back( new TStackOperator_OP_BOOLOR );
-	Templates.push_back( new TStackOperator_OP_NUMEQUAL );
-	Templates.push_back( new TStackOperator_OP_NUMEQUALVERIFY );
-	Templates.push_back( new TStackOperator_OP_NUMNOTEQUAL );
-	Templates.push_back( new TStackOperator_OP_LESSTHAN );
-	Templates.push_back( new TStackOperator_OP_GREATERTHAN );
-	Templates.push_back( new TStackOperator_OP_LESSTHANOREQUAL );
-	Templates.push_back( new TStackOperator_OP_GREATERTHANOREQUAL );
-	Templates.push_back( new TStackOperator_OP_MIN );
-	Templates.push_back( new TStackOperator_OP_MAX );
-	Templates.push_back( new TStackOperator_OP_WITHIN );
-	Templates.push_back( new TStackOperator_OP_RIPEMD160 );
-	Templates.push_back( new TStackOperator_OP_SHA1 );
-	Templates.push_back( new TStackOperator_OP_SHA256 );
-	Templates.push_back( new TStackOperator_OP_HASH160 );
-	Templates.push_back( new TStackOperator_OP_HASH256 );
-	Templates.push_back( new TStackOperator_OP_CODESEPARATOR );
-	Templates.push_back( new TStackOperator_OP_CHECKSIG );
-	Templates.push_back( new TStackOperator_OP_CHECKSIGVERIFY );
-	Templates.push_back( new TStackOperator_OP_CHECKMULTISIG );
-	Templates.push_back( new TStackOperator_OP_CHECKMULTISIGVERIFY );
-	Templates.push_back( new TStackOperator_OP_PUBKEYHASH );
-	Templates.push_back( new TStackOperator_OP_PUBKEY );
-	Templates.push_back( new TStackOperator_OP_RESERVED );
-	Templates.push_back( new TStackOperator_OP_VER );
-	Templates.push_back( new TStackOperator_OP_VERIF );
-	Templates.push_back( new TStackOperator_OP_VERNOTIF );
-	Templates.push_back( new TStackOperator_OP_RESERVED1 );
-	Templates.push_back( new TStackOperator_OP_RESERVED2 );
-	Templates.push_back( new TStackOperator_OP_NOP_N );
-	Templates.push_back( new TStackOperator_OP_N );
-	Templates.push_back( new TStackOperator_PUSH_N );
-	// OP_INVALIDOPCODE _must_ be last in the template list, this is
-	// because it is a special case and has an acceptOpcode() that
-	// always returns true.  Therefore, it will take up any opcode not
-	// previously accepted by one of the above.
-	Templates.push_back( new TStackOperator_OP_INVALIDOPCODE );
+	// Claimant scripts are limited
+	ClaimantTemplates.push_back( new TStackOperator_OP_FALSE );
+	ClaimantTemplates.push_back( new TStackOperator_OP_PUSHDATA1 );
+	ClaimantTemplates.push_back( new TStackOperator_OP_PUSHDATA2 );
+	ClaimantTemplates.push_back( new TStackOperator_OP_PUSHDATA4 );
+	ClaimantTemplates.push_back( new TStackOperator_OP_1NEGATE );
+	ClaimantTemplates.push_back( new TStackOperator_OP_TRUE );
+	ClaimantTemplates.push_back( new TStackOperator_OP_NOP );
+	ClaimantTemplates.push_back( new TStackOperator_OP_NOP_N );
+	ClaimantTemplates.push_back( new TStackOperator_OP_N );
+	ClaimantTemplates.push_back( new TStackOperator_PUSH_N );
+	// Authorisation scripts can do a lot more
+	AuthorisationTemplates.push_back( new TStackOperator_OP_FALSE );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_PUSHDATA1 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_PUSHDATA2 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_PUSHDATA4 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_1NEGATE );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_TRUE );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NOP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_IF );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NOTIF );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_ELSE );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_ENDIF );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_VERIFY );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_RETURN );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_TOALTSTACK );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_FROMALTSTACK );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_IFDUP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_DEPTH );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_DROP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_DUP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NIP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_OVER );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_PICK );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_ROLL );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_ROT );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_SWAP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_TUCK );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_2DROP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_2DUP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_3DUP );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_2OVER );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_2ROT );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_2SWAP );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_CAT );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_SUBSTR );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_LEFT );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_RIGHT );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_SIZE );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_INVERT );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_AND );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_OR );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_XOR );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_EQUAL );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_EQUALVERIFY );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_1ADD );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_1SUB );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_2MUL );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_2DIV );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NEGATE );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_ABS );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NOT );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_0NOTEQUAL );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_ADD );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_SUB );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_MUL );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_DIV );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_MOD );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_LSHIFT );
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_RSHIFT );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_BOOLAND );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_BOOLOR );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NUMEQUAL );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NUMEQUALVERIFY );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NUMNOTEQUAL );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_LESSTHAN );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_GREATERTHAN );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_LESSTHANOREQUAL );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_GREATERTHANOREQUAL );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_MIN );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_MAX );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_WITHIN );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_RIPEMD160 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_SHA1 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_SHA256 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_HASH160 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_HASH256 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_CODESEPARATOR );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_CHECKSIG );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_CHECKSIGVERIFY );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_CHECKMULTISIG );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_CHECKMULTISIGVERIFY );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_PUBKEYHASH );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_PUBKEY );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_RESERVED );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_VER );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_VERIF );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_VERNOTIF );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_RESERVED1 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_RESERVED2 );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_NOP_N );
+	AuthorisationTemplates.push_back( new TStackOperator_OP_N );
+	AuthorisationTemplates.push_back( new TStackOperator_PUSH_N );
+	// OP_INVALIDOPCODE _must_ be last in the template list if it is
+	// wanted, this is because it is a special case and has an
+	// acceptOpcode() that always returns true.  Therefore, it will take
+	// up any opcode not previously accepted by one of the above.  It
+	// can be used in situations where you want to allow but ignore
+	// invalid opcodes.
+//	AuthorisationTemplates.push_back( new TStackOperator_OP_INVALIDOPCODE );
 
 	TBitcoinScriptBase::init();
 }
@@ -2284,7 +2318,7 @@ int main( int argc, char *argv[] )
 			TExecutionContext S;
 			TBitcoinScript_0 BCP;
 
-			BCP.read(iss);
+			BCP.read(iss, TBitcoinScript::AuthorisationScript );
 
 			BCP.execute( S );
 
