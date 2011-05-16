@@ -234,10 +234,6 @@
    microcoin.  Abusing SI prefixes just makes it harder for a reader of
    the source to be sure what is happening.
 
- - CBlock::BuildMerkleTree() needs a good looking at.  I suspect the
-   Java version in Block::buildMerkleTree() is wrong, and it says it
-   copied the original.
-
  - Hashes and endianness.  Hashes are stored and displayed in fairly
    arbitrary endianness.  As far as I can tell (and it's not clear),
    they are written big endian to streams; but displayed little endian
