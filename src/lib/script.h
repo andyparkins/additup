@@ -505,7 +505,7 @@ class TStackOperatorFromCompoundOpcode : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_FALSE
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_FALSE : public TStackOperatorFromOpcode
 {
@@ -519,7 +519,7 @@ class TStackOperator_OP_FALSE : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_PUSHDATAN
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 {
@@ -561,7 +561,7 @@ class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_PUSHDATA1
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_PUSHDATA1 : public TStackOperator_OP_PUSHDATAN
 {
@@ -583,7 +583,7 @@ class TStackOperator_OP_PUSHDATA1 : public TStackOperator_OP_PUSHDATAN
 
 //
 // Class: TStackOperator_OP_PUSHDATA2
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_PUSHDATA2 : public TStackOperator_OP_PUSHDATAN
 {
@@ -610,7 +610,7 @@ class TStackOperator_OP_PUSHDATA2 : public TStackOperator_OP_PUSHDATAN
 
 //
 // Class: TStackOperator_OP_PUSHDATA4
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_PUSHDATA4 : public TStackOperator_OP_PUSHDATAN
 {
@@ -641,7 +641,7 @@ class TStackOperator_OP_PUSHDATA4 : public TStackOperator_OP_PUSHDATAN
 
 //
 // Class: TStackOperator_OP_1NEGATE
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_1NEGATE : public TStackOperatorFromOpcode
 {
@@ -655,7 +655,7 @@ class TStackOperator_OP_1NEGATE : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_TRUE
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_TRUE : public TStackOperatorFromOpcode
 {
@@ -669,7 +669,7 @@ class TStackOperator_OP_TRUE : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_NOP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_NOP : public TStackOperatorFromOpcode
 {
@@ -683,7 +683,7 @@ class TStackOperator_OP_NOP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_IF
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_IF : public TStackOperatorFromOpcode
 {
@@ -697,7 +697,7 @@ class TStackOperator_OP_IF : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_NOTIF
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_NOTIF : public TStackOperatorFromOpcode
 {
@@ -711,7 +711,7 @@ class TStackOperator_OP_NOTIF : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_ELSE
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_ELSE : public TStackOperatorFromOpcode
 {
@@ -725,7 +725,7 @@ class TStackOperator_OP_ELSE : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_ENDIF
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_ENDIF : public TStackOperatorFromOpcode
 {
@@ -739,7 +739,7 @@ class TStackOperator_OP_ENDIF : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_VERIFY
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_VERIFY : public TStackOperatorFromOpcode
 {
@@ -753,7 +753,7 @@ class TStackOperator_OP_VERIFY : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_RETURN
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_RETURN : public TStackOperatorFromOpcode
 {
@@ -767,7 +767,7 @@ class TStackOperator_OP_RETURN : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_TOALTSTACK
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_TOALTSTACK : public TStackOperatorFromOpcode
 {
@@ -781,7 +781,7 @@ class TStackOperator_OP_TOALTSTACK : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_FROMALTSTACK
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_FROMALTSTACK : public TStackOperatorFromOpcode
 {
@@ -795,7 +795,7 @@ class TStackOperator_OP_FROMALTSTACK : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_IFDUP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_IFDUP : public TStackOperatorFromOpcode
 {
@@ -809,7 +809,7 @@ class TStackOperator_OP_IFDUP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_DEPTH
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_DEPTH : public TStackOperatorFromOpcode
 {
@@ -823,7 +823,7 @@ class TStackOperator_OP_DEPTH : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_DROP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_DROP : public TStackOperatorFromOpcode
 {
@@ -837,7 +837,7 @@ class TStackOperator_OP_DROP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_DUP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_DUP : public TStackOperatorFromOpcode
 {
@@ -851,7 +851,7 @@ class TStackOperator_OP_DUP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_NIP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_NIP : public TStackOperatorFromOpcode
 {
@@ -865,7 +865,7 @@ class TStackOperator_OP_NIP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_OVER
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_OVER : public TStackOperatorFromOpcode
 {
@@ -879,7 +879,7 @@ class TStackOperator_OP_OVER : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_PICK
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_PICK : public TStackOperatorFromOpcode
 {
@@ -893,7 +893,7 @@ class TStackOperator_OP_PICK : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_ROLL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_ROLL : public TStackOperatorFromOpcode
 {
@@ -907,7 +907,7 @@ class TStackOperator_OP_ROLL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_ROT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_ROT : public TStackOperatorFromOpcode
 {
@@ -921,7 +921,7 @@ class TStackOperator_OP_ROT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_SWAP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_SWAP : public TStackOperatorFromOpcode
 {
@@ -935,7 +935,7 @@ class TStackOperator_OP_SWAP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_TUCK
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_TUCK : public TStackOperatorFromOpcode
 {
@@ -949,7 +949,7 @@ class TStackOperator_OP_TUCK : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_2DROP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_2DROP : public TStackOperatorFromOpcode
 {
@@ -963,7 +963,7 @@ class TStackOperator_OP_2DROP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_2DUP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_2DUP : public TStackOperatorFromOpcode
 {
@@ -977,7 +977,7 @@ class TStackOperator_OP_2DUP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_3DUP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_3DUP : public TStackOperatorFromOpcode
 {
@@ -991,7 +991,7 @@ class TStackOperator_OP_3DUP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_2OVER
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_2OVER : public TStackOperatorFromOpcode
 {
@@ -1005,7 +1005,7 @@ class TStackOperator_OP_2OVER : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_2ROT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_2ROT : public TStackOperatorFromOpcode
 {
@@ -1019,7 +1019,7 @@ class TStackOperator_OP_2ROT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_2SWAP
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_2SWAP : public TStackOperatorFromOpcode
 {
@@ -1033,7 +1033,7 @@ class TStackOperator_OP_2SWAP : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_CAT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_CAT : public TStackOperatorFromOpcode
 {
@@ -1047,7 +1047,7 @@ class TStackOperator_OP_CAT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_SUBSTR
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_SUBSTR : public TStackOperatorFromOpcode
 {
@@ -1061,7 +1061,7 @@ class TStackOperator_OP_SUBSTR : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_LEFT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_LEFT : public TStackOperatorFromOpcode
 {
@@ -1075,7 +1075,7 @@ class TStackOperator_OP_LEFT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_RIGHT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_RIGHT : public TStackOperatorFromOpcode
 {
@@ -1089,7 +1089,7 @@ class TStackOperator_OP_RIGHT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_SIZE
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_SIZE : public TStackOperatorFromOpcode
 {
@@ -1103,7 +1103,7 @@ class TStackOperator_OP_SIZE : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_INVERT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_INVERT : public TStackOperatorFromOpcode
 {
@@ -1117,7 +1117,7 @@ class TStackOperator_OP_INVERT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_AND
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_AND : public TStackOperatorFromOpcode
 {
@@ -1131,7 +1131,7 @@ class TStackOperator_OP_AND : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_OR
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_OR : public TStackOperatorFromOpcode
 {
@@ -1145,7 +1145,7 @@ class TStackOperator_OP_OR : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_XOR
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_XOR : public TStackOperatorFromOpcode
 {
@@ -1159,7 +1159,7 @@ class TStackOperator_OP_XOR : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_EQUAL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_EQUAL : public TStackOperatorFromOpcode
 {
@@ -1173,7 +1173,7 @@ class TStackOperator_OP_EQUAL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_EQUALVERIFY
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_EQUALVERIFY : public TStackOperatorFromCompoundOpcode
 {
@@ -1187,7 +1187,7 @@ class TStackOperator_OP_EQUALVERIFY : public TStackOperatorFromCompoundOpcode
 
 //
 // Class: TStackOperator_OP_1ADD
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_1ADD : public TStackOperatorFromOpcode
 {
@@ -1201,7 +1201,7 @@ class TStackOperator_OP_1ADD : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_1SUB
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_1SUB : public TStackOperatorFromOpcode
 {
@@ -1215,7 +1215,7 @@ class TStackOperator_OP_1SUB : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_2MUL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_2MUL : public TStackOperatorFromOpcode
 {
@@ -1229,7 +1229,7 @@ class TStackOperator_OP_2MUL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_2DIV
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_2DIV : public TStackOperatorFromOpcode
 {
@@ -1243,7 +1243,7 @@ class TStackOperator_OP_2DIV : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_NEGATE
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_NEGATE : public TStackOperatorFromOpcode
 {
@@ -1257,7 +1257,7 @@ class TStackOperator_OP_NEGATE : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_ABS
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_ABS : public TStackOperatorFromOpcode
 {
@@ -1271,7 +1271,7 @@ class TStackOperator_OP_ABS : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_NOT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_NOT : public TStackOperatorFromOpcode
 {
@@ -1285,7 +1285,7 @@ class TStackOperator_OP_NOT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_0NOTEQUAL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_0NOTEQUAL : public TStackOperatorFromOpcode
 {
@@ -1299,7 +1299,7 @@ class TStackOperator_OP_0NOTEQUAL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_ADD
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_ADD : public TStackOperatorFromOpcode
 {
@@ -1313,7 +1313,7 @@ class TStackOperator_OP_ADD : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_SUB
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_SUB : public TStackOperatorFromOpcode
 {
@@ -1327,7 +1327,7 @@ class TStackOperator_OP_SUB : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_MUL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_MUL : public TStackOperatorFromOpcode
 {
@@ -1341,7 +1341,7 @@ class TStackOperator_OP_MUL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_DIV
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_DIV : public TStackOperatorFromOpcode
 {
@@ -1355,7 +1355,7 @@ class TStackOperator_OP_DIV : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_MOD
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_MOD : public TStackOperatorFromOpcode
 {
@@ -1369,7 +1369,7 @@ class TStackOperator_OP_MOD : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_LSHIFT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_LSHIFT : public TStackOperatorFromOpcode
 {
@@ -1383,7 +1383,7 @@ class TStackOperator_OP_LSHIFT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_RSHIFT
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_RSHIFT : public TStackOperatorFromOpcode
 {
@@ -1397,7 +1397,7 @@ class TStackOperator_OP_RSHIFT : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_BOOLAND
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_BOOLAND : public TStackOperatorFromOpcode
 {
@@ -1411,7 +1411,7 @@ class TStackOperator_OP_BOOLAND : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_BOOLOR
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_BOOLOR : public TStackOperatorFromOpcode
 {
@@ -1425,7 +1425,7 @@ class TStackOperator_OP_BOOLOR : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_NUMEQUAL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_NUMEQUAL : public TStackOperatorFromOpcode
 {
@@ -1439,7 +1439,7 @@ class TStackOperator_OP_NUMEQUAL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_NUMEQUALVERIFY
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_NUMEQUALVERIFY : public TStackOperatorFromCompoundOpcode
 {
@@ -1453,7 +1453,7 @@ class TStackOperator_OP_NUMEQUALVERIFY : public TStackOperatorFromCompoundOpcode
 
 //
 // Class: TStackOperator_OP_NUMNOTEQUAL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_NUMNOTEQUAL : public TStackOperatorFromOpcode
 {
@@ -1467,7 +1467,7 @@ class TStackOperator_OP_NUMNOTEQUAL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_LESSTHAN
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_LESSTHAN : public TStackOperatorFromOpcode
 {
@@ -1481,7 +1481,7 @@ class TStackOperator_OP_LESSTHAN : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_GREATERTHAN
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_GREATERTHAN : public TStackOperatorFromOpcode
 {
@@ -1495,7 +1495,7 @@ class TStackOperator_OP_GREATERTHAN : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_LESSTHANOREQUAL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_LESSTHANOREQUAL : public TStackOperatorFromOpcode
 {
@@ -1509,7 +1509,7 @@ class TStackOperator_OP_LESSTHANOREQUAL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_GREATERTHANOREQUAL
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_GREATERTHANOREQUAL : public TStackOperatorFromOpcode
 {
@@ -1523,7 +1523,7 @@ class TStackOperator_OP_GREATERTHANOREQUAL : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_MIN
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_MIN : public TStackOperatorFromOpcode
 {
@@ -1537,7 +1537,7 @@ class TStackOperator_OP_MIN : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_MAX
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_MAX : public TStackOperatorFromOpcode
 {
@@ -1551,7 +1551,7 @@ class TStackOperator_OP_MAX : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_WITHIN
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_WITHIN : public TStackOperatorFromOpcode
 {
@@ -1565,7 +1565,7 @@ class TStackOperator_OP_WITHIN : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_CryptographicDigest
-// Desciption:
+// Description:
 //
 class TStackOperator_CryptographicDigest : public TStackOperatorFromOpcode
 {
@@ -1580,7 +1580,7 @@ class TStackOperator_CryptographicDigest : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_RIPEMD160
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_RIPEMD160 : public TStackOperator_CryptographicDigest
 {
@@ -1595,7 +1595,7 @@ class TStackOperator_OP_RIPEMD160 : public TStackOperator_CryptographicDigest
 
 //
 // Class: TStackOperator_OP_SHA1
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_SHA1 : public TStackOperator_CryptographicDigest
 {
@@ -1610,7 +1610,7 @@ class TStackOperator_OP_SHA1 : public TStackOperator_CryptographicDigest
 
 //
 // Class: TStackOperator_OP_SHA256
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_SHA256 : public TStackOperator_CryptographicDigest
 {
@@ -1625,7 +1625,7 @@ class TStackOperator_OP_SHA256 : public TStackOperator_CryptographicDigest
 
 //
 // Class: TStackOperator_OP_HASH160
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_HASH160 : public TStackOperator_CryptographicDigest
 {
@@ -1640,7 +1640,7 @@ class TStackOperator_OP_HASH160 : public TStackOperator_CryptographicDigest
 
 //
 // Class: TStackOperator_OP_HASH256
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_HASH256 : public TStackOperator_CryptographicDigest
 {
@@ -1655,7 +1655,7 @@ class TStackOperator_OP_HASH256 : public TStackOperator_CryptographicDigest
 
 //
 // Class: TStackOperator_OP_CODESEPARATOR
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_CODESEPARATOR : public TStackOperatorFromOpcode
 {
@@ -1669,7 +1669,7 @@ class TStackOperator_OP_CODESEPARATOR : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_CHECKSIG
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_CHECKSIG : public TStackOperatorFromCompoundOpcode
 {
@@ -1683,7 +1683,7 @@ class TStackOperator_OP_CHECKSIG : public TStackOperatorFromCompoundOpcode
 
 //
 // Class: TStackOperator_OP_CHECKSIGVERIFY
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_CHECKSIGVERIFY : public TStackOperatorFromCompoundOpcode
 {
@@ -1697,7 +1697,7 @@ class TStackOperator_OP_CHECKSIGVERIFY : public TStackOperatorFromCompoundOpcode
 
 //
 // Class: TStackOperator_OP_CHECKMULTISIG
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_CHECKMULTISIG : public TStackOperatorFromOpcode
 {
@@ -1711,7 +1711,7 @@ class TStackOperator_OP_CHECKMULTISIG : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_CHECKMULTISIGVERIFY
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_CHECKMULTISIGVERIFY : public TStackOperatorFromCompoundOpcode
 {
@@ -1743,7 +1743,7 @@ class TStackOperatorTemplate : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_PUBKEYHASH
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_PUBKEYHASH : public TStackOperatorTemplate
 {
@@ -1755,7 +1755,7 @@ class TStackOperator_OP_PUBKEYHASH : public TStackOperatorTemplate
 
 //
 // Class: TStackOperator_OP_PUBKEY
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_PUBKEY : public TStackOperatorTemplate
 {
@@ -1767,7 +1767,7 @@ class TStackOperator_OP_PUBKEY : public TStackOperatorTemplate
 
 //
 // Class: TStackOperator_OP_RESERVED
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_RESERVED : public TStackOperatorFromOpcode
 {
@@ -1781,7 +1781,7 @@ class TStackOperator_OP_RESERVED : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_VER
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_VER : public TStackOperatorFromOpcode
 {
@@ -1795,7 +1795,7 @@ class TStackOperator_OP_VER : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_VERIF
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_VERIF : public TStackOperatorFromOpcode
 {
@@ -1809,7 +1809,7 @@ class TStackOperator_OP_VERIF : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_VERNOTIF
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_VERNOTIF : public TStackOperatorFromOpcode
 {
@@ -1823,7 +1823,7 @@ class TStackOperator_OP_VERNOTIF : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_RESERVED1
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_RESERVED1 : public TStackOperatorFromOpcode
 {
@@ -1837,7 +1837,7 @@ class TStackOperator_OP_RESERVED1 : public TStackOperatorFromOpcode
 
 //
 // Class: TStackOperator_OP_RESERVED2
-// Desciption:
+// Description:
 //
 class TStackOperator_OP_RESERVED2 : public TStackOperatorFromOpcode
 {
@@ -1970,7 +1970,7 @@ class TStackOperator_OP_NOP_N : public TStackOperatorFromOpcodes
 
 //
 // Class: TStackOperatorInternal
-// Desciption:
+// Description:
 //
 class TStackOperatorInternal : public TStackOperator
 {
@@ -1980,7 +1980,7 @@ class TStackOperatorInternal : public TStackOperator
 
 //
 // Class: TStackOperator_INTOP_PUSHSUBSCRIPT
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_PUSHSUBSCRIPT : public TStackOperatorInternal
 {
@@ -1993,7 +1993,7 @@ class TStackOperator_INTOP_PUSHSUBSCRIPT : public TStackOperatorInternal
 
 //
 // Class: TStackOperator_INTOP_DELETESIG
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_DELETESIG : public TStackOperatorInternal
 {
@@ -2006,7 +2006,7 @@ class TStackOperator_INTOP_DELETESIG : public TStackOperatorInternal
 
 //
 // Class: TStackOperator_INTOP_REMOVEHASHTYPE
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_REMOVEHASHTYPE : public TStackOperatorInternal
 {
@@ -2019,7 +2019,7 @@ class TStackOperator_INTOP_REMOVEHASHTYPE : public TStackOperatorInternal
 
 //
 // Class: TStackOperator_INTOP_PUSHCOPYTRANSACTION
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_PUSHCOPYTRANSACTION : public TStackOperatorInternal
 {
@@ -2032,7 +2032,7 @@ class TStackOperator_INTOP_PUSHCOPYTRANSACTION : public TStackOperatorInternal
 
 //
 // Class: TStackOperator_INTOP_REMOVECODESEPARATORS
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_REMOVECODESEPARATORS : public TStackOperatorInternal
 {
@@ -2045,7 +2045,7 @@ class TStackOperator_INTOP_REMOVECODESEPARATORS : public TStackOperatorInternal
 
 //
 // Class: TStackOperator_INTOP_REMOVETXSCRIPTS
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_REMOVETXSCRIPTS : public TStackOperatorInternal
 {
@@ -2058,7 +2058,7 @@ class TStackOperator_INTOP_REMOVETXSCRIPTS : public TStackOperatorInternal
 
 //
 // Class: TStackOperator_INTOP_REPLACETXSCRIPT
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_REPLACETXSCRIPT : public TStackOperatorInternal
 {
@@ -2071,7 +2071,7 @@ class TStackOperator_INTOP_REPLACETXSCRIPT : public TStackOperatorInternal
 
 //
 // Class: TStackOperator_INTOP_SIGHASH
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_SIGHASH : public TStackOperatorInternal
 {
@@ -2084,7 +2084,7 @@ class TStackOperator_INTOP_SIGHASH : public TStackOperatorInternal
 
 //
 // Class: TStackOperator_INTOP_FINALSIGNATURE
-// Desciption:
+// Description:
 //
 class TStackOperator_INTOP_FINALSIGNATURE : public TStackOperatorInternal
 {
