@@ -147,6 +147,10 @@ void TMessageBasedBlock::updateFromMessage( const TBitcoinHash &hash, const TMes
 
 	// Invalidate any cached hash
 	flush();
+
+	// If the hash doesn't verify, it doesn't get in the chain
+	if( getHash() != hash )
+		throw block_chain_error_hash();
 }
 
 //
@@ -259,7 +263,12 @@ void TBlockPool::receiveBlock( const TBitcoinHash &NetworkHash, const TMessage_b
 	// Show it the message (this allows it to calculate its hash), and
 	// throw an exception if the network hash doesn't equal the
 	// calculated hash
-	thisBlock->updateFromMessage( NetworkHash, message );
+	try {
+		thisBlock->updateFromMessage( NetworkHash, message );
+	} catch( ... ) {
+		delete thisBlock;
+		throw;
+	}
 
 	// See if we already have this block
 	TBlock *existingBlock = getBlock( thisBlock->getHash() );

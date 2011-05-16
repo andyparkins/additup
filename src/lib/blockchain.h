@@ -69,6 +69,40 @@ class TMessage_headers;
 // -------------- Class declarations
 
 //
+// Class: block_chain_error
+// Description:
+//
+class block_chain_error : public runtime_error
+{
+  public:
+	explicit block_chain_error( const string &s ) :
+		runtime_error(s) {}
+};
+
+class block_chain_error_hash : public block_chain_error
+{
+  public:
+	block_chain_error_hash() :
+		block_chain_error("block hash mismatch") {}
+};
+
+class block_chain_error_type : public block_chain_error
+{
+  public:
+	block_chain_error_type() :
+		block_chain_error("block type wrong") {}
+};
+
+class block_chain_error_version : public block_chain_error
+{
+  public:
+	block_chain_error_version() :
+		block_chain_error("block version too old") {}
+};
+
+// -------------
+
+//
 // Class:	TBlock
 // Description:
 //
