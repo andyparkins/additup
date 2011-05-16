@@ -27,6 +27,7 @@
 // --- Project
 #include "peer.h"
 #include "hashtypes.h"
+#include "messageelements.h"
 
 
 // -------------- Namespace
@@ -91,6 +92,16 @@ class TNetworkParameters
 	// with the offical constants.
 	unsigned int COINBASE_MATURITY;
 	unsigned int MAX_BLOCK_SIZE;
+	unsigned int MAX_BLOCK_SIZE_GEN;
+	unsigned int MAX_BLOCK_SIGOPS;
+	unsigned int MINIMUM_TRANSACTION_SIZE;
+	TCoinsElement MIN_MONEY;
+	TCoinsElement MAX_MONEY;
+	TCoinsElement MIN_TX_FEE;
+
+	// Some of my own in the same style, but not from the official
+	// client
+	unsigned int BLOCK_TIMESTAMP_WINDOW;
 
 	// I am treating these following values as constants, as I think
 	// they are fundamental rather than arbitrary choices.

@@ -72,9 +72,20 @@ TNetworkParameters::TNetworkParameters() :
 	// easiest, which is 256 bits of ones.
 	ProofOfWorkLimit = (TBitcoinHash(1) << (256)) - 1;
 
-	// Default to something sensible
-	COINBASE_MATURITY = 1;
-	MAX_BLOCK_SIZE = 1 << 31;
+	// Default to something sensible (from official client)
+	COINBASE_MATURITY = 100;
+
+	MAX_BLOCK_SIZE = 1000000;
+	MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
+	MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
+
+	MINIMUM_TRANSACTION_SIZE = 100;
+
+	MIN_TX_FEE.setValue(0,50000);
+	MIN_MONEY.setValue(0,0);
+	MAX_MONEY.setValue(21000000,0);
+
+	BLOCK_TIMESTAMP_WINDOW = 2 * 60 * 60;
 }
 
 
