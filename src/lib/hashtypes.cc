@@ -14,7 +14,7 @@
 // ----------------------------------------------------------------------------
 
 // Module include
-#include "base58.h"
+#include "hashtypes.h"
 
 // -------------- Includes
 // --- C
@@ -63,7 +63,7 @@ unsigned int TBitcoinBase58::fromCharacter( unsigned int ch, unsigned int Base )
 	static const unsigned int INVALID = static_cast<unsigned int>(-1);
 
 	if( Base != 58 )
-		return TBigInteger::fromCharacter( ch, Base );
+		return TBigUnsignedInteger::fromCharacter( ch, Base );
 
 	if( ch >= '+' && ch-'+' <= sizeof(ASCIIToBase58) ) {
 		ch = ASCIIToBase58[ch-'+'];
@@ -87,7 +87,7 @@ unsigned int TBitcoinBase58::toCharacter( unsigned int ch, unsigned int Base ) c
 	static const unsigned int INVALID = static_cast<unsigned int>(-1);
 
 	if( Base != 58 )
-		return TBigInteger::toCharacter( ch, Base );
+		return TBigUnsignedInteger::toCharacter( ch, Base );
 
 	if( ch <= sizeof(Base58ToASCII) ) {
 		ch = Base58ToASCII[ch];
@@ -110,10 +110,47 @@ ostream &TBitcoinBase58::printOn( ostream &s ) const
 	}
 
 	if( s.flags() & ostream::hex ) {
-		TBigInteger::printOn(s);
+		TBigUnsignedInteger::printOn(s);
 	} else {
 		s << toString(58);
 	}
+
+	return s;
+}
+
+// ------
+
+//
+// Function:	TBitcoinHash :: stringPad
+// Description:
+//
+string TBitcoinHash::stringPad( const string &s, unsigned int ) const
+{
+	if( s.size() < 32*2 ) {
+		string pad;
+		pad.assign( 32*2 - s.size(), '0' );
+		return pad + s;
+	} else if( s.size() > 32*2 ) {
+		throw logic_error( "TBitcoinHashes can't be more than 32 bytes" );
+	} else {
+		return s;
+	}
+}
+
+//
+// Function:	TBitcoinHash :: printOn
+// Description:
+//
+ostream &TBitcoinHash::printOn( ostream &s ) const
+{
+	if( !isValid() ) {
+		s << "!INVALID!";
+		return s;
+	}
+
+	// Force the use of string pad by calling it even for hex (which the
+	// base class doesn't do)
+	s << toString(16);
 
 	return s;
 }
@@ -151,6 +188,19 @@ int main( int argc, char *argv[] )
 		k++;
 		cerr << "k = " << k << "; 0x" << hex << k << dec << endl;
 		cerr << "l = " << l << "; 0x" << hex << l << dec << endl;
+	} catch( exception &e ) {
+		cerr << e.what() << endl;
+		return 255;
+	}
+
+	try {
+		cerr << "Testing constructors and initialisation" << endl;
+
+		TBitcoinHash i("0"); // 0x94a00911
+		TBitcoinHash j("ffffffffffffffffffffffffffffffffffffffffffffffffff");
+
+		cerr << "i = " << i << endl;
+		cerr << "j = " << j << endl;
 	} catch( exception &e ) {
 		cerr << e.what() << endl;
 		return 255;

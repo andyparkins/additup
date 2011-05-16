@@ -1,6 +1,6 @@
 // ----------------------------------------------------------------------------
 // Project: library
-/// @file   base58.h
+/// @file   hashtypes.h
 /// @author Andy Parkins
 //
 // Version Control
@@ -14,8 +14,8 @@
 // ----------------------------------------------------------------------------
 
 // Catch multiple includes
-#ifndef BASE58_H
-#define BASE58_H
+#ifndef HASHTYPES_H
+#define HASHTYPES_H
 
 // -------------- Includes
 // --- C
@@ -60,7 +60,7 @@
 
 // -------------- Class declarations
 
-class TBitcoinBase58 : public TBigInteger
+class TBitcoinBase58 : public TBigUnsignedInteger
 {
   public:
 	TBitcoinBase58( const TBitcoinBase58 &O ) { operator=(O); }
@@ -71,6 +71,28 @@ class TBitcoinBase58 : public TBigInteger
   protected:
 	unsigned int fromCharacter( unsigned int, unsigned int ) const;
 	unsigned int toCharacter( unsigned int, unsigned int ) const;
+};
+
+//
+// Class:	TBitcoinHash
+// Description:
+//
+class TBitcoinHash : public TBigUnsignedInteger
+{
+  public:
+	TBitcoinHash() { invalidate(); }
+	TBitcoinHash( const TBigUnsignedInteger &O ) { operator=(O); }
+	TBitcoinHash( const TBitcoinHash &O ) { operator=(O); }
+	TBitcoinHash( const string &s ) { fromString(s,16); }
+	TBitcoinHash( int t ) : TBigUnsignedInteger(t) {}
+
+	ostream &printOn( ostream &s ) const;
+
+	// Import operators masked by C++ defaults
+	using TBigUnsignedInteger::operator=;
+
+  protected:
+	string stringPad( const string &, unsigned int ) const;
 };
 
 
