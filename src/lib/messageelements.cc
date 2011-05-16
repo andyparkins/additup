@@ -231,7 +231,7 @@ const TBitcoinHash &TTransactionElement::getHash() const
 //		<< "; Ni=" << Inputs.size()
 //		<< "; {";
 //	for(unsigned int i = 0; i < Inputs.size(); i++ ) {
-//		log() << i << ":" << hex << Inputs[i].OutPoint.TransactionHash.get() << dec
+//		log() << i << ":" << Inputs[i].OutPoint.TransactionHash.get()
 //			<< "." << (int)(Inputs[i].OutPoint.Index)
 //			<< " ";
 //	}
@@ -280,7 +280,7 @@ const TBitcoinHash &TTransactionElement::getHash() const
 	// 94eb174e84c47eb5
 	// 52672f766d9d8236
 //	log() << __PRETTY_FUNCTION__ << " big integer ";
-//	log() << hex << cachedHash << dec;
+//	log() << cachedHash;
 //	log() << endl;
 
 	return cachedHash;

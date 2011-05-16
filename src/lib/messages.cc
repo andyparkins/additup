@@ -776,11 +776,11 @@ ostream &TMessage_block::printOn( ostream &s ) const
 	s << "; Merkle=[";
 	vector<TBitcoinHash>::const_iterator it;
 	for( it = MerkleTree.begin(); it != MerkleTree.end(); it++ )
-		s << hex << (*it) << dec << ", ";
+		s << (*it) << ", ";
 	s << "]";
 	s << "; TX=[";
 	for( unsigned int i = 0; i < Transactions.size(); i++ ) {
-		s << hex << Transactions[i].getHash() << dec << ", ";
+		s << Transactions[i].getHash() << ", ";
 	}
 	s << "]";
 	s << " }";

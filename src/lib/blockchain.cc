@@ -186,7 +186,7 @@ const TBitcoinHash &TMessageBasedBlock::getParentHash() const
 //
 ostream &TMessageBasedBlock::printOn( ostream &os ) const
 {
-	os << "Hash: " << hex << getHash() << dec << endl;
+	os << "Hash: " << getHash() << endl;
 	os << "Message: ";
 	os << *Message;
 	os << endl;
