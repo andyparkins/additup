@@ -1302,7 +1302,7 @@ TGenericBigInteger<tLittleInteger>::blockShiftRight( tIndex b )
 	}
 
 	while( itB != LittleDigits.end() ) {
-		cerr << *this << endl;
+//		cerr << *this << endl;
 		*itA = *itB;
 		itA++;
 		itB++;
