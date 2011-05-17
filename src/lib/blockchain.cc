@@ -71,6 +71,7 @@ void TBlock::registerChild( TBlock *Child )
 //
 // Function:	TBlock :: validate
 // Description:
+// Without reference to other blocks, see if the block looks reasonable.
 //
 void TBlock::validate( const TBitcoinHash &hash ) const
 {
@@ -114,11 +115,16 @@ void TBlock::validate( const TBitcoinHash &hash ) const
 		if( getTimestamp() > Network->getNetworkTime() + Network->getNetworkParameters()->BLOCK_TIMESTAMP_WINDOW )
 			throw block_chain_error_prescient();
 	}
+
+	// Check transactions
+	// GetSigOpCount() > MAX_BLOCK_SIGOPS
+	// Merkleroot
 }
 
 //
 // Function:	TBlock :: fit
 // Description:
+// Like validate() but reference to other blocks is allowed
 //
 void TBlock::fit()
 {
@@ -141,6 +147,11 @@ void TBlock::fit()
 
 	// We are a child of our parent, tell it so
 	Parent->registerChild( this );
+
+	// AcceptBlock
+	//  - nBits != GetNextWorkRequired(pindexPrev)
+	//  - GetBlockTime() <= pindexPrev->GetMedianTimePast()
+	//  - Checkpoint
 }
 
 //
