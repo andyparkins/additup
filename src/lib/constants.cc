@@ -60,6 +60,15 @@ class TPredefinedNetworkParameters : public TNetworkParameters
 	}
 	const char *className() const { return "TPredefinedNetworkParameters"; }
 
+	unsigned int limitDifficultyTimespan( unsigned int ObservedTimespan ) const {
+		if( ObservedTimespan < DIFFICULTY_TIMESPAN / 4 ) {
+			return DIFFICULTY_TIMESPAN / 4;
+		} else if( ObservedTimespan > DIFFICULTY_TIMESPAN * 4 ) {
+			return DIFFICULTY_TIMESPAN * 4;
+		}
+		return ObservedTimespan;
+	}
+
   protected:
 	void configureGenesisMessage( TMessage_block & ) const;
 

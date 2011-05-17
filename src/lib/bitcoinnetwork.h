@@ -78,6 +78,8 @@ class TNetworkParameters
 
 	unsigned int DifficultyUpdateInterval() const { return DIFFICULTY_TIMESPAN / NEW_BLOCK_PERIOD; }
 
+	virtual unsigned int limitDifficultyTimespan( unsigned int ) const = 0;
+
   public:
 	uint32_t ProtocolVersion;
 	TBlock *GenesisBlock;
