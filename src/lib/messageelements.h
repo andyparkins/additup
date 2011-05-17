@@ -562,6 +562,14 @@ class TDifficultyTargetElement : public TMessageElement
 		return t;
 	}
 	void setTarget( uint32_t m, uint8_t e ) { Mantissa = m; Exponent = e; }
+	void setTarget( const TBitcoinHash & );
+
+	bool operator==( const TDifficultyTargetElement &dt ) const {
+		return dt.Mantissa.getValue() == Mantissa.getValue()
+			&& dt.Exponent.getValue() == Exponent.getValue();
+	}
+	bool operator==( const TBitcoinHash & ) const;
+	bool operator!=( const TBitcoinHash &h ) const { return !operator==(h); }
 
   public:
 	TLittleEndian24Element Mantissa;

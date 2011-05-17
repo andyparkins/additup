@@ -186,6 +186,51 @@ ostream &TAutoSizeIntegerElement::write( ostream &os ) const
 }
 
 //
+// Function:	TDifficultyTargetElement :: setTarget
+// Description:
+//
+void TDifficultyTargetElement::setTarget( const TBitcoinHash &Target )
+{
+	unsigned int highbit = Target.highestBit();
+
+//	cerr << "highbit = " << highbit << " -> ";
+
+	// The compact representation bizarrely uses a byte-based exponent,
+	// which means we can't address bits, only bytes.  We round up to
+	// the nearest byte.
+	highbit /= 8;
+	highbit += 1;
+	highbit *= 8;
+	// We're keeping the top three bytes, so reduce highbit by 24 bits
+	highbit -= 8*3;
+
+//	cerr << highbit << endl;
+
+//	cerr << Target << " -> " << (Target >> highbit) << endl;
+
+	// Extract those most significant three bytes
+	Mantissa = (Target >> highbit).getBlock(0);
+	// The exponent is stored as byte shifts offset by three.
+	Exponent = (highbit / 8) + 3;
+
+//	cerr << "Mantissa = " << Mantissa.getValue() << " comp " << CompMantissa << endl;
+//	cerr << "Exponent = " << (unsigned int)(Exponent.getValue()) << " comp " << CompExponent << endl;
+}
+
+//
+// Function:	TDifficultyTargetElement :: operator==
+// Description:
+//
+bool TDifficultyTargetElement::operator==( const TBitcoinHash &Target ) const
+{
+	TDifficultyTargetElement x;
+
+	x.setTarget( Target );
+
+	return (*this == x);
+}
+
+//
 // Function:	TInputSplitElement :: encodeSignatureScript
 // Description:
 //
@@ -356,6 +401,23 @@ int main( int argc, char *argv[] )
 
 			p++;
 		}
+
+	} catch( exception &e ) {
+		log() << e.what() << endl;
+		return 255;
+	}
+
+	try {
+		TDifficultyTargetElement dt;
+		TBitcoinHash target("00000000000404CB123456789012345678901234567890123456789012345678");
+		TBitcoinHash nottarget("000000000000504CB12345678901234567890123456789012345678901234567");
+
+		dt.setTarget(0x0404cb, 0x1b);
+
+		if( dt != target )
+			throw logic_error( "Compact target representation wrong (!=)" );
+		if( dt == nottarget )
+			throw logic_error( "Compact target representation wrong (==)" );
 
 	} catch( exception &e ) {
 		log() << e.what() << endl;
