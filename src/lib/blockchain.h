@@ -101,6 +101,13 @@ class block_chain_error_no_proof_of_work : public block_chain_error
 		block_chain_error("block hash was easier than claimed difficulty") {}
 };
 
+class block_chain_error_prescient : public block_chain_error
+{
+  public:
+	block_chain_error_prescient() :
+		block_chain_error("block is timestamped in the future") {}
+};
+
 class block_chain_error_type : public block_chain_error
 {
   public:
@@ -132,6 +139,7 @@ class TBlock
 	virtual const TBitcoinHash &getHash() const = 0;
 	virtual const TBitcoinHash &getParentHash() const = 0;
 	virtual TBitcoinHash getClaimedDifficulty() const = 0;
+	virtual time_t getTimestamp() const = 0;
 	virtual void registerChild( TBlock * );
 
 	void fit();
@@ -167,6 +175,7 @@ class TMessageBasedBlock : public TBlock
 	const TBitcoinHash &getHash() const;
 	const TBitcoinHash &getParentHash() const;
 	TBitcoinHash getClaimedDifficulty() const;
+	time_t getTimestamp() const;
 
 	void flush() { cachedHash.invalidate(); }
 

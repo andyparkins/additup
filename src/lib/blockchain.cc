@@ -109,6 +109,10 @@ void TBlock::validate( const TBitcoinHash &hash ) const
 		// upper limit
 		if( getClaimedDifficulty() > Network->getNetworkParameters()->ProofOfWorkLimit )
 			throw block_chain_error_too_easy();
+
+		// The block can't be too far in the future
+		if( getTimestamp() > Network->getNetworkTime() + Network->getNetworkParameters()->BLOCK_TIMESTAMP_WINDOW )
+			throw block_chain_error_prescient();
 	}
 }
 
@@ -246,6 +250,15 @@ const TBitcoinHash &TMessageBasedBlock::getParentHash() const
 TBitcoinHash TMessageBasedBlock::getClaimedDifficulty() const
 {
 	return Message->blockHeader().DifficultyBits.getTarget();
+}
+
+//
+// Function:	TMessageBasedBlock :: getTimestamp
+// Description:
+//
+time_t TMessageBasedBlock::getTimestamp() const
+{
+	return Message->blockHeader().Timestamp.getValue();
 }
 
 //
