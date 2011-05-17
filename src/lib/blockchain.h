@@ -143,6 +143,9 @@ class TBlock
 	virtual ostream &printOn( ostream & ) const = 0;
 
   protected:
+	void validate( const TBitcoinHash & ) const;
+
+  protected:
 	TBlockPool *Pool;
 
 	TBlock *Parent;
