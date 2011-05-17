@@ -139,6 +139,18 @@ void TBlock::fit()
 	Parent->registerChild( this );
 }
 
+//
+// Function:	TBlock :: printOn
+// Description:
+//
+ostream &TBlock::printOn( ostream &os ) const
+{
+	os << "Hash       : " << getHash() << endl;
+	os << "Difficulty : " << getClaimedDifficulty() << endl;
+
+	return os;
+}
+
 // ---------
 
 //
@@ -242,8 +254,8 @@ TBitcoinHash TMessageBasedBlock::getClaimedDifficulty() const
 //
 ostream &TMessageBasedBlock::printOn( ostream &os ) const
 {
-	os << "Hash: " << getHash() << endl;
-	os << "Message: ";
+	TBlock::printOn(os);
+	os << "Message    : ";
 	os << *Message;
 	os << endl;
 
