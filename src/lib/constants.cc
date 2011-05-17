@@ -270,6 +270,15 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		// see in the block chain
 		GenesisBlock = new TMessageBasedBlock( NULL );
 		GenesisBlock->updateFromMessage( GenesisHash, &message );
+
+		// Checkpoints from official client
+		Checkpoints[ 11111] = TBitcoinHash("0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d");
+		Checkpoints[ 33333] = TBitcoinHash("000000002dd5588a74784eaa7ab0507a18ad16a236e7b1ce69f00d7ddfb5d0a6");
+		Checkpoints[ 68555] = TBitcoinHash("00000000001e1b4903550a0b96e9a9405c8a95f387162e4944e8d9fbe501cd6a");
+		Checkpoints[ 70567] = TBitcoinHash("00000000006a49b14bcf27462068f1264c961f11fa2e0eddd2be0791e1d4124a");
+		Checkpoints[ 74000] = TBitcoinHash("0000000000573993a3c9e41ce34471c079dcf5f52a0e824a81e7f953b8661a20");
+		Checkpoints[105000] = TBitcoinHash("00000000000291ce28027faea320c8d2b054b2e0fe44a773f3eefb151d6bdc97");
+		Checkpoints[118000] = TBitcoinHash("000000000000774a7f8a7a12dc906ddb9e17e75d684f15e00f8767f9e8f36553");
 	}
 	const char *className() const { return "TProdnetNetworkParameters"; }
 };

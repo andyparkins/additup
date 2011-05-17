@@ -21,6 +21,7 @@
 // --- C
 // --- C++
 #include <list>
+#include <map>
 // --- Qt
 // --- OS
 // --- Project lib
@@ -112,6 +113,9 @@ class TNetworkParameters
 	unsigned int BLOCK_TIMESTAMP_WINDOW;
 	unsigned int DIFFICULTY_TIMESPAN;
 	unsigned int NEW_BLOCK_PERIOD;
+
+	// Checkpoints
+	map<unsigned int, TBitcoinHash> Checkpoints;
 
 	// I am treating these following values as constants, as I think
 	// they are fundamental rather than arbitrary choices.
