@@ -1294,6 +1294,7 @@ TGenericBigInteger<tLittleInteger>::blockShiftRight( tIndex b )
 	itA = LittleDigits.begin();
 	itB = LittleDigits.begin();
 
+	// Point b blocks more significant
 	itB += b;
 	if( itB == LittleDigits.end() ) {
 		LittleDigits.clear();
@@ -1308,8 +1309,8 @@ TGenericBigInteger<tLittleInteger>::blockShiftRight( tIndex b )
 		itB++;
 	}
 
-	// Remove the last element
-	LittleDigits.pop_back();
+	// Remove b elements, as we've read them they can be discarded
+	LittleDigits.erase( itA, LittleDigits.end() );
 
 	return *this;
 }
@@ -1996,10 +1997,21 @@ int main( int argc, char *argv[] )
 		TBigInteger biggest( 0x1000000, 0x00000000, 0x00000000, 0x00000000 );
 		k = biggest / 64;
 		j = biggest % 64;
-		log() << "64bit: " << biggest << " / 64 = " << k << " r " << j << endl;
+		log() << "128bit: " << biggest << " / 64 = " << k << " r " << j << endl;
 		// 0xffffffffdddddddd / 10 = 0x19999999962fc962 r 9
 		if( j != 0 || k != TBigInteger(0x40000,0x00000000,0x00000000,0x00000000) )
-			throw logic_error( "64bit divide incorrect" );
+			throw logic_error( "128bit divide incorrect" );
+
+		// Bit shift
+		k = biggest >> (32*3);
+		log() << "128bit: " << biggest << " >> " << (32*3) << " = " << k << endl;
+		if( k != TBigInteger( 0x1000000 ) )
+			throw logic_error( "128bit shift right incorrect" );
+		k.fromString("00000000000404cb123456789012345678901234567890123456789012345678", 16);
+		j = k >> 192;
+		log() << "256bit: " << k << " >> 192" << " = " << j << endl;
+		if( j != TBigInteger("0404cb",16) )
+			throw logic_error( "256bit shift right incorrect" );
 
 		log() << dec;
 
