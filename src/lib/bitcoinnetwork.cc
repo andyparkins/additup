@@ -63,9 +63,7 @@ TNetworkParameters::TNetworkParameters() :
 	ProtocolVersion(0),
 	DefaultTCPPort(0),
 	Magic(0),
-	BitcoinAddressPrefix(0),
-	DifficultyIncreaseSpacing(0),
-	TargetDifficultyIncreaseTime(0)
+	BitcoinAddressPrefix(0)
 {
 	// Zero for proof of work limit is actually the hardest possible
 	// difficulty (if not impossible, as SHA256 won't produce a zero
@@ -87,6 +85,9 @@ TNetworkParameters::TNetworkParameters() :
 	MAX_MONEY.setValue(21000000,0);
 
 	BLOCK_TIMESTAMP_WINDOW = 2 * 60 * 60;
+	DIFFICULTY_TIMESPAN = 14 * 24 * 60 * 60;
+	NEW_BLOCK_PERIOD = 10 * 60;
+//	DifficultyIncreaseSpacing = DIFFICULTY_TIMESPAN / NEW_BLOCK_PERIOD
 }
 
 // -----------

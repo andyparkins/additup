@@ -76,14 +76,15 @@ class TNetworkParameters
 	TNetworkParameters();
 	virtual const char *className() const { return "TNetworkParameters"; }
 
+	unsigned int DifficultyUpdateInterval() const { return DIFFICULTY_TIMESPAN / NEW_BLOCK_PERIOD; }
+
+  public:
 	uint32_t ProtocolVersion;
 	TBlock *GenesisBlock;
 	TBitcoinHash ProofOfWorkLimit;
 	uint16_t DefaultTCPPort;
 	uint32_t Magic;
 	uint8_t BitcoinAddressPrefix;
-	unsigned int DifficultyIncreaseSpacing;
-	unsigned int TargetDifficultyIncreaseTime;
 
 	// The official client defines these as constants, I think they're
 	// better as network parameters, as they are pretty much arbitrarily
@@ -99,9 +100,12 @@ class TNetworkParameters
 	TCoinsElement MAX_MONEY;
 	TCoinsElement MIN_TX_FEE;
 
-	// Some of my own in the same style, but not from the official
+	// Some of my own in the same style, but supplied as literals
+	// instead of constants in the official
 	// client
 	unsigned int BLOCK_TIMESTAMP_WINDOW;
+	unsigned int DIFFICULTY_TIMESPAN;
+	unsigned int NEW_BLOCK_PERIOD;
 
 	// I am treating these following values as constants, as I think
 	// they are fundamental rather than arbitrary choices.
