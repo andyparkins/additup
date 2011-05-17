@@ -155,8 +155,8 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 		DefaultTCPPort = 18333;
 		Magic = 0xdab5bffa;
 		BitcoinAddressPrefix = 111;
-		// 228 bits of 1
-		ProofOfWorkLimit = (TBitcoinHash(1) << 228) - 1;
+		// From Java client: 230 bits of 1
+		ProofOfWorkLimit = (TBitcoinHash(1) << 231) - 1;
 
 		// Genesis block
 		TMessage_block message;
@@ -199,8 +199,11 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		DefaultTCPPort = 8333;
 		Magic = 0xd9b4bef9;
 		BitcoinAddressPrefix = 0;
-		// 228 bits of 1
-		ProofOfWorkLimit = (TBitcoinHash(1) << 228) - 1;
+
+		// Official client:
+		// "CBigNum bnProofOfWorkLimit(~uint256(0) >> 32);"
+		// 256-32 is 224
+		ProofOfWorkLimit = (TBitcoinHash(1) << 225) - 1;
 
 		// Genesis block
 		TMessage_block message;
