@@ -564,6 +564,7 @@ class TMessage_tx : public TMessageWithChecksum
   public:
 	const char *className() const { return "TMessage_tx"; }
 	TMessage *clone() const { return new TMessage_tx(*this); }
+	virtual uint32_t minimumSupportedVersion() const { return 1; }
 
 	istream &read( istream &is ) {
 		TMessageWithChecksum::read(is);
@@ -595,6 +596,7 @@ class TMessage_block : public TMessageWithChecksum
   public:
 	const char *className() const { return "TMessage_block"; }
 	TMessage *clone() const { return new TMessage_block(*this); }
+	virtual uint32_t minimumSupportedVersion() const { return 1; }
 
 	istream &read( istream &is ) {
 		TMessageWithChecksum::read(is);
