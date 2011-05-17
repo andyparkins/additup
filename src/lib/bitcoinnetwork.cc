@@ -88,6 +88,19 @@ TNetworkParameters::TNetworkParameters() :
 	BLOCK_TIMESTAMP_WINDOW = 2 * 60 * 60;
 }
 
+// -----------
+
+//
+// Function:	TBitcoinNetwork :: TBitcoinNetwork
+// Description:
+//
+TBitcoinNetwork::TBitcoinNetwork() :
+	Self( NULL ),
+	TransactionPool( NULL ),
+	BlockPool( NULL )
+{
+}
+
 
 // -------------- Function definitions
 
