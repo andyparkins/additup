@@ -151,6 +151,8 @@ class TBlock
 	bool hasChildren() const { return !ChildHashes.empty(); }
 	unsigned int childCount() const { return ChildHashes.size(); }
 
+	TBitcoinHash getNextRequiredDifficulty() const;
+
 	virtual ostream &printOn( ostream & ) const = 0;
 
   protected:

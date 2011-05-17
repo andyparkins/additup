@@ -144,6 +144,55 @@ void TBlock::fit()
 }
 
 //
+// Function:	TBlock :: getNextRequiredDifficulty
+// Description:
+//
+TBitcoinHash TBlock::getNextRequiredDifficulty() const
+{
+	if( Pool == NULL || Pool->getNetwork() == NULL )
+		throw logic_error( "Don't call TBlock::getNextTarget() on a detached block" );
+
+	// Only change difficulty every N blocks; i.e. if the next block
+	// number is divisible by the difficulty block interval
+	if( getHeight() + 1 % Pool->getNetwork()->getNetworkParameters()->DifficultyUpdateInterval() != 0 ) {
+		// No change means we should use our difficulty
+		return getClaimedDifficulty();
+	}
+
+	// Follow the block chain backwards to find the first block in the
+	// current difficulty chunk
+	const TBlock *firstBlock = this;
+	for( unsigned int i = Pool->getNetwork()->getNetworkParameters()->DifficultyUpdateInterval() - 1;
+			firstBlock != NULL && i > 0; i-- ) {
+		firstBlock = firstBlock->getParent();
+	}
+	// This should be impossible, our call to getHeight() should have
+	// ensured that there are enough parents to follow
+	if( firstBlock == NULL )
+		throw logic_error( "TBlock::getNextTarget() failed to find start of difficulty chunk" );
+
+	// Time between start and end
+	time_t ObservedTimespan = getTimestamp() - firstBlock->getTimestamp();
+
+	// Defer to network parameters to enforce rules
+	ObservedTimespan = Pool->getNetwork()->getNetworkParameters()->limitDifficultyTimespan( ObservedTimespan );
+
+	TBitcoinHash NextTarget( getClaimedDifficulty() );
+	// Using the previous difficulty, that which should have taken
+	// DIFFICULTY_TIMESPAN, actually took ObservedTimespan.  We therefore
+	// adjust the current difficulty by ratio of the observed to the
+	// target timespans.
+	NextTarget *= static_cast<unsigned int>( ObservedTimespan );
+	NextTarget /= Pool->getNetwork()->getNetworkParameters()->DIFFICULTY_TIMESPAN;
+
+	// Limit to the smallest difficulty allowed
+	if( NextTarget > Pool->getNetwork()->getNetworkParameters()->ProofOfWorkLimit )
+		NextTarget = Pool->getNetwork()->getNetworkParameters()->ProofOfWorkLimit;
+
+	return NextTarget;
+}
+
+//
 // Function:	TBlock :: printOn
 // Description:
 //
