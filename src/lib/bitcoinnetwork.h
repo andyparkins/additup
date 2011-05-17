@@ -80,6 +80,9 @@ class TNetworkParameters
 
 	virtual unsigned int limitDifficultyTimespan( unsigned int ) const = 0;
 
+	double convertTargetToDifficulty( const TBitcoinHash & ) const;
+	TBitcoinHash convertDifficultyToTarget( double ) const;
+
   public:
 	uint32_t ProtocolVersion;
 	TBlock *GenesisBlock;

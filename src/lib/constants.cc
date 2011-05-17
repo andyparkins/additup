@@ -407,6 +407,10 @@ int main( int argc, char *argv[] )
 			log() << (*pNetwork)->className() << endl;
 			log() << "GenesisBlock = ";
 			(*pNetwork)->GenesisBlock->printOn( log() );
+
+			TBitcoinHash x("00000000000404CB000000000000000000000000000000000000000000000000");
+			log() << "Difficulty of " << x << " = "
+				<< (*pNetwork)->convertTargetToDifficulty(x) << endl;
 			log() << endl;
 
 			pNetwork++;

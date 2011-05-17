@@ -90,6 +90,58 @@ TNetworkParameters::TNetworkParameters() :
 //	DifficultyIncreaseSpacing = DIFFICULTY_TIMESPAN / NEW_BLOCK_PERIOD
 }
 
+//
+// Function:	TNetworkParameters :: convertTargetToDifficulty
+// Description:
+// Calculate ProofOfWorkLimit / Target as a floating point number.
+//
+// The official client cheats a fair bit and assumes the two numbers are
+// within one uint of each other.  It would be nicer if we could do a
+// proper job, but as the official client does this, so will I.
+//
+double TNetworkParameters::convertTargetToDifficulty( const TBitcoinHash &Target ) const
+{
+	TBitcoinHash q(Target), r(ProofOfWorkLimit);
+	double Difficulty;
+
+//	r.divideWithRemainder(Target, q);
+//
+//	Difficulty = r;
+//
+//	// XXX: Fractional part is r/Target
+
+	// Get the highest of the highest bits
+	unsigned int hb1, hb2;
+	hb1 = q.highestBit();
+	hb2 = r.highestBit();
+	if( hb2 > hb1 )
+		hb1 = hb2;
+
+	// Preserve the top N bits (with N being the storage unit of the big
+	// number)
+	hb1 -= TBitcoinHash::bitsPerBlock;
+	q >>= hb1;
+	r >>= hb1;
+
+	// We can now be sure that the two number fill one block only of the
+	// big numbers.  We'll let the compiler do the conversion to
+	// floating point for us.
+	Difficulty = static_cast<double>( r.getBlock(0) )
+		/ static_cast<double>( q.getBlock(0) );
+
+	return Difficulty;
+}
+
+//
+// Function:	TNetworkParameters :: convertDifficultyToTarget
+// Description:
+//
+TBitcoinHash TNetworkParameters::convertDifficultyToTarget( double ) const
+{
+	// Yuck.
+	throw logic_error( "Don't call TNetworkParameters::convertDifficultyToTarget() until I've written it" );
+}
+
 // -----------
 
 //
