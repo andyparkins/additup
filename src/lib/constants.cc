@@ -42,6 +42,7 @@
 
 
 // -------------- Template instantiations
+template class TSingleton<KNOWN_NETWORKS>;
 
 
 // -------------- Class declarations
@@ -152,6 +153,8 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 {
   public:
 	TTestnetNetworkParameters() {
+		NETWORK_TESTNET = this;
+
 		DefaultTCPPort = 18333;
 		Magic = 0xdab5bffa;
 		BitcoinAddressPrefix = 111;
@@ -196,6 +199,8 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 {
   public:
 	TProdnetNetworkParameters() {
+		NETWORK_PRODNET = this;
+
 		DefaultTCPPort = 8333;
 		Magic = 0xd9b4bef9;
 		BitcoinAddressPrefix = 0;
@@ -286,6 +291,31 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 // -------------- Class member definitions
 
 //
+// Function:	KNOWN_NETWORKS :: KNOWN_NETWORKS
+// Description:
+// Instantiate the known networks on demand.
+//
+KNOWN_NETWORKS::KNOWN_NETWORKS()
+{
+	KnownNetworks.insert( new TProdnetNetworkParameters );
+	KnownNetworks.insert( new TTestnetNetworkParameters );
+}
+
+//
+// Function:	KNOWN_NETWORKS :: ~KNOWN_NETWORKS
+// Description:
+//
+KNOWN_NETWORKS::~KNOWN_NETWORKS()
+{
+	while( KnownNetworks.begin() != KnownNetworks.end() ) {
+		delete *(KnownNetworks.begin());
+		KnownNetworks.erase( KnownNetworks.begin() );
+	}
+}
+
+// ----------
+
+//
 // Function:	TOfficialSeedNode :: TOfficialSeedNode
 // Description:
 // Store the 32 bit IP address in network byte order, so that if you
@@ -362,28 +392,16 @@ const TOfficialSeedNode SEED_NODES[] =
 };
 
 //
-// Global:	NETWORK_TESTNET
+// Global: NETWORK_TESTNET
 // Description:
 //
-TTestnetNetworkParameters localTESTNET;
-const TNetworkParameters *NETWORK_TESTNET = &localTESTNET;
+const TNetworkParameters *NETWORK_TESTNET = NULL;
 
 //
-// Global:	NETWORK_PRODNET
+// Global: NETWORK_PRODNET
 // Description:
 //
-TProdnetNetworkParameters localPRODNET;
-const TNetworkParameters *NETWORK_PRODNET = &localPRODNET;
-
-//
-// Global:	NETWORK_TESTNET
-// Description:
-//
-const TNetworkParameters *KNOWN_NETWORKS[] = {
-		NETWORK_PRODNET,
-		NETWORK_TESTNET,
-		NULL
-};
+const TNetworkParameters *NETWORK_PRODNET = NULL;
 
 
 // -------------- Function definitions
@@ -412,10 +430,10 @@ int main( int argc, char *argv[] )
 //	}
 
 	try {
-		const TNetworkParameters **pNetwork = KNOWN_NETWORKS;
+		TSingleton<KNOWN_NETWORKS>::T::iterator pNetwork = TSingleton<KNOWN_NETWORKS>::O().begin();
 
 		log() << "--- Known networks" << endl;
-		while( *pNetwork ) {
+		while( pNetwork != TSingleton<KNOWN_NETWORKS>::O().end() ) {
 			log() << (*pNetwork)->className() << endl;
 			log() << "GenesisBlock = ";
 			(*pNetwork)->GenesisBlock->printOn( log() );
