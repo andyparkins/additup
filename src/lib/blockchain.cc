@@ -213,6 +213,29 @@ void TMessageBasedBlock::updateFromMessage( const TBitcoinHash &hash, const TMes
 }
 
 //
+// Function:	TMessageBasedBlock :: getHeight
+// Description:
+//
+unsigned int TMessageBasedBlock::getHeight() const
+{
+	// If we've already calculated it, then return that
+	if( cachedHeight != 0 )
+		return cachedHeight;
+
+	// If we are a genesis block, then our height is defined as zero
+	if( getParentHash() == 0 ) {
+		cachedHeight = 0;
+	} else {
+		// XXX: WARNING! This sort of recursion is going to fill the stack
+		// up if we aren't pretty sure that most of our ancestors already
+		// know their own height.
+		cachedHeight = Parent->getHeight() + 1;
+	}
+
+	return cachedHeight;
+}
+
+//
 // Function:	TMessageBasedBlock :: getHash
 // Description:
 //

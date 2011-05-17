@@ -134,8 +134,11 @@ class TBlock
 	TBlock( TBlockPool * );
 	virtual ~TBlock();
 
+	const TBlock *getParent() const { return Parent; }
+
 	virtual void updateFromMessage( const TBitcoinHash &, const TMessage_block * ) = 0;
 
+	virtual unsigned int getHeight() const = 0;
 	virtual const TBitcoinHash &getHash() const = 0;
 	virtual const TBitcoinHash &getParentHash() const = 0;
 	virtual TBitcoinHash getClaimedDifficulty() const = 0;
@@ -172,6 +175,7 @@ class TMessageBasedBlock : public TBlock
 
 	void updateFromMessage( const TBitcoinHash &, const TMessage_block * );
 
+	unsigned int getHeight() const;
 	const TBitcoinHash &getHash() const;
 	const TBitcoinHash &getParentHash() const;
 	TBitcoinHash getClaimedDifficulty() const;
@@ -184,6 +188,7 @@ class TMessageBasedBlock : public TBlock
   protected:
 	TMessage_block *Message;
 	mutable TBitcoinHash cachedHash;
+	mutable unsigned int cachedHeight;
 };
 
 #if 0
