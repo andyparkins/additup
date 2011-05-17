@@ -531,10 +531,7 @@ TBlock *TBlockMemoryPool::getBlock( const TBitcoinHash &hash ) const
 //
 bool TBlockMemoryPool::blockExists( const TBitcoinHash &hash ) const
 {
-	const_iterator it;
-
-	it = Pool.find( hash );
-	return (it != Pool.end());
+	return (Pool.count( hash ) != 0);
 }
 
 //
