@@ -701,8 +701,8 @@ void TMessage_block::calculateMerkleTree()
 	}
 
 	// We run two loops, the first of which is going to iterate through
-	// the leaves, like this (using an 8 transaction input as an
-	// example)
+	// the merkle tree at decreasing depths, like this (using an 8
+	// transaction input as an example)
 	//
 	//  size = {8, 4, 2, 1}
 	//
@@ -716,7 +716,10 @@ void TMessage_block::calculateMerkleTree()
 	//   size == 1  ->  i = {0}            i2 = {0}
 	//
 	// Finally, the two array indexes for the two hashes being in turn
-	// hashed are calculated as offsets from a final iterator, j.
+	// hashed are calculated as offsets from a final iterator, j, which
+	// is the index of the start of the current merkle tree depth.  j
+	// then represents the index of the block of hashes of a width
+	// represented by size.
 	//
 	//   size == 8  ->  j = 0   i = {0, 2, 4, 6}   i2 = {1, 3, 5, 7}
 	//   size == 4  ->  j = 8   i = {0, 2}         i2 = (1, 3}
@@ -728,8 +731,8 @@ void TMessage_block::calculateMerkleTree()
 	//   size == 4  ->  pairs = { {8,9}, {10,11} }              size() = 14
 	//   size == 2  ->  pairs = { {12, 13} }                    size() = 15
 	//
-	// I've then renamed the variables to be clearer about what's going
-	// on
+	// I've renamed the variables, from their "official" names to be
+	// clearer about what's going on
 
 	unsigned int depthIndex = 0;
 	for( unsigned int depthSize = Transactions.size();
