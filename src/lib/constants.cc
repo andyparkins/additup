@@ -414,6 +414,10 @@ int main( int argc, char *argv[] )
 			TBitcoinHash x("00000000000404CB000000000000000000000000000000000000000000000000");
 			log() << "Difficulty of " << x << " = "
 				<< (*pNetwork)->convertTargetToDifficulty(x) << endl;
+			log() << "Hashes per block for " << x << " = "
+				<< (*pNetwork)->expectedGHashesPerBlock(x) << " Ghash" << endl;
+			log() << "Computing power for " << x << " = "
+				<< (*pNetwork)->expectedGHashesPerBlock(x) / (*pNetwork)->NEW_BLOCK_PERIOD << " Ghash/s" << endl;
 			log() << endl;
 
 			pNetwork++;

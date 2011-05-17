@@ -82,6 +82,7 @@ class TNetworkParameters
 
 	double convertTargetToDifficulty( const TBitcoinHash & ) const;
 	TBitcoinHash convertDifficultyToTarget( double ) const;
+	unsigned int expectedGHashesPerBlock( const TBitcoinHash & ) const;
 
   public:
 	uint32_t ProtocolVersion;

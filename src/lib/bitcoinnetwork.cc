@@ -142,6 +142,66 @@ TBitcoinHash TNetworkParameters::convertDifficultyToTarget( double ) const
 	throw logic_error( "Don't call TNetworkParameters::convertDifficultyToTarget() until I've written it" );
 }
 
+//
+// Function:	TNetworkParameters :: expectedGHashesPerBlock
+// Description:
+//
+unsigned int TNetworkParameters::expectedGHashesPerBlock( const TBitcoinHash &Target ) const
+{
+	TBitcoinHash Hashes;
+	// To generate a block, the nonce must be selected such that the
+	// hash of the block must be less or equal to the current target.
+	//
+	// There are 2^256 possible hashes, and the current target divides
+	// those into two -- above and below it.  Assuming that every hash
+	// is equally likely, then the probability of finding an acceptable
+	// hash will be
+	//
+	//    P = target / 2^256
+	//
+	// Imagine that target was 2^256; the probability would be 100% that
+	// any given hash was acceptable -- we would need only 1.  Imagine
+	// it was 2^255, half of all hashes would be above and half below;
+	// 50% probability -- we would need two hashes.  2^254 would be 25%
+	// and we would need 4 hashes.  And so on and so on.  In other
+	// words:
+	//
+	//   N = 2^256 / target
+	//
+	// Where N is the expected number of hashes performed to find an
+	// acceptable block.
+	//
+	Hashes = (TBitcoinHash(1) << 256);
+	Hashes /= Target;
+
+	// NB: Difficulty = MaxTarget / CurrentTarget
+	//              N = 2^256 / CurrentTarget
+	//              N = 2^256 * Difficulty / MaxTarget
+
+	// NB: We also know that the expected time between blocks is
+	// NEW_BLOCK_PERIOD (which we might call SECONDS_PER_BLOCK); we have
+	// calculated the HASHES_PER_BLOCK_PERIOD, therefore, the computing
+	// power of the network is approximately:
+	//
+	//   HASHES_PER_SECOND = HASHES_PER_BLOCK_PERIOD / NEW_BLOCK_PERIOD
+	//
+
+	// The proof of work limit for the production network is (2^224)-1,
+	// which we can use to tell us the sort of scale we are talking
+	// about.
+	//
+	//   2^256 / (2^224-1) = 2^32 (as near as makes no difference)
+	//
+	// So 4 gigahashes is the minimum expected number of hashes needed
+	// to create a block.  The running network will presumably exceed this,
+	// and we want space to express that.  Therefore we'll return our
+	// answer in gigahashes, which gives plenty of room for expansion.
+
+	Hashes /= 1000000000;
+
+	return Hashes.getBlock(0);
+}
+
 // -----------
 
 //
