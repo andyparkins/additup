@@ -170,11 +170,10 @@ class TGenericBigInteger
 	string toString( unsigned int = 10 ) const;
 
 	string toBytes(unsigned int = 0) const;
+	TGenericBigInteger &fromString( const string &, unsigned int = 10 );
 
   protected:
 	void normalise();
-
-	TGenericBigInteger &fromString( const string &, unsigned int = 10 );
 
 	virtual unsigned int fromCharacter( unsigned int, unsigned int ) const;
 	virtual unsigned int toCharacter( unsigned int, unsigned int ) const;
@@ -274,11 +273,10 @@ class TGenericBigSignedInteger : public TGenericBigInteger<tLittleInteger>
 
 	ostream &printOn( ostream & ) const;
 	string toString( unsigned int = 10 ) const;
+	TGenericBigSignedInteger &fromString( const string &, unsigned int = 10 );
 
   protected:
 	void normalise();
-
-	TGenericBigSignedInteger &fromString( const string &, unsigned int = 10 );
 
   protected:
 	bool Negative;
