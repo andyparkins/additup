@@ -18,6 +18,7 @@
 
 // -------------- Includes
 // --- C
+#include <time.h>
 // --- C++
 // --- Qt
 // --- OS
@@ -97,8 +98,18 @@ TNetworkParameters::TNetworkParameters() :
 TBitcoinNetwork::TBitcoinNetwork() :
 	Self( NULL ),
 	TransactionPool( NULL ),
-	BlockPool( NULL )
+	BlockPool( NULL ),
+	NetworkTimeOffset( 0 )
 {
+}
+
+//
+// Function:	TBitcoinNetwork :: getNetworkTime
+// Description:
+//
+time_t TBitcoinNetwork::getNetworkTime() const
+{
+	return time(NULL) + NetworkTimeOffset;
 }
 
 

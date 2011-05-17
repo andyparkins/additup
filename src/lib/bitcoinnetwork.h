@@ -130,6 +130,8 @@ class TBitcoinNetwork
 	const TNetworkParameters *getNetworkParameters() const { return Parameters; }
 	void setNetworkParameters( const TNetworkParameters *p ) { Parameters = p; }
 
+	time_t getNetworkTime() const;
+
   protected:
 	const TNetworkParameters *Parameters;
 
@@ -140,6 +142,8 @@ class TBitcoinNetwork
 
 	TTransactionPool *TransactionPool;
 	TBlockPool *BlockPool;
+
+	time_t NetworkTimeOffset;
 };
 
 
