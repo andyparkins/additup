@@ -61,6 +61,7 @@ class TDatabaseBlockPool;
 class TMessage_block;
 class TMessage_inv;
 class TMessage_headers;
+class TBitcoinNetwork;
 
 
 // -------------- Function pre-class prototypes
@@ -84,6 +85,20 @@ class block_chain_error_hash : public block_chain_error
   public:
 	block_chain_error_hash() :
 		block_chain_error("block hash mismatch") {}
+};
+
+class block_chain_error_too_easy : public block_chain_error
+{
+  public:
+	block_chain_error_too_easy() :
+		block_chain_error("block hash was too easy to find") {}
+};
+
+class block_chain_error_no_proof_of_work : public block_chain_error
+{
+  public:
+	block_chain_error_no_proof_of_work() :
+		block_chain_error("block hash was easier than claimed difficulty") {}
 };
 
 class block_chain_error_type : public block_chain_error
@@ -116,6 +131,7 @@ class TBlock
 
 	virtual const TBitcoinHash &getHash() const = 0;
 	virtual const TBitcoinHash &getParentHash() const = 0;
+	virtual TBitcoinHash getClaimedDifficulty() const = 0;
 	virtual void registerChild( TBlock * );
 
 	void fit();
@@ -147,6 +163,7 @@ class TMessageBasedBlock : public TBlock
 
 	const TBitcoinHash &getHash() const;
 	const TBitcoinHash &getParentHash() const;
+	TBitcoinHash getClaimedDifficulty() const;
 
 	void flush() { cachedHash.invalidate(); }
 
@@ -187,7 +204,7 @@ class TDatabaseBlock : public TBlock
 class TBlockPool
 {
   public:
-	TBlockPool();
+	TBlockPool( const TBitcoinNetwork * );
 	virtual ~TBlockPool();
 
 	void receiveBlock( const TBitcoinHash &, const TMessage_inv * );
@@ -202,7 +219,11 @@ class TBlockPool
 
 	virtual TBlock *createBlock() = 0;
 
+	const TBitcoinNetwork *getNetwork() { return Network; }
+
   protected:
+	const TBitcoinNetwork *Network;
+
 	set<TBitcoinHash> Tips;
 };
 
@@ -213,7 +234,7 @@ class TBlockPool
 class TBlockMemoryPool : public TBlockPool
 {
   public:
-	TBlockMemoryPool();
+	TBlockMemoryPool( const TBitcoinNetwork * );
 	~TBlockMemoryPool();
 
 	void putBlock( const TBitcoinHash &, TBlock * );

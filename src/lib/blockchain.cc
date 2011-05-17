@@ -24,6 +24,7 @@
 // --- Project libs
 // --- Project
 #include "messages.h"
+#include "bitcoinnetwork.h"
 
 
 // -------------- Namespace
@@ -151,6 +152,37 @@ void TMessageBasedBlock::updateFromMessage( const TBitcoinHash &hash, const TMes
 	// If the hash doesn't verify, it doesn't get in the chain
 	if( getHash() != hash )
 		throw block_chain_error_hash();
+
+	// The way the proof of work system works is that the block makes a
+	// claim of difficulty, which is essentially a 256-bit threshold.
+	// The hash of the block must be less than this claimed difficulty
+	// threshold for it to be valid.  The block hash is adjusted by the
+	// generator by selection of the "nonce", of which the generator
+	// tries billions until the block hash meets the difficulty target.
+	//
+	// The network imposes an additional requirement that blocks must
+	// meet some minimum level of difficulty regardless of the currently
+	// chosen difficulty level.  This is established by ensuring that
+	// the block difficulty is less than a network-wide
+	// ProofOfWorkLimit.
+	//
+	// Failing to meet either of these conditions means that the block
+	// has an invalid proof of work.
+
+	// We only check the network limits if we have a network to check
+	// against; it's possible to make blocks in isolation (the genesis
+	// block templates).
+	if( Pool != NULL && Pool->getNetwork() != NULL ) {
+		// TBitcoinHash can't be negative, so we only need to check the
+		// upper limit
+		if( getClaimedDifficulty() > Pool->getNetwork()->getNetworkParameters()->ProofOfWorkLimit )
+			throw block_chain_error_too_easy();
+	}
+
+	// The block hash must be lower than the claimed difficulty for the
+	// proof of work to be valid.
+	if( getHash() > getClaimedDifficulty() )
+		throw block_chain_error_no_proof_of_work();
 }
 
 //
@@ -182,6 +214,15 @@ const TBitcoinHash &TMessageBasedBlock::getHash() const
 const TBitcoinHash &TMessageBasedBlock::getParentHash() const
 {
 	return Message->blockHeader().PreviousBlock;
+}
+
+//
+// Function:	TMessageBasedBlock :: getClaimedDifficulty
+// Description:
+//
+TBitcoinHash TMessageBasedBlock::getClaimedDifficulty() const
+{
+	return Message->blockHeader().DifficultyBits.getTarget();
 }
 
 //
@@ -239,7 +280,8 @@ void TDatabaseBlock::updateFromMessage( const TBitcoinHash &hash, const TMessage
 // Function:	TBlockPool :: TBlockPool
 // Description:
 //
-TBlockPool::TBlockPool()
+TBlockPool::TBlockPool( const TBitcoinNetwork *n ) :
+	Network(n)
 {
 }
 
@@ -312,7 +354,8 @@ void TBlockPool::receiveBlock( const TBitcoinHash &NetworkHash, const TMessage_b
 // Function:	TBlockMemoryPool :: TBlockMemoryPool
 // Description:
 //
-TBlockMemoryPool::TBlockMemoryPool()
+TBlockMemoryPool::TBlockMemoryPool( const TBitcoinNetwork *n ) :
+	TBlockPool(n)
 {
 }
 
