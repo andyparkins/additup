@@ -403,34 +403,16 @@ int main( int argc, char *argv[] )
 //	}
 
 	try {
-		log() << "--- Parameters" << endl;
-
-		// String genesisHash = n.genesisBlock.getHashAsString();
-		// assert genesisHash.equals("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008");
-		log() << "NETWORK_TESTNET->genesisBlock = ";
-		NETWORK_TESTNET->GenesisBlock->printOn( log() );
-		log() << endl;
-
-		log() << endl;
-
-		// String genesisHash = n.genesisBlock.getHashAsString();
-		// assert genesisHash.equals("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f") : genesisHash;
-		log() << "NETWORK_PRODNET->genesisBlock = ";
-		NETWORK_PRODNET->GenesisBlock->printOn( log() );
-		log() << endl;
-
-	} catch( std::exception &e ) {
-		log() << e.what() << endl;
-		return 255;
-	}
-
-	try {
 		const TNetworkParameters **pNetwork = KNOWN_NETWORKS;
 
 		log() << "--- Known networks" << endl;
 		while( *pNetwork ) {
-			 log() << (*pNetwork)->className() << endl;
-			 pNetwork++;
+			log() << (*pNetwork)->className() << endl;
+			log() << "GenesisBlock = ";
+			(*pNetwork)->GenesisBlock->printOn( log() );
+			log() << endl;
+
+			pNetwork++;
 		}
 	} catch( std::exception &e ) {
 		log() << e.what() << endl;
