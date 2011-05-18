@@ -107,7 +107,7 @@ string TNodeInfo::get() const
 // Function:	TBitcoinPeer :: TBitcoinPeer
 // Description:
 //
-TBitcoinPeer::TBitcoinPeer( TNodeInfo *info, TBitcoinNetwork *network ) :
+TBitcoinPeer::TBitcoinPeer( const TNodeInfo *info, TBitcoinNetwork *network ) :
 	Info( info ),
 	Network( network ),
 	Factory( NULL ),

@@ -110,7 +110,7 @@ class TBitcoinPeer
 		Disconnected
 	};
   public:
-	TBitcoinPeer( TNodeInfo * = NULL, TBitcoinNetwork * = NULL );
+	TBitcoinPeer( const TNodeInfo * = NULL, TBitcoinNetwork * = NULL );
 	~TBitcoinPeer();
 
 	void setState( eState s ) { State = s; }
@@ -121,7 +121,7 @@ class TBitcoinPeer
 	const TMessageFactory *factory() const { return Factory; }
 
   protected:
-	TNodeInfo *Info;
+	const TNodeInfo *Info;
 	TBitcoinNetwork *Network;
 	TMessageFactory *Factory;
 
