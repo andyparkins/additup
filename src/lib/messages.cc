@@ -217,7 +217,7 @@ ostream &TMessage::write( ostream &os ) const
 ostream &TMessage::printOn( ostream &s ) const
 {
 	s << className() << "{"
-		<< " Command=\"" << MessageHeader.Command.getValue() << "\""
+		<< " Command=\"" << MessageHeader.Command.getValue().c_str() << "\""
 		<< "; Payload=" << MessageHeader.PayloadLength.getValue()
 		<< " }";
 	return s;
@@ -330,7 +330,7 @@ void TMessageWithChecksum::generatePayloadChecksum()
 ostream &TMessageWithChecksum::printOn( ostream &s ) const
 {
 	s << className() << "{"
-		<< " Command=\"" << MessageHeader.Command.getValue() << "\""
+		<< " Command=\"" << MessageHeader.Command.getValue().c_str() << "\""
 		<< "; Payload=" << MessageHeader.PayloadLength.getValue()
 		<< "; Checksum=" << hex << MessageHeader.Checksum.getValue() << dec
 		<< " }";
