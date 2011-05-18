@@ -420,7 +420,7 @@ int main( int argc, char *argv[] )
 //
 //		log() << "--- Official seed nodes" << endl;
 //		while( *pSeed ) {
-//			 pSeed->write(log());
+//			 pSeed->printOn(log());
 //			 log() << endl;
 //			 pSeed++;
 //		}

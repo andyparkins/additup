@@ -72,7 +72,7 @@ class TNetworkParameters;
 class TNodeInfo
 {
   public:
-	TNodeInfo( uint32_t ip ) { IPv4 = ip; }
+	TNodeInfo( uint32_t );
 
 	ostream &write( ostream & ) const;
 	string get() const;
@@ -80,8 +80,11 @@ class TNodeInfo
 	operator bool() const { return IPv4 != 0; }
 	operator uint32_t() const { return IPv4; }
 
-  protected:
+	ostream &printOn( ostream & ) const;
+
 	uint32_t IPv4;
+	time_t LastConnectAttempt;
+	time_t LastConnectSuccess;
 };
 
 //

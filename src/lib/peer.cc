@@ -51,12 +51,39 @@
 // Function:	TNodeInfo :: write
 // Description:
 //
+TNodeInfo::TNodeInfo( uint32_t ip ) :
+	IPv4( ip ),
+	LastConnectAttempt(0),
+	LastConnectSuccess(0)
+{
+}
+
+//
+// Function:	TNodeInfo :: write
+// Description:
+//
 ostream &TNodeInfo::write( ostream &os ) const
+{
+	// Big endian
+	os.put((IPv4 & 0xff000000) >> 24);
+	os.put((IPv4 & 0xff0000) >> 16);
+	os.put((IPv4 & 0xff00) >> 8);
+	os.put((IPv4 & 0xff) >> 0);
+
+	return os;
+}
+
+//
+// Function:	TNodeInfo :: printOn
+// Description:
+//
+ostream &TNodeInfo::printOn( ostream &os ) const
 {
 	os << ((IPv4 & 0xff000000) >> 24)
 		<< "." << ((IPv4 & 0xff0000) >> 16)
 		<< "." << ((IPv4 & 0xff00) >> 8)
-		<< "." << ((IPv4 & 0xff) >> 0);
+		<< "." << ((IPv4 & 0xff) >> 0)
+		<< " " << LastConnectAttempt << ", " << LastConnectSuccess;
 
 	return os;
 }
