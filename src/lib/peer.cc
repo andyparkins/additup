@@ -310,13 +310,15 @@ void TBitcoinPeer::receive( const string &s )
 #include <iostream>
 #include "unittest.h"
 #include "logstream.h"
+#include "bitcoinnetwork.h"
 
 // -------------- main()
 
 int main( int argc, char *argv[] )
 {
 	try {
-		TBitcoinPeer Peer;
+		TBitcoinNetwork Network;
+		TBitcoinPeer Peer( NULL, &Network );
 		Peer.setState( TBitcoinPeer::Connecting );
 
 		const string *p = UNITTESTSampleMessages;
