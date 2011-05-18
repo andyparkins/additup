@@ -133,6 +133,7 @@ class TBlock
   public:
 	TBlock( TBlockPool * );
 	virtual ~TBlock();
+	virtual TBlock *clone() const = 0;
 
 	const TBlock *getParent() const { return Parent; }
 
@@ -174,6 +175,7 @@ class TMessageBasedBlock : public TBlock
   public:
 	TMessageBasedBlock( TBlockPool * );
 	~TMessageBasedBlock();
+	virtual TBlock *clone() const { return new TMessageBasedBlock(*this); }
 
 	void updateFromMessage( const TBitcoinHash &, const TMessage_block * );
 
