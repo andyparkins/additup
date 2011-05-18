@@ -231,6 +231,109 @@ bool TDifficultyTargetElement::operator==( const TBitcoinHash &Target ) const
 }
 
 //
+// Function:	TSignatureElement :: read
+// Description:
+//
+// http://forum.bitcoin.org/index.php?topic=8392.msg123728#msg123728
+//
+// "To encode a positive integer in DER, you convert it to a big endian
+// sequence of octets, using the minimum necessary, and if the sign bit
+// on the leading one is set, you prepend a zero octet so it won't be
+// interpreted as a negative number.  You then prepend an "02", which
+// indicates "integer", and an octet count which is a single byte for
+// lengths up to 127, and 0x80 plus an octet count followed by the
+// length octets for lengths greater than 127.  This maps every integer
+// onto a unique octet sequence.
+//
+// A signature is a pair of bignum integers, (r,s), so it consists of
+// 0x30, which indicates a sequence of one or more things, an octet
+// count of what follows, followed by two encoded integers.  In
+// addition, bitcoin appends the hashtype, which is always "1", to the
+// end."
+//
+istream &TSignatureElement::read( istream &is )
+{
+	TByteElement B;
+
+	// Type indicator (should be 0x30 == sequence)
+	is >> B;
+	if( B.getValue() != 0x30 )
+		throw runtime_error("First byte of TSignatureElement should be 0x30");
+
+	// Sequence count (should be two)
+	is >> B;
+	if( B.getValue() != 2 )
+		throw runtime_error("TSignatureElements should be made of two items only");
+
+	// Type indicator (should be 0x02 == integer)
+	is >> B;
+	if( B.getValue() != 0x02 )
+		throw runtime_error("TSignatureElements are made of two integers");
+
+	// Size of bignum (R)
+	is >> B;
+	// Bignum
+	TSizedStringElement R(B.getValue());
+	is >> R;
+	r.fromBytes( R.getValue() );
+
+	// Size of bignum (S)
+	is >> B;
+	// Bignum
+	TSizedStringElement S(B.getValue());
+	is >> S;
+	s.fromBytes( S.getValue() );
+
+	// Hashtype is just appended by bitcoin
+	is >> HashType;
+
+	return is;
+}
+
+//
+// Function:	TSignatureElement :: write
+// Description:
+//
+ostream &TSignatureElement::write( ostream &os ) const
+{
+	// Type indicator (sequence)
+	os.put( 0x30 );
+	// Sequence count
+	os.put( 0x02 );
+
+	// Type indicator (integer)
+	os.put( 0x02 );
+	string R;
+	R = r.toBytes();
+
+	// If the first byte would contain a "sign bit", we need to mask it
+	// by prepending another zero
+	if( (R[0] & 0x80) != 0 )
+		R = string('\0') + R;
+
+	// Size of bignum
+	os.put( R.size() );
+	os.write( R.data(), R.size() );
+
+	// Type indicator (integer)
+	os.put( 0x02 );
+	R = s.toBytes();
+
+	// If the first byte would contain a "sign bit", we need to mask it
+	// by prepending another zero
+	if( (R[0] & 0x80) != 0 )
+		R = string('\0') + R;
+
+	// Size of bignum
+	os.put( R.size() );
+	os.write( R.data(), R.size() );
+
+	os << HashType;
+
+	return os;
+}
+
+//
 // Function:	TInputSplitElement :: encodeSignatureScript
 // Description:
 //

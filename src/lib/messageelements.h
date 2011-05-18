@@ -428,6 +428,25 @@ class THashElement : public TMessageElement
 };
 
 //
+// Class:	TSignatureElement
+// Description:
+//  <30><len><02><len><r bytes><02><len><s bytes><hashtype>
+//
+class TSignatureElement : public TMessageElement
+{
+  public:
+	TSignatureElement();
+
+	istream &read( istream &is );
+	ostream &write( ostream &os ) const;
+
+  protected:
+	TBigUnsignedInteger r;
+	TBigUnsignedInteger s;
+	TByteElement HashType;
+};
+
+//
 // Typedef:	TTimestampElement
 // Description:
 //
