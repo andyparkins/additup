@@ -485,6 +485,7 @@ TBitcoinScript *TMessageFactory_31402::createVersionedBitcoinScript() const
 #ifdef UNITTEST
 #include <iostream>
 #include "unittest.h"
+#include "logstream.h"
 
 // -------------- main()
 
@@ -492,6 +493,29 @@ int main( int argc, char *argv[] )
 {
 	try {
 		TVersioningMessageFactory PF;
+
+		log() << "--- " << PF.className() << endl;
+
+		const string *p = UNITTESTSampleMessages;
+		while( !p->empty() ) {
+			PF.receive( *p );
+			if( PF.newestIncoming() != NULL ) {
+				log() << "PF.queue() = " << *PF.newestIncoming() << endl;
+			} else {
+				log() << "no packet yet" << endl;
+			}
+			p++;
+		}
+
+	} catch( exception &e ) {
+		log() << e.what() << endl;
+		return 255;
+	}
+
+	try {
+		TMessageFactory_31402 PF;
+
+		log() << "--- " << PF.className() << endl;
 
 		const string *p = UNITTESTSampleMessages;
 		while( !p->empty() ) {
