@@ -824,8 +824,11 @@ const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
 #ifdef UNITTEST
 #include <iostream>
 #include <typeinfo>
+#include <sys/time.h>
 #include "logstream.h"
 #include "unittest.h"
+#include "constants.h"
+#include "blockchain.h"
 
 // -------------- main()
 
@@ -911,6 +914,69 @@ int main( int argc, char *argv[] )
 
 			p++;
 		}
+	} catch( std::exception &e ) {
+		log() << e.what() << endl;
+		return 255;
+	}
+
+	try {
+		// Force KNOWN_NETWORKS creation
+		TSingleton<KNOWN_NETWORKS>::create();
+
+		log() << "--- Hash speed test" << endl;
+		TBlock *testblock;
+
+		testblock = NETWORK_PRODNET->GenesisBlock->clone();
+
+		log() << "Loaded testblock" << endl;
+		testblock->printOn( log() );
+
+		log() << "Hashing";
+
+		static const unsigned int LOOPS = 1 << 18;
+		struct timeval start, end;
+		unsigned int i;
+		TMessage_block *message = reinterpret_cast<TMessage_block*>(testblock->getMessage()->clone());
+		TBitcoinHash hash;
+		gettimeofday( &start, NULL );
+		for( i = LOOPS; i > 0; i-- ) {
+			hash = message->calculateHash();
+			if( (i & 0xfff) == 0 )
+				log() << "." << flush;
+		}
+		gettimeofday( &end, NULL );
+
+		log() << endl;
+
+//		log() << LOOPS << " loops in " << (end.tv_sec - start.tv_sec)
+//			<< "s and " << (end.tv_usec - start.tv_usec) << "us" << endl;
+
+		log() << "Hash rate is " << LOOPS / (end.tv_sec - start.tv_sec) << " h/s (approx)" << endl;
+
+		TBitcoinHash Target(1);
+		Target <<= (256 - 19);
+		Target -= 1;
+
+		message->blockHeader().Nonce = 0;
+
+		log() << "Mining";
+		gettimeofday( &start, NULL );
+		i = 0;
+		while( true ) {
+			hash = message->calculateHash();
+			if( (i & 0xfff) == 0 )
+				log() << "." << flush;
+			if( hash <= Target )
+				break;
+			i++;
+			message->blockHeader().Nonce++;
+		}
+		gettimeofday( &end, NULL );
+
+		log() << endl;
+		log() << "Found hash  " << hash << endl
+			<< " less than  " << Target << endl;
+
 	} catch( std::exception &e ) {
 		log() << e.what() << endl;
 		return 255;
