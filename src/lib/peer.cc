@@ -249,6 +249,8 @@ void TBitcoinPeer::receive( const string &s )
 			// query the message
 			TMessage_version *VersionMessage = dynamic_cast<TMessage_version*>( Message.get() );
 
+			log() << "[PEER] Version message received, " << *VersionMessage << endl;
+
 			delete Factory;
 			Factory = VersionMessage->createMessageFactory();
 
@@ -260,6 +262,11 @@ void TBitcoinPeer::receive( const string &s )
 		} else {
 			// Odd, we shouldn't get anything but a version message from
 			// a newly connected peer.
+			if( Message.get() == NULL ) {
+				log() << "[PEER] Ignoring " << s.size() << " junk bytes" << endl;
+			} else {
+				log() << "[PEER] Ignoring " << *Message.get() << endl;
+			}
 		}
 	}
 
@@ -309,7 +316,7 @@ int main( int argc, char *argv[] )
 
 		const string *p = UNITTESTSampleMessages;
 		while( !p->empty() ) {
-			log() << "[TEST] Trying " << p->size() << " bytes" << endl;
+			log() << "[TEST] RX< " << p->size() << " bytes" << endl;
 			Peer.receive( *p );
 			p++;
 		}
