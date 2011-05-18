@@ -256,6 +256,31 @@ void TMessageFactory::init()
 // ---------
 
 //
+// Function:	TVersioningMessageFactory :: answer
+// Description:
+//
+TMessage *TVersioningMessageFactory::answer( TMessage *Message )
+{
+	if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
+		// No response needed
+	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
+		// RX< version209
+		// TX> verack
+		if( !VerackSent ) {
+			VerackSent = true;
+			return new TMessage_verack();
+		}
+	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
+		// No response needed
+	} else if( dynamic_cast<TMessage_verack*>( Message ) != NULL ) {
+		// No response needed
+		VerackReceived = true;
+	}
+
+	return NULL;
+}
+
+//
 // Function:	TVersioningMessageFactory :: init
 // Description:
 //

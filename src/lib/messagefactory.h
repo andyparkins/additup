@@ -136,11 +136,17 @@ class TMessageFactory
 class TVersioningMessageFactory : public TMessageFactory
 {
   public:
+	TVersioningMessageFactory() : VerackSent( false ), VerackReceived( false ) {}
+
 	const char *className() { return "TVersioningMessageFactory"; }
+
+	TMessage *answer( TMessage * );
 
   protected:
 	void init();
 
+	bool VerackSent;
+	bool VerackReceived;
 };
 
 //
