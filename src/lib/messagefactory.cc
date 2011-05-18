@@ -159,7 +159,7 @@ void TMessageFactory::receive( const string &s )
 	streamoff sp;
 
 	if( Peer == NULL )
-		throw logic_error("TMessageFactory::receive() is impossible without a known peer");
+		throw runtime_error("TMessageFactory::receive() is impossible without a known peer");
 
 	do {
 		// Test against each template message
