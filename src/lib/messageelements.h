@@ -184,6 +184,9 @@ class TByteElement : public TMessageElement
 	uint8_t getValue() const { return Value; }
 	TByteElement &operator=( uint8_t s ) { Value = s; return *this; }
 
+	uint8_t operator++(int) { return Value++; }
+	uint8_t operator--(int) { return Value--; }
+
   protected:
 	uint8_t Value;
 };
@@ -209,6 +212,9 @@ class TBigEndian16Element : public TMessageElement
 	uint16_t getValue() const { return Value; }
 	TBigEndian16Element &operator=( uint16_t s ) { Value = s; return *this; }
 
+	uint16_t operator++(int) { return Value++; }
+	uint16_t operator--(int) { return Value--; }
+
   protected:
 	uint16_t Value;
 };
@@ -233,6 +239,9 @@ class TLittleEndian16Element : public TMessageElement
 	operator uint16_t() const { return Value; }
 	uint16_t getValue() const { return Value; }
 	TLittleEndian16Element &operator=( uint16_t s ) { Value = s; return *this; }
+
+	uint16_t operator++(int) { return Value++; }
+	uint16_t operator--(int) { return Value--; }
 
   protected:
 	uint16_t Value;
@@ -260,6 +269,9 @@ class TLittleEndian24Element : public TMessageElement
 	operator uint32_t() const { return Value; }
 	uint32_t getValue() const { return Value; }
 	TLittleEndian24Element &operator=( uint32_t s ) { Value = s; return *this; }
+
+	uint32_t operator++(int) { return Value++; }
+	uint32_t operator--(int) { return Value--; }
 
   protected:
 	uint32_t Value;
@@ -289,6 +301,9 @@ class TLittleEndian32Element : public TMessageElement
 	operator uint32_t() const { return Value; }
 	uint32_t getValue() const { return Value; }
 	TLittleEndian32Element &operator=( uint32_t s ) { Value = s; return *this; }
+
+	uint32_t operator++(int) { return Value++; }
+	uint32_t operator--(int) { return Value--; }
 
   protected:
 	uint32_t Value;
@@ -323,6 +338,9 @@ class TLittleEndian64Element : public TMessageElement
 	operator uint64_t() const { return Value; }
 	uint64_t getValue() const { return Value; }
 	TLittleEndian64Element &operator=( uint64_t s ) { Value = s; return *this; }
+
+	uint64_t operator++(int) { return Value++; }
+	uint64_t operator--(int) { return Value--; }
 
   protected:
 	uint64_t Value;
