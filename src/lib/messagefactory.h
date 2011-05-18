@@ -107,6 +107,8 @@ class TMessageFactory
 
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
+	string::size_type findNextMagic( const string &, string::size_type = 0 ) const;
+
   protected:
 	virtual void init();
 

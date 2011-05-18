@@ -28,6 +28,8 @@
 #include "messages.h"
 #include "script.h"
 #include "logstream.h"
+#include "peer.h"
+#include "bitcoinnetwork.h"
 
 
 // -------------- Namespace
@@ -171,12 +173,12 @@ void TMessageFactory::receive( const string &s )
 			// TMessages neeed to know details of where they came from
 			p->setPeer( Peer );
 
-//			log() << "Trying " << RXBuffer.size() << " bytes with "
-//				<< p->className();
-
 			try {
 				// Store the current position
 				sp = iss.tellg();
+
+//				log() << "Trying " << (RXBuffer.size() - sp) << " bytes with "
+//					<< p->className();
 
 				p->read( iss );
 //				log() << "*" << endl;
@@ -190,14 +192,15 @@ void TMessageFactory::receive( const string &s )
 				// hoping for more
 				break;
 
+			} catch( message_parse_error_magic &e ) {
+//				log() << " - " << e.what() << endl;
+				// Skip
+
 			} catch( message_parse_error_underflow &e ) {
 //				log() << " - " << e.what() << endl;
-				// If we run out of message from the source, then leave,
-				// hoping for more
-				break;
+				// Try next template with the same data
+				iss.seekg( sp, ios::beg );
 
-			} catch( message_parse_error_magic &e ) {
-				// Skip
 			} catch( message_parse_error_version &e ) {
 //				log() << " - " << e.what() << endl;
 				// Try next template with the same data
@@ -228,13 +231,48 @@ void TMessageFactory::receive( const string &s )
 
 			return;
 		} else {
-			try {
-				iss.seekg(sp + 1);
-			} catch( ... ) {
+			string::size_type pos = findNextMagic(RXBuffer, sp + 1);
+			if( pos == string::npos || pos >= RXBuffer.size() )
 				break;
-			}
+			// We only need to keep the most recent packet, so we can
+			// discard everything before the last magic
+			RXBuffer = RXBuffer.substr( pos, RXBuffer.size() - pos );
+			// And now repoint the stringstream
+			iss.str( RXBuffer );
 		}
 	} while( true );
+}
+
+//
+// Function:	TMessageFactory :: findNextMagic
+// Description:
+//
+string::size_type TMessageFactory::findNextMagic( const string &s, string::size_type start ) const
+{
+	if( Peer == NULL || Peer->getNetworkParameters() == NULL ) {
+		// If we have no peer, then we have no magic available,
+		// which makes it hard to synchronise.  We'll have
+		// to fall back to moving one byte at a time
+//		log() << "Magic search impossible" << endl;
+		return start;
+	}
+
+	// Convert the magic to a string
+	TLittleEndian32Element Magic;
+	Magic = Peer->getNetworkParameters()->Magic;
+	ostringstream oss;
+	oss << Magic;
+
+//	log() << "Next magic from " << start;
+	start = s.find( Magic, start );
+
+	if( start == string::npos ) {
+//		log() << " not found" << endl;
+		return s.size();
+	}
+//	log() << " found at buffer position " << start << endl;
+
+	return start;
 }
 
 //
