@@ -181,6 +181,8 @@ void TBitcoinPeer::receive( const string &s )
 	if( State == Parameters ) {
 		log() << "[PEER] State: Parameters" << endl;
 		if( Network != NULL && getNetworkParameters() != NULL ) {
+			log() << "[PEER] Network parameters already available, "
+				<< getNetworkParameters()->className() << endl;
 			State = Handshaking;
 		} else {
 			log() << "[PEER] Network parameters not available" << endl;
@@ -222,9 +224,12 @@ void TBitcoinPeer::receive( const string &s )
 					p++;
 				}
 				if( p != TSingleton<KNOWN_NETWORKS>::O().end() ) {
-					log() << "[PEER]  - Network magic found, using " << (*p)->className() << endl;
-					if( Network != NULL )
+					if( Network != NULL ) {
+						log() << "[PEER]  - Network magic found, using " << (*p)->className() << endl;
 						Network->setNetworkParameters( *p );
+					} else {
+						log() << "[PEER]  - Network magic for " << (*p)->className() << " will not be used" << endl;
+					}
 					State = Handshaking;
 					break;
 				}
