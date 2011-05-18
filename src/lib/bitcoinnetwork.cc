@@ -24,6 +24,7 @@
 // --- OS
 // --- Project libs
 // --- Project
+#include "logstream.h"
 
 
 // -------------- Namespace
@@ -218,12 +219,60 @@ TBitcoinNetwork::TBitcoinNetwork() :
 }
 
 //
+// Function:	TBitcoinNetwork :: updateDirectory
+// Description:
+//
+TNodeInfo &TBitcoinNetwork::updateDirectory( const TNodeInfo &Node )
+{
+	Directory.push_back( Node );
+	// Check for duplicates
+	// Update timestamps
+
+	// What comes in is not necessarily what goes out.  We are
+	// converting a temporary incoming to a permanent entry in our
+	// directory.  This allows us to track connection attempts.
+	return Directory.back();
+}
+
+//
 // Function:	TBitcoinNetwork :: getNetworkTime
 // Description:
 //
 time_t TBitcoinNetwork::getNetworkTime() const
 {
 	return time(NULL) + NetworkTimeOffset;
+}
+
+//
+// Function:	TBitcoinNetwork :: connectToAny
+// Description:
+//
+void TBitcoinNetwork::connectToAny()
+{
+	// Pick a node, then call connect
+	connectToNode( Directory.front() );
+}
+
+//
+// Function:	TBitcoinNetwork :: connectToNode
+// Description:
+//
+void TBitcoinNetwork::connectToNode( const TNodeInfo &n )
+{
+	// Ensure Node is in our local directory, so that the peer may rely
+	// on it existing for its lifetime
+	TNodeInfo *Node = &updateDirectory( n );
+
+	log() << "Connect to ";
+	Node->printOn( log() );
+	log() << endl;
+
+	TBitcoinPeer *Peer;
+	Peer = new TBitcoinPeer( Node, this );
+
+	Peer->setState( TBitcoinPeer::Connecting );
+
+	Node->LastConnectAttempt = time(NULL);
 }
 
 
@@ -233,12 +282,24 @@ time_t TBitcoinNetwork::getNetworkTime() const
 #ifdef UNITTEST
 #include <iostream>
 #include "logstream.h"
+#include "constants.h"
 
 // -------------- main()
 
 int main( int argc, char *argv[] )
 {
 	try {
+		log() << "--- Create network" << endl;
+		TBitcoinNetwork Network;
+
+		const TOfficialSeedNode *pSeed = SEED_NODES;
+		while( *pSeed ) {
+			Network.updateDirectory( *pSeed );
+			pSeed++;
+		}
+
+		Network.connectToAny();
+
 	} catch( std::exception &e ) {
 		log() << e.what() << endl;
 		return 255;

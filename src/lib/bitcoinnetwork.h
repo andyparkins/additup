@@ -138,13 +138,15 @@ class TBitcoinNetwork
   public:
 	TBitcoinNetwork();
 
-	void connect();
-	void connect( TNodeInfo * );
+	void connectToAny();
+	void connectToNode( const TNodeInfo & );
 
 	const TNetworkParameters *getNetworkParameters() const { return Parameters; }
 	void setNetworkParameters( const TNetworkParameters *p ) { Parameters = p; }
 
 	time_t getNetworkTime() const;
+
+	TNodeInfo &updateDirectory( const TNodeInfo & );
 
   protected:
 	const TNetworkParameters *Parameters;
@@ -152,7 +154,7 @@ class TBitcoinNetwork
 	list<TBitcoinPeer* > Peers;
 	TBitcoinPeer *Self;
 
-	list<TNodeInfo *> Directory;
+	list<TNodeInfo> Directory;
 
 	TTransactionPool *TransactionPool;
 	TBlockPool *BlockPool;
