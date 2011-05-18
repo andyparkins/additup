@@ -138,6 +138,7 @@ class TBlock
 	const TBlock *getParent() const { return Parent; }
 
 	virtual void updateFromMessage( const TBitcoinHash &, const TMessage_block * ) = 0;
+	virtual const TMessage_block *getMessage() const = 0;
 
 	virtual unsigned int getHeight() const = 0;
 	virtual const TBitcoinHash &getHash() const = 0;
@@ -188,6 +189,8 @@ class TMessageBasedBlock : public TBlock
 	void flush() { cachedHash.invalidate(); }
 
 	ostream &printOn( ostream & ) const;
+
+	const TMessage_block *getMessage() const { return Message; }
 
   protected:
 	TMessage_block *Message;
