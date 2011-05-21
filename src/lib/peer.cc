@@ -298,7 +298,7 @@ void TBitcoinPeer::receive( const string &s )
 	// the factory, and create the verack response
 
 	if( State == Connected ) {
-		log() << "[PEER] State: Connected" << endl;
+//		log() << "[PEER] State: Connected" << endl;
 		if( Factory == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in connected mode" );
 
@@ -314,7 +314,7 @@ void TBitcoinPeer::receive( const string &s )
 				break;
 			Factory->answer( Message.get() );
 
-			log() << "[PEER] Got message " << *Message << endl;
+			log() << "[PEER] RX< " << *Message << endl;
 
 		} while( true );
 	}
