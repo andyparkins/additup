@@ -67,6 +67,18 @@ TMessageFactory::~TMessageFactory()
 		delete Templates.front();
 		Templates.erase( Templates.begin() );
 	}
+
+	// Tidy up anything left on the queues
+	while( !IncomingQueue.empty() ) {
+		delete IncomingQueue.front();
+		IncomingQueue.erase( IncomingQueue.begin() );
+	}
+	while( !OutgoingQueue.empty() ) {
+		delete OutgoingQueue.front();
+		OutgoingQueue.erase( OutgoingQueue.begin() );
+	}
+
+
 }
 
 //
