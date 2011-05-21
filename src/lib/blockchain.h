@@ -137,7 +137,7 @@ class TBlock
 
 	const TBlock *getParent() const { return Parent; }
 
-	virtual void updateFromMessage( const TBitcoinHash &, const TMessage_block * ) = 0;
+	virtual void updateFromMessage( const TMessage_block * ) = 0;
 	virtual const TMessage_block *getMessage() const = 0;
 
 	virtual unsigned int getHeight() const = 0;
@@ -158,7 +158,7 @@ class TBlock
 	virtual ostream &printOn( ostream & ) const = 0;
 
   protected:
-	void validate( const TBitcoinHash & ) const;
+	void validate() const;
 
   protected:
 	TBlockPool *Pool;
@@ -178,7 +178,7 @@ class TMessageBasedBlock : public TBlock
 	~TMessageBasedBlock();
 	virtual TBlock *clone() const { return new TMessageBasedBlock(*this); }
 
-	void updateFromMessage( const TBitcoinHash &, const TMessage_block * );
+	void updateFromMessage( const TMessage_block * );
 
 	unsigned int getHeight() const;
 	const TBitcoinHash &getHash() const;
@@ -231,9 +231,9 @@ class TBlockPool
 	TBlockPool( const TBitcoinNetwork * );
 	virtual ~TBlockPool();
 
-	void receiveBlock( const TBitcoinHash &, const TMessage_inv * );
-	void receiveBlock( const TBitcoinHash &, const TMessage_block * );
-	void receiveBlock( const TBitcoinHash &, const TMessage_headers * );
+	void receiveBlocks( TMessage_inv * );
+	void receiveBlock( const TMessage_block * );
+	void receiveBlocks( const TMessage_headers * );
 
 	virtual void putBlock( const TBitcoinHash &, TBlock * ) = 0;
 	virtual TBlock *getBlock( const TBitcoinHash & ) const = 0;

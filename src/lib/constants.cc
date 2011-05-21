@@ -186,7 +186,9 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 		// it can be compared against the genesis block we eventually
 		// see in the block chain
 		GenesisBlock = new TMessageBasedBlock( NULL );
-		GenesisBlock->updateFromMessage( GenesisHash, &message );
+		GenesisBlock->updateFromMessage( &message );
+		if( GenesisBlock->getHash() != GenesisHash )
+			throw logic_error( "GenesisBlock hash doesn't match pre-programmed hash" );
 	}
 	const char *className() const { return "TTestnetNetworkParameters"; }
 };
@@ -274,7 +276,9 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		// it can be compared against the genesis block we eventually
 		// see in the block chain
 		GenesisBlock = new TMessageBasedBlock( NULL );
-		GenesisBlock->updateFromMessage( GenesisHash, &message );
+		GenesisBlock->updateFromMessage( &message );
+		if( GenesisBlock->getHash() != GenesisHash )
+			throw logic_error( "GenesisBlock hash doesn't match pre-programmed hash" );
 
 		// Checkpoints from official client
 		Checkpoints[ 11111] = TBitcoinHash("0000000069e244f73d78e8fd29ba2fd2ed618bd6fa2ee92559f542fdb26e7c1d");

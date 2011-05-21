@@ -73,12 +73,8 @@ void TBlock::registerChild( TBlock *Child )
 // Description:
 // Without reference to other blocks, see if the block looks reasonable.
 //
-void TBlock::validate( const TBitcoinHash &hash ) const
+void TBlock::validate() const
 {
-	// If the hash doesn't verify, it doesn't get in the chain
-	if( getHash() != hash )
-		throw block_chain_error_hash();
-
 	// The way the proof of work system works is that the block makes a
 	// claim of difficulty, which is essentially a 256-bit threshold.
 	// The hash of the block must be less than this claimed difficulty
@@ -241,7 +237,7 @@ TMessageBasedBlock::~TMessageBasedBlock()
 // Function:	TMessageBasedBlock :: setMessage
 // Description:
 //
-void TMessageBasedBlock::updateFromMessage( const TBitcoinHash &hash, const TMessage_block *m )
+void TMessageBasedBlock::updateFromMessage( const TMessage_block *m )
 {
 	if( Message != NULL ) {
 		// XXX: Merge incoming message into existing message?
@@ -269,7 +265,7 @@ void TMessageBasedBlock::updateFromMessage( const TBitcoinHash &hash, const TMes
 	// Invalidate any cached hash
 	flush();
 
-	validate( hash );
+	validate();
 }
 
 //
@@ -416,7 +412,7 @@ TBlockPool::~TBlockPool()
 // Function:	TBlockPool :: receiveBlock
 // Description:
 //
-void TBlockPool::receiveBlock( const TBitcoinHash &NetworkHash, const TMessage_block *message )
+void TBlockPool::receiveBlock( const TMessage_block *message )
 {
 	// Create a new block
 	TBlock *thisBlock = createBlock();
@@ -425,7 +421,7 @@ void TBlockPool::receiveBlock( const TBitcoinHash &NetworkHash, const TMessage_b
 	// throw an exception if the network hash doesn't equal the
 	// calculated hash
 	try {
-		thisBlock->updateFromMessage( NetworkHash, message );
+		thisBlock->updateFromMessage( message );
 	} catch( ... ) {
 		delete thisBlock;
 		throw;
@@ -442,7 +438,7 @@ void TBlockPool::receiveBlock( const TBitcoinHash &NetworkHash, const TMessage_b
 		delete thisBlock;
 		thisBlock = existingBlock;
 		// Let the existing block have a look at the message as well
-		thisBlock->updateFromMessage( NetworkHash, message );
+		thisBlock->updateFromMessage( message );
 	} else {
 		// If not, store the new block in the pool
 		putBlock( thisBlock->getHash(), thisBlock );
