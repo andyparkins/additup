@@ -436,6 +436,9 @@ class TMessage_InventoryBase : public TMessageWithChecksum
 	}
 
   protected:
+	ostream &printOn( ostream & ) const;
+
+  protected:
 	TNElementsElement<TInventoryElement> Inventory;
 
 	static const unsigned int MAXIMUM_PAYLOAD;
