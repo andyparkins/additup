@@ -268,8 +268,12 @@ void TBitcoinPeer::receive( const string &s )
 
 			log() << "[PEER] Version message received, " << *VersionMessage << endl;
 
+			TMessageFactory *newFactory = VersionMessage->createMessageFactory();
+			// Copy anything that the old factory had queued
+			newFactory->moveQueues( Factory );
+			// Replace
 			delete Factory;
-			Factory = VersionMessage->createMessageFactory();
+			Factory = newFactory;
 
 			State = Connected;
 
