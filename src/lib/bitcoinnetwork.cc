@@ -241,24 +241,12 @@ TNodeInfo &TBitcoinNetwork::updateDirectory( const TNodeInfo &Node )
 //
 void TBitcoinNetwork::process( TMessage *Message )
 {
-	TMessage *Answer = NULL;
-
-	// --------
-	log() << "[NETWK] RX< " << *Message << endl;
-
+	log() << "[NETW] RX< " << *Message << endl;
 
 	if( Message == NULL ) {
 		// Spontaneous
 	} else if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
-//	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
-//		// RX< version209
-//		// TX> verack
-//		return new TMessage_verack();
-//	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
-//		// No response needed
-//	} else if( dynamic_cast<TMessage_verack*>( Message ) != NULL ) {
-//		// No response needed
 	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
 		// RX< inv
 		// TX> getdata
@@ -287,7 +275,7 @@ void TBitcoinNetwork::process( TMessage *Message )
 		// peers from a database of known active peers. The typical
 		// presumption is that a node is likely to be active if it has
 		// been sending a message within the last three hours."
-		Answer = new TMessage_addr();
+//		Answer = new TMessage_addr();
 	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
 		// RX< submitorder
 		// TX> reply
@@ -309,13 +297,6 @@ void TBitcoinNetwork::process( TMessage *Message )
 	} else if( dynamic_cast<TMessage_alert*>( Message ) != NULL ) {
 		// No response needed
 	}
-
-
-	if( Answer == NULL )
-		return;
-
-	// The answer goes back to the peer it came from
-	Message->getPeer()->queueOutgoing( Answer );
 }
 
 //
