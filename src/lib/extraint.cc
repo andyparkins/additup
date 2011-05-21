@@ -1158,6 +1158,29 @@ TGenericBigInteger<tLittleInteger>::operator~() const
 //
 // Function:	TGenericBigInteger :: reversedBytes
 // Description:
+// Reverse the order of the bytes in the integer.
+//
+// Consider these blocks  (highest bit 75)
+//   XXXX0908 07060504 03020100
+//
+// We want the output blocks to be
+//
+//   XXXX0001 02030405 06070809
+//
+// First we flip the blocks and flip the bytes within each block.
+//
+//   00010203 04050607 0809XXXX
+//
+// Then we bit shift right two bytes so that the top byte ends up as the
+// bottom byte.  We work out that it's two bytes because there are 32
+// bits per block.
+//
+//   Remainder bits, 75 % 32 = 11 bits
+//
+// We're not doing a full bit flip, we're doing a byte flip, so we want
+// to turn this into bytes, so we divide by eight and round up.
+//
+//   11 / 8 + 1 = 2
 //
 template <typename tLittleInteger>
 TGenericBigInteger<tLittleInteger>
@@ -1165,12 +1188,14 @@ TGenericBigInteger<tLittleInteger>::reversedBytes() const
 {
 	TGenericBigInteger<tLittleInteger> R;
 	typename tLittleDigitsVector::const_reverse_iterator it;
+	tIndex OldHighestBit = highestBit();
 
 	R.LittleDigits.clear();
 
 	// Start at most significant end of source
 	it = LittleDigits.rbegin();
 
+	// Flip the blocks
 	while( it != LittleDigits.rend() ) {
 		tLittleInteger Hold = (*it);
 		switch( sizeof(Hold) ) {
@@ -1192,6 +1217,20 @@ TGenericBigInteger<tLittleInteger>::reversedBytes() const
 	}
 
 	R.normalise();
+
+	// 00 00 00 01 -> 01 00 00 00 -> 01            hb = 0   bs >>= 3
+	// 00 00 01 02 -> 02 01 00 00 -> 02 01         hb = 8   bs >>= 2
+	// 00 01 02 03 -> 03 02 01 00 -> 03 02 01      hb = 16  bs >>= 1
+	// 01 02 03 04 -> 04 03 02 01 -> 04 03 02 01   hb = 24  bs >>= 0
+	//
+	// 00 00 00 ff -> ff 00 00 00 -> ff            hb = 7   bs >>= 3
+	// 00 00 ff fe -> fe ff 00 00 -> fe ff         hb = 15  bs >>= 2
+	// 00 ff fe fd -> fd fe ff 00 -> fd fe ff      hb = 23  bs >>= 1
+	// ff fe fd fc -> fc fd fe ff -> fc fd fe ff   hb = 31  bs >>= 0
+
+	// Now we have flipped the blocks we perform whatever byte shift is
+	// needed to finish off
+	R >>= ((bitsPerBlock - 1 - (OldHighestBit % bitsPerBlock))/8)*8;
 
 	return R;
 }
