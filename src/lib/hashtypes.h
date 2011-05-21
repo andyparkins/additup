@@ -93,6 +93,8 @@ class TBitcoinHash : public TBigUnsignedInteger
 
   protected:
 	string stringPad( const string &, unsigned int ) const;
+
+	static const unsigned int HASH_BYTES;
 };
 
 

@@ -121,17 +121,23 @@ ostream &TBitcoinBase58::printOn( ostream &s ) const
 // ------
 
 //
+// Static:	TBitcoinHash :: HASH_BYTES
+// Description:
+//
+const unsigned int TBitcoinHash::HASH_BYTES = 32;
+
+//
 // Function:	TBitcoinHash :: stringPad
 // Description:
 //
 string TBitcoinHash::stringPad( const string &s, unsigned int ) const
 {
-	if( s.size() < 32*2 ) {
+	if( s.size() < HASH_BYTES*2 ) {
 		string pad;
-		pad.assign( 32*2 - s.size(), '0' );
+		pad.assign( HASH_BYTES*2 - s.size(), '0' );
 		return pad + s;
-	} else if( s.size() > 32*2 ) {
-		throw logic_error( "TBitcoinHashes can't be more than 32 bytes" );
+	} else if( s.size() > HASH_BYTES*2 ) {
+		throw logic_error( "TBitcoinHashes can't be more than HASH_BYTES bytes" );
 	} else {
 		return s;
 	}
