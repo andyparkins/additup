@@ -409,6 +409,44 @@ TBlockPool::~TBlockPool()
 }
 
 //
+// Function:	TBlockPool :: receiveInventory
+// Description:
+//
+void TBlockPool::receiveInventory( TMessage_inv *inv )
+{
+	TMessage_getdata *getdata = new TMessage_getdata;
+
+	for( unsigned int i = 0; i < inv->size(); i++ ) {
+		if( (*inv)[i].ObjectType != TInventoryElement::MSG_BLOCK )
+			continue;
+
+		// RX< inv
+		if( blockExists( (*inv)[i].Hash.get() ) )
+			continue;
+
+		log() << "[BLKC] Block " << (*inv)[i].Hash.get()
+			<< " not found in pool, requesting" << endl;
+
+		// TX> getdata
+		TInventoryElement &elem( getdata->appendInventory() );
+
+		// Request the inventory item we were offered
+		elem = (*inv)[i];
+
+		// RX< block
+		// Add blank to blockchain?
+	}
+
+	// Only send the request if it's got any requests in it
+	if( getdata->size() > 0 ) {
+//		log() << "[NETW] NTX> " << *getdata << endl;
+		inv->getPeer()->queueOutgoing( getdata );
+	} else {
+		delete getdata;
+	}
+}
+
+//
 // Function:	TBlockPool :: receiveBlock
 // Description:
 //

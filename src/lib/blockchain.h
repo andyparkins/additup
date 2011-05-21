@@ -231,9 +231,9 @@ class TBlockPool
 	TBlockPool( const TBitcoinNetwork * );
 	virtual ~TBlockPool();
 
-	void receiveBlocks( TMessage_inv * );
+	void receiveInventory( TMessage_inv * );
 	void receiveBlock( const TMessage_block * );
-	void receiveBlocks( const TMessage_headers * );
+	void receiveHeaders( const TMessage_headers * );
 
 	virtual void putBlock( const TBitcoinHash &, TBlock * ) = 0;
 	virtual TBlock *getBlock( const TBitcoinHash & ) const = 0;

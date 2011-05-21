@@ -26,6 +26,7 @@
 // --- Project
 #include "logstream.h"
 #include "messages.h"
+#include "blockchain.h"
 
 
 // -------------- Namespace
@@ -217,6 +218,7 @@ TBitcoinNetwork::TBitcoinNetwork() :
 	BlockPool( NULL ),
 	NetworkTimeOffset( 0 )
 {
+	BlockPool = new TBlockMemoryPool( this );
 }
 
 //
@@ -248,13 +250,16 @@ void TBitcoinNetwork::process( TMessage *Message )
 	} else if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
+		// No need to dynamic cast again
+		TMessage_inv *inv = reinterpret_cast<TMessage_inv*>( Message );
 		// RX< inv
 		// TX> getdata
 		// RX< block
-		//  or
+		BlockPool->receiveInventory( inv );
 		// RX< inv
 		// TX> getdata
 		// RX< tx
+//		TransactionPool->receiveInventory( inv );
 	} else if( dynamic_cast<TMessage_getdata*>( Message ) != NULL ) {
 		// RX< getdata
 		// TX> block
@@ -286,6 +291,8 @@ void TBitcoinNetwork::process( TMessage *Message )
 		// No response needed
 	} else if( dynamic_cast<TMessage_block*>( Message ) != NULL ) {
 		// No response needed
+		// Pass the message straight to the block chain
+		BlockPool->receiveBlock( reinterpret_cast<TMessage_block*>( Message ) );
 	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
