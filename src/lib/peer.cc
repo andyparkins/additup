@@ -374,8 +374,10 @@ void TBitcoinPeer::receive( const string &s )
 			}
 		}
 
-		if( VerackReceived && VersionSent )
+		if( VerackReceived && VersionSent ) {
+			log() << "[PEER] Handshake complete, setting state to 'Connected'" << endl;
 			State = Connected;
+		}
 	}
 
 	if( State == Connected ) {
