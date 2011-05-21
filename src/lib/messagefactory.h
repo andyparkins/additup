@@ -112,6 +112,8 @@ class TMessageFactory
 		return x;
 	}
 
+	void moveQueues( TMessageFactory * );
+
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
 	string::size_type findNextMagic( const string &, string::size_type = 0 ) const;

@@ -311,6 +311,18 @@ void TMessageFactory::init()
 	Initialised = true;
 }
 
+//
+// Function:	TMessageFactory :: moveQueues
+// Description:
+//
+void TMessageFactory::moveQueues( TMessageFactory *O )
+{
+	IncomingQueue = O->IncomingQueue;
+	O->IncomingQueue.clear();
+	OutgoingQueue = O->OutgoingQueue;
+	O->OutgoingQueue.clear();
+}
+
 // ---------
 
 //
