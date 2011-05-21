@@ -67,18 +67,6 @@ TMessageFactory::~TMessageFactory()
 		delete Templates.front();
 		Templates.erase( Templates.begin() );
 	}
-
-	// Tidy up anything left on the queues
-	while( !IncomingQueue.empty() ) {
-		delete IncomingQueue.front();
-		IncomingQueue.erase( IncomingQueue.begin() );
-	}
-	while( !OutgoingQueue.empty() ) {
-		delete OutgoingQueue.front();
-		OutgoingQueue.erase( OutgoingQueue.begin() );
-	}
-
-
 }
 
 //
@@ -157,7 +145,8 @@ void TMessageFactory::answer( TMessage *Message )
 
 	Answer->setPeer( Peer );
 	Answer->setFields();
-	OutgoingQueue.push_back( Answer );
+
+	Peer->queueOutgoing( Answer );
 }
 
 //
@@ -245,7 +234,7 @@ void TMessageFactory::receive( const string &s )
 		if( potential != NULL ) {
 //			log() << *potential << endl;
 			// Push it onto the receive queue
-			IncomingQueue.push_back( potential );
+			Peer->queueIncoming( potential );
 			// Remove the bytes from the RX buffer
 			sp = potential->getMessageSize();
 			RXBuffer = RXBuffer.substr( sp, RXBuffer.size() - sp );
@@ -312,18 +301,6 @@ void TMessageFactory::init()
 	Initialised = true;
 }
 
-//
-// Function:	TMessageFactory :: moveQueues
-// Description:
-//
-void TMessageFactory::moveQueues( TMessageFactory *O )
-{
-	IncomingQueue = O->IncomingQueue;
-	O->IncomingQueue.clear();
-	OutgoingQueue = O->OutgoingQueue;
-	O->OutgoingQueue.clear();
-}
-
 // ---------
 
 //
@@ -361,7 +338,7 @@ void TVersioningMessageFactory::answer( TMessage *Message )
 
 	Answer->setPeer( Peer );
 	Answer->setFields();
-	OutgoingQueue.push_back( Answer );
+	Peer->queueOutgoing( Answer );
 }
 
 //
@@ -533,21 +510,24 @@ TBitcoinScript *TMessageFactory_31402::createVersionedBitcoinScript() const
 #include <iostream>
 #include "unittest.h"
 #include "logstream.h"
+#include "peer.h"
 
 // -------------- main()
 
 int main( int argc, char *argv[] )
 {
 	try {
+		TBitcoinPeer Peer;
 		TVersioningMessageFactory PF;
+		PF.setPeer( &Peer );
 
 		log() << "--- " << PF.className() << endl;
 
 		const string *p = UNITTESTSampleMessages;
 		while( !p->empty() ) {
 			PF.receive( *p );
-			if( PF.newestIncoming() != NULL ) {
-				log() << "PF.queue() = " << *PF.newestIncoming() << endl;
+			if( Peer.newestIncoming() != NULL ) {
+				log() << "PF.queue() = " << *Peer.newestIncoming() << endl;
 			} else {
 				log() << "no packet yet" << endl;
 			}
@@ -560,15 +540,17 @@ int main( int argc, char *argv[] )
 	}
 
 	try {
+		TBitcoinPeer Peer;
 		TMessageFactory_31402 PF;
+		PF.setPeer( &Peer );
 
 		log() << "--- " << PF.className() << endl;
 
 		const string *p = UNITTESTSampleMessages;
 		while( !p->empty() ) {
 			PF.receive( *p );
-			if( PF.newestIncoming() != NULL ) {
-				log() << "PF.queue() = " << *PF.newestIncoming() << endl;
+			if( Peer.newestIncoming() != NULL ) {
+				log() << "PF.queue() = " << *Peer.newestIncoming() << endl;
 			} else {
 				log() << "no packet yet" << endl;
 			}

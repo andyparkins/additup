@@ -122,7 +122,12 @@ class TBitcoinPeer
 
 	const TMessageFactory *factory() const { return Factory; }
 
+	TMessage *oldestIncoming() const;
+	TMessage *newestIncoming() const;
+	TMessage *nextIncoming();
 	TMessage *nextOutgoing();
+	void queueOutgoing( TMessage * );
+	void queueIncoming( TMessage * );
 
   protected:
 	const TNodeInfo *Info;
@@ -130,6 +135,9 @@ class TBitcoinPeer
 	TMessageFactory *Factory;
 
 	eState State;
+
+	list<TMessage*> IncomingQueue;
+	list<TMessage*> OutgoingQueue;
 };
 
 

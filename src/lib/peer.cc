@@ -122,6 +122,16 @@ TBitcoinPeer::TBitcoinPeer( const TNodeInfo *info, TBitcoinNetwork *network ) :
 TBitcoinPeer::~TBitcoinPeer()
 {
 	delete Factory;
+
+	// Tidy up anything left on the queues
+	while( !IncomingQueue.empty() ) {
+		delete IncomingQueue.front();
+		IncomingQueue.erase( IncomingQueue.begin() );
+	}
+	while( !OutgoingQueue.empty() ) {
+		delete OutgoingQueue.front();
+		OutgoingQueue.erase( OutgoingQueue.begin() );
+	}
 }
 
 //
@@ -136,14 +146,69 @@ const TNetworkParameters *TBitcoinPeer::getNetworkParameters() const
 }
 
 //
+// Function:	TBitcoinPeer :: oldestIncoming
+// Description:
+//
+TMessage *TBitcoinPeer::oldestIncoming() const
+{
+	if( IncomingQueue.empty() )
+		return NULL;
+	return IncomingQueue.front();
+}
+
+//
+// Function:	TBitcoinPeer :: nextIncoming
+// Description:
+//
+TMessage *TBitcoinPeer::newestIncoming() const
+{
+	if( IncomingQueue.empty() )
+		return NULL;
+	return IncomingQueue.back();
+}
+
+//
+// Function:	TBitcoinPeer :: nextIncoming
+// Description:
+//
+TMessage *TBitcoinPeer::nextIncoming()
+{
+	if( IncomingQueue.empty() )
+		return NULL;
+	TMessage *x = IncomingQueue.front();
+	IncomingQueue.pop_front();
+	return x;
+}
+
+//
 // Function:	TBitcoinPeer :: nextOutgoing
 // Description:
 //
 TMessage *TBitcoinPeer::nextOutgoing()
 {
-	if( Factory == NULL )
+	if( OutgoingQueue.empty() )
 		return NULL;
-	return Factory->nextOutgoing();
+	TMessage *x = OutgoingQueue.front();
+	OutgoingQueue.pop_front();
+	return x;
+}
+
+//
+// Function:	TBitcoinPeer :: queueOutgoing
+// Description:
+//
+void TBitcoinPeer::queueOutgoing( TMessage *m )
+{
+	OutgoingQueue.push_back( m );
+}
+
+//
+// Function:	TBitcoinPeer :: queueIncoming
+// Description:
+//
+void TBitcoinPeer::queueIncoming( TMessage *m )
+{
+	IncomingQueue.push_back( m );
 }
 
 //
@@ -257,7 +322,7 @@ void TBitcoinPeer::receive( const string &s )
 		Factory->answer(NULL);
 		Factory->receive(s);
 
-		auto_ptr<TMessage> Message( Factory->nextIncoming() );
+		auto_ptr<TMessage> Message( nextIncoming() );
 		Factory->answer( Message.get() );
 
 		if( dynamic_cast<TMessage_version*>( Message.get() ) != NULL ) {
@@ -268,12 +333,8 @@ void TBitcoinPeer::receive( const string &s )
 
 			log() << "[PEER] Version message received, " << *VersionMessage << endl;
 
-			TMessageFactory *newFactory = VersionMessage->createMessageFactory();
-			// Copy anything that the old factory had queued
-			newFactory->moveQueues( Factory );
-			// Replace
 			delete Factory;
-			Factory = newFactory;
+			Factory = VersionMessage->createMessageFactory();
 
 			State = Connected;
 
@@ -309,7 +370,7 @@ void TBitcoinPeer::receive( const string &s )
 		auto_ptr<TMessage> Message;
 
 		do {
-			Message.reset( Factory->nextIncoming() );
+			Message.reset( nextIncoming() );
 			if( Message.get() == NULL )
 				break;
 			Factory->answer( Message.get() );

@@ -87,33 +87,6 @@ class TMessageFactory
 
 	virtual void answer( TMessage * );
 
-	TMessage *oldestIncoming() const {
-		if( IncomingQueue.empty() )
-			return NULL;
-		return IncomingQueue.front();
-	}
-	TMessage *newestIncoming() const {
-		if( IncomingQueue.empty() )
-			return NULL;
-		return IncomingQueue.back();
-	}
-	TMessage *nextIncoming() {
-		if( IncomingQueue.empty() )
-			return NULL;
-		TMessage *x = IncomingQueue.front();
-		IncomingQueue.pop_front();
-		return x;
-	}
-	TMessage *nextOutgoing() {
-		if( OutgoingQueue.empty() )
-			return NULL;
-		TMessage *x = OutgoingQueue.front();
-		OutgoingQueue.pop_front();
-		return x;
-	}
-
-	void moveQueues( TMessageFactory * );
-
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
 	string::size_type findNextMagic( const string &, string::size_type = 0 ) const;
@@ -123,8 +96,6 @@ class TMessageFactory
 
   protected:
 	string RXBuffer;
-	list<TMessage*> IncomingQueue;
-	list<TMessage*> OutgoingQueue;
 
 	bool Initialised;
 
