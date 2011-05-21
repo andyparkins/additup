@@ -396,7 +396,7 @@ void TMessage_version::setFields()
 //
 ostream &TMessage_version::printOn( ostream &s ) const
 {
-	TMessageWithoutChecksum::printOn(s);
+	s << className();
 	s << "{ Version=" << Version.getValue()
 		<< "; Services=["
 		<< (Services.getValue() & TNetworkAddressElement::NODE_NETWORK ? " NODE_NETWORK" : "" )
@@ -595,7 +595,7 @@ TVersionedMessageFactory *TMessage_version_31402::createMessageFactory() const
 //
 ostream &TMessage_addr_0::printOn( ostream &s ) const
 {
-	TMessageWithChecksum::printOn(s);
+	s << className();
 	s << "{ N=" << AddressData.size();
 	for( unsigned int i = 0; i < AddressData.size(); i++ ) {
 		s << "; [" << i << ":"
@@ -614,7 +614,7 @@ ostream &TMessage_addr_0::printOn( ostream &s ) const
 //
 ostream &TMessage_addr_31402::printOn( ostream &s ) const
 {
-	TMessageWithChecksum::printOn(s);
+	s << className();
 	s << "{ N=" << AddressData.size();
 	for( unsigned int i = 0; i < AddressData.size(); i++ ) {
 		s << "; [" << i << ":"
@@ -657,7 +657,7 @@ ostream &TMessage_InventoryBase::printOn( ostream &s ) const
 //
 ostream &TMessageGetBase::printOn( ostream &s ) const
 {
-	TMessageWithChecksum::printOn(s);
+	s << className();
 	s << "{ N=" << HashStarts.size();
 	s << " }";
 	return s;
@@ -671,7 +671,7 @@ ostream &TMessageGetBase::printOn( ostream &s ) const
 //
 ostream &TMessage_tx::printOn( ostream &s ) const
 {
-	TMessageWithChecksum::printOn(s);
+	s << className();
 	s << "{ Ni=" << Transaction.Inputs.size()
 		<< "; No=" << Transaction.Outputs.size();
 	s << "; Outputs=[";
@@ -834,7 +834,7 @@ void TMessage_block::setMerkleRoot()
 //
 ostream &TMessage_block::printOn( ostream &s ) const
 {
-	TMessageWithChecksum::printOn(s);
+	s << className();
 	s << "{ N=" << Transactions.size();
 	s << "; Merkle=[";
 	vector<TBitcoinHash>::const_iterator it;
@@ -858,7 +858,7 @@ ostream &TMessage_block::printOn( ostream &s ) const
 //
 ostream &TMessage_headers::printOn( ostream &s ) const
 {
-	TMessageWithChecksum::printOn(s);
+	s << className();
 	s << "{ N=" << BlockHeaders.size();
 	s << " }";
 	return s;
