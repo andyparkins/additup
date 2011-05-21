@@ -116,6 +116,7 @@ class TBitcoinPeer
 	~TBitcoinPeer();
 
 	void setState( eState s ) { State = s; }
+	eState getState() const { return State; }
 	void receive( const string & );
 
 	const TNetworkParameters *getNetworkParameters() const;
