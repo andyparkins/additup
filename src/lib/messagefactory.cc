@@ -70,86 +70,6 @@ TMessageFactory::~TMessageFactory()
 }
 
 //
-// Function:	TMessageFactory :: answer
-// Description:
-//
-void TMessageFactory::answer( TMessage *Message )
-{
-	TMessage *Answer = NULL;
-
-	if( Message == NULL ) {
-		// Spontaneous
-	} else if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
-		// No response needed
-//	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
-//		// RX< version209
-//		// TX> verack
-//		return new TMessage_verack();
-//	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
-//		// No response needed
-//	} else if( dynamic_cast<TMessage_verack*>( Message ) != NULL ) {
-//		// No response needed
-	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
-		// RX< inv
-		// TX> getdata
-		// RX< block
-		//  or
-		// RX< inv
-		// TX> getdata
-		// RX< tx
-	} else if( dynamic_cast<TMessage_getdata*>( Message ) != NULL ) {
-		// RX< getdata
-		// TX> block
-		//  or
-		// RX< getdata
-		// TX> tx
-	} else if( dynamic_cast<TMessage_getblocks*>( Message ) != NULL ) {
-		// RX< getblocks
-		// TX> inv
-	} else if( dynamic_cast<TMessage_getheaders*>( Message ) != NULL ) {
-		// RX< getheaders
-		// TX> headers
-	} else if( dynamic_cast<TMessage_getaddr*>( Message ) != NULL ) {
-		// "The getaddr message sends a request to a node asking for
-		// information about known active peers to help with identifying
-		// potential nodes in the network. The response to receiving
-		// this message is to transmit an addr message with one or more
-		// peers from a database of known active peers. The typical
-		// presumption is that a node is likely to be active if it has
-		// been sending a message within the last three hours."
-		Answer = new TMessage_addr();
-	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
-		// RX< submitorder
-		// TX> reply
-	} else if( dynamic_cast<TMessage_checkorder*>( Message ) != NULL ) {
-		// RX< checkorder
-		// TX> reply
-	} else if( dynamic_cast<TMessage_tx*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_block*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_reply*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_ping*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_alert*>( Message ) != NULL ) {
-		// No response needed
-	}
-
-	if( Answer == NULL )
-		return;
-
-	Answer->setPeer( Peer );
-	Answer->setFields();
-
-	Peer->queueOutgoing( Answer );
-}
-
-//
 // Function:	TMessageFactory :: receive
 // Description:
 // receive() handles the conversion of raw bytes from the peer to a
@@ -304,44 +224,6 @@ void TMessageFactory::init()
 // ---------
 
 //
-// Function:	TVersioningMessageFactory :: answer
-// Description:
-//
-void TVersioningMessageFactory::answer( TMessage *Message )
-{
-	TMessage *Answer = NULL;
-
-	if( Message == NULL ) {
-		// Spontaneous
-		if( !VersionSent ) {
-			VersionSent = true;
-			Answer = new TMessage_version_20900;
-		}
-	} else if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
-		// RX< version209
-		// TX> verack
-		if( !VerackSent ) {
-			VerackSent = true;
-			Answer = new TMessage_verack();
-		}
-	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_verack*>( Message ) != NULL ) {
-		// No response needed
-		VerackReceived = true;
-	}
-
-	if( Answer == NULL )
-		return;
-
-	Answer->setPeer( Peer );
-	Answer->setFields();
-	Peer->queueOutgoing( Answer );
-}
-
-//
 // Function:	TVersioningMessageFactory :: init
 // Description:
 //
@@ -365,7 +247,7 @@ void TVersioningMessageFactory::init()
 //
 void TMessageFactory_0::init()
 {
-	Templates.push_back( new TMessage_version_0() );
+//	Templates.push_back( new TMessage_version_0() );
 	Templates.push_back( new TMessage_verack() );
 	Templates.push_back( new TMessage_addr_0() );
 	Templates.push_back( new TMessage_inv() );
@@ -401,7 +283,7 @@ TBitcoinScript *TMessageFactory_0::createVersionedBitcoinScript() const
 void TMessageFactory_10600::init()
 {
 //	Templates.push_back( new TMessage_version_10600() );
-//	Templates.push_back( new TMessage_verack() );
+	Templates.push_back( new TMessage_verack() );
 	Templates.push_back( new TMessage_addr_0() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );
@@ -436,7 +318,7 @@ TBitcoinScript *TMessageFactory_10600::createVersionedBitcoinScript() const
 void TMessageFactory_20900::init()
 {
 //	Templates.push_back( new TMessage_version_20900() );
-//	Templates.push_back( new TMessage_verack() );
+	Templates.push_back( new TMessage_verack() );
 	Templates.push_back( new TMessage_addr_0() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );
@@ -471,7 +353,7 @@ TBitcoinScript *TMessageFactory_20900::createVersionedBitcoinScript() const
 void TMessageFactory_31402::init()
 {
 //	Templates.push_back( new TMessage_version_20900() );
-//	Templates.push_back( new TMessage_verack() );
+	Templates.push_back( new TMessage_verack() );
 	Templates.push_back( new TMessage_addr_31402() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );

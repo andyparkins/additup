@@ -111,7 +111,9 @@ TBitcoinPeer::TBitcoinPeer( const TNodeInfo *info, TBitcoinNetwork *network ) :
 	Info( info ),
 	Network( network ),
 	Factory( NULL ),
-	State( Unconnected )
+	State( Unconnected ),
+	VersionSent( false ),
+	VerackReceived( false )
 {
 }
 
@@ -245,6 +247,9 @@ void TBitcoinPeer::receive( const string &s )
 		if( Factory != NULL )
 			throw logic_error( "TBitcoinPeer::receive() can't have a factory while unconnected" );
 
+		VersionSent = false;
+		VerackReceived = false;
+
 		// The versioning factory only understands version messages
 		delete Factory;
 		Factory = new TVersioningMessageFactory;
@@ -272,11 +277,12 @@ void TBitcoinPeer::receive( const string &s )
 			// we're looking for is a magic number to tell us what network
 			// we're connected to.
 
-			// We will make the assumption that the accidental transmission
-			// of bytes matching a network magic number is impossible.
-			// Therefore we'll look through a window until we see a match.
+			// We will make the assumption that the accidental
+			// transmission of bytes matching a network magic number is
+			// impossible (or at least 2^32 to 1 against).  Therefore
+			// we'll look through a window until we see a match.
 
-			// Try reading from each byte in turn
+			// Try reading four bytes starting from each byte in turn
 			istringstream iss(s);
 			while( iss.good() ) {
 				TLittleEndian32Element PotentialMagic;
@@ -324,12 +330,16 @@ void TBitcoinPeer::receive( const string &s )
 		if( Factory == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in handshaking mode" );
 
-		// Spontaneous queue is answer(NULL);
-		Factory->answer(NULL);
+		// Send our version
+		if( !VersionSent ) {
+			VersionSent = true;
+			queueOutgoing( new TMessage_version_31402 );
+		}
+
+		// Convert stream to messages
 		Factory->receive(s);
 
 		auto_ptr<TMessage> Message( nextIncoming() );
-		Factory->answer( Message.get() );
 
 		if( dynamic_cast<TMessage_version*>( Message.get() ) != NULL ) {
 			// We don't care exactly what version message, the
@@ -338,17 +348,22 @@ void TBitcoinPeer::receive( const string &s )
 			TMessage_version *VersionMessage = dynamic_cast<TMessage_version*>( Message.get() );
 
 			log() << "[PEER] Version message received, " << *VersionMessage << endl;
-
+			TMessageFactory *newFactory = VersionMessage->createMessageFactory();
+			// Any bytes left over in the factory we're about to delete
+			// must be forwarded to the new factory
+			newFactory->receive( Factory->getRXBuffer() );
 			delete Factory;
-			Factory = VersionMessage->createMessageFactory();
-
-			State = Connected;
-
+			Factory = newFactory;
 			log() << "[PEER] Factory is now " << Factory->className() << endl;
+
+			// Acknowledge every version received, even if the remote
+			// chooses to send more than one (which it shouldn't)
+			queueOutgoing( new TMessage_verack() );
 		} else if( dynamic_cast<TMessage_verack*>( Message.get() ) != NULL ) {
 			// Not sure we care...  If we don't get a verack, then
 			// presumably the remote will just hang up on us -- what
 			// else can it do?
+			VerackReceived = true;
 		} else {
 			// Odd, we shouldn't get anything but a version message from
 			// a newly connected peer.
@@ -358,19 +373,16 @@ void TBitcoinPeer::receive( const string &s )
 				log() << "[PEER] Ignoring " << *Message.get() << endl;
 			}
 		}
-	}
 
-	// If we've been handshaking, then the version message is still in
-	// the string, which is just what we want, as it will initialise
-	// the factory, and create the verack response
+		if( VerackReceived && VersionSent )
+			State = Connected;
+	}
 
 	if( State == Connected ) {
 //		log() << "[PEER] State: Connected" << endl;
 		if( Factory == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in connected mode" );
 
-		// Spontaneous queue is answer(NULL);
-		Factory->answer(NULL);
 		Factory->receive(s);
 
 		auto_ptr<TMessage> Message;
@@ -379,9 +391,10 @@ void TBitcoinPeer::receive( const string &s )
 			Message.reset( nextIncoming() );
 			if( Message.get() == NULL )
 				break;
-			Factory->answer( Message.get() );
 
-			log() << "[PEER] RX< " << *Message << endl;
+			// The network gets to process the packets once we're
+			// connected
+			Network->process( Message.get() );
 
 		} while( true );
 	}

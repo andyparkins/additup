@@ -148,6 +148,8 @@ class TBitcoinNetwork
 
 	TNodeInfo &updateDirectory( const TNodeInfo & );
 
+	void process( TMessage * );
+
   protected:
 	const TNetworkParameters *Parameters;
 

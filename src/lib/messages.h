@@ -138,6 +138,7 @@ class TMessage
 
 	void setTemplate( bool b ) const { TemplateMessage = b; }
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
+	TBitcoinPeer *getPeer() { return Peer; }
 
 	virtual void setFields();
 

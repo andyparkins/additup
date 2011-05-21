@@ -137,6 +137,9 @@ class TBitcoinPeer
 
 	eState State;
 
+	bool VersionSent;
+	bool VerackReceived;
+
 	list<TMessage*> IncomingQueue;
 	list<TMessage*> OutgoingQueue;
 };

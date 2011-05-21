@@ -85,11 +85,11 @@ class TMessageFactory
 	void receive( const string & );
 	void transmit( TMessage * );
 
-	virtual void answer( TMessage * );
-
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
 	string::size_type findNextMagic( const string &, string::size_type = 0 ) const;
+
+	const string &getRXBuffer() const { return RXBuffer; }
 
   protected:
 	virtual void init();
@@ -121,8 +121,6 @@ class TVersioningMessageFactory : public TMessageFactory
 	TVersioningMessageFactory() : VersionSent(false), VerackSent( false ), VerackReceived( false ) {}
 
 	const char *className() { return "TVersioningMessageFactory"; }
-
-	void answer( TMessage * );
 
 	bool getReady() const { return VerackSent && VerackReceived; }
 
