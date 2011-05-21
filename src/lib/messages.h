@@ -452,6 +452,13 @@ class TMessage_InventoryBase : public TMessageWithChecksum
 		return os;
 	}
 
+	unsigned int size() const { return Inventory.size(); }
+	TInventoryElement &operator[]( unsigned int i ) { return Inventory[i]; }
+	TInventoryElement &appendInventory() {
+		Inventory.append( TInventoryElement() );
+		return Inventory.back();
+	}
+
   protected:
 	ostream &printOn( ostream & ) const;
 
