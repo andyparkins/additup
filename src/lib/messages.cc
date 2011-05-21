@@ -377,16 +377,16 @@ void TMessage_version::setFields()
 	TMessageWithoutChecksum::setFields();
 
 	Version = minimumAcceptedVersion();
-	Services;
+	Services = 0;
 	Timestamp = time(NULL);
 	AddrMe;
 	if( Version >= 10600 ) {
 		AddrFrom;
-		Nonce;
-		SubVersionNum;
+		Nonce = 0;
+		SubVersionNum = "";
 	}
 	if( Version >= 20900 ) {
-		StartingHeight;
+		StartingHeight = 0;
 	}
 }
 
