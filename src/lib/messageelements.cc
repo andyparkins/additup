@@ -77,7 +77,7 @@ ostream &TNULTerminatedStringElement::write( ostream &os ) const
 //
 ostream &TSizedStringElement::write( ostream &os ) const
 {
-	if( N >= Value.size() ) {
+	if( N <= Value.size() ) {
 		// Truncate
 		os.write( Value.data(), N );
 	} else {
@@ -504,6 +504,14 @@ int main( int argc, char *argv[] )
 
 			p++;
 		}
+
+		TSizedStringElement S(12);
+		S = "short";
+		ostringstream oss;
+		S.write( oss );
+		log() << "TSizedStringElement(12) = ";
+		TLog::hexify( log(), oss.str() );
+		log() << endl;
 
 	} catch( exception &e ) {
 		log() << e.what() << endl;
