@@ -372,6 +372,7 @@ void TVersioningMessageFactory::init()
 {
 	// Must be in reverse order of version so that the highest matches
 	// first
+	Templates.push_back( new TMessage_version_31402() );
 	Templates.push_back( new TMessage_version_20900() );
 	Templates.push_back( new TMessage_version_10600() );
 	Templates.push_back( new TMessage_version_0() );

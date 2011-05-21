@@ -314,6 +314,22 @@ class TMessage_version_20900 : public TMessage_version_10600
 };
 
 //
+// Class: TMessage_version_31402
+// Description:
+//
+class TMessage_version_31402 : public TMessage_version_20900
+{
+  public:
+	const char *className() const { return "TMessage_version_31402"; }
+	TMessage *clone() const { return new TMessage_version_31402(*this); }
+
+	TVersionedMessageFactory *createMessageFactory() const;
+
+  protected:
+	uint32_t minimumAcceptedVersion() const { return 31402; }
+};
+
+//
 // Class: TMessage_verack
 // Description:
 // The verack message is sent in response to a version message,

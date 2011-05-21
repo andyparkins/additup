@@ -568,13 +568,20 @@ ostream &TMessage_version_20900::write( ostream &os ) const
 TVersionedMessageFactory *TMessage_version_20900::createMessageFactory() const
 {
 	TVersionedMessageFactory *factory;
-	// There is no special TMessage_version_31402, so we'll handle the
-	// creation of 31402's message factory here
-	if( Version < 31402 ) {
-		factory = new TMessageFactory_20900;
-	} else {
-		factory = new TMessageFactory_31402;
-	}
+	factory = new TMessageFactory_20900;
+	// The factory has the same peer as us
+	factory->setPeer( Peer );
+	return factory;
+}
+
+//
+// Function:	TMessage_version_31402 :: createMessageFactory
+// Description:
+//
+TVersionedMessageFactory *TMessage_version_31402::createMessageFactory() const
+{
+	TVersionedMessageFactory *factory;
+	factory = new TMessageFactory_31402;
 	// The factory has the same peer as us
 	factory->setPeer( Peer );
 	return factory;
