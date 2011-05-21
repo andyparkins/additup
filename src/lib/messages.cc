@@ -639,9 +639,9 @@ ostream &TMessage_InventoryBase::printOn( ostream &s ) const
 		<< "; Inv=[";
 	for( unsigned int i = 0; i < Inventory.size(); i++ ) {
 		s << " "
-			<< (Inventory[i].ObjectType == 0 ? "ERROR" : "")
-			<< (Inventory[i].ObjectType == 1 ? "TX" : "")
-			<< (Inventory[i].ObjectType == 2 ? "BLOCK" : "")
+			<< (Inventory[i].ObjectType == TInventoryElement::ERROR ? "ERROR" : "")
+			<< (Inventory[i].ObjectType == TInventoryElement::MSG_TX ? "TX" : "")
+			<< (Inventory[i].ObjectType == TInventoryElement::MSG_BLOCK ? "BLOCK" : "")
 			<< ":" << Inventory[i].Hash.get();
 	}
 	s << " ]";
