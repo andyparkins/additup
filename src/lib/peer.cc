@@ -199,6 +199,10 @@ TMessage *TBitcoinPeer::nextOutgoing()
 //
 void TBitcoinPeer::queueOutgoing( TMessage *m )
 {
+	// If it's on our queue it's going to this peer
+	m->setPeer( this );
+	// Make sure the message is valid
+	m->setFields();
 	OutgoingQueue.push_back( m );
 }
 
@@ -208,6 +212,8 @@ void TBitcoinPeer::queueOutgoing( TMessage *m )
 //
 void TBitcoinPeer::queueIncoming( TMessage *m )
 {
+	// If it's on our queue it came from our peer
+	m->setPeer( this );
 	IncomingQueue.push_back( m );
 }
 
