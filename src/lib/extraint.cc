@@ -1292,6 +1292,9 @@ TGenericBigInteger<tLittleInteger>::operator>>=( tIndex b )
 	// The left over must be done with a bit shift
 	b = b % bitsPerBlock;
 
+	if( b == 0 )
+		return *this;
+
 	// Start at the most significant end
 	for( it = LittleDigits.rbegin(); it != LittleDigits.rend(); it++ ) {
 		// We're going to shift right, so some bits are going to drop
