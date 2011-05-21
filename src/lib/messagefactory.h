@@ -88,24 +88,24 @@ class TMessageFactory
 	virtual void answer( TMessage * );
 
 	TMessage *oldestIncoming() const {
-		if( IncomingQueue.size() == 0 )
+		if( IncomingQueue.empty() )
 			return NULL;
 		return IncomingQueue.front();
 	}
 	TMessage *newestIncoming() const {
-		if( IncomingQueue.size() == 0 )
+		if( IncomingQueue.empty() )
 			return NULL;
 		return IncomingQueue.back();
 	}
 	TMessage *nextIncoming() {
-		if( IncomingQueue.size() == 0 )
+		if( IncomingQueue.empty() )
 			return NULL;
 		TMessage *x = IncomingQueue.front();
 		IncomingQueue.pop_front();
 		return x;
 	}
 	TMessage *nextOutgoing() {
-		if( OutgoingQueue.size() == 0 )
+		if( OutgoingQueue.empty() )
 			return NULL;
 		TMessage *x = OutgoingQueue.front();
 		OutgoingQueue.pop_front();
