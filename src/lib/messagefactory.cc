@@ -157,6 +157,7 @@ void TMessageFactory::answer( TMessage *Message )
 
 	Answer->setPeer( Peer );
 	Answer->setFields();
+	OutgoingQueue.push_back( Answer );
 }
 
 //
@@ -360,6 +361,7 @@ void TVersioningMessageFactory::answer( TMessage *Message )
 
 	Answer->setPeer( Peer );
 	Answer->setFields();
+	OutgoingQueue.push_back( Answer );
 }
 
 //
