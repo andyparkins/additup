@@ -155,6 +155,22 @@ void TMessage::setFields()
 		MessageHeader.Magic = Peer->getNetworkParameters()->Magic;
 	}
 	MessageHeader.Command = commandString();
+
+	// Write the message to a buffer
+	ostringstream oss;
+	write( oss );
+
+	// We find the size of the header by asking getMessageSize(), but we
+	// need to zero the payload length first
+	MessageHeader.PayloadLength = 0;
+
+	// Copy the payload part to RawPayload, note getMessageSize() is
+	// actually getHeaderSize() at this point because PayloadLength is
+	// zero, so we're copying all but the header to RawPayload.
+	RawPayload = oss.str().substr( getMessageSize(), oss.str().size() - getMessageSize() );
+
+	// Update PayloadLength, now that we know it
+	MessageHeader.PayloadLength = RawPayload.size();
 }
 
 //
@@ -290,20 +306,6 @@ void TMessageWithChecksum::verifyPayloadChecksum() const
 void TMessageWithChecksum::setFields()
 {
 	TMessage::setFields();
-
-	// Write the message to a buffer
-	ostringstream oss;
-	write( oss );
-
-	// We find the size of the header by asking getMessageSize(), but we
-	// need to zero the payload length first
-	MessageHeader.PayloadLength = 0;
-
-	// Copy the payload part to RawPayload
-	RawPayload = oss.str().substr( getMessageSize(), oss.str().size() - getMessageSize() );
-
-	// Update PayloadLength, now that we know it
-	MessageHeader.PayloadLength = RawPayload.size();
 
 	// Update checksum
 	generatePayloadChecksum();
