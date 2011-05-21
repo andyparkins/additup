@@ -345,7 +345,7 @@ void TBitcoinPeer::receive( const string &s )
 			// We don't care exactly what version message, the
 			// TMessage_version base class is more than enough for us to
 			// query the message
-			TMessage_version *VersionMessage = dynamic_cast<TMessage_version*>( Message.get() );
+			TMessage_version *VersionMessage = reinterpret_cast<TMessage_version*>( Message.get() );
 
 			log() << "[PEER] Version message received, " << *VersionMessage << endl;
 			TMessageFactory *newFactory = VersionMessage->createMessageFactory();
