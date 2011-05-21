@@ -88,6 +88,8 @@ class TBitcoinHash : public TBigUnsignedInteger
 
 	ostream &printOn( ostream &s ) const;
 
+	TBitcoinHash reversedBytes() const;
+
 	// Import operators masked by C++ defaults
 	using TBigUnsignedInteger::operator=;
 

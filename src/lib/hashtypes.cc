@@ -161,6 +161,32 @@ ostream &TBitcoinHash::printOn( ostream &s ) const
 	return s;
 }
 
+//
+// Function:	TBitcoinHash :: reversedBytes
+// Description:
+//
+TBitcoinHash TBitcoinHash::reversedBytes() const
+{
+	tIndex OldHighestBit = highestBit();
+	TBitcoinHash X( TBigUnsignedInteger::reversedBytes() );
+
+	// Consider these blocks  (highest bit 75)
+	//   XXXX0908 07060504 03020100
+	// After base-class reversal these will be
+	//   00000001 02030405 06070809
+	// Lets say we want a 18 byte hash, then our left shift will be
+	// (18-(75/8))*8 = 9
+	//   0102 03040506 07080900 00000000 00000000
+	// Final size 18 bytes, flipped version of original.
+
+	// The bytes are now reversed, but that's not enough, we have to
+	// reverse to a fixed width for a hash.  For that we need to know
+	// how many bytes we were short of 32 originally.
+	X <<= (HASH_BYTES - 1 - (OldHighestBit/8)) * 8;
+
+	return X;
+}
+
 // -------------- Function definitions
 
 
