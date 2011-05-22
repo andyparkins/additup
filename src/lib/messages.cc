@@ -801,13 +801,13 @@ void TMessage_block::calculateMerkleTree()
 			unsigned int Offset1 = (Offset0 + 1 < depthSize - 1) ? (Offset0 + 1) : (depthSize - 1);
 
 			string Buffer;
-			Buffer = MerkleTree[depthIndex + Offset0].toBytes()
-				+ MerkleTree[depthIndex + Offset1].toBytes();
+			Buffer = MerkleTree[depthIndex + Offset0].reversedBytes().toBytes()
+				+ MerkleTree[depthIndex + Offset1].reversedBytes().toBytes();
 
 			// The PayloadHasher is fine for creating the Merkle hashes
 			Buffer = PayloadHasher->transform( Buffer );
 
-			MerkleTree.push_back( TBitcoinHash().fromBytes( Buffer ) );
+			MerkleTree.push_back( TBitcoinHash().fromBytes( Buffer ).reversedBytes() );
 		}
 		depthIndex += depthSize;
 	}
