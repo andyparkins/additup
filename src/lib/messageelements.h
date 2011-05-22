@@ -503,6 +503,11 @@ class TNetworkAddressElement : public TMessageElement
 	};
 
   public:
+	TNetworkAddressElement() {
+		Services = 0;
+		PortNumber = 0;
+	}
+
 	istream &read( istream &is ) {
 		is >> Services >> Address >> PortNumber;
 		return is;
