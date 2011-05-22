@@ -45,6 +45,26 @@
 // -------------- Class member definitions
 
 //
+// Function:	TCoinTransfer :: TCoinTransfer
+// Description:
+//
+TCoinTransfer::TCoinTransfer()
+{
+}
+
+// -------------
+
+//
+// Function:	TTransaction :: ~TTransaction
+// Description:
+//
+TTransaction::~TTransaction()
+{
+}
+
+// -------------
+
+//
 // Function:	TMessageBasedTransaction :: ~TMessageBasedTransaction
 // Description:
 //
