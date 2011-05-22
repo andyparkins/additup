@@ -1075,6 +1075,24 @@ int main( int argc, char *argv[] )
 		return 255;
 	}
 
+	try {
+		log() << "--- Begin getdata" << endl;
+		TMessage_getdata getdata;
+		TInventoryElement &elem( getdata.appendInventory() );
+		getdata.setFields();
+
+		ostringstream oss;
+		getdata.write( oss );
+
+		log() << getdata.className() << " = ";
+		TLog::hexify( log(), oss.str() );
+		log() << endl;
+
+	} catch( std::exception &e ) {
+		log() << e.what() << endl;
+		return 255;
+	}
+
 	return 0;
 }
 #endif
