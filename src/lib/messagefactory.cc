@@ -120,6 +120,7 @@ void TMessageFactory::receive( const string &s )
 //				log() << " - " << e.what() << endl;
 				// If we run out of message from the source, then leave,
 				// hoping for more
+				iss.clear();
 				break;
 
 			} catch( message_parse_error_magic &e ) {
