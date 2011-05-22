@@ -530,6 +530,23 @@ int main( int argc, char *argv[] )
 	}
 
 	try {
+		TNElementsElement<TInventoryElement> inv;
+
+		inv.append( TInventoryElement() );
+
+		ostringstream oss;
+		inv.write( oss );
+
+		log() << "TNElements = ";
+		TLog::hexify( log(), oss.str() );
+		log() << endl;
+
+	} catch( exception &e ) {
+		log() << e.what() << endl;
+		return 255;
+	}
+
+	try {
 		TDifficultyTargetElement dt;
 		TBitcoinHash target("00000000000404CB123456789012345678901234567890123456789012345678");
 		TBitcoinHash nottarget("000000000000504CB12345678901234567890123456789012345678901234567");
