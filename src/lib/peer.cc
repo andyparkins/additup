@@ -337,7 +337,15 @@ void TBitcoinPeer::receive( const string &s )
 		}
 
 		// Convert stream to messages
-		Factory->receive(s);
+		try {
+			Factory->receive(s);
+		} catch( exception &e ) {
+			log() << "[PEER] Error ";
+			TLog::hexify( log(), s );
+			log() << endl;
+			log() << "[PEER] Error parsing message, " << e.what() << endl;
+			return;
+		}
 
 		auto_ptr<TMessage> Message( nextIncoming() );
 
@@ -385,7 +393,15 @@ void TBitcoinPeer::receive( const string &s )
 		if( Factory == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in connected mode" );
 
-		Factory->receive(s);
+		try {
+			Factory->receive(s);
+		} catch( exception &e ) {
+			log() << "[PEER] Error ";
+			TLog::hexify( log(), s );
+			log() << endl;
+			log() << "[PEER] Error parsing message, " << e.what() << endl;
+			return;
+		}
 
 		auto_ptr<TMessage> Message;
 
