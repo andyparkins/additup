@@ -153,6 +153,8 @@ void TMessage::setFields()
 {
 	if( Peer != NULL && Peer->getNetworkParameters() != NULL ) {
 		MessageHeader.Magic = Peer->getNetworkParameters()->Magic;
+	} else {
+		MessageHeader.Magic = 0;
 	}
 	MessageHeader.Command = commandString();
 
