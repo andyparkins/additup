@@ -777,6 +777,8 @@ class TInputSplitElement : public TMessageElement
 		return os;
 	}
 
+	bool isCoinBase() const;
+
 	void encodeSignatureScript( const TBitcoinScript & );
 
   public:

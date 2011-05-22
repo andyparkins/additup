@@ -30,6 +30,7 @@
 #include "script.h"
 #include "crypto.h"
 #include "logstream.h"
+#include "bitcoinnetwork.h"
 
 
 // -------------- Namespace
@@ -342,6 +343,16 @@ void TInputSplitElement::encodeSignatureScript( const TBitcoinScript &Script )
 	ostringstream oss;
 	Script.write(oss);
 	SignatureScript = oss.str();
+}
+
+//
+// Function:	TInputSplitElement :: isCoinBase
+// Description:
+//
+bool TInputSplitElement::isCoinBase() const
+{
+	return OutPoint.TransactionHash == TNetworkParameters::COINBASE_REFERENCE_HASH
+		&& OutPoint.OutputIndex == TNetworkParameters::COINBASE_REFERENCE_INDEX;
 }
 
 //
