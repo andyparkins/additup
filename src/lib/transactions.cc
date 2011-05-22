@@ -125,26 +125,26 @@ TTransactionPool::~TTransactionPool()
 }
 
 //
-// Function:	TTransactionPool :: receiveFromMessage
+// Function:	TTransactionPool :: receiveInventory
 // Description:
 //
-void TTransactionPool::receiveFromMessage( const TMessage_inv *Message )
+void TTransactionPool::receiveInventory( TMessage_inv *inv )
 {
 }
 
 //
-// Function:	TTransactionPool :: receiveFromMessage
+// Function:	TTransactionPool :: receiveBlock
 // Description:
 //
-void TTransactionPool::receiveFromMessage( const TMessage_block *Message )
+void TTransactionPool::receiveBlock( const TMessage_block *Message )
 {
 }
 
 //
-// Function:	TTransactionPool :: receiveFromMessage
+// Function:	TTransactionPool :: receiveTransaction
 // Description:
 //
-void TTransactionPool::receiveFromMessage( const TBitcoinHash &Hash, const TMessage_tx *Message )
+void TTransactionPool::receiveTransaction( const TMessage_tx *tx )
 {
 }
 

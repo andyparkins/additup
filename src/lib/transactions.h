@@ -245,9 +245,9 @@ class TTransactionPool
 	virtual TTransaction *getTransaction( const TBitcoinHash & ) const = 0;
 	virtual bool transactionExists( const TBitcoinHash & ) const = 0;
 
-	void receiveFromMessage( const TMessage_inv * );
-	void receiveFromMessage( const TMessage_block * );
-	void receiveFromMessage( const TBitcoinHash &, const TMessage_tx * );
+	void receiveInventory( TMessage_inv * );
+	void receiveBlock( const TMessage_block * );
+	void receiveTransaction( const TMessage_tx * );
 
   protected:
 	virtual TTransaction *createTransaction() const = 0;
