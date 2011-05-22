@@ -133,7 +133,7 @@ void TPredefinedNetworkParameters::configureGenesisMessage( TMessage_block &mess
 	// Regardless of the defaults in the future, the genesis block will
 	// be the same
 	Input.OutPoint.TransactionHash = COINBASE_REFERENCE_HASH;
-	Input.OutPoint.Index = COINBASE_REFERENCE_INDEX;
+	Input.OutPoint.OutputIndex = COINBASE_REFERENCE_INDEX;
 	Input.Sequence = 0xffffffff;
 	Input.encodeSignatureScript( genesisSignature );
 

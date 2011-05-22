@@ -746,17 +746,17 @@ class TOutputTransactionReferenceElement : public TMessageElement
 {
   public:
 	istream &read( istream &is ) {
-		is >> TransactionHash >> Index;
+		is >> TransactionHash >> OutputIndex;
 		return is;
 	}
 	ostream &write( ostream &os ) const {
-		os << TransactionHash << Index;
+		os << TransactionHash << OutputIndex;
 		return os;
 	}
 
   public:
 	THashElement TransactionHash;
-	TLittleEndian32Element Index;
+	TLittleEndian32Element OutputIndex;
 };
 
 //
