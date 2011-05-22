@@ -444,8 +444,13 @@ int main( int argc, char *argv[] )
 
 		const string *p = UNITTESTSampleMessages;
 		while( !p->empty() ) {
-			log() << "[TEST] RX< " << p->size() << " bytes" << endl;
-			Peer.receive( *p );
+			// Fake reception of partial messages
+			for( unsigned int i = 0; i < p->size(); i += 1000 ) {
+				log() << "[TEST] RX< " << p->size() << " bytes @ " << i << endl;
+				Peer.receive( p->size() - i < 200
+						? *p
+						: p->substr(i,200) );
+			}
 			p++;
 
 			ostringstream oss;
