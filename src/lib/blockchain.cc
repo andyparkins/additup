@@ -545,7 +545,7 @@ void TBlockMemoryPool::putBlock( const TBitcoinHash &Hash, TBlock *Block )
 	it = Pool.find( Hash );
 
 	if( it == Pool.end() ) {
-		Pool[Block->getHash()] = Block;
+		Pool[Hash] = Block;
 	} else {
 		// Replace the existing block -- it's the caller's duty to
 		// update rather than replace if that's their wish
