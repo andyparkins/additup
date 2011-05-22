@@ -800,14 +800,27 @@ void TMessage_block::calculateMerkleTree()
 		for( unsigned int Offset0 = 0; Offset0 < depthSize; Offset0 += 2 ) {
 			unsigned int Offset1 = (Offset0 + 1 < depthSize - 1) ? (Offset0 + 1) : (depthSize - 1);
 
-			string Buffer;
-			Buffer = MerkleTree[depthIndex + Offset0].reversedBytes().toBytes()
-				+ MerkleTree[depthIndex + Offset1].reversedBytes().toBytes();
+			// We could argue that we could do the reading writing of
+			// hashes from a buffer ourselves, but that would mean that
+			// we're duplicating code that already does that.  In
+			// particular if we use THashElement we can forget whether
+			// the bytes need reversing or not; it already knows how
+			THashElement leaf1, leaf2, result;
+			leaf1 = MerkleTree[depthIndex + Offset0];
+			leaf2 = MerkleTree[depthIndex + Offset1];
+
+			// Write the leaves to a buffer
+			ostringstream oss;
+			oss << leaf1 << leaf2;
 
 			// The PayloadHasher is fine for creating the Merkle hashes
-			Buffer = PayloadHasher->transform( Buffer );
+			istringstream iss( PayloadHasher->transform( oss.str() ) );
 
-			MerkleTree.push_back( TBitcoinHash().fromBytes( Buffer ).reversedBytes() );
+			// Read the resultant hash from a buffer
+			iss >> result;
+
+			// Push it onto the array
+			MerkleTree.push_back( result );
 		}
 		depthIndex += depthSize;
 	}
