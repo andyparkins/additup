@@ -723,7 +723,7 @@ TBitcoinHash TMessage_block::calculateHash() const
 	hash = hash.reversedBytes();
 
 //	log() << "TMessage_block.hash = ";
-//	TLog::hexify( log(), hash );
+//	TLog::hexify( log(), hash.toBytes() );
 //	log() << endl;
 
 	return hash;
