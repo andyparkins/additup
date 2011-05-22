@@ -422,6 +422,8 @@ class THashElement : public TMessageElement
 	TBitcoinHash &get() { return Hash; }
 	const TBitcoinHash &get() const { return Hash; }
 	THashElement &operator=( const TBitcoinHash &s ) { Hash = s; return *this; }
+	bool operator==( const TBitcoinHash &s ) const { return Hash == s; }
+	bool operator!=( const TBitcoinHash &s ) const { return Hash != s; }
 
   protected:
 	TBitcoinHash Hash;
