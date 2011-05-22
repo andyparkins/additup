@@ -25,6 +25,9 @@
 // --- Project libs
 // --- Project
 #include "script.h"
+#include "messages.h"
+#include "logstream.h"
+#include "peer.h"
 
 
 // -------------- Namespace
@@ -150,6 +153,34 @@ TTransactionPool::~TTransactionPool()
 //
 void TTransactionPool::receiveInventory( TMessage_inv *inv )
 {
+	TMessage_getdata *getdata = new TMessage_getdata;
+
+	for( unsigned int i = 0; i < inv->size(); i++ ) {
+		if( (*inv)[i].ObjectType != TInventoryElement::MSG_TX )
+			continue;
+
+//		// RX< inv
+//		if( blockExists( (*inv)[i].Hash.get() ) )
+//			continue;
+
+		log() << "[NETW] Transaction " << (*inv)[i].Hash.get()
+			<< " not found in pool, requesting" << endl;
+
+		// TX> getdata
+		TInventoryElement &elem( getdata->appendInventory() );
+
+		// Request the inventory item we were offered
+		elem = (*inv)[i];
+
+		// RX< tx
+	}
+
+	// Only send the request if it's got any requests in it
+	if( getdata->size() > 0 ) {
+		inv->getPeer()->queueOutgoing( getdata );
+	} else {
+		delete getdata;
+	}
 }
 
 //
