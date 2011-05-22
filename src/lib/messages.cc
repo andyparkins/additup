@@ -854,9 +854,19 @@ ostream &TMessage_block::printOn( ostream &s ) const
 	for( it = MerkleTree.begin(); it != MerkleTree.end(); it++ )
 		s << (*it) << ", ";
 	s << "]";
+	if( !MerkleTree.empty() && blockHeader().MerkleRoot != MerkleTree.back() )
+		s << "!=" << blockHeader().MerkleRoot.get();
 	s << "; TX=[";
 	for( unsigned int i = 0; i < Transactions.size(); i++ ) {
-		s << Transactions[i].getHash() << ", ";
+		if( !Transactions[i].Inputs[0].isCoinBase() ) {
+			s << " Ni=" << Transactions[i].Inputs.size() << " -> ";
+		} else {
+			s << " COINBASE ";
+		}
+		for( unsigned int j = 0; j < Transactions[i].Outputs.size(); j++ ) {
+			s << "+" << Transactions[i].Outputs[j].getValue();
+		}
+		s << ";";
 	}
 	s << "]";
 	s << " }";
@@ -966,6 +976,14 @@ int main( int argc, char *argv[] )
 				}
 				break;
 			}
+
+			// Special
+			if( dynamic_cast<TMessage_block *>( potential ) != NULL ) {
+				TMessage_block *block = reinterpret_cast<TMessage_block*>( potential );
+				block->calculateMerkleTree();
+				log() << "blockhash = " << block->calculateHash() << endl;
+			}
+
 			if( potential != NULL ) {
 				log() << " - is a " << *potential << endl;
 			} else {
