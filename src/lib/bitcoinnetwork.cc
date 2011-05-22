@@ -243,7 +243,8 @@ TNodeInfo &TBitcoinNetwork::updateDirectory( const TNodeInfo &Node )
 //
 void TBitcoinNetwork::process( TMessage *Message )
 {
-	log() << "[NETW] RX< " << *Message << endl;
+	if( Message != NULL )
+		log() << "[NETW] RX< " << *Message << endl;
 
 	if( Message == NULL ) {
 		// Spontaneous
