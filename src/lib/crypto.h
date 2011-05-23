@@ -126,6 +126,11 @@ class TDigitalSignature
 	TDigitalSignature();
 	virtual ~TDigitalSignature() {}
 
+	virtual TByteArray getPublicKey() const = 0;
+	virtual TByteArray getPrivateKey() const = 0;
+	virtual void setPublicKey( const TByteArray & ) = 0;
+	virtual void setPrivateKey( const TByteArray & ) = 0;
+
 	virtual TByteArray sign( const TByteArray &digest ) const = 0;
 	virtual bool verify( const TByteArray &digest, const TByteArray &signature ) const = 0;
 
@@ -145,6 +150,11 @@ class TEllipticCurveKey : public TDigitalSignature
 	~TEllipticCurveKey();
 
 	TEllipticCurveKey &operator=( const TEllipticCurveKey & );
+
+	TByteArray getPublicKey() const;
+	TByteArray getPrivateKey() const;
+	void setPublicKey( const TByteArray & );
+	void setPrivateKey( const TByteArray & );
 
 	void generate();
 

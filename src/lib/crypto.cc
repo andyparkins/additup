@@ -184,6 +184,93 @@ TEllipticCurveKey &TEllipticCurveKey::operator=( const TEllipticCurveKey &O )
 }
 
 //
+// Function:	TEllipticCurveKey :: getPrivateKey
+// Description:
+//
+TByteArray TEllipticCurveKey::getPrivateKey() const
+{
+	// Query the buffer size by using NULL as the target
+	int KeySize = i2d_ECPrivateKey( Key, NULL );
+	if( KeySize == 0 )
+		throw runtime_error( "i2d_ECPrivateKey()" );
+
+	TByteArray ba;
+	ba.resize( KeySize );
+
+	// i2d_xxx() wants to leave the pointer pointing after the data its
+	// written; we don't care but we need to supply it a pointer it can
+	// modify...
+	TByteArray::Pointer pba = ba;
+
+	// Internal to DER
+	if( i2d_ECPrivateKey( Key, &pba ) != KeySize )
+		throw runtime_error( "i2d_ECPrivateKey()" );
+
+	return ba;
+}
+
+//
+// Function:	TEllipticCurveKey :: getPublicKey
+// Description:
+//
+TByteArray TEllipticCurveKey::getPublicKey() const
+{
+	// Query the buffer size by using NULL as the target
+	int KeySize = i2o_ECPublicKey( Key, NULL );
+	if( KeySize == 0 )
+		throw runtime_error( "i2d_ECPublicKey()" );
+
+	TByteArray ba;
+	ba.resize( KeySize );
+
+	// i2d_xxx() wants to leave the pointer pointing after the data its
+	// written; we don't care but we need to supply it a pointer it can
+	// modify...
+	TByteArray::Pointer pba = ba;
+
+	// Internal to DER
+	if( i2o_ECPublicKey( Key, &pba ) != KeySize )
+		throw runtime_error( "i2d_ECPublicKey()" );
+
+	return ba;
+}
+
+//
+// Function:	TEllipticCurveKey :: setPrivateKey
+// Description:
+// Decode DER encoded private key from given buffer, to internal
+// structured representation
+//
+// This has to be DER encoded, because an EC private key is more than
+// just a number, it is two numbers representing curve coordinates
+// (r,s).
+//
+void TEllipticCurveKey::setPrivateKey( const TByteArray &s )
+{
+	// d2i_ECPrivateKey() needs a pointer to modify
+	TByteArray::constPointer pba = s;
+
+	// Read SEC1 formatted private key into our already-allocated
+	// structure
+	if( d2i_ECPrivateKey( &Key, &pba, s.size() ) == NULL )
+		throw runtime_error( "d2i_ECPrivateKey()" );
+}
+
+//
+// Function:	TEllipticCurveKey :: setPublicKey
+// Description:
+// Decode octet stream public to internal structured representation.
+//
+void TEllipticCurveKey::setPublicKey( const TByteArray &s )
+{
+	// d2i_ECPrivateKey() needs a pointer to modify
+	TByteArray::constPointer pba = s;
+
+	if( o2i_ECPublicKey( &Key, &pba, s.size() ) == NULL )
+		throw runtime_error( "o2i_ECPublicKey()" );
+}
+
+//
 // Function:	TEllipticCurveKey :: generate
 // Description:
 //
