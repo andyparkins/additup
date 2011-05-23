@@ -261,6 +261,7 @@ istream &TMessageWithChecksum::read( istream &is )
 	TMessage::read(is);
 
 	is >> MessageHeader.Checksum;
+	MessageHeader.hasChecksum = true;
 
 	// Pull the payload out, but preserve position
 	TSizedStringElement PL( MessageHeader.PayloadLength );
