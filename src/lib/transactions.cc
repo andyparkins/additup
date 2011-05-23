@@ -52,7 +52,7 @@
 // Function:	TCoinTransfer :: TCoinTransfer
 // Description:
 //
-TCoinTransfer::TCoinTransfer()
+TCoinTransfer::TCoinTransfer( const TTransaction *, unsigned int )
 {
 }
 
@@ -104,9 +104,10 @@ TMessageBasedTransaction::~TMessageBasedTransaction()
 // Function:	TMessageBasedTransaction :: createTransfer
 // Description:
 //
-TCoinTransfer *TMessageBasedTransaction::createTransfer() const
+TCoinTransfer *TMessageBasedTransaction::createTransfer( unsigned int n )
 {
-	return new TMemoryCoinTransfer();
+	Outputs[n] = new TMemoryCoinTransfer( this, n );
+	return Outputs[n];
 }
 
 //
@@ -119,6 +120,19 @@ const TBitcoinHash &TMessageBasedTransaction::getHash() const
 }
 
 // -------------
+
+//
+// Function:	TMemoryCoinTransfer :: TMemoryCoinTransfer
+// Description:
+//
+TMemoryCoinTransfer::TMemoryCoinTransfer( const TTransaction *t, unsigned int n ) :
+	TCoinTransfer( t, n ),
+	State(ScriptNotRun),
+	Beneficiary( NULL )
+{
+	Creation.TransactionHash = t->getHash();
+	Creation.SplitIndex = n;
+}
 
 //
 // Function:	TMemoryCoinTransfer :: validate

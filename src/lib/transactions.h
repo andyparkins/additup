@@ -55,6 +55,7 @@
 
 
 // -------------- Class pre-declarations
+class TTransaction;
 class TCoinTransfer;
 class TMessage_inv;
 class TMessage_block;
@@ -113,7 +114,7 @@ class TCoinTransfer
 		unsigned int SplitIndex;
 	};
   public:
-	TCoinTransfer();
+	TCoinTransfer( const TTransaction *, unsigned int );
 
 	virtual sSplitReference getCreatorReference() const = 0;
 	virtual sSplitReference getClaimantReference() const = 0;
@@ -138,7 +139,7 @@ class TCoinTransfer
 class TMemoryCoinTransfer : public TCoinTransfer
 {
   public:
-	TMemoryCoinTransfer() : State(ScriptNotRun), Beneficiary( NULL ) {}
+	TMemoryCoinTransfer( const TTransaction *t, unsigned int n );
 
 	sSplitReference getCreatorReference() const { return Creation; }
 	sSplitReference getClaimantReference() const { return Claim; }
@@ -197,7 +198,7 @@ class TTransaction
 //	virtual TCoinTransfer *getOutput( unsigned int ) const = 0;
 //	virtual bool outputExists( unsigned int ) const = 0;
 
-	virtual TCoinTransfer *createTransfer() const = 0;
+	virtual TCoinTransfer *createTransfer( unsigned int ) = 0;
 
 //	virtual TCoinElement sumInputs() const = 0;
 //	virtual TCoinElement sumOutputs() const = 0;
@@ -218,7 +219,7 @@ class TMessageBasedTransaction : public TTransaction
 
 	const TBitcoinHash &getHash() const;
 
-	TCoinTransfer *createTransfer() const;
+	TCoinTransfer *createTransfer( unsigned int );
 
   protected:
 	mutable TBitcoinHash cachedHash;
