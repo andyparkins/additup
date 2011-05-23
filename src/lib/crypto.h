@@ -140,7 +140,10 @@ class TEllipticCurveKey : public TDigitalSignature
 {
   public:
 	TEllipticCurveKey();
+	TEllipticCurveKey( const TEllipticCurveKey & );
 	~TEllipticCurveKey();
+
+	TEllipticCurveKey &operator=( const TEllipticCurveKey & );
 
 	void generate();
 
