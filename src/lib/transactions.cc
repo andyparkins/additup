@@ -195,9 +195,9 @@ void TTransactionPool::receiveInventory( TMessage_inv *inv )
 		if( (*inv)[i].ObjectType != TInventoryElement::MSG_TX )
 			continue;
 
-//		// RX< inv
-//		if( blockExists( (*inv)[i].Hash.get() ) )
-//			continue;
+		// RX< inv
+		if( transactionExists( (*inv)[i].Hash.get() ) )
+			continue;
 
 		log() << "[NETW] Transaction " << (*inv)[i].Hash.get()
 			<< " not found in pool, requesting" << endl;
@@ -209,6 +209,8 @@ void TTransactionPool::receiveInventory( TMessage_inv *inv )
 		elem = (*inv)[i];
 
 		// RX< tx
+		// Make space for it
+		putTransaction( (*inv)[i].Hash.get(), NULL );
 	}
 
 	// Only send the request if it's got any requests in it
