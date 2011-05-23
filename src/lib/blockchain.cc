@@ -434,7 +434,8 @@ void TBlockPool::receiveInventory( TMessage_inv *inv )
 		elem = (*inv)[i];
 
 		// RX< block
-		// Add blank to blockchain?
+		// Add blank to blockchain
+		putBlock( (*inv)[i].Hash.get(), NULL );
 	}
 
 	// Only send the request if it's got any requests in it
