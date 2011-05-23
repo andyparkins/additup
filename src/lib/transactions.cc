@@ -28,6 +28,7 @@
 #include "messages.h"
 #include "logstream.h"
 #include "peer.h"
+#include "bitcoinnetwork.h"
 
 
 // -------------- Namespace
@@ -155,7 +156,8 @@ bool TMemoryCoinTransfer::isCoinbase() const
 // Function:	TTransactionPool :: TTransactionPool
 // Description:
 //
-TTransactionPool::TTransactionPool()
+TTransactionPool::TTransactionPool( const TBitcoinNetwork *n ) :
+	Network( n )
 {
 }
 
@@ -225,7 +227,8 @@ void TTransactionPool::receiveTransaction( const TMessage_tx *tx )
 // Function:	TMemoryTransactionPool :: TMemoryTransactionPool
 // Description:
 //
-TMemoryTransactionPool::TMemoryTransactionPool()
+TMemoryTransactionPool::TMemoryTransactionPool( const TBitcoinNetwork *n ) :
+	TTransactionPool( n )
 {
 }
 

@@ -246,7 +246,7 @@ class TMessageBasedTransaction : public TTransaction
 class TTransactionPool
 {
   public:
-	TTransactionPool();
+	TTransactionPool( const TBitcoinNetwork * );
 	virtual ~TTransactionPool();
 
 	virtual void putTransaction( const TBitcoinHash &, TTransaction * ) = 0;
@@ -268,10 +268,10 @@ class TTransactionPool
 // Class:	TMemoryTransactionPool
 // Description:
 //
-class TMemoryTransactionPool
+class TMemoryTransactionPool : public TTransactionPool
 {
   public:
-	TMemoryTransactionPool();
+	TMemoryTransactionPool( const TBitcoinNetwork * );
 	~TMemoryTransactionPool();
 
 	void putTransaction( const TBitcoinHash &, TTransaction * );
