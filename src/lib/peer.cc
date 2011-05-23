@@ -236,6 +236,8 @@ void TBitcoinPeer::queueIncoming( TMessage *m )
 //
 void TBitcoinPeer::receive( const string &s )
 {
+	string incoming(s);
+
 	if( State == Unconnected ) {
 		log() << "[PEER] State: Unconnected" << endl;
 		// Can't receive anything until we at least have comms
@@ -283,7 +285,7 @@ void TBitcoinPeer::receive( const string &s )
 			// we'll look through a window until we see a match.
 
 			// Try reading four bytes starting from each byte in turn
-			istringstream iss(s);
+			istringstream iss(incoming);
 			while( iss.good() ) {
 				TLittleEndian32Element PotentialMagic;
 				streamoff pos;
@@ -338,11 +340,9 @@ void TBitcoinPeer::receive( const string &s )
 
 		// Convert stream to messages
 		try {
-			Factory->receive(s);
+			Factory->receive(incoming);
+			incoming.clear();
 		} catch( exception &e ) {
-			log() << "[PEER] Error ";
-			TLog::hexify( log(), s );
-			log() << endl;
 			log() << "[PEER] Error parsing message, " << e.what() << endl;
 			return;
 		}
@@ -357,12 +357,12 @@ void TBitcoinPeer::receive( const string &s )
 
 			log() << "[PEER] Version message received, " << *VersionMessage << endl;
 			TMessageFactory *newFactory = VersionMessage->createMessageFactory();
+			log() << "[PEER] Factory is now " << newFactory->className() << endl;
 			// Any bytes left over in the factory we're about to delete
 			// must be forwarded to the new factory
 			newFactory->receive( Factory->getRXBuffer() );
 			delete Factory;
 			Factory = newFactory;
-			log() << "[PEER] Factory is now " << Factory->className() << endl;
 
 			// Acknowledge every version received, even if the remote
 			// chooses to send more than one (which it shouldn't)
@@ -376,7 +376,7 @@ void TBitcoinPeer::receive( const string &s )
 			// Odd, we shouldn't get anything but a version message from
 			// a newly connected peer.
 			if( Message.get() == NULL ) {
-				log() << "[PEER] Ignoring " << s.size() << " junk bytes" << endl;
+				log() << "[PEER] " << incoming.size() << " bytes left pending" << endl;
 			} else {
 				log() << "[PEER] Ignoring " << *Message.get() << endl;
 			}
@@ -394,10 +394,10 @@ void TBitcoinPeer::receive( const string &s )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in connected mode" );
 
 		try {
-			Factory->receive(s);
+			Factory->receive(incoming);
 		} catch( exception &e ) {
 			log() << "[PEER] Error ";
-			TLog::hexify( log(), s );
+			TLog::hexify( log(), incoming );
 			log() << endl;
 			log() << "[PEER] Error parsing message, " << e.what() << endl;
 			return;
