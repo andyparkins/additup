@@ -210,16 +210,18 @@ unsigned int TEllipticCurveKey::getMaximumSignatureSize() const
 // Function:	TEllipticCurveKey :: sign
 // Description:
 //
-string TEllipticCurveKey::sign( const string &digest ) const
+TByteArray TEllipticCurveKey::sign( const TByteArray &digest ) const
 {
 	unsigned int SignatureLength = getMaximumSignatureSize();
-	unsigned char *SignatureBuffer = new unsigned char[SignatureLength];
-	string SignatureDER;
+	TByteArray Signature;
+	Signature.resize( SignatureLength );
 
+	// Create a DER-encoded signature of digest using our public key,
+	// storing the resulting signature in Signature
 	ECDSA_sign_ex( EC_SIGNATURE_TYPE,
-			reinterpret_cast<const unsigned char *>(digest.data()),
+			digest,
 			digest.size(),
-			SignatureBuffer, &SignatureLength,
+			Signature, &SignatureLength,
 			Precompute_kinv,
 			Precompute_rp,
 			Key);
@@ -227,26 +229,22 @@ string TEllipticCurveKey::sign( const string &digest ) const
 	// ECDSA_do_sign_ex() outputs to a newly allocated ECDSA_SIG
 	// structure instead of the DER encoded buffer we output here.
 
-	// Convert the raw byte buffer to a string
-	SignatureDER.assign(
-			reinterpret_cast<const char*>(SignatureBuffer),
-			SignatureLength );
-	delete[] SignatureBuffer;
-
-	return SignatureDER;
+	return Signature;
 }
 
 //
 // Function:	TEllipticCurveKey :: verify
 // Description:
 //
-bool TEllipticCurveKey::verify( const string &digest, const string &signature ) const
+bool TEllipticCurveKey::verify( const TByteArray &digest, const TByteArray &DERSignature ) const
 {
 	int ret;
 
+	// Verify that DERSignature is a valid signature of digest, with our
+	// public key
 	ret = ECDSA_verify( EC_SIGNATURE_TYPE,
-			reinterpret_cast<const unsigned char *>(digest.data()), digest.size(),
-			reinterpret_cast<const unsigned char *>(signature.data()), signature.size(),
+			digest, digest.size(),
+			DERSignature, DERSignature.size(),
 			Key);
 
 	return ret == 1;
@@ -309,7 +307,7 @@ void TSSLMessageDigest::init()
 // Description:
 // Return the hash for a completely available input string.
 //
-string TSSLMessageDigest::transform( const string &s )
+TByteArray TSSLMessageDigest::transform( const TByteArray &s )
 {
 	update(s);
 
@@ -322,7 +320,7 @@ string TSSLMessageDigest::transform( const string &s )
 // Add the given string to the hash.  This doesn't return a hash value
 // yet, it simply adds data to an ongoing hash session.
 //
-void TSSLMessageDigest::update( const string &s )
+void TSSLMessageDigest::update( const TByteArray &s )
 {
 	int ret;
 
@@ -344,10 +342,9 @@ void TSSLMessageDigest::update( const string &s )
 // maintaining a rolling hash as data is added, and this function
 // completes it and returns the value to us.
 //
-string TSSLMessageDigest::final()
+TByteArray TSSLMessageDigest::final()
 {
-	unsigned char *b;
-	string result;
+	TByteArray result;
 	unsigned int returnSize;
 	int ret;
 
@@ -355,19 +352,17 @@ string TSSLMessageDigest::final()
 		init();
 
 	// Allocate space for the digest
-	b = new unsigned char[ EVP_MAX_MD_SIZE ];
+	result.resize( EVP_MAX_MD_SIZE );
 
 	// DigestFinal pushes any bytes remaining in the current block out.
-	ret = EVP_DigestFinal_ex( &EVPContext, b, &returnSize );
+	ret = EVP_DigestFinal_ex( &EVPContext, result, &returnSize );
 	if( ret != 1 ) {
 		deinit();
 		throw ssl_error("EVP_DigestFinal_ex()");
 	}
 
-	// Copy the hash bytes into the result string
-	result.assign( (char*)b, returnSize );
-	// Free the memory
-	delete[] b;
+	// Copy the hash bytes into the result TByteArray
+	result.resize( returnSize );
 
 	// After a hash is finalised, no more calls to EVP_DigestUpdate()
 	// are allowed without starting again with a EVP_DigestInit()
@@ -450,15 +445,26 @@ int main( int argc, char *argv[] )
 
 	try {
 		TEllipticCurveKey ECKEY;
-		string digest("1234567");
-		string signature;
+		TByteArray digest("1234567");
+		TByteArray signature;
 
 		// Generate a completely new ECKEY pair
 		ECKEY.generate();
 
 		signature = ECKEY.sign( digest );
-		log() << "EC: Signature of \"" << digest << "\" is ";
+		log() << "EC: Signature of \"" << digest << "\" (" << digest.size() << ") is ";
 		TLog::hexify( log(), signature );
+
+		// Signature is a DER encoded signature
+		// 30 = multiple elements
+		//  44 = sequence count (why 0x44?  should be 0x02)
+		//  02 = bignum
+		//   20 = size of bignum (32)
+		//    6c 3a b8 bd a9 bc 16 5e 35 33 0f ed 17 3e 17 ab c3 e0 66 71 95 74 0a fc 00 4c a9 15 0a 70 d8 7b
+		//  02 = bignum
+		//   20 = size of bignum (32)
+		//    04 35 7e c0 94 2c ce bb 01 57 25 ea bb c5 83 c2 28 ae d6 9d 17 a8 32 49 a6 69 58 d0 f8 05 79 78
+		//  00 00 = don't know
 
 		if( ECKEY.verify( digest, signature ) ) {
 			log() << " : verifies" << endl;
@@ -473,8 +479,8 @@ int main( int argc, char *argv[] )
 	try {
 		struct sTestSample {
 			TMessageDigest *Hasher;
-			const string Plaintext;
-			const string ExpectedDigest;
+			const TByteArray Plaintext;
+			const TByteArray ExpectedDigest;
 		};
 
 		log() << "MD: Creating message digest engines" << endl;
@@ -484,47 +490,47 @@ int main( int argc, char *argv[] )
 		TDoubleHash SHASHA256( &SHA256, &SHA256 );
 		TDoubleHash RIPESHA256( &RIPEMD160, &SHA256 );
 		static const sTestSample Samples[] = {
-			{ &SHA1, "PLAINTEXTMESSAGE", string(
+			{ &SHA1, "PLAINTEXTMESSAGE", TByteArray(
 					"\xbc\x91\x35\x01\x0e\xb5\x37\x7d"
 					"\x43\xdd\x38\xbe\xf1\xa3\xf8\x34"
 					"\xce\x6c\xbe\x43", 20 ) },
-			{ &SHA256, "PLAINTEXTMESSAGE", string(
+			{ &SHA256, "PLAINTEXTMESSAGE", TByteArray(
 					"\xcb\xf7\xd5\x4c\x06\xcb\x69\xca"
 					"\x92\xed\x73\x10\x90\x40\xb1\xd2"
 					"\xcf\x5c\xc5\x5b\x32\x86\xbe\x76"
 					"\x1d\x16\xa3\xfc\xa9\xa4\x3b\xd4", 32 ) },
 			// Double hash samples from https://en.bitcoin.it/wiki/Protocol_specification
-			{ &SHA256, "hello", string(
+			{ &SHA256, "hello", TByteArray(
 					"\x2c\xf2\x4d\xba\x5f\xb0\xa3\x0e"
 					"\x26\xe8\x3b\x2a\xc5\xb9\xe2\x9e"
 					"\x1b\x16\x1e\x5c\x1f\xa7\x42\x5e"
 					"\x73\x04\x33\x62\x93\x8b\x98\x24", 32 ) },
-			{ &SHASHA256, "hello", string(
+			{ &SHASHA256, "hello", TByteArray(
 					"\x95\x95\xc9\xdf\x90\x07\x51\x48"
 					"\xeb\x06\x86\x03\x65\xdf\x33\x58"
 					"\x4b\x75\xbf\xf7\x82\xa5\x10\xc6"
 					"\xcd\x48\x83\xa4\x19\x83\x3d\x50", 32 ) },
-			{ &RIPESHA256, "hello", string(
+			{ &RIPESHA256, "hello", TByteArray(
 					"\xb6\xa9\xc8\xc2\x30\x72\x2b\x7c"
 					"\x74\x83\x31\xa8\xb4\x50\xf0\x55"
 					"\x66\xdc\x7d\x0f", 20 ) },
 			// Sample addr message from https://en.bitcoin.it/wiki/Protocol_specification
 			// Checksum of messages is the first four bytes of
 			// SHA256(SHA256())
-			{ &SHASHA256, string(
+			{ &SHASHA256, TByteArray(
 					"\x01\xe2\x15\x10\x4d\x01\x00\x00"
 					"\x00\x00\x00\x00\x00\x00\x00\x00"
 					"\x00\x00\x00\x00\x00\x00\x00\xff"
-					"\xff\x0a\x00\x00\x01\x20\x8d", 31), string(
+					"\xff\x0a\x00\x00\x01\x20\x8d", 31), TByteArray(
 					"\x7f\x85\x39\xc2"
 					, 32 ) },
-			{ NULL, string(), string() }
+			{ NULL, TByteArray(), TByteArray() }
 		};
 		const sTestSample *p = Samples;
 
 		log() << "MD: Checking samples hash as expected" << endl;
 		while( p->Hasher != NULL ) {
-			string ct;
+			TByteArray ct;
 
 			log() << "MD: Hashing \"" << safe(p->Plaintext) << "\" (" << p->Plaintext.size() << ")" << endl;
 			ct = p->Hasher->transform( p->Plaintext );

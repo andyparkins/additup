@@ -20,7 +20,7 @@
 // -------------- Includes
 // --- C
 // --- C++
-#include <string>
+#include <vector>
 // --- OS
 // --- Lib
 #include <openssl/objects.h>
@@ -30,6 +30,7 @@
 #include <openssl/evp.h>
 // --- Project
 #include "extraexcept.h"
+#include "bytearray.h"
 
 
 // -------------- Namespace
@@ -125,8 +126,8 @@ class TDigitalSignature
 	TDigitalSignature();
 	virtual ~TDigitalSignature() {}
 
-	virtual string sign( const string &digest ) const = 0;
-	virtual bool verify( const string &digest, const string &signature ) const = 0;
+	virtual TByteArray sign( const TByteArray &digest ) const = 0;
+	virtual bool verify( const TByteArray &digest, const TByteArray &signature ) const = 0;
 
   protected:
 	bool KeyAvailable;
@@ -147,8 +148,8 @@ class TEllipticCurveKey : public TDigitalSignature
 
 	void generate();
 
-	string sign( const string &digest ) const;
-	bool verify( const string &digest, const string &signature ) const;
+	TByteArray sign( const TByteArray &digest ) const;
+	bool verify( const TByteArray &digest, const TByteArray &signature ) const;
 
   protected:
 	unsigned int getMaximumSignatureSize() const;
@@ -197,7 +198,7 @@ class TMessageDigest
   public:
 	TMessageDigest() : Initialised( false ) {}
 	virtual ~TMessageDigest() {}
-	virtual string transform( const string & ) = 0;
+	virtual TByteArray transform( const TByteArray & ) = 0;
 
   protected:
 	virtual void init() { Initialised = true; }
@@ -217,7 +218,7 @@ class TDoubleHash : public TMessageDigest
 	TDoubleHash( TMessageDigest *h2, TMessageDigest *h1 ) :
 		Hash1(h1), Hash2(h2) {}
 
-	string transform( const string &s ) { return Hash2->transform( Hash1->transform(s) ); }
+	TByteArray transform( const TByteArray &s ) { return Hash2->transform( Hash1->transform(s) ); }
 
   protected:
 	TMessageDigest *Hash1;
@@ -236,7 +237,7 @@ class TDoubleHash : public TMessageDigest
 ///
 ///   \code
 ///   THash_sha1 Hasher;
-///   string output = Hasher.transform( data_to_be_hashed );
+///   TByteArray output = Hasher.transform( data_to_be_hashed );
 ///   \endcode
 ///
 /// You will find the full list of available hashes at the end of this
@@ -255,9 +256,9 @@ class TSSLMessageDigest : public TMessageDigest
 	TSSLMessageDigest( const TSSLMessageDigest & );
 	virtual ~TSSLMessageDigest();
 
-	string transform( const string & );
-	void update( const string & );
-	string final();
+	TByteArray transform( const TByteArray & );
+	void update( const TByteArray & );
+	TByteArray final();
 
   protected:
 	virtual const EVP_MD *getMD() = 0;
