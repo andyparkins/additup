@@ -59,6 +59,9 @@ class TCoinTransfer;
 class TMessage_inv;
 class TMessage_block;
 class TMessage_tx;
+class TTransactionPool;
+class TMemoryTransactionPool;
+class TBitcoinNetwork;
 
 
 // -------------- Function pre-class prototypes
@@ -185,6 +188,7 @@ class TMemoryCoinTransfer : public TCoinTransfer
 class TTransaction
 {
   public:
+	TTransaction( TTransactionPool * );
 	virtual ~TTransaction();
 
 	virtual const TBitcoinHash &getHash() const = 0;
@@ -197,6 +201,9 @@ class TTransaction
 
 //	virtual TCoinElement sumInputs() const = 0;
 //	virtual TCoinElement sumOutputs() const = 0;
+
+  protected:
+	TTransactionPool *TransactionPool;
 };
 
 //
@@ -206,6 +213,7 @@ class TTransaction
 class TMessageBasedTransaction : public TTransaction
 {
   public:
+	TMessageBasedTransaction( TMemoryTransactionPool * );
 	~TMessageBasedTransaction();
 
 	const TBitcoinHash &getHash() const;
@@ -250,7 +258,10 @@ class TTransactionPool
 	void receiveTransaction( const TMessage_tx * );
 
   protected:
-	virtual TTransaction *createTransaction() const = 0;
+	virtual TTransaction *createTransaction() = 0;
+
+  protected:
+	const TBitcoinNetwork *Network;
 };
 
 //
@@ -270,7 +281,7 @@ class TMemoryTransactionPool
 	void validate();
 
   protected:
-	virtual TTransaction *createTransaction() const;
+	virtual TTransaction *createTransaction();
 
   protected:
 	map<TBitcoinHash, TTransaction*> TransactionPool;

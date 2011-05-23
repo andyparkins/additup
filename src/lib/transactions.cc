@@ -68,6 +68,26 @@ TTransaction::~TTransaction()
 // -------------
 
 //
+// Function:	TTransaction :: TTransaction
+// Description:
+//
+TTransaction::TTransaction( TTransactionPool *p ) :
+	TransactionPool(p)
+{
+}
+
+// -------------
+
+//
+// Function:	TMessageBasedTransaction :: TMessageBasedTransaction
+// Description:
+//
+TMessageBasedTransaction::TMessageBasedTransaction( TMemoryTransactionPool *p ) :
+	TTransaction(p)
+{
+}
+
+//
 // Function:	TMessageBasedTransaction :: ~TMessageBasedTransaction
 // Description:
 //
@@ -226,9 +246,9 @@ TMemoryTransactionPool::~TMemoryTransactionPool()
 // Function:	TMemoryTransactionPool :: createTransaction
 // Description:
 //
-TTransaction *TMemoryTransactionPool::createTransaction() const
+TTransaction *TMemoryTransactionPool::createTransaction()
 {
-	return new TMessageBasedTransaction();
+	return new TMessageBasedTransaction( this );
 }
 
 //
