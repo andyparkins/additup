@@ -94,6 +94,8 @@ class TMessageFactory
   protected:
 	virtual void init();
 
+	virtual bool continuousParse() const { return true; }
+
   protected:
 	string RXBuffer;
 
@@ -126,7 +128,9 @@ class TVersioningMessageFactory : public TMessageFactory
 
   protected:
 	void init();
+	bool continuousParse() const { return false; }
 
+  protected:
 	bool VersionSent;
 	bool VerackSent;
 	bool VerackReceived;

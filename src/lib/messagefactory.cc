@@ -82,96 +82,153 @@ void TMessageFactory::receive( const string &s )
 	istringstream iss( RXBuffer );
 	iss.exceptions( ios::eofbit | ios::failbit | ios::badbit );
 
-	TMessage *potential = NULL;
-
 	// We should be initialised if we want the templates to be available
 	if( !Initialised )
 		init();
 
-	streamoff sp;
+	streamoff sp = 0;
 
 	if( Peer == NULL )
 		throw runtime_error("TMessageFactory::receive() is impossible without a known peer");
 
-	do {
+	while( !iss.str().empty() && sp < iss.str().size() ) {
+		TMessage *WorkingClone = NULL;
+
+		// --- Sync
+
+		string::size_type pos = findNextMagic(iss.str(), sp);
+		if( pos == string::npos || pos >= iss.str().size() ) {
+			// If there is no magic in the string, then there is no point
+			// looking for a message in it.  This buffer is nothing we
+			// can read, so we discard all of it.
+//			log() << "Discarding " << RXBuffer.size() << endl;
+			RXBuffer.clear();
+			break;
+		} else {
+//			log() << "Ignoring " << pos << endl;
+			// Anything before the magic has been read or isn't a
+			// message
+			RXBuffer = RXBuffer.substr( pos, RXBuffer.size() - pos );
+			// And now repoint the stringstream at this shortened buffer
+			iss.str( RXBuffer );
+			iss.seekg( 0, ios::beg );
+		}
+
+		// --- Try to read
+
+		// bookmark position
+		sp = iss.tellg();
+
 		// Test against each template message
 		for( it = Templates.begin(); it != Templates.end(); it++ ) {
+			// The clone gets automatically deleted unless we release
+			// the auto_ptr
+			auto_ptr<TMessage> AutoTidyClone( (*it)->clone() );
 
-			// Clone the template
-			auto_ptr<TMessage> p( (*it)->clone() );
-
-			// TMessages neeed to know details of where they came from
-			p->setPeer( Peer );
+			// Clear outstanding exceptions
+			iss.clear();
+			// Restore our bookmark
+			iss.seekg( sp, ios::beg );
 
 			try {
-				// Store the current position
-				sp = iss.tellg();
-
-//				log() << "Trying " << (RXBuffer.size() - sp) << " bytes with "
-//					<< p->className();
-
-				p->read( iss );
-//				log() << "*" << endl;
-				potential = p.get();
-				p.release();
-				break;
-
+				// Attempt read
+				AutoTidyClone->read( iss );
 			} catch( ios::failure &e ) {
-//				log() << " - " << e.what() << endl;
-				// If we run out of message from the source, then leave,
-				// hoping for more
-				iss.clear();
-				break;
-
-			} catch( message_parse_error_magic &e ) {
-//				log() << " - " << e.what() << endl;
-				// Skip
+//				log() << "[FACT] Parser at byte " << sp << "/" << iss.str().size();
+//				log() << " D: ";
+//				TLog::hexify( log(), iss.str() );
+//				log() << " - " << e.what() << ", " << (*it)->className() << endl;
+				// If we run out of message from the source, then we
+				// leave the pointer where it is, while in principle
+				// this is identical to the underflow error, it only
+				// gets thrown by body reads not header reads.  Fail
+				// during a body read means the packet was correctly
+				// identified, there was just insufficient data.  We
+				// therefore return in the hopes that we'll get some
+				// more
+				return;
 
 			} catch( message_parse_error_underflow &e ) {
-//				log() << " - " << e.what() << endl;
-				// Try next template with the same data
-				iss.seekg( sp, ios::beg );
+//				log() << "[FACT] Parser at byte " << sp << "/" << iss.str().size();
+//				log() << " D: ";
+//				TLog::hexify( log(), iss.str() );
+//				log() << " - " << e.what() << ", " << (*it)->className() << endl;
+				// Same as above, but caught by the parser
+				return;
+
+			} catch( message_parse_error_magic &e ) {
+				log() << "[FACT] Parser at byte " << sp << "/" << iss.str().size();
+				TLog::hexify( log(), iss.str() );
+				log() << " - " << e.what() << ", " << (*it)->className() << endl;
+				// A magic error applies to all message types, so we
+				// break out of this loop, there is no point trying
+				// other templates
+				break;
 
 			} catch( message_parse_error_version &e ) {
-//				log() << " - " << e.what() << endl;
-				// Try next template with the same data
-				iss.seekg( sp, ios::beg );
+				log() << "[FACT] Parser at byte " << sp << "/" << RXBuffer.size();
+				log() << " D: ";
+				TLog::hexify( log(), RXBuffer );
+				log() << " - " << e.what() << ", " << (*it)->className() << endl;
+				// Version errors shouldn't happen after versioning has
+				// taken place, it means a TMessage_version_X was used
+				// to read a version message that had a lower value than
+				// it supported.  When versioning is active (handshaking
+				// mode in TBitcoinPeer), this is exactly the same error
+				// as a type error: not a problem, and we simply try
+				// the next template.
+				continue;
 
 			} catch( message_parse_error_type &e ) {
-//				log() << " - " << e.what() << endl;
-				// Try next template with the same data
-				iss.seekg( sp, ios::beg );
+//				log() << "[FACT] Parser at byte " << sp << "/" << RXBuffer.size();
+//				log() << " D: ";
+//				TLog::hexify( log(), RXBuffer );
+//				log() << " - " << e.what() << ", " << (*it)->className() << endl;
+				// This incoming stream contains a message that is of a
+				// different type than the template; this is perfectly
+				// normal, most of the time the template won't be the
+				// right type, we simply try next template with the same data
+				continue;
 
 			} catch( message_parse_error &e ) {
-//				log() << " - " << e.what() << endl;
-
-				// Anything else, chuck the packet away
-				sp = iss.tellg();
-				RXBuffer = RXBuffer.substr( sp, RXBuffer.size() - sp );
-				break;
+				log() << "[FACT] Parser at byte " << sp << "/" << RXBuffer.size();
+				log() << " D: ";
+				TLog::hexify( log(), RXBuffer );
+				log() << " - " << e.what() << ", " << (*it)->className() << endl;
+				// Any other error from the parser means we can't handle
+				// this message
+				sp += 1;
+				continue;
 			}
+
+			// If there were no errors, we can release the auto_ptr, and
+			// pass it out of the loop
+			WorkingClone = AutoTidyClone.get();
+			AutoTidyClone.release();
+			break;
 		}
 
-		if( potential != NULL ) {
-//			log() << *potential << endl;
-			// Push it onto the receive queue
-			Peer->queueIncoming( potential );
-			// Remove the bytes from the RX buffer
-			sp = potential->getMessageSize();
+		if( WorkingClone != NULL ) {
+			// If the read successfully converted bytes into a TMessage
+			// then push it onto the receive queue
+			Peer->queueIncoming( WorkingClone );
+			// The data we've parsed can be removed from the stream
+			sp = iss.tellg();
+//			log() << "Eaten " << sp << " to make " << *WorkingClone << endl;
 			RXBuffer = RXBuffer.substr( sp, RXBuffer.size() - sp );
-
-			return;
-		} else {
-			string::size_type pos = findNextMagic(RXBuffer, sp + 1);
-			if( pos == string::npos || pos >= RXBuffer.size() )
-				break;
-			// We only need to keep the most recent packet, so we can
-			// discard everything before the last magic
-			RXBuffer = RXBuffer.substr( pos, RXBuffer.size() - pos );
-			// And now repoint the stringstream
+			// Repoint the stringstream at this shortened buffer
 			iss.str( RXBuffer );
+			// ... and point at the start
+			sp = 0;
+			if( !continuousParse() )
+				break;
+		} else {
+			// Not having found a message makes it harder to predict
+			// were we should start the next search for the magic.  The
+			// best we can do is start one byte along and try again.
+			sp += 1;
 		}
-	} while( true );
+	}
 }
 
 //
@@ -194,8 +251,10 @@ string::size_type TMessageFactory::findNextMagic( const string &s, string::size_
 	ostringstream oss;
 	oss << Magic;
 
-//	log() << "Next magic from " << start;
-	start = s.find( Magic, start );
+//	log() << "Next magic ";
+//	TLog::hexify( log(), oss.str() );
+//	log() << " from " << start;
+	start = s.find( oss.str(), start );
 
 	if( start == string::npos ) {
 //		log() << " not found" << endl;
