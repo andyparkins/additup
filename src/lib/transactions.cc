@@ -262,10 +262,10 @@ void TMemoryTransactionPool::putTransaction( const TBitcoinHash &NetworkHash, TT
 {
 	map<TBitcoinHash, TTransaction*>::iterator it;
 
-	it = TransactionPool.find( Transaction->getHash() );
+	it = TransactionPool.find( NetworkHash );
 
 	if( it == TransactionPool.end() ) {
-		TransactionPool[Transaction->getHash()] = Transaction;
+		TransactionPool[NetworkHash] = Transaction;
 	} else {
 		// Replace the existing transaction -- it's the caller's duty to
 		// update rather than replace if that's their wish
