@@ -262,6 +262,8 @@ istream &TSignatureElement::read( istream &is )
 		throw runtime_error("First byte of TSignatureElement should be 0x30");
 
 	// Sequence count (should be two)
+	// XXX: http://msdn.microsoft.com/en-us/library/bb648643%28v=vs.85%29.aspx
+	// says that this is a byte count not an element count
 	is >> B;
 	if( B.getValue() != 2 )
 		throw runtime_error("TSignatureElements should be made of two items only");
