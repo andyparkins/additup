@@ -164,6 +164,10 @@ class TByteArray_t : public vector<unsigned char>
 	operator char *() { return reinterpret_cast<char*>(&operator[](0)); }
 	operator const char *() const { return reinterpret_cast<const char*>(&operator[](0)); }
 
+	// void typecasts
+	operator void *() { return reinterpret_cast<void*>(&operator[](0)); }
+	operator const void *() const { return reinterpret_cast<const void*>(&operator[](0)); }
+
 	operator string() const { return string().assign( *this, size() ); }
 
 	TByteArray_t &assign(const char *p, size_type n) {
