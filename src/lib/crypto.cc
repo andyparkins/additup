@@ -333,6 +333,9 @@ TByteArray TEllipticCurveKey::sign( const TByteArray &digest ) const
 			Precompute_rp,
 			Key);
 
+	// If we reserved too many bytes, then throw the unused away
+	Signature.resize( SignatureLength );
+
 	// ECDSA_do_sign_ex() outputs to a newly allocated ECDSA_SIG
 	// structure instead of the DER encoded buffer we output here.
 
