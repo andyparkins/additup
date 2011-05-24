@@ -559,7 +559,34 @@ int main( int argc, char *argv[] )
 		TByteArray signature;
 
 		// Generate a completely new ECKEY pair
+		log() << "EC: Generating key pair" << endl;
 		ECKEY.generate();
+
+		log() << "EC: Public key ";
+		TLog::hexify( log(), ECKEY.getPublicKey() );
+		log() << endl;
+		// Public key is a byte stream, 65 bytes; e.g.
+		// 04 fa 4d b7 a8 90 14 22 3a a2 76 7b 97 7f 57 eb
+		// 06 fb 1d 8b fe 40 f0 ad 48 94 12 31 37 b7 a0 63
+		// e6 d0 c3 f5 c4 c2 ee 2a 5b ad 9d 9a 09 f6 ea 8c
+		// ad e2 f3 f5 a5 2b e4 b1 48 09 b9 9b 1f 82 ac af 00
+
+		log() << "EC: Private key ";
+		TLog::hexify( log(), ECKEY.getPrivateKey() );
+		log() << endl;
+
+		// Private key is DER encoded http://tools.ietf.org/html/rfc5915
+		// ECPrivateKey ::= SEQUENCE {
+		//     version        INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
+		//     privateKey     OCTET STRING,
+		//     parameters [0] ECParameters {{ NamedCurve }} OPTIONAL,
+		//     publicKey  [1] BIT STRING OPTIONAL
+		//   }
+
+		// 30 82   (SEQUENCE)
+		//  |    01 13  (01 = boolean?)
+		//  |    02 01 01 04 20 da e4 84 b7 bc c8 3b 98 34 65 29 41 65 e5 27 5b 4a d6 20 01 fb b6 48 03 d6 c0 e0 d9 de 8c 07 0f a0 81 a5 30 81 a2 02 01 01 30 2c 06 07 2a 86 48 ce 3d 01 01 02 21 00
+		//  |    ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fe ff ff fc 2f 30 06 04 01 00 04 01 07 04 41 04 79 be 66 7e f9 dc bb ac 55 a0 62 95 ce 87 0b 07 02 9b fc db 2d ce 28 d9 59 f2 81 5b 16 f8 17 98 48 3a da 77 26 a3 c4 65 5d a4 fb fc 0e 11 08 a8 fd 17 b4 48 a6 85 54 19 9c 47 d0 8f fb 10 d4 b8 02 21 00 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff fe ba ae dc e6 af 48 a0 3b bf d2 5e 8c d0 36 41 41 02 01 01 a1 44 03 42 00 04 fa 4d b7 a8 90 14 22 3a a2 76 7b 97 7f 57 eb 06 fb 1d 8b fe 40 f0 ad 48 94 12 31 37 b7 a0 63 e6 d0 c3 f5 c4 c2 ee 2a 5b ad 9d 9a 09 f6 ea 8c ad e2 f3 f5 a5 2b e4 b1 48 09 b9 9b 1f 82 ac af 00
 
 		signature = ECKEY.sign( digest );
 		log() << "EC: Signature of \"" << digest << "\" (" << digest.size() << ") is ";
