@@ -291,12 +291,21 @@ void TBitcoinNetwork::process( TMessage *Message )
 		// RX< checkorder
 		// TX> reply
 	} else if( dynamic_cast<TMessage_tx*>( Message ) != NULL ) {
-		// No response needed
-		TransactionPool->receiveTransaction( reinterpret_cast<TMessage_tx*>( Message ) );
+		TMessage_tx *tx = reinterpret_cast<TMessage_tx*>( Message );
+		try {
+			// Pass the message straight to the transaction pool
+			TransactionPool->receiveTransaction( tx );
+		} catch( exception &e ) {
+			log() << "[NETW] Rejecting transaction " << *tx << ", " << e.what() << endl;
+		}
 	} else if( dynamic_cast<TMessage_block*>( Message ) != NULL ) {
-		// No response needed
+		TMessage_block *block = reinterpret_cast<TMessage_block*>( Message );
 		// Pass the message straight to the block chain
-		BlockPool->receiveBlock( reinterpret_cast<TMessage_block*>( Message ) );
+		try {
+			BlockPool->receiveBlock( block );
+		} catch( exception &e ) {
+			log() << "[NETW] Rejecting block " << *block << ", " << e.what() << endl;
+		}
 	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
