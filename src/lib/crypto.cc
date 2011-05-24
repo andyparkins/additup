@@ -145,8 +145,9 @@ TEllipticCurveKey::TEllipticCurveKey() :
 	Precompute_kinv( NULL ),
 	Precompute_rp( NULL )
 {
-	// Create a new key structure
-	Key = EC_KEY_new_by_curve_name( NID_secp256k1 );
+	// invalidate() frees any existing key and creates a new one, so we
+	// can use it for initialisation here
+	invalidate();
 }
 
 //
@@ -160,6 +161,7 @@ TEllipticCurveKey::TEllipticCurveKey( const TEllipticCurveKey &O ) :
 {
 	// Copy the curve and the keys into a newly allocated structure
 	Key = EC_KEY_dup( O.Key );
+	KeyAvailable = O.KeyAvailable;
 }
 
 //
@@ -179,6 +181,7 @@ TEllipticCurveKey &TEllipticCurveKey::operator=( const TEllipticCurveKey &O )
 {
 	// Copy the keys into an already-allocated structure
 	EC_KEY_copy( Key, O.Key );
+	KeyAvailable = O.KeyAvailable;
 
 	return *this;
 }
@@ -279,9 +282,26 @@ void TEllipticCurveKey::generate()
 	// Create a new private and public key
 	if( !EC_KEY_generate_key( Key ) )
 		throw runtime_error( "EC_KEY_generate_key()" );
+	KeyAvailable = true;
 
 	// Future: speed things up by using ECSDA_sign_setup() to precompute
 	// kinv and rp for passing to ECDSA_sign_ex().
+}
+
+//
+// Function:	TEllipticCurveKey :: invalidate
+// Description:
+//
+void TEllipticCurveKey::invalidate()
+{
+	if( Key != NULL ) {
+		// Kill the existing key
+		EC_KEY_free( Key );
+	}
+
+	// Create a new key structure
+	Key = EC_KEY_new_by_curve_name( NID_secp256k1 );
+	KeyAvailable = false;
 }
 
 //
