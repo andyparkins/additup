@@ -168,10 +168,29 @@ class TFixedStringElement : public TSizedStringElement
 };
 
 //
+// Class:	TIntegerElement_t
+// Description:
+//
+template <typename integer_t>
+class TIntegerElement_t : public TMessageElement
+{
+  public:
+	operator integer_t() const { return Value; }
+	integer_t getValue() const { return Value; }
+	TIntegerElement_t &operator=( integer_t s ) { Value = s; return *this; }
+
+	integer_t operator++(int) { return Value++; }
+	integer_t operator--(int) { return Value--; }
+
+  protected:
+	integer_t Value;
+};
+
+//
 // Class:	TByteElement
 // Description:
 //
-class TByteElement : public TMessageElement
+class TByteElement : public TIntegerElement_t<uint8_t>
 {
   public:
 	istream &read( istream &is ) {
@@ -180,22 +199,14 @@ class TByteElement : public TMessageElement
 	}
 	ostream &write( ostream &os ) const { return os.put( Value ); }
 
-	operator uint8_t() const { return Value; }
-	uint8_t getValue() const { return Value; }
-	TByteElement &operator=( uint8_t s ) { Value = s; return *this; }
-
-	uint8_t operator++(int) { return Value++; }
-	uint8_t operator--(int) { return Value--; }
-
-  protected:
-	uint8_t Value;
+	using TIntegerElement_t<uint8_t>::operator=;
 };
 
 //
 // Class:	TBigEndian16Element
 // Description:
 //
-class TBigEndian16Element : public TMessageElement
+class TBigEndian16Element : public TIntegerElement_t<uint16_t>
 {
   public:
 	istream &read( istream &is ) {
@@ -208,22 +219,14 @@ class TBigEndian16Element : public TMessageElement
 		return os.put( (Value & 0xff) >> 0 );
 	}
 
-	operator uint16_t() const { return Value; }
-	uint16_t getValue() const { return Value; }
-	TBigEndian16Element &operator=( uint16_t s ) { Value = s; return *this; }
-
-	uint16_t operator++(int) { return Value++; }
-	uint16_t operator--(int) { return Value--; }
-
-  protected:
-	uint16_t Value;
+	using TIntegerElement_t<uint16_t>::operator=;
 };
 
 //
 // Class:	TLittleEndian16Element
 // Description:
 //
-class TLittleEndian16Element : public TMessageElement
+class TLittleEndian16Element : public TIntegerElement_t<uint16_t>
 {
   public:
 	istream &read( istream &is ) {
@@ -236,22 +239,14 @@ class TLittleEndian16Element : public TMessageElement
 		return os.put( (Value & 0xff00) >> 8 );
 	}
 
-	operator uint16_t() const { return Value; }
-	uint16_t getValue() const { return Value; }
-	TLittleEndian16Element &operator=( uint16_t s ) { Value = s; return *this; }
-
-	uint16_t operator++(int) { return Value++; }
-	uint16_t operator--(int) { return Value--; }
-
-  protected:
-	uint16_t Value;
+	using TIntegerElement_t<uint16_t>::operator=;
 };
 
 //
 // Class:	TLittleEndian24Element
 // Description:
 //
-class TLittleEndian24Element : public TMessageElement
+class TLittleEndian24Element : public TIntegerElement_t<uint32_t>
 {
   public:
 	istream &read( istream &is ) {
@@ -266,22 +261,14 @@ class TLittleEndian24Element : public TMessageElement
 		return os.put( (Value & 0xff0000) >> 16 );
 	}
 
-	operator uint32_t() const { return Value; }
-	uint32_t getValue() const { return Value; }
-	TLittleEndian24Element &operator=( uint32_t s ) { Value = s; return *this; }
-
-	uint32_t operator++(int) { return Value++; }
-	uint32_t operator--(int) { return Value--; }
-
-  protected:
-	uint32_t Value;
+	using TIntegerElement_t<uint32_t>::operator=;
 };
 
 //
 // Class:	TLittleEndian32Element
 // Description:
 //
-class TLittleEndian32Element : public TMessageElement
+class TLittleEndian32Element : public TIntegerElement_t<uint32_t>
 {
   public:
 	istream &read( istream &is ) {
@@ -298,22 +285,14 @@ class TLittleEndian32Element : public TMessageElement
 		return os.put( (Value & 0xff000000) >> 24 );
 	}
 
-	operator uint32_t() const { return Value; }
-	uint32_t getValue() const { return Value; }
-	TLittleEndian32Element &operator=( uint32_t s ) { Value = s; return *this; }
-
-	uint32_t operator++(int) { return Value++; }
-	uint32_t operator--(int) { return Value--; }
-
-  protected:
-	uint32_t Value;
+	using TIntegerElement_t<uint32_t>::operator=;
 };
 
 //
 // Class:	TLittleEndian64Element
 // Description:
 //
-class TLittleEndian64Element : public TMessageElement
+class TLittleEndian64Element : public TIntegerElement_t<uint64_t>
 {
   public:
 	istream &read( istream &is ) {
@@ -334,35 +313,20 @@ class TLittleEndian64Element : public TMessageElement
 		return os.put( (Value & 0xff00000000000000ULL) >> 56 );
 	}
 
-
-	operator uint64_t() const { return Value; }
-	uint64_t getValue() const { return Value; }
-	TLittleEndian64Element &operator=( uint64_t s ) { Value = s; return *this; }
-
-	uint64_t operator++(int) { return Value++; }
-	uint64_t operator--(int) { return Value--; }
-
-  protected:
-	uint64_t Value;
+	using TIntegerElement_t<uint64_t>::operator=;
 };
 
 //
 // Class:	TAutoSizeIntegerElement
 // Description:
 //
-class TAutoSizeIntegerElement : public TMessageElement
+class TAutoSizeIntegerElement : public TIntegerElement_t<uint64_t>
 {
   public:
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
 
-	uint64_t getValue() const { return Value; }
-	TAutoSizeIntegerElement &operator=( uint64_t s ) { Value = s; return *this; }
-
-	operator uint64_t() const { return Value; }
-
-  protected:
-	uint64_t Value;
+	using TIntegerElement_t<uint64_t>::operator=;
 };
 
 //
