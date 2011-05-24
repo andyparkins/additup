@@ -690,8 +690,10 @@ class TInventoryElement : public TMessageElement
 //    5000000  =  0.05 Coins
 // 3354000000  = 33.54 Coins
 //  100000000x =  x    Coins
-// Annoyingly the bitcoin client and java bitcoin library refer to
-// these as NanoCoins -- they are manifestly not.
+//
+// Annoyingly the java bitcoin library refers to these as NanoCoins --
+// they are manifestly not.  The bitcoin community calls them,
+// colloquially, Satoshis.
 //
 class TCoinsElement : public TLittleEndian64Element
 {
