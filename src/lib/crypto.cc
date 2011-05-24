@@ -190,20 +190,20 @@ TEllipticCurveKey &TEllipticCurveKey::operator=( const TEllipticCurveKey &O )
 // Function:	TEllipticCurveKey :: getPrivateKey
 // Description:
 //
-TByteArray TEllipticCurveKey::getPrivateKey() const
+TSecureByteArray TEllipticCurveKey::getPrivateKey() const
 {
 	// Query the buffer size by using NULL as the target
 	int KeySize = i2d_ECPrivateKey( Key, NULL );
 	if( KeySize == 0 )
 		throw runtime_error( "i2d_ECPrivateKey()" );
 
-	TByteArray ba;
+	TSecureByteArray ba;
 	ba.resize( KeySize );
 
 	// i2d_xxx() wants to leave the pointer pointing after the data its
 	// written; we don't care but we need to supply it a pointer it can
 	// modify...
-	TByteArray::Pointer pba = ba;
+	TSecureByteArray::Pointer pba = ba;
 
 	// Internal to DER
 	if( i2d_ECPrivateKey( Key, &pba ) != KeySize )
@@ -248,10 +248,10 @@ TByteArray TEllipticCurveKey::getPublicKey() const
 // just a number, it is two numbers representing curve coordinates
 // (r,s).
 //
-void TEllipticCurveKey::setPrivateKey( const TByteArray &s )
+void TEllipticCurveKey::setPrivateKey( const TSecureByteArray &s )
 {
 	// d2i_ECPrivateKey() needs a pointer to modify
-	TByteArray::constPointer pba = s;
+	TSecureByteArray::constPointer pba = s;
 
 	// Read SEC1 formatted private key into our already-allocated
 	// structure
