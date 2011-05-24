@@ -57,6 +57,64 @@
 
 // -------------- Class pre-declarations
 
+
+// -------------- Function pre-class prototypes
+
+
+// -------------- Class declarations
+
+//
+// Class:	TAutoClearAllocator
+// Description:
+//
+// http://www.codeproject.com/KB/cpp/allocator.aspx
+//
+template<typename T, typename baseAllocator = std::allocator<T> >
+class TAutoClearAllocator : public baseAllocator
+{
+  public:
+	// --- typedefs
+	typedef typename baseAllocator::pointer pointer;
+	typedef typename baseAllocator::const_pointer const_pointer;
+	typedef typename baseAllocator::reference reference;
+	typedef typename baseAllocator::const_reference const_reference;
+	typedef typename baseAllocator::value_type value_type;
+	typedef typename baseAllocator::size_type size_type;
+	typedef typename baseAllocator::difference_type  difference_type;
+
+	// --- constructors/destructor
+	TAutoClearAllocator() throw () {}
+	TAutoClearAllocator( const TAutoClearAllocator &O ) throw() :
+		baseAllocator(O) {}
+	// Allow our initialisation by copying any of our cousin classes
+	template <typename AnotherT>
+		TAutoClearAllocator( const TAutoClearAllocator<AnotherT> &O ) throw() :
+			baseAllocator(O) {}
+	~TAutoClearAllocator() throw() {}
+
+	// --- allocator interface
+
+	// "The template class member rebind in the table above is
+	// effectively a template typedef: if the name Allocator is bound to
+	// SomeAllocator<T>, then Allocator::rebind<U>::other is the same
+	// type as SomeAllocator<U>."  This is needed to enable list<int> to
+	// allocate memory to Node<int> instead of <int>.  vector<> won't
+	// care.
+	template <typename U>
+	struct rebind {
+		typedef TAutoClearAllocator<U> other;
+	};
+
+	// Base class allocate() is fine
+
+	// Override deallocation to zero the memory before freeing
+	void deallocate( T *ptr, size_type n ) {
+		if( ptr != NULL )
+			memset( ptr, 0, sizeof(T) * n );
+		baseAllocator::deallocate( ptr, n );
+	}
+};
+
 //
 // Class:	TByteArray
 // Description:
@@ -79,16 +137,17 @@
 // provides a few casts and operators to make it easier to use
 // concisely.
 //
-class TByteArray : public vector<unsigned char>
+template <typename TAllocator = std::allocator<unsigned char> >
+class TByteArray_t : public vector<unsigned char>
 {
   public:
-	TByteArray() {}
-	TByteArray( const string &s ) : vector<unsigned char>( s.begin(), s.end() ) {}
-	TByteArray( const unsigned char *p, size_type n ) { assign(p,n); }
-	TByteArray( const char *p ) { assign(p, strlen(p)); }
-	TByteArray( const char *p, size_type n ) { assign(p,n); }
-	TByteArray( size_type n, unsigned char v = 0 ) : vector<unsigned char>(n,v) {}
-	TByteArray( const TByteArray &O ) : vector<unsigned char>(O) {}
+	TByteArray_t() {}
+	TByteArray_t( const string &s ) : vector<unsigned char>( s.begin(), s.end() ) {}
+	TByteArray_t( const unsigned char *p, size_type n ) { assign(p,n); }
+	TByteArray_t( const char *p ) { assign(p, strlen(p)); }
+	TByteArray_t( const char *p, size_type n ) { assign(p,n); }
+	TByteArray_t( size_type n, unsigned char v = 0 ) : vector<unsigned char>(n,v) {}
+	TByteArray_t( const TByteArray_t &O ) : vector<unsigned char>(O) {}
 
 	using vector<unsigned char>::operator=;
 
@@ -107,10 +166,10 @@ class TByteArray : public vector<unsigned char>
 
 	operator string() const { return string().assign( *this, size() ); }
 
-	TByteArray &assign(const char *p, size_type n) {
+	TByteArray_t &assign(const char *p, size_type n) {
 		return assign( reinterpret_cast<const unsigned char *>(p), n );
 	}
-	TByteArray &assign(const unsigned char *p, size_type n) {
+	TByteArray_t &assign(const unsigned char *p, size_type n) {
 		resize(n);
 		memcpy(ptr(), p, n );
 		return *this;
@@ -118,16 +177,16 @@ class TByteArray : public vector<unsigned char>
 };
 
 
-// -------------- Function pre-class prototypes
-
-
-// -------------- Class declarations
-
+// -------------- Typedefs
+typedef TByteArray_t<allocator<unsigned char> > TByteArray;
+typedef TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > > TSecureByteArray;
 
 // -------------- Constants
 
 
 // -------------- Inline Functions
+// Note: we do not supply an operator<< for the auto clearing secure
+// byte array; there is no reason to make it easy to show secure bytes
 inline ostream &operator<<( ostream &s, const TByteArray &O ) { return s.write(O,O.size()); }
 
 
@@ -135,6 +194,8 @@ inline ostream &operator<<( ostream &s, const TByteArray &O ) { return s.write(O
 
 
 // -------------- Template instantiations
+extern template class TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > >;
+
 
 
 // -------------- World globals ("extern"s only)

@@ -38,6 +38,7 @@
 
 
 // -------------- Explicit template instantiations
+template class TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > >;
 
 
 // -------------- Function definitions
