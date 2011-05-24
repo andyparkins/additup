@@ -308,7 +308,7 @@ void TEllipticCurveKey::invalidate()
 // Function:	TEllipticCurveKey :: getMaximumSignatureSize
 // Description:
 //
-unsigned int TEllipticCurveKey::getMaximumSignatureSize() const
+TByteArray::size_type TEllipticCurveKey::getMaximumSignatureSize() const
 {
 	return ECDSA_size( Key );
 }
@@ -319,7 +319,7 @@ unsigned int TEllipticCurveKey::getMaximumSignatureSize() const
 //
 TByteArray TEllipticCurveKey::sign( const TByteArray &digest ) const
 {
-	unsigned int SignatureLength = getMaximumSignatureSize();
+	TByteArray::size_type SignatureLength = getMaximumSignatureSize();
 	TByteArray Signature;
 	Signature.resize( SignatureLength );
 

@@ -168,7 +168,7 @@ class TEllipticCurveKey : public TDigitalSignature
 	bool verify( const TByteArray &digest, const TByteArray &signature ) const;
 
   protected:
-	unsigned int getMaximumSignatureSize() const;
+	TByteArray::size_type getMaximumSignatureSize() const;
 
 	// const EC_GROUP *EC_KEY_get0_group(const EC_KEY *);
 	// int EC_KEY_set_group(EC_KEY *, const EC_GROUP *);
