@@ -28,6 +28,7 @@
 // --- Project lib
 // --- Project
 #include "hashtypes.h"
+#include "messageelements.h"
 
 
 // -------------- Namespace
@@ -62,6 +63,7 @@ class TMessage_block;
 class TMessage_inv;
 class TMessage_headers;
 class TBitcoinNetwork;
+class TBlockHeaderElement;
 
 
 // -------------- Function pre-class prototypes
@@ -137,8 +139,8 @@ class TBlock
 
 	const TBlock *getParent() const { return Parent; }
 
-	virtual void updateFromMessage( const TMessage_block * ) = 0;
-	virtual const TMessage_block *getMessage() const = 0;
+	virtual void updateFromHeader( const TBlockHeaderElement & ) = 0;
+	virtual void writeToHeader( const TBlockHeaderElement & ) const = 0;
 
 	virtual unsigned int getHeight() const = 0;
 	virtual const TBitcoinHash &getHash() const = 0;
@@ -178,7 +180,8 @@ class TMessageBasedBlock : public TBlock
 	~TMessageBasedBlock();
 	virtual TBlock *clone() const { return new TMessageBasedBlock(*this); }
 
-	void updateFromMessage( const TMessage_block * );
+	void updateFromHeader( const TBlockHeaderElement & );
+	void writeToHeader( const TBlockHeaderElement & ) const;
 
 	unsigned int getHeight() const;
 	const TBitcoinHash &getHash() const;
@@ -190,12 +193,13 @@ class TMessageBasedBlock : public TBlock
 
 	ostream &printOn( ostream & ) const;
 
-	const TMessage_block *getMessage() const { return Message; }
-
   protected:
-	TMessage_block *Message;
+	TBlockHeaderElement Header;
 	mutable TBitcoinHash cachedHash;
 	mutable unsigned int cachedHeight;
+
+  protected:
+	static TMessageDigest *BlockHasher;
 };
 
 #if 0
@@ -209,7 +213,7 @@ class TDatabaseBlock : public TBlock
 	TDatabaseBlock( TDatabaseBlockPool * );
 	~TDatabaseBlock();
 
-	void updateFromMessage( const TBitcoinHash &, const TMessage_block * );
+	void updateFromHeader( const TBlockHeaderElement & );
 
 	const TBitcoinHash &getHash() const;
 	const TBitcoinHash &getParentHash() const;

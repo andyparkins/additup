@@ -19,12 +19,15 @@
 // -------------- Includes
 // --- C
 // --- C++
+#include <sstream>
 // --- Qt
 // --- OS
 // --- Project libs
 // --- Project
 #include "messages.h"
 #include "bitcoinnetwork.h"
+#include "logstream.h"
+#include "crypto.h"
 
 
 // -------------- Namespace
@@ -214,12 +217,17 @@ ostream &TBlock::printOn( ostream &os ) const
 // ---------
 
 //
+// Static:	TMessageBasedBlock :: BlockHasher
+// Description:
+//
+TMessageDigest *TMessageBasedBlock::BlockHasher = new TDoubleHash( new THash_sha256, new THash_sha256 );
+
+//
 // Function:	TMessageBasedBlock :: TMessageBasedBlock
 // Description:
 //
 TMessageBasedBlock::TMessageBasedBlock( TBlockPool *p ) :
-	TBlock( p ),
-	Message( NULL )
+	TBlock( p )
 {
 	cachedHash.invalidate();
 }
@@ -230,37 +238,15 @@ TMessageBasedBlock::TMessageBasedBlock( TBlockPool *p ) :
 //
 TMessageBasedBlock::~TMessageBasedBlock()
 {
-	delete Message;
 }
 
 //
 // Function:	TMessageBasedBlock :: setMessage
 // Description:
 //
-void TMessageBasedBlock::updateFromMessage( const TMessage_block *m )
+void TMessageBasedBlock::updateFromHeader( const TBlockHeaderElement &H )
 {
-	if( Message != NULL ) {
-		// XXX: Merge incoming message into existing message?
-		delete Message;
-	}
-
-	if( m == NULL ) {
-		Message = NULL;
-		return;
-	}
-
-	// Copy the block message.  It's important that we use clone() in
-	// case there are multiple versions of TMessage_block in the future.
-	// We will be given a TMessage_block_XXX but will only see it as a
-	// TMessage_block; therefore we must use clone().  The type-abusing
-	// reinterpret_cast<> is justified because we are cloning a
-	// TMessage_block; it's just that clone() returns a TMessage, so
-	// must be coerced back to TMessage_block.
-	Message = reinterpret_cast<TMessage_block*>( m->clone() );
-
-	// The above copy is our quickest way of getting the individual
-	// fields out of the message; but we could just as easily have
-	// copied every field out of the message into our own structure.
+	Header = H;
 
 	// Invalidate any cached hash
 	flush();
@@ -301,14 +287,36 @@ const TBitcoinHash &TMessageBasedBlock::getHash() const
 	if( cachedHash.isValid() )
 		return cachedHash;
 
-	if( Message == NULL )
-		throw runtime_error( "Can't calculate a hash on a NULL block" );
+	ostringstream oss;
 
-	// Messages are already version enabled; to enable future alteration
-	// of block hashing method, we'll defer to the message itself for
-	// this calculation, which saves us needing to implement another
-	// versioned infrastructure
-	cachedHash = Message->calculateHash();
+	// "The SHA256 hash that identifies each block (and which must have
+	// a run of 0 bits) is calculated from the first 6 fields of this
+	// structure (version, prev_block, merkle_root, timestamp, bits,
+	// nonce, and standard SHA256 padding, making two 64-byte chunks in
+	// all) and not from the complete block. To calculate the hash, only
+	// two chunks need to be processed by the SHA256 algorithm. Since
+	// the nonce  field is in the second chunk, the first chunk stays
+	// constant during mining and therefore only the second chunk needs
+	// to be processed. However, a Bitcoin hash is the hash of the hash,
+	// so two SHA256 rounds are needed for each mining iteration."
+	Header.write(oss);
+
+	// Field sizes: 4 + 32 + 32 + 4 + 4 + 4 = 80
+	// OpenSSL should pad on its own...
+
+//	log() << "TMessage_block = ";
+//	TLog::hexify( log(), oss.str() );
+//	log() << endl;
+	cachedHash.fromBytes( BlockHasher->transform( oss.str() ) );
+
+	// For an unknown reason, bitcoin calculates the hash, then reverses
+	// the byte order, and that reversed form is then treated as the
+	// hash
+	cachedHash = cachedHash.reversedBytes();
+
+//	log() << "TMessage_block.hash = ";
+//	TLog::hexify( log(), hash.toBytes() );
+//	log() << endl;
 
 	return cachedHash;
 }
@@ -319,7 +327,7 @@ const TBitcoinHash &TMessageBasedBlock::getHash() const
 //
 const TBitcoinHash &TMessageBasedBlock::getParentHash() const
 {
-	return Message->blockHeader().PreviousBlock;
+	return Header.PreviousBlock;
 }
 
 //
@@ -328,7 +336,7 @@ const TBitcoinHash &TMessageBasedBlock::getParentHash() const
 //
 TBitcoinHash TMessageBasedBlock::getClaimedDifficulty() const
 {
-	return Message->blockHeader().DifficultyBits.getTarget();
+	return Header.DifficultyBits.getTarget();
 }
 
 //
@@ -337,7 +345,7 @@ TBitcoinHash TMessageBasedBlock::getClaimedDifficulty() const
 //
 time_t TMessageBasedBlock::getTimestamp() const
 {
-	return Message->blockHeader().Timestamp.getValue();
+	return Header.Timestamp.getValue();
 }
 
 //
@@ -347,8 +355,8 @@ time_t TMessageBasedBlock::getTimestamp() const
 ostream &TMessageBasedBlock::printOn( ostream &os ) const
 {
 	TBlock::printOn(os);
-	os << "Message    : ";
-	os << *Message;
+//	os << "Message    : ";
+//	os << *Message;
 	os << endl;
 
 	return os;
@@ -378,7 +386,7 @@ TDatabaseBlock::~TDatabaseBlock()
 // Function:	TDatabaseBlock :: setMessage
 // Description:
 //
-void TDatabaseBlock::updateFromMessage( const TBitcoinHash &hash, const TMessage_block *m )
+void TDatabaseBlock::updateFromHeader( const TBitcoinHash &hash, const TMessage_block *m )
 {
 	if( m == NULL ) {
 		// XXX: Delete existing record?
@@ -460,7 +468,7 @@ void TBlockPool::receiveBlock( const TMessage_block *message )
 	// throw an exception if the network hash doesn't equal the
 	// calculated hash
 	try {
-		thisBlock->updateFromMessage( message );
+		thisBlock->updateFromHeader( message->blockHeader() );
 	} catch( ... ) {
 		delete thisBlock;
 		throw;
@@ -477,7 +485,7 @@ void TBlockPool::receiveBlock( const TMessage_block *message )
 		delete thisBlock;
 		thisBlock = existingBlock;
 		// Let the existing block have a look at the message as well
-		thisBlock->updateFromMessage( message );
+		thisBlock->updateFromHeader( message->blockHeader() );
 	} else {
 		// If not, store the new block in the pool
 		putBlock( thisBlock->getHash(), thisBlock );
@@ -648,6 +656,8 @@ void TDatabaseBlockPool::scanForNewChildLinks()
 
 #ifdef UNITTEST
 #include <iostream>
+#include "constants.h"
+#include "messageelements.h"
 
 // -------------- main()
 
@@ -656,6 +666,72 @@ int main( int argc, char *argv[] )
 	try {
 	} catch( exception &e ) {
 		cerr << e.what() << endl;
+		return 255;
+	}
+
+	try {
+		// Force KNOWN_NETWORKS creation
+		TSingleton<KNOWN_NETWORKS>::create();
+
+		log() << "--- Hash speed test" << endl;
+		TMessageBasedBlock *testblock;
+
+		testblock = dynamic_cast<TMessageBasedBlock*>( NETWORK_PRODNET->GenesisBlock->clone() );
+
+		log() << "Loaded testblock" << endl;
+		testblock->printOn( log() );
+
+		log() << "Hashing";
+
+		static const unsigned int LOOPS = 1 << 18;
+		struct timeval start, end;
+		unsigned int i;
+		TBlockHeaderElement TestBlockHeader;
+		testblock->writeToHeader( TestBlockHeader );
+		TBitcoinHash hash;
+		gettimeofday( &start, NULL );
+		for( i = LOOPS; i > 0; i-- ) {
+			testblock->flush();
+			hash = testblock->getHash();
+			if( (i & 0xfff) == 0 )
+				log() << "." << flush;
+		}
+		gettimeofday( &end, NULL );
+
+		log() << endl;
+
+//		log() << LOOPS << " loops in " << (end.tv_sec - start.tv_sec)
+//			<< "s and " << (end.tv_usec - start.tv_usec) << "us" << endl;
+
+		log() << "Hash rate is " << LOOPS / (end.tv_sec - start.tv_sec) << " h/s (approx)" << endl;
+
+		TBitcoinHash Target(1);
+		Target <<= (256 - 19);
+		Target -= 1;
+
+		TestBlockHeader.Nonce = 0;
+
+		log() << "Mining";
+		gettimeofday( &start, NULL );
+		i = 0;
+		while( true ) {
+			testblock->flush();
+			hash = testblock->getHash();
+			if( (i & 0xfff) == 0 )
+				log() << "." << flush;
+			if( hash <= Target )
+				break;
+			i++;
+			TestBlockHeader.Nonce++;
+		}
+		gettimeofday( &end, NULL );
+
+		log() << endl;
+		log() << "Found hash  " << hash << endl
+			<< " less than  " << Target << endl;
+
+	} catch( std::exception &e ) {
+		log() << e.what() << endl;
 		return 255;
 	}
 

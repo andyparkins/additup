@@ -186,7 +186,7 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 		// it can be compared against the genesis block we eventually
 		// see in the block chain
 		GenesisBlock = new TMessageBasedBlock( NULL );
-		GenesisBlock->updateFromMessage( &message );
+		GenesisBlock->updateFromHeader( message.blockHeader() );
 		if( GenesisBlock->getHash() != GenesisHash )
 			throw logic_error( "GenesisBlock hash doesn't match pre-programmed hash" );
 	}
@@ -276,7 +276,7 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		// it can be compared against the genesis block we eventually
 		// see in the block chain
 		GenesisBlock = new TMessageBasedBlock( NULL );
-		GenesisBlock->updateFromMessage( &message );
+		GenesisBlock->updateFromHeader( message.blockHeader() );
 		if( GenesisBlock->getHash() != GenesisHash )
 			throw logic_error( "GenesisBlock hash doesn't match pre-programmed hash" );
 

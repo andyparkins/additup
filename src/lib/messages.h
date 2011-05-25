@@ -659,8 +659,6 @@ class TMessage_block : public TMessageWithChecksum
 		return os;
 	}
 
-	virtual TBitcoinHash calculateHash() const;
-
 	const TBlockHeaderElement &blockHeader() const { return BlockHeader; }
 	TBlockHeaderElement &blockHeader() { return BlockHeader; }
 

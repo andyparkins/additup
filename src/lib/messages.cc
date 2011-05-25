@@ -695,48 +695,6 @@ ostream &TMessage_tx::printOn( ostream &s ) const
 // --------
 
 //
-// Function:	TMessage_block :: calculateHash
-// Description:
-//
-TBitcoinHash TMessage_block::calculateHash() const
-{
-	TBitcoinHash hash;
-	ostringstream oss;
-
-	// "The SHA256 hash that identifies each block (and which must have
-	// a run of 0 bits) is calculated from the first 6 fields of this
-	// structure (version, prev_block, merkle_root, timestamp, bits,
-	// nonce, and standard SHA256 padding, making two 64-byte chunks in
-	// all) and not from the complete block. To calculate the hash, only
-	// two chunks need to be processed by the SHA256 algorithm. Since
-	// the nonce  field is in the second chunk, the first chunk stays
-	// constant during mining and therefore only the second chunk needs
-	// to be processed. However, a Bitcoin hash is the hash of the hash,
-	// so two SHA256 rounds are needed for each mining iteration."
-	BlockHeader.write(oss);
-
-	// Field sizes: 4 + 32 + 32 + 4 + 4 + 4 = 80
-	// OpenSSL should pad on its own...
-
-	// Conveniently, PayloadHasher is already double SHA256
-//	log() << "TMessage_block = ";
-//	TLog::hexify( log(), oss.str() );
-//	log() << endl;
-	hash.fromBytes( PayloadHasher->transform( oss.str() ) );
-
-	// For an unknown reason, bitcoin calculates the hash, then reverses
-	// the byte order, and that reversed form is then treated as the
-	// hash
-	hash = hash.reversedBytes();
-
-//	log() << "TMessage_block.hash = ";
-//	TLog::hexify( log(), hash.toBytes() );
-//	log() << endl;
-
-	return hash;
-}
-
-//
 // Function:	TMessage_block :: calculateMerkleTree
 // Description:
 //
@@ -986,13 +944,6 @@ int main( int argc, char *argv[] )
 				break;
 			}
 
-			// Special
-			if( dynamic_cast<TMessage_block *>( potential ) != NULL ) {
-				TMessage_block *block = reinterpret_cast<TMessage_block*>( potential );
-				block->calculateMerkleTree();
-				log() << "blockhash = " << block->calculateHash() << endl;
-			}
-
 			if( potential != NULL ) {
 				log() << " - is a " << *potential << endl;
 			} else {
@@ -1014,69 +965,6 @@ int main( int argc, char *argv[] )
 
 			p++;
 		}
-	} catch( std::exception &e ) {
-		log() << e.what() << endl;
-		return 255;
-	}
-
-	try {
-		// Force KNOWN_NETWORKS creation
-		TSingleton<KNOWN_NETWORKS>::create();
-
-		log() << "--- Hash speed test" << endl;
-		TBlock *testblock;
-
-		testblock = NETWORK_PRODNET->GenesisBlock->clone();
-
-		log() << "Loaded testblock" << endl;
-		testblock->printOn( log() );
-
-		log() << "Hashing";
-
-		static const unsigned int LOOPS = 1 << 18;
-		struct timeval start, end;
-		unsigned int i;
-		TMessage_block *message = reinterpret_cast<TMessage_block*>(testblock->getMessage()->clone());
-		TBitcoinHash hash;
-		gettimeofday( &start, NULL );
-		for( i = LOOPS; i > 0; i-- ) {
-			hash = message->calculateHash();
-			if( (i & 0xfff) == 0 )
-				log() << "." << flush;
-		}
-		gettimeofday( &end, NULL );
-
-		log() << endl;
-
-//		log() << LOOPS << " loops in " << (end.tv_sec - start.tv_sec)
-//			<< "s and " << (end.tv_usec - start.tv_usec) << "us" << endl;
-
-		log() << "Hash rate is " << LOOPS / (end.tv_sec - start.tv_sec) << " h/s (approx)" << endl;
-
-		TBitcoinHash Target(1);
-		Target <<= (256 - 19);
-		Target -= 1;
-
-		message->blockHeader().Nonce = 0;
-
-		log() << "Mining";
-		gettimeofday( &start, NULL );
-		i = 0;
-		while( true ) {
-			hash = message->calculateHash();
-			if( (i & 0xfff) == 0 )
-				log() << "." << flush;
-			if( hash <= Target )
-				break;
-			i++;
-			message->blockHeader().Nonce++;
-		}
-		gettimeofday( &end, NULL );
-
-		log() << endl;
-		log() << "Found hash  " << hash << endl
-			<< " less than  " << Target << endl;
-
 	} catch( std::exception &e ) {
 		log() << e.what() << endl;
 		return 255;
