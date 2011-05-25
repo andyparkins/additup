@@ -267,8 +267,14 @@ TNodeInfo &TBitcoinNetwork::updateDirectory( const TNodeInfo &Node )
 //
 void TBitcoinNetwork::process( TMessage *Message )
 {
-	if( Message != NULL )
+	TBitcoinPeer *Peer = NULL;
+
+	if( Message != NULL ) {
 		log() << "[NETW] RX< " << *Message << endl;
+
+		// For those times we want to know who the message is from
+		Peer = Message->getPeer();
+	}
 
 	if( Message == NULL ) {
 		// Spontaneous
