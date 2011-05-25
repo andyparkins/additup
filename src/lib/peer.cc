@@ -353,7 +353,7 @@ void TBitcoinPeer::receive( const TByteArray &s )
 				set<const TNetworkParameters *>::const_iterator p = TSingleton<KNOWN_NETWORKS>::O().begin();
 				while( p != TSingleton<KNOWN_NETWORKS>::O().end() ) {
 					TMessage_version *version;
-					version = new TMessage_version_31402;
+					version = Network->createMyVersionMessage();
 					version->setFields();
 					version->setMagic( (*p)->Magic );
 					queueOutgoing( version );
@@ -371,7 +371,7 @@ void TBitcoinPeer::receive( const TByteArray &s )
 		// Send our version
 		if( !VersionSent ) {
 			VersionSent = true;
-			queueOutgoing( new TMessage_version_31402 );
+			queueOutgoing( Network->createMyVersionMessage() );
 		}
 
 		// Convert stream to messages

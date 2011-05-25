@@ -342,6 +342,15 @@ void TBitcoinNetwork::process( TMessage *Message )
 }
 
 //
+// Function:	TBitcoinNetwork :: createMyVersionMessage
+// Description:
+//
+TMessage_version *TBitcoinNetwork::createMyVersionMessage() const
+{
+	return new TMessage_version_31402;
+}
+
+//
 // Function:	TBitcoinNetwork :: getNetworkTime
 // Description:
 //

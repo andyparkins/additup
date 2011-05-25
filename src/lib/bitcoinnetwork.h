@@ -164,6 +164,8 @@ class TBitcoinNetwork
 
 	uint64_t getNonce() const { return Nonce; }
 
+	virtual TMessage_version *createMyVersionMessage() const;
+
   protected:
 	virtual void disconnect( TBitcoinPeer * ) = 0;
 
