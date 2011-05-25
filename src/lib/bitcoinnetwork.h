@@ -114,7 +114,17 @@ class TNetworkParameters
 	unsigned int DIFFICULTY_TIMESPAN;
 	unsigned int NEW_BLOCK_PERIOD;
 
-	unsigned int GETDATA_MAX_INV;
+	unsigned int INV_MAX;
+	unsigned int GETDATA_MAX;
+	unsigned int GETBLOCKS_RESPONSES_MAX;
+	unsigned int GETHEADERS_RESPONSES_MAX;
+	unsigned int ADDR_MAX;
+	unsigned int ADDR_MIN_TIME;
+	unsigned int ADDR_MAX_TIME_OFFSET;
+	unsigned int ADDR_DEFAULT_TIME_PENALTY;
+	unsigned int ASSUME_OFFLINE_AFTER;
+	unsigned int OFFLINE_UPDATE_INTERVAL;
+	unsigned int ONLINE_UPDATE_INTERVAL;
 
 	// Checkpoints
 	map<unsigned int, TBitcoinHash> Checkpoints;
