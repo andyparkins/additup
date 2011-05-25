@@ -217,12 +217,6 @@ ostream &TBlock::printOn( ostream &os ) const
 // ---------
 
 //
-// Static:	TMessageBasedBlock :: BlockHasher
-// Description:
-//
-TMessageDigest *TMessageBasedBlock::BlockHasher = new TDoubleHash( new THash_sha256, new THash_sha256 );
-
-//
 // Function:	TMessageBasedBlock :: TMessageBasedBlock
 // Description:
 //
@@ -307,7 +301,8 @@ const TBitcoinHash &TMessageBasedBlock::getHash() const
 //	log() << "TMessage_block = ";
 //	TLog::hexify( log(), oss.str() );
 //	log() << endl;
-	cachedHash.fromBytes( BlockHasher->transform( oss.str() ) );
+	cachedHash.fromBytes(
+			Pool->getNetwork()->getNetworkParameters()->blockHasher()->transform( oss.str() ) );
 
 	// For an unknown reason, bitcoin calculates the hash, then reverses
 	// the byte order, and that reversed form is then treated as the

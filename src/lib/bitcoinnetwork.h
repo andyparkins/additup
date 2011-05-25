@@ -60,6 +60,7 @@
 class TTransactionPool;
 class TBlockPool;
 class TBlock;
+class TMessageDigest;
 
 
 // -------------- Function pre-class prototypes
@@ -84,6 +85,10 @@ class TNetworkParameters
 	double convertTargetToDifficulty( const TBitcoinHash & ) const;
 	TBitcoinHash convertDifficultyToTarget( double ) const;
 	unsigned int expectedGHashesPerBlock( const TBitcoinHash & ) const;
+
+	virtual TMessageDigest *blockHasher() const = 0;
+	virtual TMessageDigest *payloadHasher() const = 0;
+	virtual TMessageDigest *merkleHasher() const = 0;
 
   public:
 	uint32_t ProtocolVersion;

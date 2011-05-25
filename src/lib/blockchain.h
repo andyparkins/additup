@@ -199,7 +199,6 @@ class TMessageBasedBlock : public TBlock
 	mutable unsigned int cachedHeight;
 
   protected:
-	static TMessageDigest *BlockHasher;
 };
 
 #if 0

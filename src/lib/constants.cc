@@ -29,6 +29,7 @@
 #include "blockchain.h"
 #include "messages.h"
 #include "script.h"
+#include "crypto.h"
 
 
 // -------------- Namespace
@@ -58,6 +59,12 @@ class TPredefinedNetworkParameters : public TNetworkParameters
 		// Defined by whatever we support -- not sure this should be here,
 		// would like to support multiple versions in the same client
 		ProtocolVersion = 31800;
+
+		// Hashers are all the same
+		Hasher = new TDoubleHash( new THash_sha256, new THash_sha256 );
+	}
+	~TPredefinedNetworkParameters() {
+		delete Hasher;
 	}
 	const char *className() const { return "TPredefinedNetworkParameters"; }
 
@@ -70,10 +77,16 @@ class TPredefinedNetworkParameters : public TNetworkParameters
 		return ObservedTimespan;
 	}
 
+	TMessageDigest *blockHasher() const { return Hasher; }
+	TMessageDigest *payloadHasher() const { return Hasher; };
+	TMessageDigest *merkleHasher() const { return Hasher; };
+
   protected:
 	void configureGenesisMessage( TMessage_block & ) const;
 
   protected:
+	TMessageDigest *Hasher;
+
 	static const TStackOperator *SATOSHI_GENESIS_SIGSCRIPT[];
 	static const TStackOperator *SATOSHI_GENESIS_PUBKEYSCRIPT[];
 };

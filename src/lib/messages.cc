@@ -249,12 +249,6 @@ ostream &TMessage::printOn( ostream &s ) const
 // --------
 
 //
-// Static:	TMessageWithChecksum :: PayloadHasher
-// Description:
-//
-TMessageDigest *TMessageWithChecksum::PayloadHasher = new TDoubleHash( new THash_sha256, new THash_sha256 );
-
-//
 // Function:	TMessageWithChecksum :: read
 // Description:
 //
@@ -296,7 +290,7 @@ ostream &TMessageWithChecksum::write( ostream &os ) const
 //
 void TMessageWithChecksum::verifyPayloadChecksum() const
 {
-	string digest = PayloadHasher->transform( RawPayload );
+	string digest = Peer->getNetworkParameters()->payloadHasher()->transform( RawPayload );
 	uint32_t CalculatedChecksum = TMessageElement::littleEndian32FromString( digest, 0 );
 
 	if( CalculatedChecksum != MessageHeader.Checksum ) {
@@ -323,7 +317,7 @@ void TMessageWithChecksum::setFields()
 //
 void TMessageWithChecksum::generatePayloadChecksum()
 {
-	string digest = PayloadHasher->transform( RawPayload );
+	string digest = Peer->getNetworkParameters()->payloadHasher()->transform( RawPayload );
 	MessageHeader.Checksum = TMessageElement::littleEndian32FromString( digest, 0 );
 	MessageHeader.hasChecksum = true;
 
@@ -780,8 +774,7 @@ void TMessage_block::calculateMerkleTree()
 			ostringstream oss;
 			oss << leaf1 << leaf2;
 
-			// The PayloadHasher is fine for creating the Merkle hashes
-			istringstream iss( PayloadHasher->transform( oss.str() ) );
+			istringstream iss( Peer->getNetworkParameters()->merkleHasher()->transform( oss.str() ) );
 
 			// Read the resultant hash from a buffer
 			iss >> result;

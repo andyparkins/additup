@@ -205,9 +205,6 @@ class TMessageWithChecksum : public TMessage
 	void verifyPayloadChecksum() const;
 	void generatePayloadChecksum();
 	ostream &printOn( ostream & ) const;
-
-  protected:
-	static TMessageDigest *PayloadHasher;
 };
 
 //
