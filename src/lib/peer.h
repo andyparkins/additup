@@ -61,6 +61,7 @@ class TBitcoinNetwork;
 class TMessageFactory;
 class TNetworkParameters;
 class TMessage;
+class TMessage_version;
 struct sockaddr;
 
 
@@ -150,6 +151,7 @@ class TBitcoinPeer
 
 	bool VersionSent;
 	bool VerackReceived;
+	TMessage_version *VersionMessage;
 
 	list<TMessage*> IncomingQueue;
 	list<TMessage*> OutgoingQueue;

@@ -132,7 +132,8 @@ TBitcoinPeer::TBitcoinPeer( const TNodeInfo *info, TBitcoinNetwork *network ) :
 	Factory( NULL ),
 	State( Unconnected ),
 	VersionSent( false ),
-	VerackReceived( false )
+	VerackReceived( false ),
+	VersionMessage( NULL )
 {
 }
 
@@ -142,6 +143,7 @@ TBitcoinPeer::TBitcoinPeer( const TNodeInfo *info, TBitcoinNetwork *network ) :
 //
 TBitcoinPeer::~TBitcoinPeer()
 {
+	delete VersionMessage;
 	delete Factory;
 
 	// Tidy up anything left on the queues
@@ -387,7 +389,7 @@ void TBitcoinPeer::receive( const TByteArray &s )
 			// We don't care exactly what version message, the
 			// TMessage_version base class is more than enough for us to
 			// query the message
-			TMessage_version *VersionMessage = reinterpret_cast<TMessage_version*>( Message.get() );
+			VersionMessage = reinterpret_cast<TMessage_version*>( Message.get()->clone() );
 
 			log() << "[PEER] Version message received, " << *VersionMessage << endl;
 			TMessageFactory *newFactory = VersionMessage->createMessageFactory();
