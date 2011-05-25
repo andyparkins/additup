@@ -280,6 +280,27 @@ void TBitcoinNetwork::process( TMessage *Message )
 		// Spontaneous
 	} else if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
+	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
+		TMessage_version *version = reinterpret_cast<TMessage_version*>( Message );
+
+		// We must make this concession to versioning.  Perhaps it would
+		// be better to have version-specific TBitcoinNetwork classes,
+		// but I'm afraid I can't quite be bothered to do that just for
+		// the sake of this if()
+		if( version->getVersion() > 20900 ) {
+			// Acknowledge every version received, even if the remote
+			// chooses to send more than one (which it shouldn't)
+			Peer->queueOutgoing( new TMessage_verack() );
+		}
+
+//		if( !Inbound ) {
+//			// XXX: Official client does getaddr
+//		}
+
+		// XXX: Request block updates since our latest
+
+		// XXX: Pending alerts
+
 	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
 		// No need to dynamic cast again
 		TMessage_inv *inv = reinterpret_cast<TMessage_inv*>( Message );

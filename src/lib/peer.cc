@@ -394,15 +394,17 @@ void TBitcoinPeer::receive( const TByteArray &s )
 			log() << "[PEER] Version message received, " << *VersionMessage << endl;
 			TMessageFactory *newFactory = VersionMessage->createMessageFactory();
 			log() << "[PEER] Factory is now " << newFactory->className() << endl;
+			// Requeue the version message so the network gets to see it
+			queueIncoming( Message.get() );
+			// ... since we've requeued it, don't delete it
+			Message.release();
 			// Any bytes left over in the factory we're about to delete
 			// must be forwarded to the new factory
 			newFactory->receive( Factory->getRXBuffer() );
 			delete Factory;
 			Factory = newFactory;
 
-			// Acknowledge every version received, even if the remote
-			// chooses to send more than one (which it shouldn't)
-			queueOutgoing( new TMessage_verack() );
+			// We'll leave acknowledgement to the network
 		} else if( dynamic_cast<TMessage_verack*>( Message.get() ) != NULL ) {
 			// Not sure we care...  If we don't get a verack, then
 			// presumably the remote will just hang up on us -- what
