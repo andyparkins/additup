@@ -544,6 +544,10 @@ class TMessageGetBase : public TMessageWithChecksum
 		return os;
 	}
 
+	unsigned int size() const { return HashStarts.size(); }
+	const TBitcoinHash &operator[]( unsigned int i ) { return HashStarts[i]; }
+	const TBitcoinHash &getStop() const { return HashStop; }
+
   protected:
 	ostream &printOn( ostream & ) const;
 
