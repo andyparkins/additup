@@ -337,12 +337,6 @@ void TBitcoinNetwork::process( TMessage *Message )
 		// presumption is that a node is likely to be active if it has
 		// been sending a message within the last three hours."
 //		Answer = new TMessage_addr();
-	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
-		// RX< submitorder
-		// TX> reply
-	} else if( dynamic_cast<TMessage_checkorder*>( Message ) != NULL ) {
-		// RX< checkorder
-		// TX> reply
 	} else if( dynamic_cast<TMessage_tx*>( Message ) != NULL ) {
 		TMessage_tx *tx = reinterpret_cast<TMessage_tx*>( Message );
 		try {
@@ -367,6 +361,12 @@ void TBitcoinNetwork::process( TMessage *Message )
 		// No response needed
 	} else if( dynamic_cast<TMessage_ping*>( Message ) != NULL ) {
 		// No response needed
+	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
+		// RX< submitorder
+		// TX> reply
+	} else if( dynamic_cast<TMessage_checkorder*>( Message ) != NULL ) {
+		// RX< checkorder
+		// TX> reply
 	} else if( dynamic_cast<TMessage_alert*>( Message ) != NULL ) {
 		// No response needed
 	}
