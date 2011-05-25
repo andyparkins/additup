@@ -706,6 +706,14 @@ class TMessage_headers : public TMessageWithChecksum
 		return os;
 	}
 
+	unsigned int size() const { return BlockHeaders.size(); }
+	TBlockHeaderElement &operator[]( unsigned int i ) { return BlockHeaders[i]; }
+	const TBlockHeaderElement &operator[]( unsigned int i ) const { return BlockHeaders[i]; }
+	TBlockHeaderElement &appendBlockHeader() {
+		BlockHeaders.append( TPaddedBlockHeaderElement() );
+		return BlockHeaders.back();
+	}
+
   protected:
 	const char *commandString() const { return "headers"; }
 
