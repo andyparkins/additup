@@ -249,6 +249,9 @@ class TMessage_version : public TMessageWithoutChecksum
 
 	void setFields();
 
+	uint64_t getVersion() const { return Version.getValue(); }
+	uint64_t getTimestamp() const { return Timestamp.getValue(); }
+
   protected:
 	const char *commandString() const { return "version"; }
 
