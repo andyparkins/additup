@@ -249,6 +249,15 @@ void TMessageBasedBlock::updateFromHeader( const TBlockHeaderElement &H )
 }
 
 //
+// Function:	TMessageBasedBlock :: writeToHeader
+// Description:
+//
+void TMessageBasedBlock::writeToHeader( TBlockHeaderElement &H ) const
+{
+	H = Header;
+}
+
+//
 // Function:	TMessageBasedBlock :: getHeight
 // Description:
 //
@@ -451,10 +460,10 @@ void TBlockPool::receiveInventory( TMessage_inv *inv )
 }
 
 //
-// Function:	TBlockPool :: receiveBlock
+// Function:	TBlockPool :: receiveHeader
 // Description:
 //
-void TBlockPool::receiveBlock( const TMessage_block *message )
+void TBlockPool::receiveHeader( const TBlockHeaderElement &Header )
 {
 	// Create a new block
 	TBlock *thisBlock = createBlock();
@@ -463,7 +472,7 @@ void TBlockPool::receiveBlock( const TMessage_block *message )
 	// throw an exception if the network hash doesn't equal the
 	// calculated hash
 	try {
-		thisBlock->updateFromHeader( message->blockHeader() );
+		thisBlock->updateFromHeader( Header );
 	} catch( ... ) {
 		delete thisBlock;
 		throw;
@@ -480,7 +489,7 @@ void TBlockPool::receiveBlock( const TMessage_block *message )
 		delete thisBlock;
 		thisBlock = existingBlock;
 		// Let the existing block have a look at the message as well
-		thisBlock->updateFromHeader( message->blockHeader() );
+		thisBlock->updateFromHeader( Header );
 	} else {
 		// If not, store the new block in the pool
 		putBlock( thisBlock->getHash(), thisBlock );
@@ -506,21 +515,22 @@ void TBlockPool::receiveBlock( const TMessage_block *message )
 }
 
 //
+// Function:	TBlockPool :: receiveBlock
+// Description:
+//
+void TBlockPool::receiveBlock( const TMessage_block *message )
+{
+	receiveHeader( message->blockHeader() );
+}
+
+//
 // Function:	TBlockPool :: receiveHeaders
 // Description:
 //
 void TBlockPool::receiveHeaders( const TMessage_headers *headers )
 {
 	for( unsigned int i = 0; i < headers->size(); i++ ) {
-		if( (*headers)[i].ObjectType != TheadersentoryElement::MSG_BLOCK )
-			continue;
-
-		// RX< headers
-		if( blockExists( (*headers)[i].Hash.get() ) )
-			continue;
-
-		log() << "[BLKC] Block header " << (*headers)[i].Hash.get()
-			<< " not found in pool" << endl;
+		receiveHeader( (*headers)[i] );
 	}
 }
 

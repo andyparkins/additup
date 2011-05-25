@@ -141,7 +141,7 @@ class TBlock
 	const TBlock *getParent() const { return Parent; }
 
 	virtual void updateFromHeader( const TBlockHeaderElement & ) = 0;
-	virtual void writeToHeader( const TBlockHeaderElement & ) const = 0;
+	virtual void writeToHeader( TBlockHeaderElement & ) const = 0;
 
 	virtual unsigned int getHeight() const = 0;
 	virtual const TBitcoinHash &getHash() const = 0;
@@ -184,7 +184,7 @@ class TMessageBasedBlock : public TBlock
 	virtual TBlock *clone() const { return new TMessageBasedBlock(*this); }
 
 	void updateFromHeader( const TBlockHeaderElement & );
-	void writeToHeader( const TBlockHeaderElement & ) const;
+	void writeToHeader( TBlockHeaderElement & ) const;
 
 	unsigned int getHeight() const;
 	const TBitcoinHash &getHash() const;
@@ -240,6 +240,7 @@ class TBlockPool
 	void receiveInventory( TMessage_inv * );
 	void receiveBlock( const TMessage_block * );
 	void receiveHeaders( const TMessage_headers * );
+	void receiveHeader( const TBlockHeaderElement & );
 	void queueBlock( TBitcoinPeer *, const TBitcoinHash & );
 	void queueBlock( TBitcoinPeer *, const TBlock * );
 
