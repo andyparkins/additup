@@ -304,6 +304,10 @@ void TBitcoinNetwork::process( TMessage *Message )
 	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
 		// No need to dynamic cast again
 		TMessage_inv *inv = reinterpret_cast<TMessage_inv*>( Message );
+
+		if( inv->size() > getNetworkParameters()->INV_MAX )
+			return;
+
 		// RX< inv
 		// TX> getdata
 		// RX< block
