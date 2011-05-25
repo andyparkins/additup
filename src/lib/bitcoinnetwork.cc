@@ -235,6 +235,7 @@ unsigned int TNetworkParameters::expectedGHashesPerBlock( const TBitcoinHash &Ta
 //
 TBitcoinNetwork::TBitcoinNetwork() :
 	Parameters( NULL ),
+	Nonce( 0 ),
 	Self( NULL ),
 	TransactionPool( NULL ),
 	BlockPool( NULL ),

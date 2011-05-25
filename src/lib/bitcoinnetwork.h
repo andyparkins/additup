@@ -162,12 +162,14 @@ class TBitcoinNetwork
 
 	void process( TMessage * );
 
+	uint64_t getNonce() const { return Nonce; }
+
   protected:
 	virtual void disconnect( TBitcoinPeer * ) = 0;
 
-
   protected:
 	const TNetworkParameters *Parameters;
+	uint64_t Nonce;
 
 	list<TBitcoinPeer* > Peers;
 	TBitcoinPeer *Self;
