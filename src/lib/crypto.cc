@@ -564,6 +564,7 @@ int main( int argc, char *argv[] )
 
 		log() << "EC: Public key ";
 		TLog::hexify( log(), ECKEY.getPublicKey() );
+		log() << " (" << ECKEY.getPublicKey().size() << ")";
 		log() << endl;
 		// Public key is a byte stream, 65 bytes; e.g.
 		// 04 fa 4d b7 a8 90 14 22 3a a2 76 7b 97 7f 57 eb
@@ -573,6 +574,7 @@ int main( int argc, char *argv[] )
 
 		log() << "EC: Private key ";
 		TLog::hexify( log(), ECKEY.getPrivateKey() );
+		log() << " (" << ECKEY.getPrivateKey().size() << ")";
 		log() << endl;
 
 		// Private key is DER encoded http://tools.ietf.org/html/rfc5915
