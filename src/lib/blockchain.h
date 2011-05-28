@@ -23,6 +23,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <queue>
 // --- Qt
 // --- OS
 // --- Project lib
@@ -65,6 +66,7 @@ class TMessage_headers;
 class TBitcoinNetwork;
 class TBitcoinPeer;
 class TBlockHeaderElement;
+class TTransaction;
 
 
 // -------------- Function pre-class prototypes
@@ -229,6 +231,25 @@ class TDatabaseBlock : public TBlock
 // ---------
 
 //
+// Class:	TBranch
+// Description:
+//
+class TBranch
+{
+  public:
+	TBranch() : Pool(NULL), MiningBlock(NULL) {}
+	TBranch( const TBlockPool *p ) : Pool(p), MiningBlock(NULL) {}
+	~TBranch() { delete MiningBlock; }
+
+  public:
+	const TBlockPool *Pool;
+	priority_queue<TTransaction*> QueuedTransactions;
+	set<TTransaction*> IncompleteTransactions;
+	set<TTransaction*> AdoptedTransactions;
+	TBlock *MiningBlock;
+};
+
+//
 // Class:	TBlockPool
 // Description:
 //
@@ -261,7 +282,7 @@ class TBlockPool
   protected:
 	const TBitcoinNetwork *Network;
 
-	set<TBitcoinHash> Branches;
+	map<TBitcoinHash, TBranch> Branches;
 	TBitcoinHash NominatedBranch;
 };
 

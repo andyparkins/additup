@@ -644,7 +644,7 @@ void TBlockPool::receiveHeader( const TBlockHeaderElement &Header )
 	// (2) If this block has no children, then it can be a chain tip (at
 	// least until we find otherwise)
 	if( !thisBlock->hasChildren() )
-		Branches.insert( thisBlock->getHash() );
+		Branches[thisBlock->getHash()] = TBranch( this );
 
 	// With these rules in place, the Branches array represents all blocks
 	// in the pool that have no children.  Once the full block chain has
