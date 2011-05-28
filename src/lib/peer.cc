@@ -393,13 +393,18 @@ void TBitcoinPeer::receive( const TByteArray &s )
 				VersionMessage = reinterpret_cast<TMessage_version*>( Message.get()->clone() );
 
 				log() << "[PEER] Version message received, " << *VersionMessage << endl;
-				TMessageFactory *newFactory = VersionMessage->createMessageFactory();
+				TVersionedMessageFactory *newFactory = VersionMessage->createMessageFactory();
 				log() << "[PEER] Factory is now " << newFactory->className() << endl;
 				// Any bytes left over in the factory we're about to delete
 				// must be forwarded to the new factory
 				newFactory->receive( Factory->getRXBuffer() );
 				delete Factory;
 				Factory = newFactory;
+
+				// Some versions don't require verack, so we need to
+				// check for that and bypass that requirement
+				if( !newFactory->verackRequired() )
+					VerackReceived = true;
 			}
 
 			// Requeue the version message so the network gets to see it

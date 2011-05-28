@@ -160,6 +160,8 @@ class TVersionedMessageFactory : public TMessageFactory
 
 	virtual TBitcoinScript *createVersionedBitcoinScript() const = 0;
 
+	virtual bool verackRequired() const { return false; }
+
   protected:
 	void init() = 0;
 
@@ -212,6 +214,8 @@ class TMessageFactory_20900 : public TVersionedMessageFactory
 
 	TBitcoinScript *createVersionedBitcoinScript() const;
 
+	bool verackRequired() const { return true; }
+
   protected:
 	void init();
 
@@ -228,6 +232,8 @@ class TMessageFactory_31402 : public TVersionedMessageFactory
 	const char *className() { return "TMessageFactory_31402"; }
 
 	TBitcoinScript *createVersionedBitcoinScript() const;
+
+	bool verackRequired() const { return true; }
 
   protected:
 	void init();
