@@ -386,23 +386,27 @@ void TBitcoinPeer::receive( const TByteArray &s )
 		auto_ptr<TMessage> Message( nextIncoming() );
 
 		if( dynamic_cast<TMessage_version*>( Message.get() ) != NULL ) {
-			// We don't care exactly what version message, the
-			// TMessage_version base class is more than enough for us to
-			// query the message
-			VersionMessage = reinterpret_cast<TMessage_version*>( Message.get()->clone() );
+			if( VersionMessage == NULL ) {
+				// We don't care exactly what version message, the
+				// TMessage_version base class is more than enough for us to
+				// query the message
+				VersionMessage = reinterpret_cast<TMessage_version*>( Message.get()->clone() );
 
-			log() << "[PEER] Version message received, " << *VersionMessage << endl;
-			TMessageFactory *newFactory = VersionMessage->createMessageFactory();
-			log() << "[PEER] Factory is now " << newFactory->className() << endl;
+				log() << "[PEER] Version message received, " << *VersionMessage << endl;
+				TMessageFactory *newFactory = VersionMessage->createMessageFactory();
+				log() << "[PEER] Factory is now " << newFactory->className() << endl;
+				// Any bytes left over in the factory we're about to delete
+				// must be forwarded to the new factory
+				newFactory->receive( Factory->getRXBuffer() );
+				delete Factory;
+				Factory = newFactory;
+			}
+
 			// Requeue the version message so the network gets to see it
+			// once we get to the "Connected" stage
 			queueIncoming( Message.get() );
 			// ... since we've requeued it, don't delete it
 			Message.release();
-			// Any bytes left over in the factory we're about to delete
-			// must be forwarded to the new factory
-			newFactory->receive( Factory->getRXBuffer() );
-			delete Factory;
-			Factory = newFactory;
 
 			// We'll leave acknowledgement to the network
 		} else if( dynamic_cast<TMessage_verack*>( Message.get() ) != NULL ) {
