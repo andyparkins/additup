@@ -651,6 +651,8 @@ void TBitcoinNetwork_Sockets::receiveFrom( TBitcoinPeer *Peer )
 	} else if( n < 0 ) {
 		throw libc_error( "read()" );
 	}
+	// How many bytes were actually read?
+	ba.resize(n);
 
 	// let the peer deal with what it received
 	Peer->receive( ba );
