@@ -104,6 +104,8 @@ class TSingleton
 
 	static bool exists() { return Instance != 0; }
 	static Singleton *instance() { create(); return Instance; }
+	// We can't have static operator(), so supply a function that does
+	// nearly that.
 	static Singleton &O() { return *instance(); }
 
   protected:

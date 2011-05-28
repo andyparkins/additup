@@ -86,15 +86,15 @@ class TOfficialSeedNode : public TNodeInfo
 // singleton so that initialisation is deferred to the first use, rather
 // than left to being at the whim of the compiler and linker.
 //
-class KNOWN_NETWORKS
+class TKNOWN_NETWORKS
 {
   public:
 	typedef set<const TNetworkParameters *>::iterator iterator;
 	typedef set<const TNetworkParameters *>::const_iterator const_iterator;
 
   public:
-	KNOWN_NETWORKS();
-	~KNOWN_NETWORKS();
+	TKNOWN_NETWORKS();
+	~TKNOWN_NETWORKS();
 
 	iterator begin() { return KnownNetworks.begin(); }
 	iterator end() { return KnownNetworks.end(); }
@@ -104,6 +104,7 @@ class KNOWN_NETWORKS
   protected:
 	set<const TNetworkParameters *> KnownNetworks;
 };
+typedef TSingleton<TKNOWN_NETWORKS> KNOWN_NETWORKS;
 
 
 // -------------- Constants
@@ -121,7 +122,7 @@ class KNOWN_NETWORKS
 // -------------- World globals ("extern"s only)
 extern const TOfficialSeedNode SEED_NODES[];
 
-extern template class TSingleton<KNOWN_NETWORKS>;
+extern template class TSingleton<TKNOWN_NETWORKS>;
 extern const TNetworkParameters *NETWORK_TESTNET;
 extern const TNetworkParameters *NETWORK_PRODNET;
 

@@ -329,13 +329,13 @@ void TBitcoinPeer::receive( const TByteArray &s )
 				// Compare magic against all known networks
 				log() << "[PEER]  - Testing potential network magic " << hex << PotentialMagic.getValue() << dec << endl;
 
-				set<const TNetworkParameters *>::const_iterator p = TSingleton<KNOWN_NETWORKS>::O().begin();
-				while( p != TSingleton<KNOWN_NETWORKS>::O().end() ) {
+				KNOWN_NETWORKS::T::const_iterator p = KNOWN_NETWORKS::O().begin();
+				while( p != KNOWN_NETWORKS::O().end() ) {
 					if( (*p)->Magic == PotentialMagic.getValue() )
 						break;
 					p++;
 				}
-				if( p != TSingleton<KNOWN_NETWORKS>::O().end() ) {
+				if( p != KNOWN_NETWORKS::O().end() ) {
 					if( Network != NULL ) {
 						log() << "[PEER]  - Network magic found, using " << (*p)->className() << endl;
 						Network->setNetworkParameters( *p );
@@ -350,8 +350,8 @@ void TBitcoinPeer::receive( const TByteArray &s )
 			// Send some version messages -- the correct one will get us
 			// an answer, the wrong ones will be ignored
 			if( incoming.empty() ) {
-				set<const TNetworkParameters *>::const_iterator p = TSingleton<KNOWN_NETWORKS>::O().begin();
-				while( p != TSingleton<KNOWN_NETWORKS>::O().end() ) {
+				KNOWN_NETWORKS::T::const_iterator p = KNOWN_NETWORKS::O().begin();
+				while( p != KNOWN_NETWORKS::O().end() ) {
 					TMessage_version *version;
 					version = Network->createMyVersionMessage();
 					version->setFields();

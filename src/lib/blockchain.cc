@@ -860,7 +860,7 @@ int main( int argc, char *argv[] )
 
 	try {
 		// Force KNOWN_NETWORKS creation
-		TSingleton<KNOWN_NETWORKS>::create();
+		KNOWN_NETWORKS::create();
 
 		log() << "--- Hash speed test" << endl;
 		TMessageBasedBlock *testblock;

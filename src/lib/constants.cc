@@ -43,7 +43,7 @@
 
 
 // -------------- Template instantiations
-template class TSingleton<KNOWN_NETWORKS>;
+template class TSingleton<TKNOWN_NETWORKS>;
 
 
 // -------------- Class declarations
@@ -308,21 +308,21 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 // -------------- Class member definitions
 
 //
-// Function:	KNOWN_NETWORKS :: KNOWN_NETWORKS
+// Function:	TKNOWN_NETWORKS :: TKNOWN_NETWORKS
 // Description:
 // Instantiate the known networks on demand.
 //
-KNOWN_NETWORKS::KNOWN_NETWORKS()
+TKNOWN_NETWORKS::TKNOWN_NETWORKS()
 {
 	KnownNetworks.insert( new TProdnetNetworkParameters );
 	KnownNetworks.insert( new TTestnetNetworkParameters );
 }
 
 //
-// Function:	KNOWN_NETWORKS :: ~KNOWN_NETWORKS
+// Function:	TKNOWN_NETWORKS :: ~TKNOWN_NETWORKS
 // Description:
 //
-KNOWN_NETWORKS::~KNOWN_NETWORKS()
+TKNOWN_NETWORKS::~TKNOWN_NETWORKS()
 {
 	while( KnownNetworks.begin() != KnownNetworks.end() ) {
 		delete *(KnownNetworks.begin());
@@ -447,10 +447,10 @@ int main( int argc, char *argv[] )
 //	}
 
 	try {
-		TSingleton<KNOWN_NETWORKS>::T::iterator pNetwork = TSingleton<KNOWN_NETWORKS>::O().begin();
+		KNOWN_NETWORKS::T::iterator pNetwork = KNOWN_NETWORKS::O().begin();
 
 		log() << "--- Known networks" << endl;
-		while( pNetwork != TSingleton<KNOWN_NETWORKS>::O().end() ) {
+		while( pNetwork != KNOWN_NETWORKS::O().end() ) {
 			log() << (*pNetwork)->className() << endl;
 			log() << "GenesisBlock = ";
 			(*pNetwork)->GenesisBlock->printOn( log() );
