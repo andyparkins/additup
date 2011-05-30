@@ -255,6 +255,7 @@ class TTransactionPool
 	virtual TTransaction *getTransaction( const TBitcoinHash & ) const = 0;
 	virtual bool transactionExists( const TBitcoinHash & ) const = 0;
 
+	virtual unsigned int size() const = 0;
 	void receiveInventory( TMessage_inv * );
 	void receiveBlock( const TMessage_block * );
 	void receiveTransaction( const TMessage_tx * );
@@ -277,6 +278,7 @@ class TMemoryTransactionPool : public TTransactionPool
 	TMemoryTransactionPool( const TBitcoinNetwork * );
 	~TMemoryTransactionPool();
 
+	unsigned int size() const { return TransactionPool.size(); }
 	void putTransaction( const TBitcoinHash &, TTransaction * );
 	TTransaction *getTransaction( const TBitcoinHash & ) const;
 	bool transactionExists( const TBitcoinHash & ) const;
