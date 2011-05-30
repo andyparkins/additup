@@ -290,6 +290,10 @@ ostream &TMessageWithChecksum::write( ostream &os ) const
 //
 void TMessageWithChecksum::verifyPayloadChecksum() const
 {
+	// Can't verify a checksum without knowing the hash that the network
+	// uses
+	if( Peer == NULL )
+		return;
 	string digest = Peer->getNetworkParameters()->payloadHasher()->transform( RawPayload );
 	uint32_t CalculatedChecksum = TMessageElement::littleEndian32FromString( digest, 0 );
 
@@ -508,7 +512,7 @@ istream &TMessage_version_10600::read( istream &is )
 	is >> SubVersionNum;
 
 	// Self connection check
-	if( Nonce == Peer->getNetwork()->getNonce() )
+	if( Peer != NULL && Nonce == Peer->getNetwork()->getNonce() )
 		throw message_parse_error_self();
 
 	return is;
