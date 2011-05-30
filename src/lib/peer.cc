@@ -385,49 +385,60 @@ void TBitcoinPeer::receive( const TByteArray &s )
 			return;
 		}
 
-		auto_ptr<TMessage> Message( nextIncoming() );
+		while( true ) {
+			auto_ptr<TMessage> Message( nextIncoming() );
 
-		if( dynamic_cast<TMessage_version*>( Message.get() ) != NULL ) {
-			if( VersionMessage == NULL ) {
-				// We don't care exactly what version message, the
-				// TMessage_version base class is more than enough for us to
-				// query the message
-				VersionMessage = reinterpret_cast<TMessage_version*>( Message.get()->clone() );
+			if( dynamic_cast<TMessage_version*>( Message.get() ) != NULL ) {
+				if( VersionMessage == NULL ) {
+					// We don't care exactly what version message, the
+					// TMessage_version base class is more than enough for us to
+					// query the message
+					VersionMessage = reinterpret_cast<TMessage_version*>( Message.get()->clone() );
 
-				log() << "[PEER] Version message received, " << *VersionMessage << endl;
-				TVersionedMessageFactory *newFactory = VersionMessage->createMessageFactory();
-				log() << "[PEER] Factory is now " << newFactory->className() << endl;
-				// Any bytes left over in the factory we're about to delete
-				// must be forwarded to the new factory
-				newFactory->receive( Factory->getRXBuffer() );
-				delete Factory;
-				Factory = newFactory;
+					log() << "[PEER] Version message received, " << *VersionMessage << endl;
+					TVersionedMessageFactory *newFactory = VersionMessage->createMessageFactory();
+					log() << "[PEER] Factory is now " << newFactory->className() << endl;
+					// Any bytes left over in the factory we're about to delete
+					// must be forwarded to the new factory
+					newFactory->receive( Factory->getRXBuffer() );
+					delete Factory;
+					Factory = newFactory;
 
-				// Some versions don't require verack, so we need to
-				// check for that and bypass that requirement
-				if( !newFactory->verackRequired() )
-					VerackReceived = true;
-			}
+					// Some versions don't require verack, so we need to
+					// check for that and bypass that requirement
+					if( !newFactory->verackRequired() )
+						VerackReceived = true;
+				}
 
-			// Requeue the version message so the network gets to see it
-			// once we get to the "Connected" stage
-			queueIncoming( Message.get() );
-			// ... since we've requeued it, don't delete it
-			Message.release();
+				// We'll leave acknowledgement to the network
 
-			// We'll leave acknowledgement to the network
-		} else if( dynamic_cast<TMessage_verack*>( Message.get() ) != NULL ) {
-			// Not sure we care...  If we don't get a verack, then
-			// presumably the remote will just hang up on us -- what
-			// else can it do?
-			VerackReceived = true;
-		} else {
-			// Odd, we shouldn't get anything but a version message from
-			// a newly connected peer.
-			if( Message.get() == NULL ) {
-				log() << "[PEER] " << incoming.size() << " bytes left pending" << endl;
+				// Requeue the version message so the network gets to see it
+				// once we get to the "Connected" stage
+				queueIncoming( Message.get() );
+				// ... since we've requeued it, don't delete it
+				Message.release();
+
+				// If the requeued version is the only thing on the
+				// queue, then we're done with the loop
+				if( IncomingQueue.size() == 1 )
+					break;
+
+			} else if( dynamic_cast<TMessage_verack*>( Message.get() ) != NULL ) {
+				// Not sure we care...  If we don't get a verack, then
+				// presumably the remote will just hang up on us -- what
+				// else can it do?
+				VerackReceived = true;
+				log() << "[PEER] Version acknowledgement received" << endl;
 			} else {
-				log() << "[PEER] Ignoring " << *Message.get() << endl;
+				// Odd, we shouldn't get anything but a version message from
+				// a newly connected peer.
+				if( Message.get() == NULL ) {
+					log() << "[PEER] " << incoming.size() << " bytes left pending" << endl;
+					// Leave the loop when no more messages are on it
+					break;
+				} else {
+					log() << "[PEER] Ignoring " << *Message.get() << endl;
+				}
 			}
 		}
 
