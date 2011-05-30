@@ -669,6 +669,7 @@ void TBitcoinNetwork_Sockets::sendTo( TBitcoinPeer *Peer )
 	TMessage *out;
 
 	while( (out = Peer->nextOutgoing()) ) {
+		oss.str("");
 		out->write( oss );
 		write( fd, oss.str().data(), oss.str().size() );
 	}

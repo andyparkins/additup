@@ -267,6 +267,7 @@ class TBlockPool
 	void queueBlock( TBitcoinPeer *, const TBlock * ) const;
 	const TBlock *getCommonAncestor( const TBlock *, const TBlock * ) const;
 
+	virtual unsigned int size() const = 0;
 	virtual void putBlock( const TBitcoinHash &, TBlock * ) = 0;
 	virtual TBlock *getBlock( const TBitcoinHash & ) const = 0;
 	virtual bool blockExists( const TBitcoinHash & ) const = 0;
@@ -296,6 +297,7 @@ class TBlockMemoryPool : public TBlockPool
 	TBlockMemoryPool( const TBitcoinNetwork * );
 	~TBlockMemoryPool();
 
+	unsigned int size() const { return Pool.size(); }
 	void putBlock( const TBitcoinHash &, TBlock * );
 	TBlock *getBlock( const TBitcoinHash & ) const;
 	bool blockExists( const TBitcoinHash & ) const;
