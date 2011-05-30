@@ -434,6 +434,8 @@ typedef TLittleEndian32Element TTimestampElement;
 class TMessageHeaderElement : public TMessageElement
 {
   public:
+	TMessageHeaderElement() { Magic = 0; PayloadLength = 0; hasChecksum = false; Checksum = 0; }
+
 	istream &read( istream &is ) {
 		is >> Magic >> Command >> PayloadLength;
 		return is;
