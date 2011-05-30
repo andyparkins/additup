@@ -359,6 +359,8 @@ void TBitcoinPeer::receive( const TByteArray &s )
 					queueOutgoing( version );
 					p++;
 				}
+				// We've definitely sent our version now
+				VersionSent = true;
 			}
 		}
 	}
