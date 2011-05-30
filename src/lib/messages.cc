@@ -324,7 +324,7 @@ void TMessageWithChecksum::setFields()
 //
 void TMessageWithChecksum::generatePayloadChecksum()
 {
-	string digest = Peer->getNetworkParameters()->payloadHasher()->transform( RawPayload );
+	TByteArray digest = Peer->getNetworkParameters()->payloadHasher()->transform( RawPayload );
 	MessageHeader.Checksum = TMessageElement::littleEndian32FromString( digest, 0 );
 	MessageHeader.hasChecksum = true;
 
@@ -903,7 +903,7 @@ int main( int argc, char *argv[] )
 
 		log() << "--- Testing parser" << endl;
 
-		const string *p = UNITTESTSampleMessages;
+		const TByteArray *p = UNITTESTSampleMessages;
 		while( !p->empty() ) {
 			TMessage *potential = NULL;
 			istringstream iss(*p);
@@ -955,9 +955,13 @@ int main( int argc, char *argv[] )
 			// Now check that conversion back produces the input
 			ostringstream oss;
 			potential->write( oss );
-			if( oss.str() != *p ) {
-				log() << "Original message was " << p->size()
-					<< " bytes; generated was " << oss.str().size() << endl;
+			if( oss.str() != p->str() ) {
+				log() << "Original message : ";
+				TLog::hexify( log(), *p );
+				log() << endl;
+				log() << "Generated message: ";
+				TLog::hexify( log(), oss.str() );
+				log() << endl;
 				throw runtime_error("message didn't invert");
 			}
 

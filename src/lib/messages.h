@@ -28,6 +28,7 @@
 // --- OS
 // --- Project
 #include "messageelements.h"
+#include "bytearray.h"
 
 
 // -------------- Namespace
@@ -162,7 +163,7 @@ class TMessage
 
   protected:
 	TMessageHeaderElement MessageHeader;
-	string RawPayload;
+	TByteArray RawPayload;
 
 	TBitcoinPeer *Peer;
 
