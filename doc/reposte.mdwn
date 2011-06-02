@@ -1,0 +1,530 @@
+## Repostes
+
+### Bitcoins are overvalued
+
+Compared to what, exactly?
+
+The value of anything is determined at the time one person is willing to
+sell to another at a particular price.  Bitcoins are worth what they are
+trading for.  That's it.
+
+At any given instant the price tells us nothing.  Speculators might
+desire that the price go up from the time when they bought, but it is
+the relative change that matters to them, not the absolute value at
+either time.  It's easy to see why: does it matter that it costs 81 Yen
+to buy a dollar?  Of course not, for everything priced in Yen is
+approximately 81 times the price in dollars.
+
+If Bitcoins had started life priced at $1,000 per coin and were now
+worth $1,000,000; that would be indistinguishable from them starting out
+at $0.01 and now being worth $10.  For this reason picking any arbitrary
+price and saying that is "too big" is meaningless.
+
+
+### Bitcoins are not backed by anything
+
+No.  Nor is any fiat currency; and if we're being brutal, nor is gold.
+
+Gold has value only because everybody has assigned it that value, and
+trusts that everybody else does too.
+
+Bitcoins only have the value that their owners attribute to them.
+
+There is nothing in this world that is 'backed' by something else of
+intrinsic value -- in fact there is nothing that is itself of intrinsic
+value.  All value is assumed and ascribed.  Bitcoins are no worse or
+better than anything else that is traded.  Even if you believe that gold
+has implicit value, by virtue of the fact that historically it has
+implicit value, you should be aware that fiat currencies are _not_
+backed by gold; and haven't been since the world moved away from the
+gold standard.  Your paper is worthless.  You can't then complain that
+Bitcoins are worthless, since by that logic, so are all the notes in
+your pocket.
+
+Bitcoins however have a particular advantage over fiat currency in that
+they are not debt notes.  A dollar is nothing more than a fancy IOU.  A
+Bitcoin, on the other hand, represents value that has been poured into
+it.  What value is a different question.
+
+Let us imagine that there are ten Bitcoins in the world, and I own all
+of them.  You think that they will make pretty numbers on your hard disk
+and offer me a dollar for the lot, and I accept.  Those Bitcoins are
+worth one dollar, at that moment, at that time, for that instant, no one
+can argue -- those Bitcoins are worth a dollar, for that is what you and
+I both valued them at (possibly I valued them a little less, and you
+valued them a little more, but that's quibbling).  Now that that sale
+has occurred a dollar has been pushed into the currency that is
+Bitcoins, they must collectively be worth at least that.  Ten cents
+each.  Someone else comes along, seeing that Bitcoins are worth at least
+ten cents, and that I made a dollar profit on mine, and offers you eleven
+cents for one.  The whole pool is now worth $1.01.  Another real one
+cent has been pushed into the collective store.  This process continues,
+with the price adjusting until supply equals demand and the value of a
+Bitcoin is known.
+
+So, what are Bitcoins backed by?  They are backed by the money people
+have used to purchase them, and subsequently the products suppliers are
+willing to exchange for them.  _Just like everything else in the world_.
+
+If that still isn't sufficient for you, there is one final point:
+Bitcoins take time and electricity to calculate.  That electricity costs
+money.  While there is no hard link (there is nothing to stop a buyer
+valuing them less than the miner paid to generate them) Bitcoins do not
+spring from thin air for free.  That, in theory, gives a floor to their
+value -- that value being the work needed to solve a difficult
+mathematical problem.
+
+
+### Fiat currencies are backed by government promise
+
+No.  They really aren't.  Unless that promise is "we promise to pay the
+bearer of a $10 note, two $5 notes".  The promise would have to be of
+the form "$1 is worth X amount of Y product".
+
+If fiat currency were pegged to something real then foreign currency
+exchanges would have no purpose since the value of all currencies would
+be fixed to the value of this "promise".
+
+If there were such a promise it has been regularly broken over and over
+again since the leaving of the gold standard as they printed more and
+more notes devaluing those that you hold again and again.
+
+
+### Fiat currencies are backed by the estate of the Queen/King
+
+... if you happen to live in a monarachy.
+
+This was actually said to me, by an intelligent guy (admittedly he was a
+bit drunk).  It's incredible how wrong this myth really is.  Your
+currency notes, at one time in the past, gave you a claim on the gold
+held by the central bank (not the monarch).  Your fiat currency does not
+give you a claim on anything, and it most certainly doesn't give you a
+claim on the assets of your monarch, who's property is as privately held
+as your own.
+
+
+### Bitcoins are a Bubble
+
+A financial bubble happens when a traded item is selling for more than
+it is inherently worth.  It increases in value, and that increase means
+that it is always (ahem, temporarily) sensible to buy... which increases
+demand, which increases the price, which makes it even more sensible to
+buy.  It's called the greater fool theory: that even though you have
+bought (knowingly) something for more than it is worth, there will
+always be a greater fool than you to buy it off you for more than you
+paid.
+
+Eventually of course, time is called, everybody knows that the item is
+overpriced, and so everyone is just waiting for the collapse so they can
+jump ship.  That means any small perturbation can trigger collapse.
+
+Here is the important part of bubble economics that gets missed: the
+traded item devalues when the bubble bursts, but it _does not devalue to
+zero_.  When it is trading high, it is _overvalued_ not worthless.  As
+its price falls and falls as the bubble bursts, it will reach the point
+were it will be actually be _undervalued_.  For example, the world has
+experienced a housing bubble.  Properties in the centre of New York were
+overvalued.  The bubble has now burst; would you pay ten dollars for a
+New York apartment?  One hundred?  One thousand?  Ten thousand?  If you
+are sane, you will answer yes.  A New York apartment would still be
+worth $10,000, and you would be a fool not to buy if you were offered one
+at that price.
+
+If Bitcoins are a financial bubble, and it pops, they will not devalue
+to zero, and for the purposes of Bitcoin's long term survival, that is
+all that matters.
+
+All currency is a bubble.  They are guaranteed to trade at more the
+physical items are worth.  So far, more traditional currencies have not
+popped.  Bitcoin may or may not.  So what?
+
+A certain amount of stability is important for a currency to get day to
+day use; but a currency that is in day to day use will gain that
+stability naturally.  Until then, Bitcoin can be used to transport value
+regardless of their current price.  If I want to send you $20, I can
+simply send you $20 worth of Bitcoins at today's prices.  If you want to
+turn that back into dollars, that is your call; if you want to speculate
+that tomorrow they will be worth more, go right to it.  This means it is
+perfectly possible for a vendor to accept Bitcoins, although it will
+perhaps be some time before we see goods priced in Bitcoins rather than
+some national currency.
+
+The point is that Bitcoins still have a purpose and a use (and hence
+value) regardless of their price.  Should their value completely
+collapse, they will still be able to function as a store of value.
+
+
+### Bitcoins are a Ponzi scheme
+
+A Ponzi scheme is a con.  Investors' money is not actually invested in a
+Ponzi scheme, it is simply held and used to pay the profits of the
+previous investors.  The investors are _not told that though_.  Ponzi
+schemes rely on each generation of new investors being larger than the
+previous generation so that there is enough money flowing in to pay the
+fake profits.
+
+Let's not confuse a Ponzi scheme with a normal profitable investment;
+let's say a successful company stock.  Let's say that you, as an early
+investor, make a profit (just as in a Ponzi scheme); that is the
+privilege of being an early investor: you saw value where others did
+not.  You took the risk when others would not.  It could just as easily
+have gone wrong for you, and you would have lost your investment.  Your
+reward, from a certain perspective, comes when later investors drive the
+price up because they later see the potential that you saw early.  Did
+you then take their money in a Ponzi scheme cheat because the later
+investors effectively gave value to the early investors?  No.  You all
+knew what you were buying, and made your choice.  What's more,
+everybody's money is still backed by something: the investment itself --
+a percentage of ownership of a company.  The difference is that the late
+adopters can still make money by virtue of their ownership of something
+of value.
+
+The point is that in a Ponzi scheme, nothing is actually purchased that
+could be called an investment, the money is simply held by the
+perpetrator.  There will always be some central authority running the
+scheme (and taking a percentage); and more importantly: the operator
+lies to the investors, and the eventual collapse of the scheme is
+guaranteed.
+
+Bitcoins are not a Ponzi scheme.  There is no central operator.  There
+is no lie, everybody knows what it is.  There is no guarantee of profit
+or loss.  Either investors believe that Bitcoins have value or they
+don't.  That is their choice.  It is in fact that choice that determines
+the Bitcoin exchange rates.  Bitcoins might increase in value, they
+might decrease -- just like any other investment, and people make their
+own judgement.
+
+
+### Bitcoins are a Pyramid Scheme
+
+A pyramid scheme shares some properties with a Ponzi scheme, but is not
+a Ponzi.  Each investor is responsible for recruiting new investors.
+Those that they do recruit are arranged "under" them in a pyramid.  A
+percentage of the new investor's money is paid to the investor "above"
+them, and so on and so on up the tree.  People high up in the tree are
+early investors and are paid by future investors.  There is often a
+product somewhere in a pyramid scheme, and the product price is used as
+the method of taking money -- the top of the tree pays a cheaper price
+for the product than the lower levels.
+
+A pyramid scheme has investors arranged in a pyramid.  Bitcoin doesn't,
+so it isn't.
+
+
+### Bitcoin will fail because it will succeed
+
+This is one of the more bizarre of the attacks that get levelled against
+Bitcoin.  The argument goes like this: Bitcoins will eventually be worth
+$10,000 each, so the early adopters will unfairly make huge gains at the
+expense of the late adopters.  Therefore Bitcoin will never take off.
+
+The illogicality is obvious when we observe that if "Bitcoin never
+takes off" then they won't be worth $10,000 each.
+
+This argument is essentially based in envy.  Early adopters paid a few
+cents per Bitcoin.  At time of writing they are trading at $8 each.
+Therefore those early adopters (assuming they didn't cash out before
+now) have made an incredible profit.  The thing is: so what?  High risk
+has always equated to high reward, and the risk of investing in Bitcoin
+then (and perhaps even now) is that you will lose 100% of your
+investment.  No one knows if Bitcoin will take off, or if it will
+suddenly collapse into ignominy.  Investors are therefore taking a risk.
+It is only fair that they are rewarded for that risk, in the event of
+success.  Those early adopters are the ones who first primed the Bitcoin
+pump; without them it would not now be worth talking about in this
+context.  There is a reward for seeing future potential when others do
+not.  Someone who invested $1,500 in Google in 1999 would now be a
+millionaire.
+
+Hindsight is 20/20; and it's easy to think that the early adopters have
+unfairly profited.  They did not.  Their profit was entirely fair: they
+believed and risked when you did not.  Live with it.
+
+
+### Bitcoins are deflationary
+
+Let's be clear: inflation and deflation are technically words that
+describe changes in the money supply.  The Bitcoin network is programmed
+to asymptotically generate 21 million coins over a number of years,
+approaching but never reaching that 21 million.  That is to say the
+money supply will increase at first, and there is therefore inflation.
+
+Once the number generated becomes negligibly small there will effectively
+be no more made.  Therefore the money supply will be stable, and hence
+neither inflating or deflating (ignoring the small deflation that will
+come about from the odd lost coin).
+
+However, most people don't think of inflation as money supply inflation,
+most people understand inflation and deflation to mean _price_ inflation
+and deflation; this is understandable as they only have experience of
+inflationary currencies (not a single fiat currency has ever been
+anything but inflationary), and one side effect of an inflating currency
+is prices increase as the value per unit of currency decreases.  In a
+Bitcoin world, in a static economy, prices would remain stable, money
+supply would remain stable and so there would be no deflation.
+
+Of course there is no such thing as a static economy.  Rather, we assume
+because the population is increasing, and because each year we have fed
+another year's worth of labour and production into our economy, that it
+will increase in value.  Given that the number of Bitcoins will be
+fixed, that increased value of the economy must be divided amongst the
+same number of coins, and so the value of individual Bitcoins will go
+up.  It is this _price deflation_ that makes people call Bitcoins
+deflationary.
+
+One of the more bizarre arguments made goes something like "Bitcoins are
+deflationary, which is why we see behaviour X at present".  Completely
+ignoring the fact that though Bitcoins will _eventually_ be slightly
+deflationary, they are inflationary at the moment.  Making an argument
+based on Bitcoins being deflationary is, at present, utterly wrong.  We
+won't see the true effects of using a deflationary currency until and
+unless Bitcoins become a sizeable proportion of an economy.  Since there
+has never been a deflationary currency in wide use, there is no way to
+sensibly predict what will happen.
+
+
+### Deflation is bad
+
+Deflation is supposed to be bad for two reasons:
+
+ - Given the choice between spending today, or spending tomorrow, you
+   will get more for your money tomorrow.  The same will be true
+   tomorrow, so no one will ever spend, and will simply hoard Bitcoins.
+ - Debts measured in currency units are bigger tomorrow than they are
+   today.
+
+Let's deal with hoarding first.
+
+ - Hoarding can't continue indefinitely, an individual needs to live,
+   and to live they need to spend.  Don't believe me?  Tell me, would
+   you prefer to pay $10 for a bunch of roses on the day of your wedding
+   anniversary, or $9 the day after?  Would you prefer to pay $10 for a
+   bottle of water now, or $1 in a month (assuming you can't get water
+   elsewhere)?
+ - If coins are hoarded then they aren't being spent.  For what purpose
+   are they being hoarded?  Presumably for profit, but unless you spend
+   them Bitcoins will fall in value and there is no profit.  Therefore
+   an equilibrium will be reached, where people "cash out" and take the
+   profit they have seen accumulate in their savings by spending them.
+
+These two points mean that the entire supply of coins will not be
+hoarded all at once.  There will be some percentage of coins that are
+hoarded, and the rest will be in circulation.  Let's say the number of
+coins that are in circulation is X out of a total population of Y coins,
+with X being proportional to Y, whatever value of Y is chosen.
+
+Now let's temporarily imagine a different currency.  For some reason
+(which I won't specify), people don't like hoarding this alternative
+currency.  Let's say that this currency has Z coins in circulation.
+
+If we make X equal to Z then what is the difference in these two
+situations?  There is none.  Given that Bitcoin's total coins was an
+entirely arbitrary amount, with the expectation that they will be
+subdivided or combined to whatever level is necessary for the economy,
+the exact choice of Y doesn't matter.  If Y doesn't matter, then X
+doesn't matter.  If X doesn't matter then Z doesn't matter.
+
+In short: hoarding is irrelevant -- an equilibrium will be reached were
+an amount of coins represent the flowing economy.  What that amount is
+doesn't matter in the slightest, only that it exists.
+
+Now let's deal with debts being bigger tomorrow.  In our inflationary
+world, investment is discouraged by the currency.  A factory owner
+spends money on new machinery for his business.  This is a long-term
+investment.  The problem is that his expenditure is measured in
+today-dollars, but his return is measured in tomorrow-dollars, which
+will be worth less.  Every investment must out-perform inflation to make
+it worthwhile for the investor.  If you want 5% profit, your investment
+must make 10% (say) when measured in an inflating currency.
+
+Further, if you borrow money to invest, then that debt is smaller
+tomorrow than it is today, which encourages debt.  Are we surprised then
+that the entire world is in debt?
+
+Conversely, in a deflationary world your investment can make a slight
+numerical loss, and still be a profit (in value) for you.  A business
+making 5% numerically is actually making 10% in value when the profit is
+measured in a 5% deflationary currency.  The compensatory cost for this
+is of course that the loan you took out to invest at 10% costs you an
+additional 5% because it is worth more tomorrow than it is today.
+
+You should be able to see that the two cases are identical: inflation
+and deflation are irrelevant.  All prices move up and down together as
+inflation and deflation happen.  That is as it should be, it means that
+value remains the same, and isn't measured in arbitrarily assigned units
+of currency.
+
+Think of an example: a loaf of bread cost, say $0.02 in 1920; and $2.00
+in 2010.  Is that loaf worth more or less?  You see the trick, normally
+the question here is "is the dollar worth more or less?".  The answer is
+that a loaf is still worth one loaf.  More relevant is: what percentage
+of your income would a loaf cost in 1920 and what would it cost in 2010.
+This answer is completely independent of what currency you happen to be
+using (the answer to this question is that it costs a smaller percentage
+of your income, because the entire world is richer now than it was in
+1920).
+
+One final point: Bitcoin is _never_ going to replace all world
+currencies, if any.  If you like your inflationary currency, inflated at
+the whim of a central authority for their benefit not yours, fine, use
+that.  The fundamental principles of Bitcoin are ones of voluntaryism --
+no one is coerced to run a node, and anyone can (in principle) pick
+whatever limits and constants they like for their client -- of course no
+one else is forced to go along with you, and hence the majority wins.
+
+For the socialists of the world: inflation hurts poor people more than
+it hurts rich people (and conversely deflation hurts rich people more
+than it hurts poor people).  Rich people are more likely to have savings
+in the form of non-currency denominated assets.  Those assets retain
+their value when governments inflate the currency supply.  Poorer people
+have savings denominated in currency units, and so they suffer more from
+those currency units being devalued.  With no savings, it is simply the
+prices in the economy that affect wealth; so the absolute poorest suffer
+the most when prices go up.  Socialists should be more in favour of
+Bitcoins than anyone else.
+
+
+### People won't accept a decreasing pay packet
+
+One reason that inflationary currencies are accepted is that it allows
+people to have ever-increasing wages.  Of course they aren't really
+getting any more money, because the inflation means that everything that
+they would buy with their wage is more expensive.  Many people don't
+receive a greater-than-inflation pay increase; and the poorest receive
+lower-than-inflation pay increases.  Again: inflation is worse for poor
+people.
+
+This isn't an economic problem, it is a psychological one.  The solution
+in Bitcoin world will likely be that people will keep their inflationary
+currency for setting their wage and will instantly convert to Bitcoins.
+Their company might even do it for them if Bitcoins are popular enough.
+Your wage would be denominated in dollars but paid in Bitcoins.
+
+People can then happily have their ever-increasing pay packet.  It won't
+matter though, as they will have the easy option of converting it to
+inflation proof Bitcoins.  Maybe with time the psychology will change
+and people will understand that that ever increasing pay packet continues
+to buy them exactly the same number of Bitcoins.  Either way: it won't
+matter.
+
+
+### Mining is Unsustainable
+
+To understand this myth you need to know that the Bitcoin network
+maintains a constant rate of block creation by raising and lowering a
+network wide difficulty parameter.  Therefore as more miners appear, the
+mathematical problem that needs solving is made harder.
+
+The complaint goes that as the difficulty goes up the miners have to
+dedicate more and more electricity to generate the same number of coins,
+so they are "worth" more.  This is nonsense.  There is no connection
+between the price of creation of a currency "note" and the value it
+represents.  $100 dollar bills do not cost 100 times more to print than
+a $1 bill; and $1 bills do not even cost $1 to print.
+
+If it costs a miner more to generate their coins than the coins are
+worth, then they will cease mining.  That will lower the difficulty, and
+mining will get easier.  Therefore difficulty will follow price.  Price
+will not follow difficulty.
+
+It's easy to see why: the buyers of Bitcoins are not forced to pay what
+the miners ask for their coins.  If it cost $50 for a miner to make a
+coin, they can offer it for sale at $51, at their option.  A buyer of
+Bitcoins who thinks that they are not worth that cannot be forced to pay that
+though.  If coins are currently worth $10, then there are potentially a
+lot of sellers other than the miner who might be interested in selling
+somewhere between $10 and $51.  Hence the miner is not able to drive
+price up simply because they spent more electricity generating.
+
+
+### Bitcoin can be completely bought out
+
+Bitcoin is such a small market (relatively) that one large investor
+could currently buy the whole market, effectively killing Bitcoin if
+they wished.
+
+Here's why this wouldn't be a problem:
+
+ - Not all Bitcoins are necessarily for sale.  However, let's assume
+   they all are _at a price_.  This rich investor would drive the price
+   of Bitcoins up and up.  The existing owners of Bitcoins would be
+   delighted.  This would be a huge windfall for them.  There would be a
+   huge amount of publicity for Bitcoin.  The investor would then be the
+   sole owner, and the Bitcoins he owned would be worth zero -- his
+   money would be gone, not invested.
+ - Remember that the marginal cost to begin a Bitcoin chain is close to
+   zero.  The Bitcoin chain exists as the official one only by
+   voluntary, mutual agreement.  This agreement is expressed by people
+   choosing the client that they run, and the developers could easily
+   start a new chain and publicise it.  Once all the coins in the
+   current chain had been bought out, then Bitcoin would have been
+   demonstrated to be a huge success.  It would be hugely popular.  A
+   new chain would then be started and the whole game begins from
+   exactly where it left off; only this time the large investor will
+   have transferred a large chunk of wealth to the previous owners.
+
+In short: if a rich lunatic were foolish enough to try to stop Bitcoin
+by virtue of buying the market, it would be great for Bitcoin, and bad
+for the rich lunatic.
+
+Since Bitcoin's scarcity is mathemematically and algorithmically
+enforced rather than being due to physical scarcity, more can always be
+made.  Their value comes from their use a method of trade and value
+transfer.  Take that away by collecting them all under one owner and
+that value vanishes.  Bitcoins only have value while many people are
+using and owning them.  Buying them all removes that value.
+
+
+### Bitcoin should be 'pegged' to a real currency for stability
+
+Pegging a currency is not something that you just decide to do, it is
+done by acting.  It requires vast amounts of the pegged-to currency (and
+pegged currency, but since pegging is usually done by states who can
+print their own currency, that part is much easier) to manipulate the
+market keeping your own currency at the target price.  The amount of
+foreign currency needed is also dependent on how hard the market is
+trying to move your currency.
+
+For example, with enormous wealth I could offer to sell Bitcoins for
+$1.01 and buy Bitcoins at $0.99; well then the price would stay fixed at
+$1.00; but I would have to pump massive amounts of money into the system
+to make it work, because as soon as I ran out of Bitcoins to sell,
+someone else would offer them at a higher or lower price, as they chose.
+
+In other words: Bitcoin will never be pegged to anything, as pegging
+requires the resources of a state to do it, and even then is
+monumentally expensive.  Worse: there is no particularly good reason to
+do this; market manipulation simply hides price signals that should
+rightly be transmitted to participants.
+
+
+### Bitcoin is unworkable, why look at how much they cost
+
+Erm... they are increasing in value, and that is somehow evidence that
+the Bitcoin model is broken?  Okay.
+
+
+### Bitcoins will eventually be declared illegal
+
+Maybe.  It will take an incredible amount of chutzpah on the part of a
+government to do so though.  For a government to ban Bitcoins will mean
+banning of a freely traded security.  It would also be a terribly
+difficult law to write... have a think about it, what exactly would you
+ban?  Miners?  Exchanges?  Computers?  Cryptography?  The Internet?
+
+Banning it will not be enough though; just as bit torrents have survived
+legal attacks.  Banning it will probably be done in the name of stopping
+tax evasion, money laundering and drug dealing.  This regardless of the
+fact that these things are themselves illegal already, adding "running
+illegal software" to the charge sheet probably won't bother those
+criminals too much.
+
+So; a ban, if it happened, would simply stop legitimate businesses from
+accepting Bitcoins -- or rather it would prevent them from declaring
+taxable income in the form of Bitcoins.  It would not stop individuals
+using Bitcoins to move value as they wish.
+
+The Bitcoin genie is out of the bottle; just as the knowledge needed to
+make nuclear weapons couldn't be un-discovered, Bitcoin cannot be
+uninvented.
+

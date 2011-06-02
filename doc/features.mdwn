@@ -1,0 +1,257 @@
+## Features
+
+What makes Bitcoin good?
+
+
+### Transaction fees set by free market
+
+Transaction fees determined by unfettered competition, not by virtue of
+monopoly position.  Banks are allowed to act as banks because they have
+been given a license to do so by governments.  That makes them a
+government mandated monopoly, and therefore you have to pay whatever
+figure they make up for whatever purpose they make it up.  You may at
+this point shout "but my banking is free".  No, it's not, either by
+lower interest rates, higher fees (and hence higher prices) from your
+suppliers or by longer transaction times (ask yourself why it takes four
+days to move money from electronic account to electronic account in an
+era when you can video chat with someone in the Antarctic).
+
+Bitcoin solves that problem by having no barriers to entry for miners,
+who act as the engine room of Bitcoin transactions; with each competing
+with other to earn the fees offered by participants.
+
+
+### Transaction security
+
+The electronic economy of banks runs primarily by building an
+impregnable wall between their (your) data, and the attackers.  Banks
+keep the secrets on their computers.
+
+Bitcoin on the other hand keeps all the transaction data in public,
+broadcast to every node to anyone who wants to listen.  The secrets are
+kept in your hands, on your computer.
+
+Your privacy is maintained not by virtue of not revealing the
+information, but by virtue of the fact that the only person to whom the
+publicly released information has meaning is to you.
+
+### No chargebacks
+
+Trust is a problem.  In the world where control of your money has been
+delegated to a third party you have to trust that they one day won't
+undo a transaction you make.
+
+You must trust the person who sends you money, because there are a large
+number of ways that transactions can be undone.  If your customer
+chooses to ring their credit card supplier and say "I want my money
+back", they will take back the money you thought was yours.
+
+Bitcoin is digital cash.  Cash cannot be taken back, all sales are
+final.  This might sound like a bad thing if you are used to living in a
+nanny-run world where personal responsibility is not considered
+necessary; but it isn't.  It will force you to be sure that you are
+paying the right person for the right thing.
+
+That being said: most retailers don't force you to go to the clearing
+house to undo a transaction.  If they have any sense, they get
+themselves a good reputation with customers by treating them fairly and
+operating a good returns policy.  That wouldn't change in a Bitcoin
+economy.
+
+### Freedom
+
+Being able to send any amount of money to anywhere in the world is
+liberating.  Until you've used Bitcoin for real, you won't understand
+how truly extraordinary it is.  No bank log in, no tracking, no
+money-laundering protections, no borders, and no foreign exchanges.
+
+Let's say you're going on holiday.  In a Bitcoin world, you'll just load
+up your mobile wallet and off you go.  Even before Bitcoin takes over,
+you can use Bitcoin as an intermediate currency to beam your Euros to
+Australia and have them converted instantly.
+
+
+
+
+## Client Features
+
+Features I'd like to have in my alternative client.
+
+### Separation of wallet and block chain
+
+The wallet is a store of public-private key pairs.  Nothing more.
+Transactions shouldn't be "applied" to a wallet.  Instead the wallet
+application should be able to ask the block chain application (or
+library) what the current balance of any key is.
+
+### Human-readable wallet
+
+Storing a wallet in a human-readable file will make humans a lot less
+scared of it.  Berkley DB is uncomfortable to use anyway.  A list of a
+few thousand keys really doesn't need a database.  A couple of ASCII
+lines per address is manageable.
+
+### The word "wallet" is wrong
+
+No coins are stored in the wallet.  The analogy is therefore flawed and
+will confuse people.  Especially when they find out that a copy of their
+wallet is just as good as their original.  Spending coins in one spends
+them in the other.  Coins are not in the wallet.  Rather,
+proof-of-ownership of particular coins in the block chain is stored in
+the wallet.
+
+This confusion was particularly clear when discussion was going on of a
+stolen wallet.  The victim kept talking about how he was in his room
+with the door locked at the time of the theft of the coins.  Not having
+realised that once the wallet is copied the theft can take place any
+time, whenever the robber sees a large amount of coins at one of the
+stolen addresses.  Real wallets contain coins; bitcoin wallets don't.
+
+I don't think I'll get this one passed any of the existing
+users or developers though.  The nomenclature is going to be fixed now,
+regardless of how confusing it might be for new users.
+
+### Multiple, simultaneous wallet support
+
+A wallet shouldn't be a single file, and it shouldn't be necessary to
+shut down and restart the client simply to look in a different wallet.
+Instead I'd like to see wallets as a directory (or ideally a compressed
+archive, but that's a bit tougher to do).
+
+That directory will contain:
+ - The key pairs, with the private key encrypted.  I'd like to see these
+   in separate files, one per pair.  The reason for this is that it
+   would make it very easy to move a key from one wallet to another; and
+   best of all: doing so wouldn't require any special software.
+ - A key cache.  Just like the official client, it's a good idea to keep
+   a list of keys that will be used in the future.  This guards against
+   the restoration of an older backup being guaranteed to destroy coins.
+   The older backup is likely to contain the keys that have subsequently
+   been used.
+ - Transaction annotations.  Transaction IDs are not human
+   friendly.  The user is going to want to be able to write "bought a
+   spanner from Bob" against a particular transaction.  It might be
+   sensible to keep these annotations in the key pair file.
+ - Address annotations.  Similarly, the user should be able to label
+   every address.
+
+### USB Key
+
+Detection of the presence of a USB key and use of it (or more likely a
+file on it) as one factor in the encryption needed to get at the private
+keys in the wallet(s).
+
+### Block explorer built in
+
+It's not acceptable to rely on a web site that uses a special,
+custom-build of the Bitcoin client plus a load of databases to be able
+to browse the block chain.  That site is not necessarily trustworthy,
+and is not necessarily always up.
+
+Instead, the main block chain management library will behave as a local
+block explorer.  Checking the balance of any address will be a query to
+that local explorer, which will know the answer.
+
+Here's the key thing though: it should be possible to bookmark and watch
+any Bitcoin address; even if it's private key is not local.  It should
+also be possible to watch keys in a unidirectional manner. There are a
+few reasons:
+
+ - Private key is stored offline.  For a savings wallet, a user might
+   remove their private key from the local hard disk, print out a copy
+   and store it in a safe-deposit box (say).  They should be able to
+   watch the balance of that address without having to go to the safety
+   deposit box and load up the key to their system.
+ - Services like mybitcoin give a user a key; receipt on which get
+   directed to their mybitcoin account.  It's convenient for them to be
+   able to watch that account without having to log in to the mybitcoin
+   service.  Outgoing coins from these addresses have nothing to do with
+   the user though, so it should be possible to set a bookmark as only
+   watching incoming transactions.
+ - Similarly, they may be given a time limited deposit address.  It
+   should be possible for them to specify that time limit in the
+   bookmark.
+
+### Instant transaction confirmation
+
+Receiving coins is a nerve-wracking experience.  When you send coins
+from, say, Mt.Gox to your local wallet, you want to know as soon as
+possible that they've arrived.  Transactions actually happen very
+quickly.
+
+ - Transaction created by owner of coins `[CREATED]`
+ - Transaction broadcast to network `[CLEARING]`
+ - Transaction accepted into a miner's pending block `[ACCEPTED]`
+ - Block broadcast to network `[CONFIRMED1]`
+ - Subsequent confirmation blocks broadcast to network `[CONFIRMEDn]`
+
+The names in brackets give a name for the state.  `CONFIRMEDn` is what
+we're looking for, the higher the `n` the better.  However, `CLEARING`
+is an important state too; the user will feel a lot more relaxed if,
+when they send coins from their Mt.Gox account to their wallet, if a
+transaction appears on their screen saying `CLEARING`.
+
+This next part won't work without a protocol change, who knows if I will
+ever get agreement for this.  Double spends are a problem.  Let's say
+two con men want to double spend.  One is buying a Ferrari in Australia,
+the other in America.  They are in communication and they both broadcast
+the transaction at the same time.  The transactions spend the same
+coins.
+
+The network simply drops any transaction it receives that conflicts with
+one it already has, and never passes it on to its peers.  That means half
+of the network will receive the first transaction, half of the network
+will receive the second.  Assuming the receiver node (i.e. the vendor)
+in each case is logically close to the conman, then each vendor sees
+their wanted transaction.  They have no idea that a double spend has
+been attempted.  Instead they will have to wait for sufficient blocks to
+be generated to decide on "true" chain.
+
+Here is the change needed: when a node drops a transaction it doesn't
+just drop it, it broadcasts the fact of the rejection with a new `inv`
+message type.  Let's call it `MSG_REJECT_TX`.  These `inv` messages get
+passed along exactly as normal; and the nodes respond with a `tx` as
+normal.  However, the nodes know that they are requesting a rejected
+transaction.  In this way a double spend will be detected by both halves
+of the network.  Given that it takes about 10 seconds for a transaction
+to propagate, a node will know about a double spend within ten seconds
+and can tell the vendor close to instantaneously.
+
+### Decouple GUI
+
+The official client only vaguely separates the GUI from the protocol.
+For example, in main.cpp it uses constants from wxWidgets and tries
+to show a message box.
+
+The GUI shouldn't be referenced at all in this part of the code.
+
+### Far better monitoring
+
+With the block chain code separated from the wallet code, it should be
+possible for a website to keep its wallet data in its relational
+database.  Further, it should be easy to extend the block and
+wallet handling to manipulate the target database automatically.
+
+I'm thinking in particular of removing the need for web sites to
+regularly poll the bitcoin RPC mechanism.  Instead the appropriate
+records should just appear in the database.
+
+A similar extension could make http calls associated with bitcoin
+events.
+
+### SSL
+
+Encryption between nodes would help hiding Bitcoin activity from ISPs
+and governments.  It would also make traffic analysis harder.
+
+### No more IRC
+
+IRC is a poor way of boot strapping the network.  I plan to just remove
+it.
+
+### Time
+
+If my node has its time set by NTP, why should I allow it to be voted to
+a potentially worse average by the network?
+
+

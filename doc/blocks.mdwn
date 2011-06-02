@@ -5,12 +5,11 @@
 Blocks contain multiple transactions.  For the most part those transactions
 can be handled exactly as unchained transaction receipt is handled.
 
-We should consider that it's possible that a block contains a
-transaction we already have; and that the block version is different.
-The block version obviously takes precedence, and flushes the
-unchained transaction from the incoming queue.  More likely is that the
-transaction is identical.  Then we have no problem: we just fill in the
-ContainingBlockID field for the transaction record we already have.
+Since it is impossible to have a transaction be different inside and
+outside a block (since it is identified by its own hash), it's easy to
+move an orphan transaction into a block when the block is received.  We
+just fill in the ContainingBlockID field for the transaction record we
+already have.
 
 ### Generating Blocks
 
@@ -20,7 +19,7 @@ a containing block.
 
 ### Block Chains
 
-Blocks are announced by way of an `inv` message with MSG_BLOCK; either
+Blocks are announced by way of an `inv` message with `MSG_BLOCK`; either
 spontaneously or as a response to a `getblocks` message.  Either way, the
 hashes we are offered in `inv` should be checked against the current
 block pool.  If we don't have details of that block (either header or

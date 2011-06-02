@@ -1,0 +1,127 @@
+## Transaction Confirmation Problem
+
+### Introduction
+
+If we are a vendor, we have a customer standing in front of us who wants
+to buy from us.  We accept bitcoins.  The customer is issued with a
+payment address and taps it into his, say, smartphone.  We want to be
+able to release the goods as soon as possible with minimum risk.
+
+The problems are:
+
+ - It can take up to 10 minutes (approximately) before a transaction is
+   accepted into a block and that block is broadcast.
+ - Even when a block has been broadcast, there is no guarantee that that
+   block will persist.  Another node could have generated a block at the
+   same time (by chance) which did not include the target transaction,
+   but was more difficult to find, and hence the network will eventually
+   treat that block as being the "true" chain tip.
+ - There is no limit on chain reorganisations, but it's increasingly
+   unlikely as time passes.  The recommended confirmation time is six
+   blocks.  That is to say, that there are five blocks on top of the one
+   with the target transaction in it.
+
+No merchant is going to delay a customer 10 minutes before they can
+release the goods; let alone an hour.
+
+It becomes a question of risk/reward then.  How much is at risk?  If you
+were selling a house for bitcoins, then it would behoove you to wait for
+six blocks of confirmation _at least_.  If you were selling a penny
+sweet, you would probably risk allowing them to leave the store with
+zero confirmations.
+
+
+### Confirmation
+
+Here is the problem, you do want _some_ sort of confirmation.  You want
+some evidence that the transaction has been broadcast.
+
+Let's consider an automated vending machine.  The items are low value
+and the customer will not be willing to wait any time at all.  We might
+imagine a normal transaction with a bitcoin vending machine to go like
+this:
+
+ - Customer chooses a chocolate bar from the machine.
+ - Vending machine shows a bitcoin address on its display and a price.
+ - Customer uses smartphone to send it X coins.
+ - Vending machine observes a broadcast transaction to its address on
+   the network for X coins, and dispenses the item.
+
+Assuming an honest customer, all is well.
+
+### Double Spend
+
+If the customer is not honest, the vending machine is in trouble.
+
+Double spends can't actually happen, since the network won't allow it.
+However, they can be attempted during the time the transaction has not
+appeared in a block.
+
+ - A miner will not accept a transaction that spends coins that have
+   already had a spend attempt (we suppose, although a malicious miner
+   could, we imagine that it would be low probability that a malicious
+   spender manages to get his double spend generated on his malicious
+   miner).
+ - Only the owner can double spend
+ - A double spend from the same place will naturally be rejected, since
+   the path for the second spend will be similar enough to the first,
+   that it will be rejected
+ - Therefore, a double spend is only feasible when it is done
+   simultaneously from two widely separated parts of the network.
+
+Let's look at how it would work:
+
+ - Thief and accomplice have the same private key for a particular
+   bitcoin address.
+ - Thief and accomplice are in live communication.
+ - Thief and accomplice go to two vending machines in different parts of
+   the world.
+ - Both make their selection, and the machines both give a different
+   destination address to pay for the item.
+ - Both simultaneously spend the same coins to pay for the item.
+
+We'll assume that the local vending machines will receive the
+rebroadcast transaction from the thief closest to them first.
+
+ - Vending machine is looking for transaction to its issued address.
+ - It sees that transaction, and releases the item.
+
+Eventually, the network will reject one of these transactions, and only
+one vendor will have been stolen from.  The question is, can we reduce
+the possibility of fraud for the other?
+
+Let's say that the time for a single transaction to propagate through
+the entire network is T.  If a second spend attempt happens after T then
+it will be rejected instantly by every honest node since their early
+checks will see that those coins are already in a pending transaction.
+Therefore the second spend will never reach the vending machine so it
+will not release the item.
+
+If the second spend happens within T, then some nodes will reject the
+first transaction and some will reject the second depending on what
+order they received the two transactions.  Since a rejected transaction
+will not be rebroadcast, the vending machines are certain to only see
+one of the two of these.
+
+How then do they know about the second spend attempt?
+
+
+
+Let's look at it from the point of view of the vending machine
+
+Here's a suggestion:
+
+Why not add an extra field to the inventory vector structure?
+[list]
+[li]Type[/li]
+[li]Hash[/li]
+[li]Timestamp[/li]
+[/list]
+
+The timestamp would be set by the first offerer; i.e. the one who creates the transaction; and simply passed along with every inv by forwarders of the transaction (and blocks I suppose, but it's not that relevant for blocks, since they have a timestamp in them).
+
+Now, here is the key part: when being offered a new transaction via an inv message a node would make sure that the timestamp was in the past
+(perhaps with some limit); and would then record it with their internal
+transaction structure.  Then when they receive the transaction itself,
+they would have an "attempt to spend at" time against the inputs.
+

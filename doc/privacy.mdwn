@@ -1,0 +1,204 @@
+## Privacy
+
+Surprisingly for a currency that lists privacy and anonymity as
+features, they are very easy to lose when using Bitcoins.
+
+With a centralised currency, you have no more privacy than you do with
+Bitcoin, it is simply that the number of people that can spy on you is
+vastly reduced.  Paypal, Google, your bank, Tesco, pretty much any
+centralised authority involved in your finances will be recording all
+the information they can about you forever.  They will happily sell that
+information to anyone who asks, and will hand it over to any government
+that waves their government stick at them.  There is no way around this.
+
+With Bitcoin, on the other hand, it is _possible_ to remain anonymous,
+but it will not happen on its own, you must take precautions, just as
+you do with existing currencies.
+
+The problem is that every Bitcoin transaction from address to address is
+recorded in the blockchain for all to see.  The difference of course is
+that there is no way, looking only at the blockchain, to see who owns
+what address.
+
+However, the blockchain does not stand alone in the world.  Once you
+Bitcoins are actually used for something, both the buyer and seller
+reveal information to each other.
+
+### Merchants
+
+Let's say you are a merchant.  You obviously don't want your competitors
+knowing what sales you make.  But, if you use a single incoming Bitcoin
+address for all payments, that's exactly what happens -- your
+competitors will have no difficulty finding that one address and then
+have no difficulty examining the block chain to see all receipts to that
+address.  There is nothing to stop a merchant organising their business
+in that way and discarding their privacy.  Bitcoin is not _inherently_
+private.  Should the merchant value his privacy, what he _should_ do is
+generate a new address for each customer (at least), or each transaction
+(at most).  Probably most will settle for a per-customer address --
+there is a nice one-to-one relationship between customer accounts and
+bitcoin addresses; meaning that a customer could credit their account
+and then spend it, rather than needing to make a purchase first.
+
+For example:
+
+    FROM     : aiZ8uuk2ol5gi2Aiisa2Oodo  (customer address)
+    TO       : Ael2tailna8couNeang3Ooch  (per-customer merchant address)
+    VALUE    : 10.00
+
+Provided TO address is uniquely generated for each customer, and never
+publicly published, no competitor can ever know anything about sales.
+
+### Customers
+
+Now, let's imagine that you, the merchant, are a mail order company.
+You probably know, at least, your customer's address, but probably their
+name as well.  You are then able to associate any transmitting address
+with that customer's details.  In the above example then:
+
+    FROM     : aiZ8uuk2ol5gi2Aiisa2Oodo  (customer address)
+    TO       : Ael2tailna8couNeang3Ooch  (per-customer merchant address)
+    VALUE    : 10.00
+
+The merchant knows that `Ael2tailna8couNeang3Ooch` represents, say _Joe
+Bloggs_.  Therefore `aiZ8uuk2ol5gi2Aiisa2Oodo` represents _Joe Bloggs_
+as well.  A quick trip to the block chain might then reveal
+
+    FROM     : uesh5Ei9og4Ohch3Ohnah3ie  (Joe Bloggs fund source)
+    TO       : aiZ8uuk2ol5gi2Aiisa2Oodo  (Joe Bloggs)
+    VALUE    : 10.00
+    TO       : uesh5Ei9og4Ohch3Ohnah3ie  (change)
+    VALUE    : 2990.00
+
+We might be able to guess that _Joe Bloggs_ is paid 3000 a month.  If
+he buys more than once from us, it's perfectly possible that we could 
+repeat this trick and be more confident in that guess.
+
+Ouch.  This is not the sort of thing people like to reveal.
+
+It's worth noting at this point that this same trick can be pulled the
+other way.  When the merchant gives the customer an address, that
+address can be linked to the merchant.
+
+
+### Laundering
+
+Laundering in the cash world is usually associated with criminal
+activity.  In the bitcoin world it's going to be fundamental to retain
+your anonymity.
+
+The way it will work is by the existence of trusted anonymising
+services.  These will essentially be one-in-one-out; probably with a
+little bit of lag to allow the pool to churn a little.  I'll call this
+service a "bank", because the level of trust needed is similar.  We give
+the "bank" some coins.  Sent, as is sensible, to a per-customer address,
+rather than a per-bank address (it might even be sensible for the bank
+to maintain a pool of incoming addresses and reuse these too -- there
+would be slightly more complexity for the customer though).  Many people
+do this; and the bank records these as deposits to each sender's
+personal account, and now holds an enormous pool of coins.
+
+When a depositor wishes to spend Bitcoins, rather than use the bitcoin
+client, they tell their bank via some secure means (just as we do now
+with cash) -- say a website with username and password -- what address
+we wish to send to.  The bank selects one or more of the incoming
+addresses to create the required outgoing amount and creates the bitcoin
+transaction.
+
+Note: the bank uses _any_ per-customer incoming addresses as outgoing
+addresses.  All of those incoming addresses represent one giant pool.
+They are only per-customer on the incoming side; so that the correct
+bank account can be credited.  Outgoing, there is no way of linking the
+outgoing address to the spender because their is no link.
+
+Trust is needed because you are essentially giving control of your money
+over to the bank -- you are only able to spend them provided the banker is
+willing to spend them on your behalf.  Standard banking regulation will
+probably sort that problem out though.
+
+Of course we're now back to square one.  The "bank" is now a centralised
+authority that knows our transactions.  There is this difference though:
+there is no need for this sort of bank to ever know anything about us.
+Our account is the equivalent of an anonymous numbered swiss bank
+account.  Nor does the bank even need to hold our coins for any significant
+length of time; we could simply pay in and instantly pay out again to a
+newly generated address.  The coins would be back in our wallet, but
+those we get back are different from those we sent out, and the block
+chain can no longer reveal anything about us.
+
+### Unnecessary
+
+Now... given that the above is perfectly possible, and that it's likely
+that people will offer services like the above, following the block
+chain becomes pointless.  Let's return to our merchant spying on his
+customer:
+
+    FROM     : aiZ8uuk2ol5gi2Aiisa2Oodo  (customer address)
+    TO       : Ael2tailna8couNeang3Ooch  (per-customer merchant address)
+    VALUE    : 10.00
+
+The merchant knows that `Ael2tailna8couNeang3Ooch` represents, say _Joe
+Bloggs_.  We concluded, that therefore `aiZ8uuk2ol5gi2Aiisa2Oodo`
+represents _Joe Bloggs_ as well.  That is no longer a valid conclusion.
+
+The merchant has _no way_ of knowing whether _Joe Bloggs_ sent coins
+from his own bitcoin installation or had a bank service do it on his
+behalf.  There is nothing to show that `aiZ8uuk2ol5gi2Aiisa2Oodo` is
+either from a "bank" or not from a "bank", nor whether it is from _Joe
+Bloggs_ himself or one of his friends.
+
+The mere existence of the ability to use a mixing service means that it
+is pointless to try to track anyone using the block chain.  Provided the
+service is available, and commonly used, it won't matter whether you use
+a bank or not for any given transaction... the spy has no way of knowing
+how you paid.
+
+### Governments
+
+Governments have a lot more power than merchants.  Unfortunately.  The
+risk then is that they come knocking on the banker's door and demand
+that the logs of expenditure be handed over to them.  This allows them
+to reconnect bitcoin addresses across the anonymising black box that is
+the bank.
+
+This reveals less than it does with a normal bank, as there is no
+information associated with an account other than an "incoming" address.
+The chain is reformed though, and the government agent can then carry on
+following the links via the Bitcoin blockchain.
+
+The solution here then is this: multiple banks in multiple governmental
+jurisdictions.
+
+Once there are mixing services all over the world, it will become
+possible to send coins from mixer A to mixer B to mixer C, each in
+different countries.  Government agents lose an awful lot of their power
+once international borders are crossed.  They will find it very
+difficult to obtain the private records of all these mixers.
+
+### Payroll
+
+Let's say our merchant were Amazon.  Amazon would receive vast amounts
+of Bitcoins and would pay vast amounts of employees and suppliers out of
+the money they receive.  In essence, acting as an implicit mixing service.
+There would be no way of tracing coins through a large merchant, as
+there is no way to know what the merchant is buying or who they are
+employing (looking only at the block chain -- obviously the merchant
+themselves know).
+
+### Summary
+
+In essence: anonymity is not guaranteed by Bitcoin, but it is supported.
+As the Bitcoin economy takes off, it will become so close to pointless
+to track chains of transactions that no one will bother.  Therefore as a
+law-abiding every day citizen you need not worry, simply make use of
+what mixing services you wish as they become available.
+
+As a merchant you need do only one thing: use more than one incoming
+address.  Probably you will create one per customer, but one per
+transaction is perfectly feasible.
+
+Should you want to use Bitcoin for criminal activity (and let's remember
+that what is "criminal" is an accident of the time and place of your
+birth), you'll have to jump through some much bigger hoops; but then you
+had to do that anyway didn't you, if you're a criminal?
+

@@ -10,15 +10,18 @@ write whatever number they want to create).
 All other transactions (i.e. the vast majority) must reference the outputs
 of an earlier transaction.
 
-The block chain merely provides a container for the transaction chains.
-The block chain has very little to do with actual transactions.
+The block chain merely provides a container for (and verification of)
+the transaction chains.  The block chain has very little to do with
+actual transactions, and it is actually the transactions that are
+important to us.
 
-The transaction chain is essentially a list of signed messages (barring
+A transaction chain is essentially a list of signed messages (barring
 the COINBASE).  Let's pretend for now that each transaction has one
-input and one output.  The input is a reference to an earlier output,
-and the output is a public key.  The clever piece is that only the owner
-of the private key companion to a public key output can sign the
-transaction input as being valid.  Gulp.  That was a mouthful.
+input and one output.  The input is a reference to an earlier output
+plus a signature, and the output is a public key.  The clever piece is
+that only the owner of the private key companion to a public key output
+can sign the transaction input as being valid.  Gulp.  That was a
+mouthful.
 
 Let's have an example.  A COINBASE transaction creates coins and assigns
 them to a particular public key.
@@ -26,39 +29,41 @@ them to a particular public key.
     TRANSACTION_01: COINBASE(50 coins)
                  -> PUBLIC_KEY_01
 
-Now; the owner of PUBLIC_KEY_01 (with "owner" defined as the person with
-PRIVATE_KEY_01) wants to transfer those coins to PUBLIC_KEY_02.
+Now; the owner of `PUBLIC_KEY_01` (with "owner" defined as the person
+with `PRIVATE_KEY_01`) wants to transfer ownership of those coins to
+`PUBLIC_KEY_02`.
 
     TRANSACTION_02: PRIVATE_KEY_01_SIGNATURE(TRANSACTION_01)
                  -> PUBLIC_KEY_02
 
-Only the owner of PRIVATE_KEY_01 can create the signature in
-TRANSACTION_02; but anyone who knows PUBLIC_KEY_01 can verify it.
-Everyone knows PUBLIC_KEY_01, because it is in TRANSACTION_01.  The
-coins created in TRANSACTION_01 have been spent.
+Only the owner of `PRIVATE_KEY_01` can create the signature in
+`TRANSACTION_02`; but anyone who knows `PUBLIC_KEY_01` can verify it.
+Everyone knows `PUBLIC_KEY_01`, because it is in `TRANSACTION_01`.  The
+coins created in `TRANSACTION_01` have been signed over to
+`PUBLIC_KEY_02`, and anyone can verify it.
 
 The block chain ensures that these two transactions are published and
 carved in stone (for all intents).  Everyone on the network has a copy
 of the block chain (let's say), and hence the transaction list.
 
-Let's say the owner of PRIVATE_KEY_01 is a cheeky devil and wants to spend that
-money again.  He prepares a new transaction, giving the same coins to
-PUBLIC_KEY_03 (presumably in exchange for a Ferrari).
+Let's say the owner of `PRIVATE_KEY_01` is a cheeky devil and wants to
+spend that money again.  He prepares a new transaction, giving the same
+coins to `PUBLIC_KEY_03` (presumably in exchange for a Ferrari).
 
     TRANSACTION_03: PRIVATE_KEY_01_SIGNATURE(TRANSACTION_01)
                  -> PUBLIC_KEY_03
 
-He can't reference the output of TRANSACTION_02 because he doesn't own
-PRIVATE_KEY_02, and so can't sign that reference, the transaction would
-be instantly rejected.  So, he references TRANSACTION_01 again.  His
-signature is valid -- his plan has succeeded hasn't it?  No.  The plan
-hasn't succeeded.  You see, everyone has an agreed-valid copy of
-TRANSACTION_02, which already references the output of TRANSACTION_01.
-A quick search through previous transactions will easily reveal that
-TRANSACTION_01's output has been spent, in a transaction earlier than
-TRANSACTION_03.  That earlier transaction has our cheater's signature on
-it, so he cannot claim that it wasn't him that spent it, and
-TRANSACTION_03 is rejected.
+He can't reference the output of `TRANSACTION_02` because he doesn't own
+`PRIVATE_KEY_02`, and so can't sign that reference, the transaction
+would be instantly rejected.  So, he references `TRANSACTION_01` again.
+His signature is valid -- his plan has succeeded hasn't it?  No.  The
+plan hasn't succeeded.  You see, everyone has an agreed-valid copy of
+`TRANSACTION_02`, which already references the output of
+`TRANSACTION_01`.  A quick search through previous transactions will
+easily reveal that `TRANSACTION_01`'s output has been spent, in a
+transaction earlier than `TRANSACTION_03`.  That earlier transaction has
+our cheater's signature on it, so he cannot claim that it wasn't him
+that spent it, and `TRANSACTION_03` is rejected.
 
 For an incoming transaction then (i.e. not added to any block yet), we
 know a start point -- the transaction references the output of an
@@ -104,14 +109,15 @@ output blocks appear.
 
 Here's the trick though.  Transaction outputs _are_ transaction inputs.
 We don't need three tables at all, two allows us to easily fill in the
-chain details as they become available.
+chain details as they become available.  This second table is the list
+of coin ownership transfers.
 
 Transactions:
  - TransactionID
  - ContainingBlockID
  - LockTime, Version, etc
 
-TransactionOutputs:
+CoinTransfers:
  - SplitID
  - CreatedInTransactionID
  - CreationOutputIndex
@@ -122,16 +128,16 @@ TransactionOutputs:
  - SpentSequenceNumber
  - ClaimantScript
 
-Notice that the splits span two transactions each.  These are the links
+Notice that the transfers span two transactions each.  These are the links
 in the transaction chain.
 
     Transaction 1                          Transaction 2
-				         \                        /
-								  \                      /
-									 +- Output -----------+
-									 |USING        USED BY|
-		               |output 0     input 0|
-								   +--------------------+
+                 \                        /
+                  \                      /
+                   +- Transfer ---------+
+                   |USING        USED BY|
+                   |output 0     input 0|
+                   +--------------------+
 
 It's important to recognise that this is not the input/output pairing in
 a single transaction, this is a record representing the connection from
@@ -155,14 +161,19 @@ Here's a sample:
 
     Creation of coins:
     Value: 5000000000
-    scriptPubKey: OP_DUP OP_HASH160 404371705fa9bd789a2fcd52d2c580b65d35549d
-    OP_EQUALVERIFY OP_CHECKSIG
+    scriptPubKey:
+        OP_DUP
+        OP_HASH160
+        404371705fa9bd789a2fcd52d2c580b65d35549d
+        OP_EQUALVERIFY
+        OP_CHECKSIG
 
-		Claim of coins:
+    Claim of coins:
     Previous tx: f5d8ee39a430901c91a5917b9f2dc19d6d1a0e9cea205b009ca73dd04470b9a6
     Output Index: 0
-    scriptSig: 304502206e21798a42fae0e854281abd38bacd1aeed3ee3738d9e1446618c4571d10
-    90db022100e2ac980643b0b82c0e88ffdfec6b64e3e6ba35e7ba5fdd7d5d6cc8d25c6b241501
+    scriptSig:
+        304502206e21798a42fae0e854281abd38bacd1aeed3ee3738d9e1446618c4571d10
+        90db022100e2ac980643b0b82c0e88ffdfec6b64e3e6ba35e7ba5fdd7d5d6cc8d25c6b241501
 
 These would be executed in this order:
 
@@ -196,8 +207,8 @@ The (owner address) is a literal and is simply pushed onto the stack.
  - (claimant address)
  - (owner address)
 
-`OP_EQUALVERIFY` is two operations combined.  OP_EQUAL followed by
-OP_VERIFY.  OP_EQUAL compares the top two stack elements for equality,
+`OP_EQUALVERIFY` is two operations combined.  `OP_EQUAL` followed by
+`OP_VERIFY`.  `OP_EQUAL` compares the top two stack elements for equality,
 replacing them with either 0 or 1 depending on the result.  Let's say
 for our example that the claimant is the owner, the top two elements
 will be equal and will be replaced with 1:
@@ -220,8 +231,8 @@ complete.  The final operation left on the stack is `OP_CHECKSIG`.  The
 docs say that
 
 > The entire transaction's outputs, inputs, and script (from the most
-> recently-executed OP_CODESEPARATOR to the end) are hashed. The
-> signature used by OP_CHECKSIG must be a valid signature for this hash
+> recently-executed `OP_CODESEPARATOR` to the end) are hashed. The
+> signature used by `OP_CHECKSIG` must be a valid signature for this hash
 > and public key. If it is, 1 is returned, 0 otherwise.
 
 I'm not sure this is entirely accurate.  First of all we must ask: which
@@ -237,20 +248,20 @@ There is a more detailed description of `OP_CHECKSIG` on the bitcoin
 wiki, which is far more plausible.
 
  - The public key and the signature are popped from the stack, in that
-	 order.
+   order.
  - A new subscript is created from the instruction from the most recent
-	 OP_CODESEPARATOR to the end of the script. If there is no
-	 OP_CODESEPARATOR the entire script becomes the subscript (hereby
-	 referred to as subScript)
+   `OP_CODESEPARATOR` to the end of the script. If there is no
+   `OP_CODESEPARATOR` the entire script becomes the subscript (hereby
+   referred to as subScript)
  - The sig is deleted from subScript.
  - The hashtype is removed from the last byte of the sig and stored
  - A deep copy is made of the current transaction (hereby referred to
-	 txCopy)
- - All OP_CODESEPARATORS are removed from subScript
+   txCopy)
+ - All `OP_CODESEPARATORS` are removed from subScript
  - The scripts for all transaction inputs in txCopy are set to empty
-	 scripts
+   scripts
  - The script for the current transaction input in txCopy is set to
-	 subScript
+   subScript
 
 
 
@@ -260,7 +271,7 @@ wiki, which is far more plausible.
 Let's think about what happens when a new unchained (as yet) transaction
 is broadcast
 
- - Receive `inv` containing array of MSG_TX type hashes.
+ - Receive `inv` containing array of `MSG_TX` type hashes.
  - Create transaction records for these hashes.
  - Request those that we don't know about with `getdata` commands.
  - Receive `tx` message.
