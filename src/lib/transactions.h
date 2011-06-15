@@ -27,6 +27,7 @@
 // --- Project
 #include "messageelements.h"
 #include "hashtypes.h"
+#include "bitcoinnetwork.h"
 
 
 // -------------- Namespace
@@ -89,6 +90,48 @@ class TTransferBeneficiary
 };
 
 //
+// Class:	TTransactionReference
+// Description:
+//
+class TTransactionReference
+{
+  public:
+	virtual unsigned int getIndex() const = 0;
+
+	bool isNull() const {
+		return TransactionHash == TNetworkParameters::NULL_REFERENCE_HASH
+			&& getIndex() == TNetworkParameters::NULL_REFERENCE_INDEX;
+	}
+
+  public:
+	TBitcoinHash TransactionHash;
+};
+
+//
+// Class:	TInputReference
+// Description:
+//
+class TInputReference : public TTransactionReference
+{
+  public:
+	unsigned int getIndex() const { return InputIndex; }
+  public:
+	unsigned int InputIndex;
+};
+
+//
+// Class:	TOutputReference
+// Description:
+//
+class TOutputReference : public TTransactionReference
+{
+  public:
+	unsigned int getIndex() const { return OutputIndex; }
+  public:
+	unsigned int OutputIndex;
+};
+
+//
 // Class:	TCoinTransfer
 // Description:
 // Object representing transaction outputs, and what happened to them.
@@ -110,15 +153,11 @@ class TTransferBeneficiary
 class TCoinTransfer
 {
   public:
-	struct sSplitReference {
-		TBitcoinHash TransactionHash;
-		unsigned int SplitIndex;
-	};
   public:
 	TCoinTransfer( const TTransaction *, unsigned int );
 
-	virtual sSplitReference getCreatorReference() const = 0;
-	virtual sSplitReference getClaimantReference() const = 0;
+	virtual TOutputReference getCreatorReference() const = 0;
+	virtual TInputReference getClaimantReference() const = 0;
 	virtual const TTransferBeneficiary *getBeneficiary() const = 0;
 	virtual bool confirmationAvailable() const = 0;
 	virtual bool confirmed() const = 0;
@@ -142,8 +181,8 @@ class TMemoryCoinTransfer : public TCoinTransfer
   public:
 	TMemoryCoinTransfer( const TTransaction *t, unsigned int n );
 
-	sSplitReference getCreatorReference() const { return Creation; }
-	sSplitReference getClaimantReference() const { return Claim; }
+	TOutputReference getCreatorReference() const { return Creation; }
+	TInputReference getClaimantReference() const { return Claim; }
 	const TTransferBeneficiary *getBeneficiary() const { return Beneficiary; }
 
 	bool confirmationAvailable() const { return State != ScriptNotRun; }
@@ -155,13 +194,13 @@ class TMemoryCoinTransfer : public TCoinTransfer
 
   protected:
 	// The output we represent (we are an "output" of this transaction)
-	sSplitReference Creation;
+	TOutputReference Creation;
 	// The script that gives the conditions for our use
 	string AuthorisationScript;
 
 	// The transaction that "claims" us (we are an "input" of this
 	// transaction)
-	sSplitReference Claim;
+	TInputReference Claim;
 	// The script that purports to meet the conditions specified in
 	// AuthorisationScript.  If it doesn't meet the conditions, then
 	// these members will get cleared pretty quickly.  This script is

@@ -54,16 +54,16 @@
 // -------------- Class member definitions
 
 //
-// Static:	TNetworkParameters :: COINBASE_REFERENCE_HASH
+// Static:	TNetworkParameters :: NULL_REFERENCE_HASH
 // Description:
 //
-const TBitcoinHash TNetworkParameters::COINBASE_REFERENCE_HASH = 0;
+const TBitcoinHash TNetworkParameters::NULL_REFERENCE_HASH = 0;
 
 //
-// Static:	TNetworkParameters :: COINBASE_REFERENCE_INDEX
+// Static:	TNetworkParameters :: NULL_REFERENCE_INDEX
 // Description:
 //
-const unsigned int TNetworkParameters::COINBASE_REFERENCE_INDEX = static_cast<unsigned int>(-1);
+const unsigned int TNetworkParameters::NULL_REFERENCE_INDEX = static_cast<unsigned int>(-1);
 
 //
 // Function:	TNetworkParameters

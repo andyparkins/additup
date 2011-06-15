@@ -152,8 +152,8 @@ class TNetworkParameters
 
 	// I am treating these following values as constants, as I think
 	// they are fundamental rather than arbitrary choices.
-	static const TBitcoinHash COINBASE_REFERENCE_HASH;
-	static const unsigned int COINBASE_REFERENCE_INDEX;
+	static const TBitcoinHash NULL_REFERENCE_HASH;
+	static const unsigned int NULL_REFERENCE_INDEX;
 };
 
 //

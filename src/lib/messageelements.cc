@@ -353,8 +353,8 @@ void TInputSplitElement::encodeSignatureScript( const TBitcoinScript &Script )
 //
 bool TInputSplitElement::isCoinBase() const
 {
-	return OutPoint.TransactionHash == TNetworkParameters::COINBASE_REFERENCE_HASH
-		&& OutPoint.OutputIndex == TNetworkParameters::COINBASE_REFERENCE_INDEX;
+	return OutPoint.TransactionHash == TNetworkParameters::NULL_REFERENCE_HASH
+		&& OutPoint.OutputIndex == TNetworkParameters::NULL_REFERENCE_INDEX;
 }
 
 //
