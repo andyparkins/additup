@@ -267,250 +267,373 @@ TNodeInfo &TBitcoinNetwork::updateDirectory( const TNodeInfo &Node )
 //
 void TBitcoinNetwork::process( TMessage *Message )
 {
-	TBitcoinPeer *Peer = NULL;
-
 	if( Message != NULL ) {
 		log() << "[NETW] RX< " << *Message << endl;
-
-		// For those times we want to know who the message is from
-		Peer = Message->getPeer();
 	}
 
 	if( Message == NULL ) {
 		// Spontaneous
 	} else if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
+		log(TLog::Warning) << "[NETW] Ignoring unknown message type, " << Message->className() << endl;
 	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
-		TMessage_version *version = reinterpret_cast<TMessage_version*>( Message );
-
-		// We must make this concession to versioning.  Perhaps it would
-		// be better to have version-specific TBitcoinNetwork classes,
-		// but I'm afraid I can't quite be bothered to do that just for
-		// the sake of this if()
-		if( version->getVersion() > 20900 ) {
-			// Acknowledge every version received, even if the remote
-			// chooses to send more than one (which it shouldn't)
-			Peer->queueOutgoing( new TMessage_verack() );
-		}
-
-//		if( !Inbound ) {
-//			// XXX: Official client does getaddr
-//		}
-
-		// XXX: Request block updates since our latest
-
-		// XXX: Pending alerts
-
+		receive_version( reinterpret_cast<TMessage_version*>( Message ) );
 	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
-		// No need to dynamic cast again
-		TMessage_inv *inv = reinterpret_cast<TMessage_inv*>( Message );
-
-		if( inv->size() > getNetworkParameters()->INV_MAX )
-			return;
-
-		// RX< inv
-		// TX> getdata
-		// RX< block
-		BlockPool->receiveInventory( inv );
-		// RX< inv
-		// TX> getdata
-		// RX< tx
-		TransactionPool->receiveInventory( inv );
+		receive_inv( reinterpret_cast<TMessage_inv*>( Message ) );
 	} else if( dynamic_cast<TMessage_getdata*>( Message ) != NULL ) {
-		TMessage_getdata *getdata = reinterpret_cast<TMessage_getdata*>( Message );
-
-		if( getdata->size() > getNetworkParameters()->GETDATA_MAX )
-			return;
-
-		for( unsigned int i = 0; i < getdata->size(); i++ ) {
-			// RX< getdata
-			TInventoryElement &inv( (*getdata)[i] );
-			if( inv.ObjectType == TInventoryElement::MSG_BLOCK ) {
-				// TX> block
-				BlockPool->queueBlock( Peer, inv.Hash );
-				// --- continuation of earlier getblocks
-				if( Peer->getContinuationHash() == inv.Hash ) {
-					TMessage_inv *inv = new TMessage_inv;
-					// From official client:
-					// "Bypass PushInventory, this must send even if
-					// redundant, and we want it right after the last
-					// block so they don't wait for other stuff first."
-					TInventoryElement &elem( inv->appendInventory() );
-					elem.ObjectType = TInventoryElement::MSG_BLOCK;
-					elem.Hash = BlockPool->getBestBranch()->getHash();
-					Peer->setContinuationHash( TBitcoinHash() );
-				}
-			} else if( inv.ObjectType == TInventoryElement::MSG_TX ) {
-				// TX> tx
-//				TransactionPool->queueTransaction( Peer, inv.Hash );
-			} else if( inv.ObjectType == TInventoryElement::ERROR ) {
-				log() << "[NETW] Remote requested ERROR hash " << inv.Hash
-					<< ", which I don't know how to handle" << endl;
-			}
-		}
+		receive_getdata( reinterpret_cast<TMessage_getdata*>( Message ) );
 	} else if( dynamic_cast<TMessage_getblocks*>( Message ) != NULL ) {
-		// No need to dynamic cast again
-		TMessage_getblocks *getblocks = reinterpret_cast<TMessage_getblocks*>( Message );
-		TMessage_inv *inv = new TMessage_inv;
-		// RX< getblocks
+		receive_getblocks( reinterpret_cast<TMessage_getblocks*>( Message ) );
+	} else if( dynamic_cast<TMessage_getheaders*>( Message ) != NULL ) {
+		receive_getheaders( reinterpret_cast<TMessage_getheaders*>( Message ) );
+	} else if( dynamic_cast<TMessage_getaddr*>( Message ) != NULL ) {
+		receive_getaddr( reinterpret_cast<TMessage_getaddr*>( Message ) );
+	} else if( dynamic_cast<TMessage_tx*>( Message ) != NULL ) {
+		receive_tx( reinterpret_cast<TMessage_tx*>( Message ) );
+	} else if( dynamic_cast<TMessage_block*>( Message ) != NULL ) {
+		receive_block( reinterpret_cast<TMessage_block*>( Message ) );
+	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
+		receive_headers( reinterpret_cast<TMessage_headers*>( Message ) );
+	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
+		receive_addr( reinterpret_cast<TMessage_addr*>( Message ) );
+	} else if( dynamic_cast<TMessage_reply*>( Message ) != NULL ) {
+		receive_reply( reinterpret_cast<TMessage_reply*>( Message ) );
+	} else if( dynamic_cast<TMessage_ping*>( Message ) != NULL ) {
+		receive_ping( reinterpret_cast<TMessage_ping*>( Message ) );
+	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
+		receive_submitorder( reinterpret_cast<TMessage_submitorder*>( Message ) );
+	} else if( dynamic_cast<TMessage_checkorder*>( Message ) != NULL ) {
+		receive_checkorder( reinterpret_cast<TMessage_checkorder*>( Message ) );
+	} else if( dynamic_cast<TMessage_alert*>( Message ) != NULL ) {
+		receive_alert( reinterpret_cast<TMessage_alert*>( Message ) );
+	}
+}
 
-		// The remote sends us a list of blocks it has, and we are to
-		// send it an inventory containing blocks it doesn't have, but
-		// (apparently) we only show it blocks in the main chain.  The
-		// blocks it has are most likely the last blockchain tips it had
-		// received.  It doesn't know which one of them became the main
-		// chain so we must help it by sending only the main chain.
-		// (I'm not sure why this is so; for a peer-to-peer network, it
-		// would be better for the peer to decide for itself what it
-		// thinks the main chain is).
-		for( unsigned int i = 0; i < getblocks->size(); i++ ) {
-			const TBitcoinHash &BlockHash = (*getblocks)[i];
-			const TBlock *Block = BlockPool->getBlock( BlockHash );
+//
+// Function:	TBitcoinNetwork :: receive_version
+// Description:
+//
+void TBitcoinNetwork::receive_version( TMessage_version *version )
+{
+	// We must make this concession to versioning.  Perhaps it would
+	// be better to have version-specific TBitcoinNetwork classes,
+	// but I'm afraid I can't quite be bothered to do that just for
+	// the sake of this if()
+	if( version->getVersion() > 20900 ) {
+		// Acknowledge every version received, even if the remote
+		// chooses to send more than one (which it shouldn't)
+		version->getPeer()->queueOutgoing( new TMessage_verack() );
+	}
 
-			// If we don't have that block, then we can't supply its
-			// children
-			if( Block == NULL )
-				continue;
+//	if( !Inbound ) {
+//		// XXX: Official client does getaddr
+//	}
 
-			// We only send blocks from what we consider the best chain
-			if( !Block->isAncestorOf( BlockPool->getBestBranch() ) )
-				continue;
+	// XXX: Request block updates since our latest
 
-			Peer->setContinuationHash( TBitcoinHash() );
+	// XXX: Pending alerts
 
-			unsigned int Limit = getNetworkParameters()->GETBLOCKS_RESPONSES_MAX;
-			while( true ) {
-				Block = Block->getChildOnBranch( BlockPool->getBestBranch() );
-				// No more blocks
-				if( Block == NULL )
-					break;
-				// Caller requested a stop
-				if( Block->getHash() == getblocks->getStop() )
-					break;
+}
 
-				// append this block's hash to the inventory
+//
+// Function:	TBitcoinNetwork :: receive_verack
+// Description:
+//
+void TBitcoinNetwork::receive_verack( TMessage_verack *verack )
+{
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_inv
+// Description:
+//
+void TBitcoinNetwork::receive_inv( TMessage_inv *inv )
+{
+	if( inv->size() > getNetworkParameters()->INV_MAX )
+		return;
+
+	// RX< inv
+	// TX> getdata
+	// RX< block
+	BlockPool->receiveInventory( inv );
+	// RX< inv
+	// TX> getdata
+	// RX< tx
+	TransactionPool->receiveInventory( inv );
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_getdata
+// Description:
+//
+void TBitcoinNetwork::receive_getdata( TMessage_getdata *getdata )
+{
+	TBitcoinPeer *Peer = getdata->getPeer();
+
+	if( getdata->size() > getNetworkParameters()->GETDATA_MAX )
+		return;
+
+	for( unsigned int i = 0; i < getdata->size(); i++ ) {
+		// RX< getdata
+		TInventoryElement &inv( (*getdata)[i] );
+		if( inv.ObjectType == TInventoryElement::MSG_BLOCK ) {
+			// TX> block
+			BlockPool->queueBlock( Peer, inv.Hash );
+			// --- continuation of earlier getblocks
+			if( Peer->getContinuationHash() == inv.Hash ) {
+				TMessage_inv *inv = new TMessage_inv;
+				// From official client:
+				// "Bypass PushInventory, this must send even if
+				// redundant, and we want it right after the last
+				// block so they don't wait for other stuff first."
 				TInventoryElement &elem( inv->appendInventory() );
 				elem.ObjectType = TInventoryElement::MSG_BLOCK;
-				elem.Hash = Block->getHash();
-
-				// If we need to send more than is allowed, then we have
-				// to defer our next inv until they have requested the
-				// last block we've just offered.
-				// This is dreadful.  This makes the bitcoin protocol
-				// stateful, which it shouldn't be.  See also getdata
-				Limit--;
-				if( Limit == 0 ) {
-					Peer->setContinuationHash( Block->getHash() );
-					break;
-				}
+				elem.Hash = BlockPool->getBestBranch()->getHash();
+				Peer->setContinuationHash( TBitcoinHash() );
 			}
+		} else if( inv.ObjectType == TInventoryElement::MSG_TX ) {
+			// TX> tx
+//			TransactionPool->queueTransaction( Peer, inv.Hash );
+		} else if( inv.ObjectType == TInventoryElement::ERROR ) {
+			log() << "[NETW] Remote requested ERROR hash " << inv.Hash
+				<< ", which I don't know how to handle" << endl;
 		}
-		// TX> inv
-		if( inv->size() > 0 ) {
-			Peer->queueOutgoing( inv );
-		} else {
-			delete inv;
-		}
-	} else if( dynamic_cast<TMessage_getheaders*>( Message ) != NULL ) {
-		// No need to dynamic cast again
-		TMessage_getheaders *getheaders = reinterpret_cast<TMessage_getheaders*>( Message );
-		TMessage_headers *headers = new TMessage_headers;
-		// RX< getheaders
-
-		// The remote sends us a list of blocks it has, and we are to
-		// send it an headersentory containing blocks it doesn't have, but
-		// (apparently) we only show it blocks in the main chain.  The
-		// blocks it has is most likely the last blockchain tips it had
-		// received.  It doesn't know which one of them became the main
-		// chain so we must help it by sending only the main chain.
-		// (I'm not sure why this is so; for a peer-to-peer network, it
-		// would be better for the peer to decide for itself what it
-		// thinks the main chain is).
-		for( unsigned int i = 0; i < getheaders->size(); i++ ) {
-			const TBitcoinHash &BlockHash = (*getheaders)[i];
-			const TBlock *Block = BlockPool->getBlock( BlockHash );
-
-			// If we don't have that block, then we can't supply its
-			// children
-			if( Block == NULL )
-				continue;
-
-			// We only send blocks from what we consider the best chain
-			if( !Block->isAncestorOf( BlockPool->getBestBranch() ) )
-				continue;
-
-			unsigned int Limit = getNetworkParameters()->GETHEADERS_RESPONSES_MAX;
-			while( true ) {
-				Block = Block->getChildOnBranch( BlockPool->getBestBranch() );
-				// No more blocks
-				if( Block == NULL )
-					break;
-				// Caller requested a stop
-				if( Block->getHash() == getheaders->getStop() )
-					break;
-				// append this block header to the mesage
-				Block->writeToHeader( headers->appendBlockHeader() );
-				// Limit
-				Limit--;
-				if( Limit == 0 )
-					break;
-			}
-		}
-		// TX> headers
-		if( headers->size() > 0 ) {
-			Peer->queueOutgoing( headers );
-		} else {
-			delete headers;
-		}
-	} else if( dynamic_cast<TMessage_getaddr*>( Message ) != NULL ) {
-		// "The getaddr message sends a request to a node asking for
-		// information about known active peers to help with identifying
-		// potential nodes in the network. The response to receiving
-		// this message is to transmit an addr message with one or more
-		// peers from a database of known active peers. The typical
-		// presumption is that a node is likely to be active if it has
-		// been sending a message within the last three hours."
-//		Answer = new TMessage_addr();
-	} else if( dynamic_cast<TMessage_tx*>( Message ) != NULL ) {
-		TMessage_tx *tx = reinterpret_cast<TMessage_tx*>( Message );
-		try {
-			// Pass the message straight to the transaction pool
-			TransactionPool->receiveTransaction( tx );
-			log() << "[NETW] Transactions in pool " << TransactionPool->size() << endl;
-		} catch( exception &e ) {
-			log() << "[NETW] Rejecting transaction " << *tx << ", " << e.what() << endl;
-		}
-	} else if( dynamic_cast<TMessage_block*>( Message ) != NULL ) {
-		TMessage_block *block = reinterpret_cast<TMessage_block*>( Message );
-		// Pass the message straight to the block chain
-		try {
-			BlockPool->receiveBlock( block );
-			log() << "[NETW] Blocks in pool " << BlockPool->size() << endl;
-		} catch( exception &e ) {
-			log() << "[NETW] Rejecting block " << *block << ", " << e.what() << endl;
-		}
-	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
-		TMessage_headers *headers = reinterpret_cast<TMessage_headers*>( Message );
-		// Pass the message straight to the block chain
-		BlockPool->receiveHeaders( headers );
-		// No response needed
-	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
-		TMessage_addr *addr = reinterpret_cast<TMessage_addr*>( Message );
-		addr->updateNetworkDirectory();
-		// No response needed
-	} else if( dynamic_cast<TMessage_reply*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_ping*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
-		// RX< submitorder
-		// TX> reply
-	} else if( dynamic_cast<TMessage_checkorder*>( Message ) != NULL ) {
-		// RX< checkorder
-		// TX> reply
-	} else if( dynamic_cast<TMessage_alert*>( Message ) != NULL ) {
-		// No response needed
 	}
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_getblocks
+// Description:
+//
+// The remote sends us a list of blocks it has, and we are to send it an
+// inventory containing blocks it doesn't have, but we only show it
+// blocks in the main chain.
+//
+// The blocks it has list it sends are most likely the last blockchain
+// tips it had received.  It doesn't know which one of them became the
+// main chain so we must help it by sending only the main chain.  (I'm
+// not sure why this is so; for a peer-to-peer network, it would be
+// better for the peer to decide for itself what it thinks the main
+// chain is).
+//
+void TBitcoinNetwork::receive_getblocks( TMessage_getblocks *getblocks )
+{
+	TBitcoinPeer *Peer = getblocks->getPeer();
+	TMessage_inv *inv = new TMessage_inv;
+	// RX< getblocks
+
+	for( unsigned int i = 0; i < getblocks->size(); i++ ) {
+		const TBitcoinHash &BlockHash = (*getblocks)[i];
+		const TBlock *Block = BlockPool->getBlock( BlockHash );
+
+		// If we don't have that block, then we can't supply its
+		// children
+		if( Block == NULL )
+			continue;
+
+		// We only send blocks from what we consider the best chain
+		if( !Block->isAncestorOf( BlockPool->getBestBranch() ) )
+			continue;
+
+		Peer->setContinuationHash( TBitcoinHash() );
+
+		unsigned int Limit = getNetworkParameters()->GETBLOCKS_RESPONSES_MAX;
+		while( true ) {
+			Block = Block->getChildOnBranch( BlockPool->getBestBranch() );
+			// No more blocks
+			if( Block == NULL )
+				break;
+			// Caller requested a stop
+			if( Block->getHash() == getblocks->getStop() )
+				break;
+
+			// append this block's hash to the inventory
+			TInventoryElement &elem( inv->appendInventory() );
+			elem.ObjectType = TInventoryElement::MSG_BLOCK;
+			elem.Hash = Block->getHash();
+
+			// If we need to send more than is allowed, then we have
+			// to defer our next inv until they have requested the
+			// last block we've just offered.
+			// This is dreadful.  This makes the bitcoin protocol
+			// stateful, which it shouldn't be.  See also getdata
+			Limit--;
+			if( Limit == 0 ) {
+				Peer->setContinuationHash( Block->getHash() );
+				break;
+			}
+		}
+	}
+	// TX> inv
+	if( inv->size() > 0 ) {
+		Peer->queueOutgoing( inv );
+	} else {
+		delete inv;
+	}
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_getheaders
+// Description:
+//
+void TBitcoinNetwork::receive_getheaders( TMessage_getheaders *getheaders )
+{
+	TMessage_headers *headers = new TMessage_headers;
+	// RX< getheaders
+
+	for( unsigned int i = 0; i < getheaders->size(); i++ ) {
+		const TBitcoinHash &BlockHash = (*getheaders)[i];
+		const TBlock *Block = BlockPool->getBlock( BlockHash );
+
+		// If we don't have that block, then we can't supply its
+		// children
+		if( Block == NULL )
+			continue;
+
+		// We only send blocks from what we consider the best chain
+		if( !Block->isAncestorOf( BlockPool->getBestBranch() ) )
+			continue;
+
+		unsigned int Limit = getNetworkParameters()->GETHEADERS_RESPONSES_MAX;
+		while( true ) {
+			Block = Block->getChildOnBranch( BlockPool->getBestBranch() );
+			// No more blocks
+			if( Block == NULL )
+				break;
+			// Caller requested a stop
+			if( Block->getHash() == getheaders->getStop() )
+				break;
+			// append this block header to the mesage
+			Block->writeToHeader( headers->appendBlockHeader() );
+			// Limit
+			Limit--;
+			if( Limit == 0 )
+				break;
+		}
+	}
+	// TX> headers
+	if( headers->size() > 0 ) {
+		getheaders->getPeer()->queueOutgoing( headers );
+	} else {
+		delete headers;
+	}
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_getaddr
+// Description:
+//
+// "The getaddr message sends a request to a node asking for
+// information about known active peers to help with identifying
+// potential nodes in the network. The response to receiving
+// this message is to transmit an addr message with one or more
+// peers from a database of known active peers. The typical
+// presumption is that a node is likely to be active if it has
+// been sending a message within the last three hours."
+//
+void TBitcoinNetwork::receive_getaddr( TMessage_getaddr *getaddr )
+{
+//	Answer = new TMessage_addr();
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_tx
+// Description:
+//
+void TBitcoinNetwork::receive_tx( TMessage_tx *tx )
+{
+	try {
+		// Pass the message straight to the transaction pool
+		TransactionPool->receiveTransaction( tx );
+		log() << "[NETW] Transactions in pool " << TransactionPool->size() << endl;
+	} catch( exception &e ) {
+		log() << "[NETW] Rejecting transaction " << *tx << ", " << e.what() << endl;
+	}
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_block
+// Description:
+//
+void TBitcoinNetwork::receive_block( TMessage_block *block )
+{
+	// Pass the message straight to the block pool
+	try {
+		BlockPool->receiveBlock( block );
+		log() << "[NETW] Blocks in pool " << BlockPool->size() << endl;
+	} catch( exception &e ) {
+		log() << "[NETW] Rejecting block " << *block << ", " << e.what() << endl;
+	}
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_headers
+// Description:
+//
+void TBitcoinNetwork::receive_headers( TMessage_headers *headers )
+{
+	// Pass the message straight to the block pool
+	BlockPool->receiveHeaders( headers );
+	// No response needed
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_addr
+// Description:
+//
+void TBitcoinNetwork::receive_addr( TMessage_addr *addr )
+{
+	addr->updateNetworkDirectory();
+	// No response needed
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_reply
+// Description:
+//
+void TBitcoinNetwork::receive_reply( TMessage_reply *reply )
+{
+	// No response needed
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_ping
+// Description:
+//
+void TBitcoinNetwork::receive_ping( TMessage_ping *ping )
+{
+	// No response needed
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_submitorder
+// Description:
+//
+// RX< submitorder
+// TX> reply
+//
+void TBitcoinNetwork::receive_submitorder( TMessage_submitorder *submitorder )
+{
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_checkorder
+// Description:
+//
+// RX< checkorder
+// TX> reply
+//
+void TBitcoinNetwork::receive_checkorder( TMessage_checkorder *checkorder )
+{
+}
+
+//
+// Function:	TBitcoinNetwork :: receive_alert
+// Description:
+//
+void TBitcoinNetwork::receive_alert( TMessage_alert *alert )
+{
+	// No response needed
 }
 
 //

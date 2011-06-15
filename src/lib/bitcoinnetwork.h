@@ -61,6 +61,22 @@ class TTransactionPool;
 class TBlockPool;
 class TBlock;
 class TMessageDigest;
+class TMessage_version;
+class TMessage_verack;
+class TMessage_inv;
+class TMessage_getdata;
+class TMessage_getblocks;
+class TMessage_getheaders;
+class TMessage_getaddr;
+class TMessage_tx;
+class TMessage_block;
+class TMessage_headers;
+class TMessage_addr;
+class TMessage_reply;
+class TMessage_ping;
+class TMessage_submitorder;
+class TMessage_checkorder;
+class TMessage_alert;
 
 
 // -------------- Function pre-class prototypes
@@ -170,6 +186,24 @@ class TBitcoinNetwork
 	uint64_t getNonce() const { return Nonce; }
 
 	virtual TMessage_version *createMyVersionMessage() const;
+
+	// Handlers
+	void receive_version( TMessage_version * );
+	void receive_verack( TMessage_verack * );
+	void receive_inv( TMessage_inv * );
+	void receive_getdata( TMessage_getdata * );
+	void receive_getblocks( TMessage_getblocks * );
+	void receive_getheaders( TMessage_getheaders * );
+	void receive_getaddr( TMessage_getaddr * );
+	void receive_tx( TMessage_tx * );
+	void receive_block( TMessage_block * );
+	void receive_headers( TMessage_headers * );
+	void receive_addr( TMessage_addr * );
+	void receive_reply( TMessage_reply * );
+	void receive_ping( TMessage_ping * );
+	void receive_submitorder( TMessage_submitorder * );
+	void receive_checkorder( TMessage_checkorder * );
+	void receive_alert( TMessage_alert * );
 
   protected:
 	virtual void disconnect( TBitcoinPeer * ) = 0;
