@@ -700,6 +700,7 @@ class TInventoryElement : public TMessageElement
 class TCoinsElement : public TLittleEndian64Element
 {
   public:
+//	TCoinsElement &operator=( const TCoinsElement &c ) { *this = c; return *this; }
 	void setValue( uint64_t Coins, unsigned int Cents = 0 ) {
 		Value = Coins * COIN + Cents * CENT;
 	}
@@ -776,6 +777,7 @@ class TOutputSplitElement : public TMessageElement
 		return os;
 	}
 
+	void setValue( const TCoinsElement &c ) { Coins = c; }
 	void setValue( uint64_t a, unsigned int b = 0 ) { Coins.setValue(a,b); }
 	double getValue() const { return Coins.getValue(); }
 
