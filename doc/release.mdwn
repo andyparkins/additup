@@ -21,9 +21,15 @@ library) what the current balance of any key is.
 ### Human-readable wallet
 
 Storing a wallet in a human-readable file will make humans a lot less
-scared of it.  Berkley DB is uncomfortable to use anyway.  A list of a
-few thousand keys really doesn't need a database.  A couple of ASCII
-lines per address is manageable.
+scared of it.  Berkley DB is uncomfortable to use anyway, it's always
+changing on-disk format when the version changes.  A list of a few
+thousand keys really doesn't need a database.  A couple of ASCII lines
+per address is manageable without a database.
+
+(See below) my intent is to have one file per key pair.  This key pair
+would be opened for writing _only_ once, upon creation.  From then on
+there would be no need to ever write to the file.  This makes them far
+safer against power failures or crashes than any database will ever be.
 
 ### The word "wallet" is wrong
 
