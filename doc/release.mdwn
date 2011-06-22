@@ -92,6 +92,29 @@ Detection of the presence of a USB key and use of it (or more likely a
 file on it) as one factor in the encryption needed to get at the private
 keys in the wallet(s).
 
+### "Light" modes
+
+There are a number of modes that a Bitcoin node could conceivably
+operate in:
+
+ - Full block chain.  The node downloads every block and every
+   transaction in that block.
+ - Block headers only.  The node downloads every block header.  It
+   cannot perform verification of transactions.
+ - Blocks on demand.  The node downloads every block header, then,
+   assuming permanent connectivity, when the node needs the transactions
+   from a particular block (say when spending or verifying deposits), it
+   can just ask its peers for it.
+ - Block headers on demand.  The node downloads nothing.  When it needs
+   a particular block header or transaction block it requests it from
+   its peers.
+
+Note in particular that it is the "headers only" mode that is the
+riskiest.  The "on-demand" modes, assuming that the peers are available,
+still perform whatever verification is necessary, they just do it at
+their leisure requesting what they need.
+
+
 ### Block explorer built in
 
 It's not acceptable to rely on a web site that uses a special,
