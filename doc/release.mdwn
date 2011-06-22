@@ -2,6 +2,15 @@
 
 Features I'd like to have in my alternative client.
 
+### Grammar
+
+"Bitcoin" is the project; "bitcoins" are the currency.  The vaguaries of
+English make this problem easy then for most cases.  If the word you are
+using is plural, _it must be 'bitcoins'_.  If the word you are using is
+singular and you aren't talking about a currency unit, _it must be
+'Bitcoin'_.  The only difficult case then is, "I'm about to send you a
+bitcoin using the Bitcoin client".
+
 ### Separation of wallet and block chain
 
 The wallet is a store of public-private key pairs.  Nothing more.
@@ -59,7 +68,7 @@ That directory will contain:
    spanner from Bob" against a particular transaction.  It might be
    sensible to keep these annotations in the key pair file.
  - Address annotations.  Similarly, the user should be able to label
-   every address.
+   any address.
 
 ### USB Key
 
@@ -159,10 +168,10 @@ database.  Further, it should be easy to extend the block and
 wallet handling to manipulate the target database automatically.
 
 I'm thinking in particular of removing the need for web sites to
-regularly poll the bitcoin RPC mechanism.  Instead the appropriate
+regularly poll the Bitcoin RPC mechanism.  Instead the appropriate
 records should just appear in the database.
 
-A similar extension could make http calls associated with bitcoin
+A similar extension could make http calls associated with Bitcoin
 events.
 
 ### SSL
@@ -182,7 +191,7 @@ a potentially worse average by the network?
 
 ### Clearing
 
-A bitcoin balance, just as at a bank, isn't the whole story.  At your
+A Bitcoin balance, just as at a bank, isn't the whole story.  At your
 bank, when you deposit a cheque, your balance doesn't go up instantly.
 Instead you get two balances:
 
@@ -237,7 +246,7 @@ them confidence that clearing is in progress, and it makes it obvious
 what has happened.  Many people are familiar with the idea of clearing
 already, and so it is using ideas they already understand to explain the
 operation of Bitcoin.  What's more, they'll be very pleased to compare
-the banking system's 3-6 day clearing process with Bitcoins one hour
+the banking system's 3-6 day clearing process with Bitcoin's one hour
 clearing process, and near-instant announcement of deposits.
 
 
