@@ -180,5 +180,64 @@ it.
 If my node has its time set by NTP, why should I allow it to be voted to
 a potentially worse average by the network?
 
+### Clearing
+
+A bitcoin balance, just as at a bank, isn't the whole story.  At your
+bank, when you deposit a cheque, your balance doesn't go up instantly.
+Instead you get two balances:
+
+    Balance:       25.32
+    Uncleared:    125.32
+
+Clearing is the time between a transaction being committed to and it
+being settled.  In the case of a cheque, the bank knows about the cheque
+when you deposit it, but you must wait for that cheque to pass through
+the inter-bank clearing system before it registers as cleared funds in
+your account.  Cleared funds are those that you can draw on.
+
+With banks, they have no idea when you have written a cheque, nor who
+you have given it to until that person deposits it and it passes through
+clearing.  Your bank balance therefore can't show uncleared outgoing
+funds.  The concept exists in both directions though.
+
+Bitcoin would benefit from using the same ideas and nomenclature, but
+thanks to the way the technology works it _can_ supply clearing
+information for both withdrawals and deposits.
+
+    Cleared balance:           25.32
+    Uncleared deposits:       100.00
+    Uncleared withdrawals:   (  5.32)
+                                    --------
+    Uncleared balance                 120.00
+
+The uncleared balance will eventually become the cleared balance, and
+the uncleared deposits and withdrawals will eventually reach zero.
+
+In the UK banking system, the banks could originally wait as long as
+they wished before declining a cheque.  The government passed a law
+telling them that they couldn't do this any more, and that there must
+come a time when they honour a cheque even if they later find they would
+have declined it.  This so-called, "certainty of fate" is six days in UK
+banking.
+
+Bitcoin can do better than this.  No transactions are ever really
+declined; they cannot be once they are sent.  However, the receiver is
+worried primarily about successful double-spend attempts.  Received
+wisdom is that six confirmations (approximately one hour) is good enough
+to be able to rely on the block chain not experiencing a reorganisation
+(and unclearing previously accepted transactions).
+
+Transactions with less than six confirmations should therefore be
+considered "uncleared" and shown as such in the balance summary.
+
+The reason this is important, is that many new users make a payment and
+see their balance instantly drop.  Whereas they don't see it instantly
+increase when they receive a payment.  The above four figures will give
+them confidence that clearing is in progress, and it makes it obvious
+what has happened.  Many people are familiar with the idea of clearing
+already, and so it is using ideas they already understand to explain the
+operation of Bitcoin.  What's more, they'll be very pleased to compare
+the banking system's 3-6 day clearing process with Bitcoins one hour
+clearing process, and near-instant announcement of deposits.
 
 
