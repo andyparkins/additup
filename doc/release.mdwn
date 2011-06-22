@@ -63,15 +63,17 @@ regardless of how confusing it might be for new users.
 
 A wallet shouldn't be a single file, and it shouldn't be necessary to
 shut down and restart the client simply to look in a different wallet.
-Instead I'd like to see wallets as a directory (or ideally a compressed
-archive, but that's a bit tougher to do).
+Instead I'd like to see wallets as directories (or ideally a compressed
+archive, but that's a bit tougher to do, and potentially riskier).
 
 That directory will contain:
 
  - The key pairs, with the private key encrypted.  I'd like to see these
    in separate files, one per pair.  The reason for this is that it
    would make it very easy to move a key from one wallet to another; and
-   best of all: doing so wouldn't require any special software.
+   best of all: doing so wouldn't require any special software.  I'd
+   imagine that the PEM format is already set up for this sort of thing.
+ - Bookmarks (see below).
  - A key cache.  Just like the official client, it's a good idea to keep
    a list of keys that will be used in the future.  This guards against
    the restoration of an older backup being guaranteed to destroy coins.
