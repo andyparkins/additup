@@ -117,19 +117,29 @@ their leisure requesting what they need.
 
 ### Block explorer built in
 
-It's not acceptable to rely on a web site that uses a special,
-custom-build of the Bitcoin client plus a load of databases to be able
-to browse the block chain.  That site is not necessarily trustworthy,
-and is not necessarily always up.
+The block explorer website is an excellent tool.  However, it's not
+acceptable to rely on a web site that uses a special, custom-build of
+the Bitcoin client plus a load of databases to be able to browse the
+block chain.  That site is not necessarily trustworthy, and is not
+necessarily always up.  What if I want to confirm a transaction by the
+owner of the site?  How can I trust that the block explorer is showing
+me the truth?  What if someone hacks `blockexplorer.com`?
 
 Instead, the main block chain management library will behave as a local
-block explorer.  Checking the balance of any address will be a query to
-that local explorer, which will know the answer.
+block explorer for every user.  Checking the balance of any address will
+be a query to that local explorer, which will know the answer.
 
-Here's the key thing though: it should be possible to bookmark and watch
-any Bitcoin address; even if it's private key is not local.  It should
-also be possible to watch keys in a unidirectional manner. There are a
-few reasons:
+There is an advantage to the network in doing this as well: it
+encourages downloading of the entire block chain.  The more copies of
+that, the better.
+
+### Bookmarking
+
+Given that every user will have a local, high speed block explorer, we
+should give them some enhanced facilities.  It should be possible to
+bookmark and watch any Bitcoin address; even if it's private key is not
+local.  It should also be possible to watch keys in a unidirectional
+manner. There are a few reasons:
 
  - Private key is stored offline.  For a savings wallet, a user might
    remove their private key from the local hard disk, print out a copy
