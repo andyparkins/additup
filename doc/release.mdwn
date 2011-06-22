@@ -241,3 +241,27 @@ the banking system's 3-6 day clearing process with Bitcoins one hour
 clearing process, and near-instant announcement of deposits.
 
 
+### "I PAID!" Message Signing
+
+Let's say you want to prove to a third party that you paid a bill.  It's
+not easy.  The hard part is proving that the address you sent to was
+really owned by the vendor.  However, we'll assume that you've got
+signed emails showing the receive address.  Given a publicly available
+transaction, how do you prove that you were the sender in it, without
+revealing the private key for that send address?
+
+The answer is the ability to sign an arbitrary message with your private
+key for that address or group of addresses.
+
+    "Dear Third Party,
+
+    I sent 25 BTC to Mr Liar in transaction 1234567...89abcdef; my proof
+    of this is that I have signed this letter with the keys used by the
+    sending addresses in that transaction.
+
+    Yours,
+
+    Injured Party"
+
+You should be able to feed this into the Bitcoin client and have it sign
+it with the appropriate private keys.
