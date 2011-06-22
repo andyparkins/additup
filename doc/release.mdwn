@@ -33,19 +33,27 @@ safer against power failures or crashes than any database will ever be.
 
 ### The word "wallet" is wrong
 
-No coins are stored in the wallet.  The analogy is therefore flawed and
-will confuse people.  Especially when they find out that a copy of their
-wallet is just as good as their original.  Spending coins in one spends
-them in the other.  Coins are not in the wallet.  Rather,
-proof-of-ownership of particular coins in the block chain is stored in
-the wallet.
+No bitcoins are stored in the wallet.  The analogy is therefore flawed
+and will confuse people.  Especially when they find out that a copy of
+their wallet is just as good as the original.  Spending coins using one
+spends them in the other.  Coins are therefore not _in_ the wallet.
+Rather, proof-of-ownership of particular coins in the block chain is
+stored in the wallet.  The Bitcoin wallet is more like a safe containing
+deeds of ownership.
 
-This confusion was particularly clear when discussion was going on of a
-stolen wallet.  The victim kept talking about how he was in his room
+This confusion was particularly evident when discussion was going on of
+a stolen wallet.  The victim kept talking about how he was in his room
 with the door locked at the time of the theft of the coins.  Not having
-realised that once the wallet is copied the theft can take place any
+understood that once the wallet is copied the theft can take place any
 time, whenever the robber sees a large amount of coins at one of the
-stolen addresses.  Real wallets contain coins; bitcoin wallets don't.
+stolen addresses.  If I got hold of a copy of your wallet in 2010, and
+in 2015 you suddenly filled it with money -- I could spend that money.
+The theft happened five years ago, but that won't stop me.  One day,
+this is going to make an interesting case because of statutes of
+limitations.
+
+Real wallets contain money; Bitcoin wallets don't.  "Wallet" is therefore
+the wrong word.
 
 I don't think I'll get this one passed any of the existing
 users or developers though.  The nomenclature is going to be fixed now,
