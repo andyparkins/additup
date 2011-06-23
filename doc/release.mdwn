@@ -86,11 +86,22 @@ That directory will contain:
  - Address annotations.  Similarly, the user should be able to label
    any address.
 
-### USB Key
+### Two Factor Authentication
 
 Detection of the presence of a USB key and use of it (or more likely a
 file on it) as one factor in the encryption needed to get at the private
 keys in the wallet(s).
+
+It would also be nice to use Google's Authenticator application for two
+factor authentication, since the app already exists for Android, iPhone
+and Blackberry.
+
+Google's authenticator is a time based one time password.  The
+application issues a code that changes every 30 seconds.  That code is
+dependent not just on the time, but on a secret that is entered into the
+phone during two-factor configuration (on Android this can be done with
+a QR code).  A wallet secured in this way would be encrypted using this
+code and a password.
 
 ### "Light" modes
 
