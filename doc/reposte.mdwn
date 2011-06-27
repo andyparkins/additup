@@ -528,3 +528,46 @@ The Bitcoin genie is out of the bottle; just as the knowledge needed to
 make nuclear weapons couldn't be un-discovered, Bitcoin cannot be
 uninvented.
 
+
+### Fractional reserve banking is impossible with bitcoins
+
+Fractional reserve banking is the primary means of money creation (or
+rather credit creation) in financially developed countries.  Imagine
+that there is only one bank in the world.  Alice deposits $100 in the
+bank.  The bank lends that $100 to Bob, who uses it to buy a painting
+from Charlie.  Charlie deposits that $100 in the bank.  The bank lends
+that $100 to Dave... and so on.  The same $100 is owned by both Alice
+and Charlie, and loaned to Bob and Dave.  When there are
+multiple banks, the principle still holds in aggregate: the money ends
+up in one of them eventually, and can then be lent out again.
+
+This is a 0% fractional reserve banking system.  In reality, national
+laws prevent banks from doing this, and set the FRB ratio at between 3%
+and 5%.  In other words, the bank lends out 95% of what it has on
+deposit.
+
+You might have heard of "bank runs".  This is when too many depositors
+turn up at the bank to withdraw their money.  The bank has lent out 95%
+of what they had on deposit.  This would be a disaster for them except
+for one thing: central banks.  The central bank of a country is referred
+to as the "lender of last resort"; and being a central bank, they have
+access to the printing presses.  Should a bank run ever occur, the idea
+is that the central bank can simply print (and lend) as much money as is
+necessary to the bank.  This is meant to make bank runs unlikely,
+because depositors know that their money will always be available.
+
+Fractional reserve banking with bitcoins is therefore perfectly
+possible.  Nothing prevents a bank from lending out 95% of all deposits.
+The assumption is that whomever ends up with the money that was lent
+eventually deposits it back in the bank.
+
+The difference is that there is no central bank of bitcoins.  There is
+no printing press, and therefore no "lender of last resort".  In the
+event of a bank run on a bitcoin bank, the bank would go bust, and
+people would loose money.
+
+There are arguments either way for this being a good or bad thing; but
+they are irrelevant with respect to this section.  Fractional reserve
+banking is possible with bitcoins; but it is a lot more dangerous.
+
+
