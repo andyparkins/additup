@@ -87,6 +87,7 @@ class TNodeInfo
 //
 // Class:	TBitcoinPeer
 // Description:
+// A peer is a connection to another node in the network.
 //
 class TBitcoinPeer
 {
