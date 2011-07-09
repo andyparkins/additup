@@ -83,6 +83,9 @@ class TBlock
 
 	void fit();
 
+	bool hasChildren() const { return !ChildHashes.empty(); }
+	unsigned int childCount() const { return ChildHashes.size(); }
+
   protected:
 	TBlockPool *Pool;
 
