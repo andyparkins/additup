@@ -436,6 +436,8 @@ class TStackOperatorFromStream : public TStackOperator
 	virtual istream &read( istream & ) = 0;
 
 	virtual bool acceptOpcode( eScriptOp ) const = 0;
+
+	virtual ostream &write( ostream & ) = 0;
 };
 
 //
@@ -454,6 +456,11 @@ class TStackOperatorFromOpcode : public TStackOperatorFromStream
 		// Discard the Opcode, we already know it's getOpcode()
 		is.get();
 		return is;
+	}
+
+	ostream &write( ostream &os ) {
+		os.put( getOpcode() );
+		return os;
 	}
 
 };
@@ -1797,6 +1804,11 @@ class TStackOperatorFromOpcodes : public TStackOperatorFromStream
 	istream &read( istream &is ) {
 		OP = static_cast<eScriptOp>( is.get() );
 		return is;
+	}
+
+	ostream &write( ostream &os ) {
+		os.put(OP);
+		return os;
 	}
 
   protected:

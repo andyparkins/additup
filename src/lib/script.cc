@@ -22,6 +22,7 @@
 #include <iostream>
 #include <memory>
 #include <iterator>
+#include <sstream>
 // --- Qt
 // --- OS
 // --- Project libs
