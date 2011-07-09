@@ -416,6 +416,8 @@ class TStackOperator
 
 	virtual TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer & ) const = 0;
 
+	virtual ostream &printOn( ostream & ) const;
+
 	static TStackOperator *createPUSH( const string & );
 };
 
@@ -1922,6 +1924,8 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 	}
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
+
+	ostream &printOn( ostream &os ) const;
 
   protected:
 	string Raw;

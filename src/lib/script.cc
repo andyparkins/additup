@@ -459,6 +459,16 @@ void TBitcoinScript_0::init()
 // -----------
 
 //
+// Function:	TStackOperator :: printOn
+// Description:
+//
+ostream &TStackOperator::printOn( ostream &os ) const
+{
+	os << className();
+	return os;
+}
+
+//
 // Function:	TStackOperator :: createPUSH
 // Description:
 //
@@ -2059,6 +2069,18 @@ TStackOperator_OP_N::execute( TExecutionContext &Stack, const TBitcoinScript::tI
 	Stack.give( new TStackElementBigInteger( OP-OP_2 ) );
 
 	return ip;
+}
+
+//
+// Function:	TStackOperator_PUSH_N :: printOn
+// Description:
+//
+ostream &TStackOperator_PUSH_N::printOn( ostream &os ) const
+{
+	os << "TStackOperator_PUSH_" << Raw.size() << "(";
+	TLog::hexify(os, Raw);
+	os << ")";
+	return os;
 }
 
 //
