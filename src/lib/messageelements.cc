@@ -27,6 +27,7 @@
 // --- OS
 // --- Project libs
 // --- Project
+#include "script.h"
 #include "crypto.h"
 
 
@@ -181,6 +182,28 @@ ostream &TAutoSizeIntegerElement::write( ostream &os ) const
 	os.write( buffer, n );
 
 	return os;
+}
+
+//
+// Function:	TInputSplitElement :: encodeSignatureScript
+// Description:
+//
+void TInputSplitElement::encodeSignatureScript( const TBitcoinScript &Script )
+{
+	ostringstream oss;
+	Script.write(oss);
+	SignatureScript = oss.str();
+}
+
+//
+// Function:	TOutputSplitElement :: encodePubKeyScript
+// Description:
+//
+void TOutputSplitElement::encodePubKeyScript( const TBitcoinScript &lScript )
+{
+	ostringstream oss;
+	lScript.write(oss);
+	Script = oss.str();
 }
 
 // --------

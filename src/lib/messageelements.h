@@ -59,6 +59,7 @@
 // -------------- Class pre-declarations
 class TMessageElement;
 class TMessageDigest;
+class TBitcoinScript;
 
 
 // -------------- Function pre-class prototypes
@@ -721,6 +722,8 @@ class TInputSplitElement : public TMessageElement
 		return os;
 	}
 
+	void encodeSignatureScript( const TBitcoinScript & );
+
   public:
 	TOutputTransactionReferenceElement OutPoint;
 	TVariableSizedStringElement SignatureScript;
@@ -745,6 +748,8 @@ class TOutputSplitElement : public TMessageElement
 
 	void setValue( uint64_t a, unsigned int b = 0 ) { Coins.setValue(a,b); }
 	double getValue() const { return Coins.getValue(); }
+
+	void encodePubKeyScript( const TBitcoinScript & );
 
   protected:
 	TCoinsElement Coins;
