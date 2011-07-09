@@ -180,6 +180,7 @@ class TStackElement;
 class TStackOperator;
 class TStackOperatorFromStream;
 class TMessageDigest;
+class TTransaction;
 
 
 // -------------- Function pre-class prototypes
@@ -278,7 +279,8 @@ class TStackOperator
 	TStackOperator() {}
 	virtual const char *className() const { return "TStackOperator"; }
 
-	virtual TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer & ) const = 0;
+	virtual TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer & ) const = 0;
+
 };
 
 //
@@ -341,7 +343,7 @@ class TStackOperatorFromCompoundOpcode : public TStackOperatorFromOpcode
 	istream &read( istream & ) {
 		throw logic_error("TStackOperatorFromCompoundOpcode should never be read()");
 	}
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer & ) const {
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer & ) const {
 		throw logic_error("TStackOperatorFromCompoundOpcode should never be execute()d");
 	}
 
@@ -359,7 +361,7 @@ class TStackOperator_OP_FALSE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_FALSE(*this); }
 	eScriptOp getOpcode() const { return OP_FALSE; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -382,7 +384,7 @@ class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 		return is;
 	}
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 
   protected:
 	virtual streamsize getRawReadCount( istream & ) const = 0;
@@ -463,7 +465,7 @@ class TStackOperator_OP_1NEGATE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_1NEGATE(*this); }
 	eScriptOp getOpcode() const { return OP_1NEGATE; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -477,7 +479,7 @@ class TStackOperator_OP_TRUE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_TRUE(*this); }
 	eScriptOp getOpcode() const { return OP_TRUE; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -491,7 +493,7 @@ class TStackOperator_OP_NOP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NOP(*this); }
 	eScriptOp getOpcode() const { return OP_NOP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const { return ip; }
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const { return ip; }
 };
 
 //
@@ -505,7 +507,7 @@ class TStackOperator_OP_IF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_IF(*this); }
 	eScriptOp getOpcode() const { return OP_IF; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -519,7 +521,7 @@ class TStackOperator_OP_NOTIF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NOTIF(*this); }
 	eScriptOp getOpcode() const { return OP_NOTIF; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -533,7 +535,7 @@ class TStackOperator_OP_ELSE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ELSE(*this); }
 	eScriptOp getOpcode() const { return OP_ELSE; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -547,7 +549,7 @@ class TStackOperator_OP_ENDIF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ENDIF(*this); }
 	eScriptOp getOpcode() const { return OP_ENDIF; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -561,7 +563,7 @@ class TStackOperator_OP_VERIFY : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_VERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_VERIFY; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -575,7 +577,7 @@ class TStackOperator_OP_RETURN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RETURN(*this); }
 	eScriptOp getOpcode() const { return OP_RETURN; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -589,7 +591,7 @@ class TStackOperator_OP_TOALTSTACK : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_TOALTSTACK(*this); }
 	eScriptOp getOpcode() const { return OP_TOALTSTACK; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -603,7 +605,7 @@ class TStackOperator_OP_FROMALTSTACK : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_FROMALTSTACK(*this); }
 	eScriptOp getOpcode() const { return OP_FROMALTSTACK; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -617,7 +619,7 @@ class TStackOperator_OP_IFDUP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_IFDUP(*this); }
 	eScriptOp getOpcode() const { return OP_IFDUP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -631,7 +633,7 @@ class TStackOperator_OP_DEPTH : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_DEPTH(*this); }
 	eScriptOp getOpcode() const { return OP_DEPTH; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -645,7 +647,7 @@ class TStackOperator_OP_DROP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_DROP(*this); }
 	eScriptOp getOpcode() const { return OP_DROP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -659,7 +661,7 @@ class TStackOperator_OP_DUP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_DUP(*this); }
 	eScriptOp getOpcode() const { return OP_DUP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -673,7 +675,7 @@ class TStackOperator_OP_NIP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NIP(*this); }
 	eScriptOp getOpcode() const { return OP_NIP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -687,7 +689,7 @@ class TStackOperator_OP_OVER : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_OVER(*this); }
 	eScriptOp getOpcode() const { return OP_OVER; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -701,7 +703,7 @@ class TStackOperator_OP_PICK : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PICK(*this); }
 	eScriptOp getOpcode() const { return OP_PICK; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -715,7 +717,7 @@ class TStackOperator_OP_ROLL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ROLL(*this); }
 	eScriptOp getOpcode() const { return OP_ROLL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -729,7 +731,7 @@ class TStackOperator_OP_ROT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ROT(*this); }
 	eScriptOp getOpcode() const { return OP_ROT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -743,7 +745,7 @@ class TStackOperator_OP_SWAP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SWAP(*this); }
 	eScriptOp getOpcode() const { return OP_SWAP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -757,7 +759,7 @@ class TStackOperator_OP_TUCK : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_TUCK(*this); }
 	eScriptOp getOpcode() const { return OP_TUCK; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -771,7 +773,7 @@ class TStackOperator_OP_2DROP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2DROP(*this); }
 	eScriptOp getOpcode() const { return OP_2DROP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -785,7 +787,7 @@ class TStackOperator_OP_2DUP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2DUP(*this); }
 	eScriptOp getOpcode() const { return OP_2DUP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -799,7 +801,7 @@ class TStackOperator_OP_3DUP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_3DUP(*this); }
 	eScriptOp getOpcode() const { return OP_3DUP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -813,7 +815,7 @@ class TStackOperator_OP_2OVER : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2OVER(*this); }
 	eScriptOp getOpcode() const { return OP_2OVER; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -827,7 +829,7 @@ class TStackOperator_OP_2ROT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2ROT(*this); }
 	eScriptOp getOpcode() const { return OP_2ROT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -841,7 +843,7 @@ class TStackOperator_OP_2SWAP : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2SWAP(*this); }
 	eScriptOp getOpcode() const { return OP_2SWAP; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -855,7 +857,7 @@ class TStackOperator_OP_CAT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CAT(*this); }
 	eScriptOp getOpcode() const { return OP_CAT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -869,7 +871,7 @@ class TStackOperator_OP_SUBSTR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SUBSTR(*this); }
 	eScriptOp getOpcode() const { return OP_SUBSTR; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -883,7 +885,7 @@ class TStackOperator_OP_LEFT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_LEFT(*this); }
 	eScriptOp getOpcode() const { return OP_LEFT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -897,7 +899,7 @@ class TStackOperator_OP_RIGHT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RIGHT(*this); }
 	eScriptOp getOpcode() const { return OP_RIGHT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -911,7 +913,7 @@ class TStackOperator_OP_SIZE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SIZE(*this); }
 	eScriptOp getOpcode() const { return OP_SIZE; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -925,7 +927,7 @@ class TStackOperator_OP_INVERT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_INVERT(*this); }
 	eScriptOp getOpcode() const { return OP_INVERT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -939,7 +941,7 @@ class TStackOperator_OP_AND : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_AND(*this); }
 	eScriptOp getOpcode() const { return OP_AND; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -953,7 +955,7 @@ class TStackOperator_OP_OR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_OR(*this); }
 	eScriptOp getOpcode() const { return OP_OR; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -967,7 +969,7 @@ class TStackOperator_OP_XOR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_XOR(*this); }
 	eScriptOp getOpcode() const { return OP_XOR; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -981,7 +983,7 @@ class TStackOperator_OP_EQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_EQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_EQUAL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1009,7 +1011,7 @@ class TStackOperator_OP_1ADD : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_1ADD(*this); }
 	eScriptOp getOpcode() const { return OP_1ADD; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1023,7 +1025,7 @@ class TStackOperator_OP_1SUB : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_1SUB(*this); }
 	eScriptOp getOpcode() const { return OP_1SUB; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1037,7 +1039,7 @@ class TStackOperator_OP_2MUL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2MUL(*this); }
 	eScriptOp getOpcode() const { return OP_2MUL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1051,7 +1053,7 @@ class TStackOperator_OP_2DIV : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_2DIV(*this); }
 	eScriptOp getOpcode() const { return OP_2DIV; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1065,7 +1067,7 @@ class TStackOperator_OP_NEGATE : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NEGATE(*this); }
 	eScriptOp getOpcode() const { return OP_NEGATE; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1079,7 +1081,7 @@ class TStackOperator_OP_ABS : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ABS(*this); }
 	eScriptOp getOpcode() const { return OP_ABS; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1093,7 +1095,7 @@ class TStackOperator_OP_NOT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NOT(*this); }
 	eScriptOp getOpcode() const { return OP_NOT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1107,7 +1109,7 @@ class TStackOperator_OP_0NOTEQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_0NOTEQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_0NOTEQUAL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1121,7 +1123,7 @@ class TStackOperator_OP_ADD : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_ADD(*this); }
 	eScriptOp getOpcode() const { return OP_ADD; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1135,7 +1137,7 @@ class TStackOperator_OP_SUB : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_SUB(*this); }
 	eScriptOp getOpcode() const { return OP_SUB; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1149,7 +1151,7 @@ class TStackOperator_OP_MUL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_MUL(*this); }
 	eScriptOp getOpcode() const { return OP_MUL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1163,7 +1165,7 @@ class TStackOperator_OP_DIV : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_DIV(*this); }
 	eScriptOp getOpcode() const { return OP_DIV; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1177,7 +1179,7 @@ class TStackOperator_OP_MOD : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_MOD(*this); }
 	eScriptOp getOpcode() const { return OP_MOD; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1191,7 +1193,7 @@ class TStackOperator_OP_LSHIFT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_LSHIFT(*this); }
 	eScriptOp getOpcode() const { return OP_LSHIFT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1205,7 +1207,7 @@ class TStackOperator_OP_RSHIFT : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RSHIFT(*this); }
 	eScriptOp getOpcode() const { return OP_RSHIFT; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1219,7 +1221,7 @@ class TStackOperator_OP_BOOLAND : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_BOOLAND(*this); }
 	eScriptOp getOpcode() const { return OP_BOOLAND; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1233,7 +1235,7 @@ class TStackOperator_OP_BOOLOR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_BOOLOR(*this); }
 	eScriptOp getOpcode() const { return OP_BOOLOR; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1247,7 +1249,7 @@ class TStackOperator_OP_NUMEQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NUMEQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_NUMEQUAL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1275,7 +1277,7 @@ class TStackOperator_OP_NUMNOTEQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NUMNOTEQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_NUMNOTEQUAL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1289,7 +1291,7 @@ class TStackOperator_OP_LESSTHAN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_LESSTHAN(*this); }
 	eScriptOp getOpcode() const { return OP_LESSTHAN; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1303,7 +1305,7 @@ class TStackOperator_OP_GREATERTHAN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_GREATERTHAN(*this); }
 	eScriptOp getOpcode() const { return OP_GREATERTHAN; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1317,7 +1319,7 @@ class TStackOperator_OP_LESSTHANOREQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_LESSTHANOREQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_LESSTHANOREQUAL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1331,7 +1333,7 @@ class TStackOperator_OP_GREATERTHANOREQUAL : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_GREATERTHANOREQUAL(*this); }
 	eScriptOp getOpcode() const { return OP_GREATERTHANOREQUAL; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1345,7 +1347,7 @@ class TStackOperator_OP_MIN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_MIN(*this); }
 	eScriptOp getOpcode() const { return OP_MIN; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1359,7 +1361,7 @@ class TStackOperator_OP_MAX : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_MAX(*this); }
 	eScriptOp getOpcode() const { return OP_MAX; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1373,7 +1375,7 @@ class TStackOperator_OP_WITHIN : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_WITHIN(*this); }
 	eScriptOp getOpcode() const { return OP_WITHIN; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1385,7 +1387,7 @@ class TStackOperator_CryptographicDigest : public TStackOperatorFromOpcode
   public:
 	const char *className() const { return "TStackOperator_CryptographicDigest"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 
   protected:
 	virtual TMessageDigest *createHasher() const = 0;
@@ -1477,7 +1479,7 @@ class TStackOperator_OP_CODESEPARATOR : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CODESEPARATOR(*this); }
 	eScriptOp getOpcode() const { return OP_CODESEPARATOR; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1519,7 +1521,7 @@ class TStackOperator_OP_CHECKMULTISIG : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKMULTISIG(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKMULTISIG; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1547,7 +1549,7 @@ class TStackOperator_OP_PUBKEYHASH : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUBKEYHASH(*this); }
 	eScriptOp getOpcode() const { return OP_PUBKEYHASH; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1561,7 +1563,7 @@ class TStackOperator_OP_PUBKEY : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUBKEY(*this); }
 	eScriptOp getOpcode() const { return OP_PUBKEY; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1575,7 +1577,7 @@ class TStackOperator_OP_RESERVED : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RESERVED(*this); }
 	eScriptOp getOpcode() const { return OP_RESERVED; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1589,7 +1591,7 @@ class TStackOperator_OP_VER : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_VER(*this); }
 	eScriptOp getOpcode() const { return OP_VER; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1603,7 +1605,7 @@ class TStackOperator_OP_VERIF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_VERIF(*this); }
 	eScriptOp getOpcode() const { return OP_VERIF; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1617,7 +1619,7 @@ class TStackOperator_OP_VERNOTIF : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_VERNOTIF(*this); }
 	eScriptOp getOpcode() const { return OP_VERNOTIF; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1631,7 +1633,7 @@ class TStackOperator_OP_RESERVED1 : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RESERVED1(*this); }
 	eScriptOp getOpcode() const { return OP_RESERVED1; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1645,7 +1647,7 @@ class TStackOperator_OP_RESERVED2 : public TStackOperatorFromOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_RESERVED2(*this); }
 	eScriptOp getOpcode() const { return OP_RESERVED2; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1683,7 +1685,7 @@ class TStackOperator_OP_INVALIDOPCODE : public TStackOperatorFromOpcodes
 	eScriptOp getOpcode() const { return OP_INVALIDOPCODE; }
 	bool acceptOpcode( eScriptOp op ) const { return true; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1698,7 +1700,7 @@ class TStackOperator_OP_N : public TStackOperatorFromOpcodes
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_N(*this); }
 	bool acceptOpcode( eScriptOp op ) const { return op >= OP_2 && op <= OP_16; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1728,7 +1730,7 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 		return is;
 	}
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 
   protected:
 	string Raw;
@@ -1746,7 +1748,7 @@ class TStackOperator_OP_NOP_N : public TStackOperatorFromOpcodes
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NOP_N(*this); }
 	bool acceptOpcode( eScriptOp op ) const { return op >= OP_NOP1 && op <= OP_NOP10; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const { return ip; }
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const { return ip; }
 };
 
 //
@@ -1768,7 +1770,7 @@ class TStackOperator_INTOP_PUSHSUBSCRIPT : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_PUSHSUBSCRIPT"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1780,7 +1782,7 @@ class TStackOperator_INTOP_DELETESIG : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_DELETESIG"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1792,7 +1794,7 @@ class TStackOperator_INTOP_REMOVEHASHTYPE : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_REMOVEHASHTYPE"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1804,7 +1806,7 @@ class TStackOperator_INTOP_PUSHCOPYTRANSACTION : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_PUSHCOPYTRANSACTION"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1816,7 +1818,7 @@ class TStackOperator_INTOP_REMOVECODESEPARATORS : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_REMOVECODESEPARATORS"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1828,7 +1830,7 @@ class TStackOperator_INTOP_REMOVETXSCRIPTS : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_REMOVETXSCRIPTS"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1840,7 +1842,7 @@ class TStackOperator_INTOP_REPLACETXSCRIPT : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_REPLACETXSCRIPT"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1852,7 +1854,7 @@ class TStackOperator_INTOP_SIGHASH : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_SIGHASH"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 //
@@ -1864,7 +1866,7 @@ class TStackOperator_INTOP_FINALSIGNATURE : public TStackOperatorInternal
   public:
 	const char *className() const { return "TStackOperator_INTOP_FINALSIGNATURE"; }
 
-	TBitcoinScript::tInstructionPointer execute( TExecutionStack &, const TBitcoinScript::tInstructionPointer &ip ) const;
+	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
 // -------------
@@ -1906,13 +1908,13 @@ typedef TStackElement_t<string> TStackElementString;
 // -------------
 
 //
-// Class: TExecutionStack
+// Class: TExecutionContext
 // Description:
 //
-class TExecutionStack
+class TExecutionContext
 {
   public:
-	TExecutionStack();
+	TExecutionContext();
 
 	ostream &printOn( ostream &s ) const;
 
@@ -1921,12 +1923,15 @@ class TExecutionStack
 	TStackElement *take() { TStackElement *x = Stack.back(); Stack.pop_back(); return x; }
 	void give( TStackElement *s ) { Stack.push_back(s); }
 
+	void setTransaction( TTransaction * );
+
   public:
 	list<TStackElement*> Stack;
 	list<TStackElement*> AltStack;
 	typedef list<TStackElement*>::iterator iterator;
 	typedef list<TStackElement*>::const_iterator const_iterator;
 
+	TTransaction *Transaction;
 	bool Invalid;
 };
 
@@ -1942,7 +1947,7 @@ class TBitcoinScript
 
 	istream &read( istream & );
 
-	void execute( TExecutionStack & ) const;
+	void execute( TExecutionContext & ) const;
 
 	virtual uint32_t getMinimumAcceptedVersion() const = 0;
 
