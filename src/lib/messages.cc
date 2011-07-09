@@ -30,6 +30,7 @@
 #include "peer.h"
 #include "bitcoinnetwork.h"
 // --- Project
+#include "logstream.h"
 
 
 // -------------- Namespace
@@ -638,7 +639,13 @@ string TMessage_block::calculateHash() const
 	// OpenSSL should pad on its own...
 
 	// Conveniently, PayloadHasher is already double SHA256
+//	log() << "TMessage_block = ";
+//	TLog::hexify( log(), oss.str() );
+//	log() << endl;
 	hash = PayloadHasher->transform( oss.str() );
+//	log() << "TMessage_block.hash = ";
+//	TLog::hexify( log(), hash );
+//	log() << endl;
 
 	return hash;
 }
