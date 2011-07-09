@@ -187,6 +187,8 @@ class TMessageWithChecksum : public TMessage
 
 	unsigned int getMessageSize() { return TMessage::getMessageSize() + 4; }
 
+	void setHeader();
+
   protected:
 	void verifyPayloadChecksum() const;
 	void generatePayloadChecksum();

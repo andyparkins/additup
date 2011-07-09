@@ -271,6 +271,30 @@ void TMessageWithChecksum::verifyPayloadChecksum() const
 }
 
 //
+// Function:	TMessageWithChecksum :: setHeader
+// Description:
+//
+void TMessageWithChecksum::setHeader()
+{
+	// Write the message to a buffer
+	ostringstream oss;
+	write( oss );
+
+	// We find the size of the header by asking getMessageSize(), but we
+	// need to zero the payload length first
+	MessageHeader.PayloadLength = 0;
+
+	// Copy the payload part to RawPayload
+	RawPayload = oss.str().substr( getMessageSize(), oss.str().size() - getMessageSize() );
+
+	// Update PayloadLength, now that we know it
+	MessageHeader.PayloadLength = RawPayload.size();
+
+	// Update checksum
+	generatePayloadChecksum();
+}
+
+//
 // Function:	TMessageWithChecksum :: generatePayloadChecksum
 // Description:
 // First 4 bytes of sha256(sha256(payload))
