@@ -143,6 +143,9 @@ void TMessageBasedBlock::updateFromMessage( const string &hash, const TMessage_b
 	// The above copy is our quickest way of getting the individual
 	// fields out of the message; but we could just as easily have
 	// copied every field out of the message into our own structure.
+
+	// Invalidate any cached hash
+	flush();
 }
 
 //
