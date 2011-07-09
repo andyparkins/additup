@@ -58,6 +58,8 @@
 class TBlockPool;
 class TDatabaseBlockPool;
 class TMessage_block;
+class TMessage_inv;
+class TMessage_headers;
 
 
 // -------------- Function pre-class prototypes
@@ -148,7 +150,9 @@ class TBlockPool
 	TBlockPool();
 	virtual ~TBlockPool();
 
+	void receiveBlock( const string &, const TMessage_inv * );
 	void receiveBlock( const string &, const TMessage_block * );
+	void receiveBlock( const string &, const TMessage_headers * );
 
 	virtual void putBlock( const string &, TBlock * ) = 0;
 	virtual TBlock *getBlock( const string & ) const = 0;
