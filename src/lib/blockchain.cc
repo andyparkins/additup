@@ -132,10 +132,16 @@ void TMessageBasedBlock::updateFromMessage( const string &hash, const TMessage_b
 
 	// Copy the block message.  It's important that we use clone() in
 	// case there are multiple versions of TMessage_block in the future.
-	// The type-abusing reinterpret_cast<> is justified because we were
-	// given a TMessage_block as a parameter; it's just that clone()
-	// returns a TMessage, so must be coerced back to TMessage_block.
+	// We will be given a TMessage_block_XXX but will only see it as a
+	// TMessage_block; therefore we must use clone().  The type-abusing
+	// reinterpret_cast<> is justified because we are cloning a
+	// TMessage_block; it's just that clone() returns a TMessage, so
+	// must be coerced back to TMessage_block.
 	Message = reinterpret_cast<TMessage_block*>( m->clone() );
+
+	// The above copy is our quickest way of getting the individual
+	// fields out of the message; but we could just as easily have
+	// copied every field out of the message into our own structure.
 }
 
 //
@@ -229,7 +235,9 @@ void TBlockPool::receiveBlock( const string &NetworkHash, TMessage_block *messag
 	// Create a new block
 	TBlock *thisBlock = createBlock();
 
-	// Show it the message (this allows it to calculate its hash)
+	// Show it the message (this allows it to calculate its hash), and
+	// throw an exception if the network hash doesn't equal the
+	// calculated hash
 	thisBlock->updateFromMessage( NetworkHash, message );
 
 	// See if we already have this block
@@ -252,6 +260,20 @@ void TBlockPool::receiveBlock( const string &NetworkHash, TMessage_block *messag
 	// Now try and fit this block into the chain, given the new
 	// information supplied in the message
 	thisBlock->fit();
+
+	// Once the block has fitted into the chain, it's parents and
+	// children can also have changed.  In particular:
+	//
+	// (1) This block's parent can definitely not be a chain tip
+	Tips.erase( thisBlock->getParentHash() );
+	// (2) If this block has no children, then it can be a chain tip (at
+	// least until we find otherwise)
+	if( !thisBlock->hasChildren() )
+		Tips.insert( thisBlock->getHash() );
+
+	// With these rules in place, the Tips array represents all blocks
+	// in the pool that have no children.  Once the full block chain has
+	// been downloaded this should be a very limited set.
 }
 
 // ---------
