@@ -416,6 +416,7 @@ class TStackOperator
 
 	virtual TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer & ) const = 0;
 
+	static TStackOperator *createPUSH( const string & );
 };
 
 //

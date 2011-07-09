@@ -459,6 +459,28 @@ void TBitcoinScript_0::init()
 // -----------
 
 //
+// Function:	TStackOperator :: createPUSH
+// Description:
+//
+TStackOperator *TStackOperator::createPUSH( const string &Raw )
+{
+	if( Raw.size() < PUSH_1 ) {
+		throw runtime_error( "Can't create a script PUSH for an empty string" );
+	} else if( Raw.size() <= PUSH_75 ) {
+		return new TStackOperator_PUSH_N( Raw );
+	} else if( Raw.size() < (1 << 8) ) {
+		return new TStackOperator_OP_PUSHDATA1( Raw );
+	} else if( Raw.size() < (1 << 16) ) {
+		return new TStackOperator_OP_PUSHDATA2( Raw );
+	} else {
+		return new TStackOperator_OP_PUSHDATA4( Raw );
+	}
+	return NULL;
+}
+
+// -----------
+
+//
 // Function:	TStackOperatorFromStream :: readAndAppend
 // Description:
 //
