@@ -388,12 +388,12 @@ int main( int argc, char *argv[] )
 	}
 
 	try {
-		const TOfficialSeedNode *pSeed = SEED_NODES;
+		const TNetworkParameters **pNetwork = KNOWN_NETWORKS;
 
-		while( *pSeed ) {
-			 pSeed->write(log());
-			 log() << endl;
-			 pSeed++;
+		log() << "--- Known networks" << endl;
+		while( *pNetwork ) {
+			 log() << (*pNetwork)->className() << endl;
+			 pNetwork++;
 		}
 	} catch( std::exception &e ) {
 		log() << e.what() << endl;
