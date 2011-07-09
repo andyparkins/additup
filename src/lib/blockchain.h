@@ -116,6 +116,7 @@ class TMessageBasedBlock : public TBlock
 	mutable string cachedHash;
 };
 
+#if 0
 //
 // Class:	TDatabaseBlock
 // Description:
@@ -134,6 +135,7 @@ class TDatabaseBlock : public TBlock
   protected:
 	TDatabaseBlockPool *Pool;
 };
+#endif
 
 // ---------
 
@@ -178,6 +180,7 @@ class TBlockMemoryPool : public TBlockPool
 	map<string, TBlock*> Pool;
 };
 
+#if 0
 //
 // Class:	TDatabaseBlockPool
 // Description:
@@ -197,6 +200,7 @@ class TDatabaseBlockPool : public TBlockPool
 
   protected:
 };
+#endif
 
 
 // -------------- Constants

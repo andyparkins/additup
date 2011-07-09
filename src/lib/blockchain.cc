@@ -177,6 +177,7 @@ const string &TMessageBasedBlock::getParentHash() const
 
 // ---------
 
+#if 0
 //
 // Function:	TDatabaseBlock :: TDatabaseBlock
 // Description:
@@ -207,6 +208,7 @@ void TDatabaseBlock::updateFromMessage( const string &hash, const TMessage_block
 
 	// XXX: Copy message to database
 }
+#endif
 
 // ---------
 
@@ -358,6 +360,7 @@ bool TBlockMemoryPool::blockExists( const string &hash ) const
 
 // ---------
 
+#if 0
 //
 // Function:	TDatabaseBlockPool :: TDatabaseBlockPool
 // Description:
@@ -382,6 +385,7 @@ TBlock *TDatabaseBlockPool::createBlock()
 {
 	return new TDatabaseBlock( this );
 }
+#endif
 
 
 // -------------- Class member definitions
