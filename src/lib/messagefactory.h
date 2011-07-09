@@ -97,6 +97,13 @@ class TMessageFactory
 			return NULL;
 		return IncomingQueue.back();
 	}
+	TMessage *nextIncoming() {
+		if( IncomingQueue.size() == 0 )
+			return NULL;
+		TMessage *x = IncomingQueue.front();
+		IncomingQueue.pop_front();
+		return x;
+	}
 
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
