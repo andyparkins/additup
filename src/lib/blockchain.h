@@ -158,14 +158,14 @@ class TBlockPool
 };
 
 //
-// Class:	TMemoryBlockPool
+// Class:	TBlockMemoryPool
 // Description:
 //
-class TMemoryBlockPool : public TBlockPool
+class TBlockMemoryPool : public TBlockPool
 {
   public:
-	TMemoryBlockPool();
-	~TMemoryBlockPool();
+	TBlockMemoryPool();
+	~TBlockMemoryPool();
 
 	void putBlock( TBlock * );
 	TBlock *getBlock( const string & ) const;

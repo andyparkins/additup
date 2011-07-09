@@ -279,18 +279,18 @@ void TBlockPool::receiveBlock( const string &NetworkHash, TMessage_block *messag
 // ---------
 
 //
-// Function:	TMemoryBlockPool :: TMemoryBlockPool
+// Function:	TBlockMemoryPool :: TBlockMemoryPool
 // Description:
 //
-TMemoryBlockPool::TMemoryBlockPool()
+TBlockMemoryPool::TBlockMemoryPool()
 {
 }
 
 //
-// Function:	TMemoryBlockPool :: ~TMemoryBlockPool
+// Function:	TBlockMemoryPool :: ~TBlockMemoryPool
 // Description:
 //
-TMemoryBlockPool::~TMemoryBlockPool()
+TBlockMemoryPool::~TBlockMemoryPool()
 {
 	// delete the pool
 	while( !Pool.empty() ) {
@@ -300,19 +300,19 @@ TMemoryBlockPool::~TMemoryBlockPool()
 }
 
 //
-// Function:	TMemoryBlockPool :: createBlock
+// Function:	TBlockMemoryPool :: createBlock
 // Description:
 //
-TBlock *TMemoryBlockPool::createBlock()
+TBlock *TBlockMemoryPool::createBlock()
 {
 	return new TMessageBasedBlock( this );
 }
 
 //
-// Function:	TMemoryBlockPool :: putBlock
+// Function:	TBlockMemoryPool :: putBlock
 // Description:
 //
-void TMemoryBlockPool::putBlock( TBlock *Block )
+void TBlockMemoryPool::putBlock( TBlock *Block )
 {
 	map<string, TBlock*>::iterator it;
 
@@ -329,10 +329,10 @@ void TMemoryBlockPool::putBlock( TBlock *Block )
 }
 
 //
-// Function:	TMemoryBlockPool :: getBlock
+// Function:	TBlockMemoryPool :: getBlock
 // Description:
 //
-TBlock *TMemoryBlockPool::getBlock( const string &hash ) const
+TBlock *TBlockMemoryPool::getBlock( const string &hash ) const
 {
 	map<string, TBlock*>::const_iterator it;
 
@@ -345,10 +345,10 @@ TBlock *TMemoryBlockPool::getBlock( const string &hash ) const
 }
 
 //
-// Function:	TMemoryBlockPool :: blockExists
+// Function:	TBlockMemoryPool :: blockExists
 // Description:
 //
-bool TMemoryBlockPool::blockExists( const string &hash ) const
+bool TBlockMemoryPool::blockExists( const string &hash ) const
 {
 	map<string, TBlock*>::const_iterator it;
 
