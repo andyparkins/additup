@@ -59,6 +59,7 @@
 // -------------- Class pre-declarations
 class TTransactionPool;
 class TBlockPool;
+class TBlock;
 
 
 // -------------- Function pre-class prototypes
@@ -77,7 +78,7 @@ class TNetworkParameters
 	virtual const char *className() const { return "TNetworkParameters"; }
 
 	uint32_t ProtocolVersion;
-	// Block GenesisBlock;
+	TBlock *GenesisBlock;
 	TBigInteger ProofOfWorkLimit;
 	uint16_t DefaultTCPPort;
 	uint32_t Magic;

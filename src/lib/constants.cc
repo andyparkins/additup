@@ -26,9 +26,17 @@
 // --- Project libs
 // --- Project
 #include "extraint.h"
+#include "blockchain.h"
+#include "messages.h"
+#include "script.h"
+#include "logstream.h"
 
 
 // -------------- Namespace
+
+
+// -------------- Macros
+#define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 
 
 // -------------- Module Globals
@@ -63,8 +71,83 @@ class TPredefinedNetworkParameters : public TNetworkParameters
 		// And we note the DIFFICULTY_TIMESPAN...
 		TargetDifficultyIncreaseTime = DIFFICULTY_TIMESPAN;
 	}
-	const char *className() const { return "TPredefiniedNetworkParameters"; }
+	const char *className() const { return "TPredefinedNetworkParameters"; }
+
+  protected:
+	void configureGenesisMessage( TMessage_block & ) const;
+
+  protected:
+	static const TStackOperator *SATOSHI_GENESIS_SIGSCRIPT[];
+	static const TStackOperator *SATOSHI_GENESIS_PUBKEYSCRIPT[];
 };
+
+const TStackOperator *TPredefinedNetworkParameters::SATOSHI_GENESIS_SIGSCRIPT[] = {
+	// Initial difficult = 0xffff << ((0x1d-3) * 8)
+	new TStackOperator_PUSH_N( string("\xff\xff\x00\x1d",4) ),
+	// ???
+	new TStackOperator_PUSH_N( string("\x04", 1) ),
+	// Message
+	new TStackOperator_PUSH_N( string(
+		"The Times 03/Jan/2009 Chancellor "
+		"on brink of second bailout for banks" ) )
+};
+
+const TStackOperator *TPredefinedNetworkParameters::SATOSHI_GENESIS_PUBKEYSCRIPT[] = {
+	// Initial difficult = 0xffff << ((0x1d-3) * 8)
+	TStackOperator::createPUSH( string(
+				"\x04\x67\x8a\xfd\xb0\xfe\x55\x48"
+				"\x27\x19\x67\xf1\xa6\x71\x30\xb7"
+				"\x10\x5c\xd6\xa8\x28\xe0\x39\x09"
+				"\xa6\x79\x62\xe0\xea\x1f\x61\xde"
+				"\xb6\x49\xf6\xbc\x3f\x4c\xef\x38"
+				"\xc4\xf3\x55\x04\xe5\x1e\xc1\x12"
+				"\xde\x5c\x38\x4d\xf7\xba\x0b\x8d"
+				"\x57\x8a\x4c\x70\x2b\x6b\xf1\x1d"
+				"\x5f", 65) ),
+	new TStackOperator_OP_CHECKSIG()
+};
+
+//
+// Function:	TPredefinedNetworkParameters :: configureGenesisMessage
+// Description:
+//
+void TPredefinedNetworkParameters::configureGenesisMessage( TMessage_block &message ) const
+{
+	message.blockHeader().Version = 1;
+	// Genesis block has no parent, indicate with zero hash
+	message.blockHeader().PreviousBlock.zero();
+	// Zero for now, but this gets recalculated later
+	message.blockHeader().MerkleRoot.zero();
+
+	// Genesis transaction
+
+	TBitcoinScript_0 genesisSignature(SATOSHI_GENESIS_SIGSCRIPT,
+			ARRAY_SIZE(SATOSHI_GENESIS_SIGSCRIPT));
+	TBitcoinScript_0 genesisPublicKey(SATOSHI_GENESIS_PUBKEYSCRIPT,
+			ARRAY_SIZE(SATOSHI_GENESIS_PUBKEYSCRIPT));
+
+	// Note: references so we can edit in place
+	TTransactionElement &Transaction( message.createTransaction() );
+	// Regardless of the defaults in the future, the genesis block will
+	// be the same
+	Transaction.Version = 1;
+	Transaction.LockTime = 0;
+
+	TInputSplitElement &Input( Transaction.createInput() );
+	// Regardless of the defaults in the future, the genesis block will
+	// be the same
+	Input.OutPoint.TransactionHash.zero();
+	Input.OutPoint.Index = 0;
+	Input.Sequence = 0xffffffff;
+	Input.encodeSignatureScript( genesisSignature );
+
+	TOutputSplitElement &Output( Transaction.createOutput() );
+	Output.encodePubKeyScript( genesisPublicKey );
+	Output.setValue( 50 );
+
+//	genesisSignature.printOn(log());
+//	genesisPublicKey.printOn(log());
+}
 
 //
 // Class:	TTestnetNetworkParameters
@@ -78,18 +161,37 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 		Magic = 0xdab5bffa;
 		BitcoinAddressPrefix = 111;
 		// 228 bits of 1
-		ProofOfWorkLimit = (TBigInteger(1) << 228) - 1
+		ProofOfWorkLimit = (TBigInteger(1) << 228) - 1;
 
-//		Block GenesisBlock;
+		// Genesis block
+		TMessage_block message;
+		configureGenesisMessage( message );
+		message.blockHeader().Timestamp = 1296688602;
+		message.blockHeader().Nonce = 384568319;
+		// XXX: Doesn't this imply we need different genesis messages
+		// for test and production networks?
+		message.blockHeader().DifficultyBits.setTarget(0x07fff8, 0x1d);
 
-		// From Android BitCoin client:
-		//
-		// n.genesisBlock = createGenesis(n);
-		// n.genesisBlock.setTime(1296688602L);
-		// n.genesisBlock.setDifficultyTarget(0x1d07fff8L);
-		// n.genesisBlock.setNonce(384568319);
-		// String genesisHash = n.genesisBlock.getHashAsString();
-		// assert genesisHash.equals("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008");
+		// We're done, update calculated fields
+		message.setMerkleRoot();
+		message.setHeader();
+
+		log() << "TESTNET: ";
+		log() << message << endl;
+
+		string GenesisHash( "\x00\x00\x00\x07\x19\x95\x08\xe3"
+				"\x4a\x9f\xf8\x1e\x6e\xc0\xc4\x77"
+				"\xa4\xcc\xcf\xf2\xa4\x76\x7a\x8e"
+				"\xee\x39\xc1\x1d\xb3\x67\xb0\x08", 32 );
+
+		// We've created the genesis transaction, wrapped it in a
+		// TMessage_block, now we wrap that message in a TBlock, so that
+		// it can be compared against the genesis block we eventually
+		// see in the block chain
+		GenesisBlock = new TMessageBasedBlock( NULL );
+		GenesisBlock->updateFromMessage( GenesisHash, &message );
+
+		// Calculate the Merkle tree
 	}
 	const char *className() const { return "TTestnetNetworkParameters"; }
 };
@@ -106,18 +208,35 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		Magic = 0xd9b4bef9;
 		BitcoinAddressPrefix = 0;
 		// 228 bits of 1
-		ProofOfWorkLimit = (TBigInteger(1) << 228) - 1
+		ProofOfWorkLimit = (TBigInteger(1) << 228) - 1;
 
-//		Block GenesisBlock;
+		// Genesis block
+		TMessage_block message;
+		configureGenesisMessage( message );
+		message.blockHeader().Timestamp = 1231006505;
+		message.blockHeader().Nonce = 2083236893;
+		message.blockHeader().DifficultyBits.setTarget(0x00ffff, 0x1d);
 
-		// From Android BitCoin client:
-		//
-		// n.genesisBlock = createGenesis(n);
-		// n.genesisBlock.setDifficultyTarget(0x1d00ffffL);
-		// n.genesisBlock.setTime(1231006505L);
-		// n.genesisBlock.setNonce(2083236893);
-		// String genesisHash = n.genesisBlock.getHashAsString();
-		// assert genesisHash.equals("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f") : genesisHash;
+		// We're done, update calculated fields
+		message.setMerkleRoot();
+		message.setHeader();
+
+		log() << "PRODNET: ";
+		log() << message << endl;
+
+		string GenesisHash( "\x00\x00\x00\x00\x00\x19\xd6\x68"
+				"\x9c\x08\x5a\xe1\x65\x83\x1e\x93"
+				"\x4f\xf7\x63\xae\x46\xa2\xa6\xc1"
+				"\x72\xb3\xf1\xb6\x0a\x8c\xe2\x6f" , 32 );
+
+		// We've created the genesis transaction, wrapped it in a
+		// TMessage_block, now we wrap that message in a TBlock, so that
+		// it can be compared against the genesis block we eventually
+		// see in the block chain
+		GenesisBlock = new TMessageBasedBlock( NULL );
+		GenesisBlock->updateFromMessage( GenesisHash, &message );
+
+		// Calculate the Merkle tree
 	}
 	const char *className() const { return "TProdnetNetworkParameters"; }
 };
@@ -236,6 +355,38 @@ const TNetworkParameters *KNOWN_NETWORKS[] = {
 
 int main( int argc, char *argv[] )
 {
+//	try {
+//		const TOfficialSeedNode *pSeed = SEED_NODES;
+//
+//		log() << "--- Official seed nodes" << endl;
+//		while( *pSeed ) {
+//			 pSeed->write(log());
+//			 log() << endl;
+//			 pSeed++;
+//		}
+//	} catch( std::exception &e ) {
+//		log() << e.what() << endl;
+//		return 255;
+//	}
+
+	try {
+		// String genesisHash = n.genesisBlock.getHashAsString();
+		// assert genesisHash.equals("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008");
+		log() << "NETWORK_TESTNET->genesisBlock.hash = ";
+		TLog::hexify( log(), NETWORK_TESTNET->GenesisBlock->getHash() );
+		log() << endl;
+
+		// String genesisHash = n.genesisBlock.getHashAsString();
+		// assert genesisHash.equals("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f") : genesisHash;
+		log() << "NETWORK_PRODNET->genesisBlock.hash = ";
+		TLog::hexify( log(), NETWORK_PRODNET->GenesisBlock->getHash() );
+		log() << endl;
+
+	} catch( std::exception &e ) {
+		log() << e.what() << endl;
+		return 255;
+	}
+
 	try {
 		const TOfficialSeedNode *pSeed = SEED_NODES;
 
