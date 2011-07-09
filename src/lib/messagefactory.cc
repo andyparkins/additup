@@ -156,67 +156,85 @@ void TMessageFactory::receive( const string &s )
 	if( !Initialised )
 		init();
 
-	ios::streampos sp;
+	streamoff sp;
 
-	// Test against each template message
-	for( it = Templates.begin(); it != Templates.end(); it++ ) {
+	if( Peer == NULL )
+		throw logic_error("TMessageFactory::receive() is impossible without a known peer");
 
-		// Clone the template
-		auto_ptr<TMessage> p( (*it)->clone() );
+	do {
+		// Test against each template message
+		for( it = Templates.begin(); it != Templates.end(); it++ ) {
 
-//		cerr << "Trying " << RXBuffer.size() << " bytes with "
-//			<< potential->className();
+			// Clone the template
+			auto_ptr<TMessage> p( (*it)->clone() );
 
-		try {
-			// Store the current position
-			sp = iss.tellg();
+			// TMessages neeed to know details of where they came from
+			p->setPeer( Peer );
 
-			p->read( iss );
-//			cerr << "*" << endl;
-			potential = p.get();
-			p.release();
-			break;
+//			log() << "Trying " << RXBuffer.size() << " bytes with "
+//				<< p->className();
 
-		} catch( ios::failure &e ) {
-//			cerr << " - " << e.what() << endl;
-			// If we run out of message from the source, then leave,
-			// hoping for more
-			break;
+			try {
+				// Store the current position
+				sp = iss.tellg();
 
-		} catch( message_parse_error_underflow &e ) {
-//			cerr << " - " << e.what() << endl;
-			// If we run out of message from the source, then leave,
-			// hoping for more
-			break;
+				p->read( iss );
+//				log() << "*" << endl;
+				potential = p.get();
+				p.release();
+				break;
 
-		} catch( message_parse_error_version &e ) {
-//			cerr << " - " << e.what() << endl;
-			// Try next template with the same data
-			iss.seekg( sp, ios::beg );
+			} catch( ios::failure &e ) {
+//				log() << " - " << e.what() << endl;
+				// If we run out of message from the source, then leave,
+				// hoping for more
+				break;
 
-		} catch( message_parse_error_type &e ) {
-//			cerr << " - " << e.what() << endl;
-			// Try next template with the same data
-			iss.seekg( sp, ios::beg );
+			} catch( message_parse_error_underflow &e ) {
+//				log() << " - " << e.what() << endl;
+				// If we run out of message from the source, then leave,
+				// hoping for more
+				break;
 
-		} catch( message_parse_error &e ) {
-//			cerr << " - " << e.what() << endl;
+			} catch( message_parse_error_magic &e ) {
+				// Skip
+			} catch( message_parse_error_version &e ) {
+//				log() << " - " << e.what() << endl;
+				// Try next template with the same data
+				iss.seekg( sp, ios::beg );
 
-			// Anything else, chuck the packet away
-			sp = iss.tellg();
-			RXBuffer = RXBuffer.substr( sp, RXBuffer.size() - sp );
-			break;
+			} catch( message_parse_error_type &e ) {
+//				log() << " - " << e.what() << endl;
+				// Try next template with the same data
+				iss.seekg( sp, ios::beg );
+
+			} catch( message_parse_error &e ) {
+//				log() << " - " << e.what() << endl;
+
+				// Anything else, chuck the packet away
+				sp = iss.tellg();
+				RXBuffer = RXBuffer.substr( sp, RXBuffer.size() - sp );
+				break;
+			}
 		}
-	}
 
-	if( potential != NULL ) {
-//		cerr << *potential << endl;
-		// Push it onto the receive queue
-		IncomingQueue.push_back( potential );
-		// Remove the bytes from the RX buffer
-		sp = potential->getMessageSize();
-		RXBuffer = RXBuffer.substr( sp, RXBuffer.size() - sp );
-	}
+		if( potential != NULL ) {
+//			log() << *potential << endl;
+			// Push it onto the receive queue
+			IncomingQueue.push_back( potential );
+			// Remove the bytes from the RX buffer
+			sp = potential->getMessageSize();
+			RXBuffer = RXBuffer.substr( sp, RXBuffer.size() - sp );
+
+			return;
+		} else {
+			try {
+				iss.seekg(sp + 1);
+			} catch( ... ) {
+				break;
+			}
+		}
+	} while( true );
 }
 
 //
