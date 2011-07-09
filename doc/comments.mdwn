@@ -227,4 +227,15 @@
    always going to be less than or equal to 0x23 in this definition.
    Some possible precision has therefore been wasted.
 
+ - Which genius decided that one "nanocoin" (as they are called in the
+   bitcoin and java library sources) was 100,000,000th of a coin?  The
+   word nano has a standard meaning, and that meaning is one billionth.
+   These "nanocoins" are actually one hundred nano coins or 0.1 of a
+   microcoin.  Abusing SI prefixes just makes it harder for a reader of
+   the source to be sure what is happening.
+
+ - CBlock::BuildMerkleTree() needs a good looking at.  I suspect the
+   Java version in Block::buildMerkleTree() is wrong, and it says it
+   copied the original.
+
 
