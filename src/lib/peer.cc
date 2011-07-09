@@ -125,11 +125,13 @@ const TNetworkParameters *TBitcoinPeer::getNetworkParameters() const
 void TBitcoinPeer::receive( const string &s )
 {
 	if( State == Unconnected ) {
+		log() << "[PEER] State: Unconnected" << endl;
 		// Can't receive anything until we at least have comms
 		return;
 	}
 
 	if( State == Connecting ) {
+		log() << "[PEER] State: Connecting" << endl;
 		if( Factory.get() != NULL )
 			throw logic_error( "TBitcoinPeer::receive() can't have a factory while unconnected" );
 
@@ -199,10 +201,10 @@ void TBitcoinPeer::receive( const string &s )
 				}
 			}
 		}
-
 	}
 
 	if( State == Handshaking ) {
+		log() << "[PEER] State: Handshaking" << endl;
 		if( Factory.get() == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in handshaking mode" );
 
@@ -220,7 +222,7 @@ void TBitcoinPeer::receive( const string &s )
 
 			Factory.reset( VersionMessage->createMessageFactory() );
 
-			log() << "Factory is now " << Factory->className() << endl;
+			log() << "[PEER] Factory is now " << Factory->className() << endl;
 		} else if( dynamic_cast<TMessage_verack*>( Message.get() ) != NULL ) {
 			// Not sure we care...  If we don't get a verack, then
 			// presumably the remote will just hang up on us -- what
@@ -236,6 +238,7 @@ void TBitcoinPeer::receive( const string &s )
 	// the factory, and create the verack response
 
 	if( State == Connected ) {
+		log() << "[PEER] State: Connected" << endl;
 		if( Factory.get() == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in connected mode" );
 
@@ -248,7 +251,7 @@ void TBitcoinPeer::receive( const string &s )
 			if( Message.get() == NULL )
 				break;
 
-			log() << "[CONNECTED] Got message " << *Message << endl;
+			log() << "[PEER] Got message " << *Message << endl;
 
 		} while( true );
 	}
