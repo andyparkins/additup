@@ -145,7 +145,7 @@ class TBlockPool
 	TBlockPool();
 	virtual ~TBlockPool();
 
-	void receiveBlock( const string &, TMessage_block * );
+	void receiveBlock( const string &, const TMessage_block * );
 
 	virtual void putBlock( const string &, TBlock * ) = 0;
 	virtual TBlock *getBlock( const string & ) const = 0;

@@ -232,7 +232,7 @@ TBlockPool::~TBlockPool()
 // Function:	TBlockPool :: receiveBlock
 // Description:
 //
-void TBlockPool::receiveBlock( const string &NetworkHash, TMessage_block *message )
+void TBlockPool::receiveBlock( const string &NetworkHash, const TMessage_block *message )
 {
 	// Create a new block
 	TBlock *thisBlock = createBlock();
