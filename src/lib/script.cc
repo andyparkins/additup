@@ -106,12 +106,131 @@ void TExecutionContext::setTransaction( TTransaction *tx )
 // -----------
 
 //
+// Function:	TBitcoinScriptBase :: TBitcoinScriptBase
+// Description:
+//
+TBitcoinScriptBase::TBitcoinScriptBase() :
+	Initialised( false )
+{
+}
+
+//
+// Function:	TBitcoinScriptBase :: TBitcoinScriptBase
+// Description:
+//
+TBitcoinScriptBase::TBitcoinScriptBase( const TStackOperator **OperatorArray, unsigned int N ) :
+	Initialised( false )
+{
+	for( unsigned int i = 0; i < N; i++ ) {
+		// Note: we use push_back() not append() because this is the
+		// only way to get explodable operators into a script.  This
+		// constructor is intended to allow the creation of writable
+		// scripts rather than runnable scripts.
+		Program.push_back( OperatorArray[i]->clone() );
+	}
+}
+
+//
+// Function:	TBitcoinScriptBase :: ~TBitcoinScriptBase
+// Description:
+//
+TBitcoinScriptBase::~TBitcoinScriptBase()
+{
+	while( !Program.empty() ) {
+		delete Program.front();
+		Program.erase( Program.begin() );
+	}
+}
+
+//
+// Function:	TBitcoinScriptBase :: init
+// Description:
+//
+void TBitcoinScriptBase::init()
+{
+	Initialised = true;
+}
+
+//
+// Function:	TBitcoinScriptBase :: execute
+// Description:
+//
+void TBitcoinScriptBase::execute( TExecutionContext &Stack ) const
+{
+	tInstructionPointer it, itn;
+	it = Program.begin();
+	while( it != Program.end() ) {
+		itn = (*it)->execute( Stack, it );
+		log() << (*it)->className() << " executed, stack now:" << endl;
+		Stack.printOn(log());
+
+		// Catch infinite loop
+		if( it == itn ) {
+			it = itn;
+			it++;
+		} else {
+			it = itn;
+		}
+	}
+}
+
+//
+// Function:	TBitcoinScriptBase :: append
+// Description:
+//
+void TBitcoinScriptBase::append( TStackOperator *op )
+{
+	if( dynamic_cast<TStackOperatorFromCompoundOpcode*>(op) != NULL ) {
+		// Don't append this operator, it's a compound code, instead
+		// explode it, which will in turn call us again.
+		dynamic_cast<TStackOperatorFromCompoundOpcode*>(op)->explode( this );
+
+		// XXX: Who is going to delete "op" if we don't?
+	} else {
+		Program.push_back(op);
+	}
+}
+
+//
+// Function:	TBitcoinScriptBase :: printOn
+// Description:
+//
+ostream &TBitcoinScriptBase::printOn( ostream &os ) const
+{
+	list<TStackOperator*>::const_iterator it;
+	unsigned int i = 0;
+
+	it = Program.begin();
+	while( it != Program.end() ) {
+		os << i << ". ";
+		(*it)->printOn( os );
+		os << endl;
+
+		it++;
+		i++;
+	}
+	return os;
+}
+
+// -----------
+
+//
 // Function:	TBitcoinScript :: TBitcoinScript
 // Description:
 //
-TBitcoinScript::TBitcoinScript() :
-	Initialised( false )
+TBitcoinScript::TBitcoinScript( const TStackOperator **a, unsigned int n ) :
+	TBitcoinScriptBase(a,n)
 {
+}
+
+//
+// Function:	TBitcoinScript :: TBitcoinScript
+// Description:
+//
+TBitcoinScript::TBitcoinScript( const string &s )
+{
+	istringstream iss(s);
+	read(iss);
 }
 
 //
@@ -120,23 +239,10 @@ TBitcoinScript::TBitcoinScript() :
 //
 TBitcoinScript::~TBitcoinScript()
 {
-	while( !Program.empty() ) {
-		delete Program.front();
-		Program.erase( Program.begin() );
-	}
 	while( !Templates.empty() ) {
 		delete Templates.front();
 		Templates.erase( Templates.begin() );
 	}
-}
-
-//
-// Function:	TBitcoinScript :: init
-// Description:
-//
-void TBitcoinScript::init()
-{
-	Initialised = true;
 }
 
 //
@@ -181,41 +287,29 @@ istream &TBitcoinScript::read( istream &is )
 }
 
 //
-// Function:	TBitcoinScript :: execute
+// Function:	TBitcoinScript :: write
 // Description:
 //
-void TBitcoinScript::execute( TExecutionContext &Stack ) const
+ostream &TBitcoinScript::write( ostream &os ) const
 {
-	tInstructionPointer it, itn;
+	list<TStackOperator*>::const_iterator it;
+	TStackOperatorFromStream *S;
+
 	it = Program.begin();
 	while( it != Program.end() ) {
-		itn = (*it)->execute( Stack, it );
-		log() << (*it)->className() << " executed, stack now:" << endl;
-		Stack.printOn(log());
-
-		// Catch infinite loop
-		if( it == itn ) {
-			it = itn;
-			it++;
-		} else {
-			it = itn;
+		// We can't have non-streamable operators in the program, that's
+		// an error
+		S = dynamic_cast<TStackOperatorFromStream*>( (*it) );
+		if( S == NULL ) {
+			string err("TBitcoinScript: Can't write() non-streamable operator ");
+			throw runtime_error( err + (*it)->className() );
 		}
-	}
-}
 
-//
-// Function:	TBitcoinScript :: append
-// Description:
-//
-void TBitcoinScript::append( TStackOperator *op )
-{
-	if( dynamic_cast<TStackOperatorFromCompoundOpcode*>(op) != NULL ) {
-		// Don't append this operator, it's a compound code, instead
-		// explode it, which will in turn call us again.
-		dynamic_cast<TStackOperatorFromCompoundOpcode*>(op)->explode( this );
-	} else {
-		Program.push_back(op);
+		S->write( os );
+
+		it++;
 	}
+	return os;
 }
 
 // -----------
@@ -225,6 +319,24 @@ void TBitcoinScript::append( TStackOperator *op )
 // Description:
 //
 TBitcoinScript_0::TBitcoinScript_0()
+{
+}
+
+//
+// Function:	TBitcoinScript_0 :: TBitcoinScript_0
+// Description:
+//
+TBitcoinScript_0::TBitcoinScript_0( const TStackOperator **a, unsigned int n ) :
+	TBitcoinScript(a,n)
+{
+}
+
+//
+// Function:	TBitcoinScript_0 :: TBitcoinScript_0
+// Description:
+//
+TBitcoinScript_0::TBitcoinScript_0( const string &s ) :
+	TBitcoinScript(s)
 {
 }
 
@@ -340,7 +452,7 @@ void TBitcoinScript_0::init()
 	// previously accepted by one of the above.
 	Templates.push_back( new TStackOperator_OP_INVALIDOPCODE );
 
-	TBitcoinScript::init();
+	TBitcoinScriptBase::init();
 }
 
 // -----------
@@ -353,7 +465,7 @@ void TBitcoinScript_0::init()
 //
 // By default we simply clone ourself and get the clone to read itself.
 //
-istream &TStackOperatorFromStream::readAndAppend( TBitcoinScript *Script, istream &is ) const
+istream &TStackOperatorFromStream::readAndAppend( TBitcoinScriptBase *Script, istream &is ) const
 {
 	// While we have matched the type, we haven't actually created an
 	// operator that we can read to yet.
@@ -1144,7 +1256,7 @@ TStackOperator_OP_EQUAL::execute( TExecutionContext &Stack, const TBitcoinScript
 // Input:     x1 x2
 // Output:    True / false
 // Operation: Same as OP_EQUAL, but runs OP_VERIFY afterward.
-void TStackOperator_OP_EQUALVERIFY::explode( TBitcoinScript *Script ) const
+void TStackOperator_OP_EQUALVERIFY::explode( TBitcoinScriptBase *Script ) const
 {
 	Script->append( new TStackOperator_OP_EQUAL );
 	Script->append( new TStackOperator_OP_VERIFY );
@@ -1529,7 +1641,7 @@ TStackOperator_OP_NUMEQUAL::execute( TExecutionContext &Stack, const TBitcoinScr
 // Input:     a b
 // Output:    out
 // Operation: Same as OP_NUMEQUAL, but runs OP_VERIFY afterward.
-void TStackOperator_OP_NUMEQUALVERIFY::explode( TBitcoinScript *Script ) const
+void TStackOperator_OP_NUMEQUALVERIFY::explode( TBitcoinScriptBase *Script ) const
 {
 	Script->append( new TStackOperator_OP_NUMEQUAL );
 	Script->append( new TStackOperator_OP_VERIFY );
@@ -1836,7 +1948,7 @@ TStackOperator_OP_CODESEPARATOR::execute( TExecutionContext &Stack, const TBitco
 // 8. The script for the current transaction input in txCopy is set to
 //    subScript
 //
-void TStackOperator_OP_CHECKSIG::explode( TBitcoinScript *Script ) const
+void TStackOperator_OP_CHECKSIG::explode( TBitcoinScriptBase *Script ) const
 {
 	Script->append( new TStackOperator_INTOP_PUSHSUBSCRIPT );
 	Script->append( new TStackOperator_INTOP_DELETESIG );
@@ -1854,7 +1966,7 @@ void TStackOperator_OP_CHECKSIG::explode( TBitcoinScript *Script ) const
 // Input:     sig pubkey
 // Output:    True / false
 // Operation: Same as OP_CHECKSIG, but OP_VERIFY is executed afterward.
-void TStackOperator_OP_CHECKSIGVERIFY::explode( TBitcoinScript *Script ) const
+void TStackOperator_OP_CHECKSIGVERIFY::explode( TBitcoinScriptBase *Script ) const
 {
 	Script->append( new TStackOperator_OP_CHECKSIG );
 	Script->append( new TStackOperator_OP_VERIFY );
@@ -1880,7 +1992,7 @@ TStackOperator_OP_CHECKMULTISIG::execute( TExecutionContext &Stack, const TBitco
 // Input:     sig1 sig2 ... <number of signatures> pub1 pub2 ... <number of public keys>
 // Output:    True / False
 // Operation: Same as OP_CHECKMULTISIG, but OP_VERIFY is executed afterward.
-void TStackOperator_OP_CHECKMULTISIGVERIFY::explode( TBitcoinScript *Script ) const
+void TStackOperator_OP_CHECKMULTISIGVERIFY::explode( TBitcoinScriptBase *Script ) const
 {
 	Script->append( new TStackOperator_OP_CHECKMULTISIGVERIFY );
 	Script->append( new TStackOperator_OP_VERIFY );

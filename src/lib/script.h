@@ -298,7 +298,7 @@ class TStackOperatorFromStream : public TStackOperator
   public:
 	const char *className() const { return "TStackOperatorFromStream"; }
 	virtual TStackOperatorFromStream *clone() const = 0;
-	virtual istream &readAndAppend( TBitcoinScript *, istream & ) const;
+	virtual istream &readAndAppend( TBitcoinScriptBase *, istream & ) const;
 	virtual istream &read( istream & ) = 0;
 
 	virtual bool acceptOpcode( eScriptOp ) const = 0;
@@ -332,7 +332,7 @@ class TStackOperatorFromCompoundOpcode : public TStackOperatorFromOpcode
 {
   public:
 	const char *className() const { return "TStackOperatorFromCompoundOpcode"; }
-	istream &readAndAppend( TBitcoinScript *S, istream &is ) const {
+	istream &readAndAppend( TBitcoinScriptBase *S, istream &is ) const {
 		// Discard the Opcode, we already know it's getOpcode()
 		is.get();
 		// Perform the append
@@ -348,7 +348,7 @@ class TStackOperatorFromCompoundOpcode : public TStackOperatorFromOpcode
 		throw logic_error("TStackOperatorFromCompoundOpcode should never be execute()d");
 	}
 
-	virtual void explode( TBitcoinScript * ) const = 0;
+	virtual void explode( TBitcoinScriptBase * ) const = 0;
 };
 
 //
@@ -998,7 +998,7 @@ class TStackOperator_OP_EQUALVERIFY : public TStackOperatorFromCompoundOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_EQUALVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_EQUALVERIFY; }
 
-	void explode( TBitcoinScript * ) const;
+	void explode( TBitcoinScriptBase * ) const;
 };
 
 //
@@ -1264,7 +1264,7 @@ class TStackOperator_OP_NUMEQUALVERIFY : public TStackOperatorFromCompoundOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_NUMEQUALVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_NUMEQUALVERIFY; }
 
-	void explode( TBitcoinScript * ) const;
+	void explode( TBitcoinScriptBase * ) const;
 };
 
 //
@@ -1494,7 +1494,7 @@ class TStackOperator_OP_CHECKSIG : public TStackOperatorFromCompoundOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKSIG(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKSIG; }
 
-	void explode( TBitcoinScript * ) const;
+	void explode( TBitcoinScriptBase * ) const;
 };
 
 //
@@ -1508,7 +1508,7 @@ class TStackOperator_OP_CHECKSIGVERIFY : public TStackOperatorFromCompoundOpcode
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKSIGVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKSIGVERIFY; }
 
-	void explode( TBitcoinScript * ) const;
+	void explode( TBitcoinScriptBase * ) const;
 };
 
 //
@@ -1536,7 +1536,7 @@ class TStackOperator_OP_CHECKMULTISIGVERIFY : public TStackOperatorFromCompoundO
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKMULTISIGVERIFY(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKMULTISIGVERIFY; }
 
-	void explode( TBitcoinScript * ) const;
+	void explode( TBitcoinScriptBase * ) const;
 };
 
 //
@@ -1946,32 +1946,54 @@ class TExecutionContext
 };
 
 //
-// Class: TBitcoinScript
+// Class: TBitcoinScriptBase
 // Description:
 //
-class TBitcoinScript
+class TBitcoinScriptBase
 {
   public:
-	TBitcoinScript();
-	virtual ~TBitcoinScript();
-
-	istream &read( istream & );
+	TBitcoinScriptBase();
+	TBitcoinScriptBase( const TStackOperator **, unsigned int );
+	virtual ~TBitcoinScriptBase();
 
 	void execute( TExecutionContext & ) const;
-
-	virtual uint32_t getMinimumAcceptedVersion() const = 0;
 
 	void append( TStackOperator *op );
 
 	typedef list<TStackOperator*>::const_iterator tInstructionPointer;
+
+	virtual ostream &printOn( ostream & ) const;
 
   protected:
 	virtual void init();
 
   protected:
 	bool Initialised;
-	list<const TStackOperatorFromStream *> Templates;
 	list<TStackOperator *> Program;
+
+  private:
+	// Not implemented yet -- needs deep copy
+	TBitcoinScriptBase( const TBitcoinScriptBase & ) {}
+};
+
+//
+// Class: TBitcoinScript
+// Description:
+//
+class TBitcoinScript : public TBitcoinScriptBase
+{
+  public:
+	TBitcoinScript() {};
+	TBitcoinScript( const TStackOperator **, unsigned int );
+	TBitcoinScript( const string & );
+	~TBitcoinScript();
+	virtual uint32_t getMinimumAcceptedVersion() const = 0;
+
+	istream &read( istream & );
+	ostream &write( ostream & ) const;
+
+  protected:
+	list<const TStackOperatorFromStream *> Templates;
 };
 
 //
@@ -1982,6 +2004,8 @@ class TBitcoinScript_0 : public TBitcoinScript
 {
   public:
 	TBitcoinScript_0();
+	TBitcoinScript_0( const TStackOperator **, unsigned int );
+	TBitcoinScript_0( const string & );
 
 	uint32_t getMinimumAcceptedVersion() const;
 
