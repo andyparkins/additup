@@ -513,6 +513,8 @@ class TStackOperator_OP_FALSE : public TStackOperatorFromOpcode
 class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 {
   public:
+	TStackOperator_OP_PUSHDATAN() {};
+	TStackOperator_OP_PUSHDATAN( const string &r ) { Raw = r; }
 	const char *className() const { return "TStackOperator_OP_PUSHDATAN"; }
 
 	istream &read( istream &is ) {
@@ -526,10 +528,21 @@ class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 		return is;
 	}
 
+	ostream &write( ostream &os ) {
+		// Write the opcode byte
+		TStackOperatorFromOpcode::write(os);
+		// Write the appropriate number of size bytes
+		putRawWriteCount(os);
+		// Write the bytes
+		os.write( Raw.data(), Raw.size() );
+		return os;
+	}
+
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 
   protected:
 	virtual streamsize getRawReadCount( istream & ) const = 0;
+	virtual void putRawWriteCount( ostream & ) const = 0;
 
   protected:
 	string Raw;
@@ -542,6 +555,8 @@ class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 class TStackOperator_OP_PUSHDATA1 : public TStackOperator_OP_PUSHDATAN
 {
   public:
+	TStackOperator_OP_PUSHDATA1() {}
+	TStackOperator_OP_PUSHDATA1( const string &r ) : TStackOperator_OP_PUSHDATAN(r) {}
 	const char *className() const { return "TStackOperator_OP_PUSHDATA1"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUSHDATA1(*this); }
 	eScriptOp getOpcode() const { return OP_PUSHDATA1; }
@@ -549,6 +564,9 @@ class TStackOperator_OP_PUSHDATA1 : public TStackOperator_OP_PUSHDATAN
   protected:
 	streamsize getRawReadCount( istream &is ) const {
 		return is.get();
+	}
+	void putRawWriteCount( ostream &os ) const {
+		os.put( Raw.size() & 0xff );
 	}
 };
 
@@ -559,6 +577,8 @@ class TStackOperator_OP_PUSHDATA1 : public TStackOperator_OP_PUSHDATAN
 class TStackOperator_OP_PUSHDATA2 : public TStackOperator_OP_PUSHDATAN
 {
   public:
+	TStackOperator_OP_PUSHDATA2() {}
+	TStackOperator_OP_PUSHDATA2( const string &r ) : TStackOperator_OP_PUSHDATAN(r) {}
 	const char *className() const { return "TStackOperator_OP_PUSHDATA2"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUSHDATA2(*this); }
 	eScriptOp getOpcode() const { return OP_PUSHDATA2; }
@@ -571,6 +591,10 @@ class TStackOperator_OP_PUSHDATA2 : public TStackOperator_OP_PUSHDATAN
 		N |= is.get() << 0;
 		return N;
 	}
+	void putRawWriteCount( ostream &os ) const {
+		os.put( Raw.size() & 0xff );
+		os.put( (Raw.size() & 0xff00) >> 8 );
+	}
 };
 
 //
@@ -580,6 +604,8 @@ class TStackOperator_OP_PUSHDATA2 : public TStackOperator_OP_PUSHDATAN
 class TStackOperator_OP_PUSHDATA4 : public TStackOperator_OP_PUSHDATAN
 {
   public:
+	TStackOperator_OP_PUSHDATA4() {}
+	TStackOperator_OP_PUSHDATA4( const string &r ) : TStackOperator_OP_PUSHDATAN(r) {}
 	const char *className() const { return "TStackOperator_OP_PUSHDATA4"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_PUSHDATA4(*this); }
 	eScriptOp getOpcode() const { return OP_PUSHDATA4; }
@@ -593,6 +619,12 @@ class TStackOperator_OP_PUSHDATA4 : public TStackOperator_OP_PUSHDATAN
 		N |= is.get() << 8;
 		N |= is.get() << 0;
 		return N;
+	}
+	void putRawWriteCount( ostream &os ) const {
+		os.put( Raw.size() & 0xff );
+		os.put( (Raw.size() & 0xff00) >> 8 );
+		os.put( (Raw.size() & 0xff0000) >> 16 );
+		os.put( (Raw.size() & 0xff000000) >> 24 );
 	}
 };
 
@@ -1863,6 +1895,9 @@ class TStackOperator_OP_N : public TStackOperatorFromOpcodes
 class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 {
   public:
+	TStackOperator_PUSH_N() {};
+	TStackOperator_PUSH_N( const string &r ) { Raw = r; }
+
 	const char *className() const { return "TStackOperator_PUSH_N"; }
 	bool acceptOpcode( eScriptOp op ) const { return op >= PUSH_1 && op <= PUSH_75; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_PUSH_N(*this); }
@@ -1875,6 +1910,14 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 		// Assign the bytes to a string
 		Raw.assign( buffer, OP );
 		return is;
+	}
+
+	ostream &write( ostream &os ) {
+		// Write the opcode byte (which is simply N)
+		os.put( Raw.size() );
+		// Write the bytes
+		os.write( Raw.data(), Raw.size() );
+		return os;
 	}
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
