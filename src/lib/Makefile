@@ -33,7 +33,7 @@ else
 	LDFLAGS += -mconsole -mno-cygwin -gstabs
 	LIBS += gdi32
 endif
-LIBS += $(PROJECT)
+LIBS += $(PROJECT) pthread dl ssl crypto
 
 ifdef strict
 	# --- strict compilation
