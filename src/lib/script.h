@@ -347,6 +347,8 @@ class TBitcoinScript
 
 	void append( TStackOperator *op ) { Program.push_back(op); }
 
+	typedef list<TStackOperator*>::const_iterator tInstructionPointer;
+
   protected:
 	virtual void init();
 
