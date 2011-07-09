@@ -275,10 +275,11 @@ int main( int argc, char *argv[] )
 {
 	try {
 		TBitcoinPeer Peer;
+		Peer.setState( TBitcoinPeer::Connecting );
 
 		const string *p = UNITTESTSampleMessages;
 		while( !p->empty() ) {
-			log() << "Trying " << p->size() << " bytes" << endl;
+			log() << "[TEST] Trying " << p->size() << " bytes" << endl;
 			Peer.receive( *p );
 			p++;
 		}
