@@ -242,7 +242,7 @@ void TBlockPool::receiveBlock( const string &NetworkHash, TMessage_block *messag
 
 	// See if we already have this block
 	TBlock *existingBlock = getBlock( thisBlock->getHash() );
-	if( existingBlock == NULL ) {
+	if( existingBlock != NULL ) {
 		// If so, discard the received update, and use the pooled
 		// version instead.  We do it this way around, as the already
 		// stored version can have information we might not have to
