@@ -148,49 +148,55 @@ void TBitcoinPeer::receive( const string &s )
 	}
 
 	if( State == Parameters ) {
-		if( getNetworkParameters() != NULL )
+		log() << "[PEER] State: Parameters" << endl;
+		if( Network != NULL && getNetworkParameters() != NULL ) {
 			State = Handshaking;
+		} else {
+			log() << "[PEER] Network parameters not available" << endl;
+			// If we don't already know our network, then the first thing
+			// we're looking for is a magic number to tell us what network
+			// we're connected to.
 
-		// If we don't already know our network, then the first thing
-		// we're looking for is a magic number to tell us what network
-		// we're connected to.
+			// We will make the assumption that the accidental transmission
+			// of bytes matching a network magic number is impossible.
+			// Therefore we'll look through a window until we see a match.
 
-		// We will make the assumption that the accidental transmission
-		// of bytes matching a network magic number is impossible.
-		// Therefore we'll look through a window until we see a match.
+			// Try reading from each byte in turn
+			istringstream iss(s);
+			while( iss.good() ) {
+				TLittleEndian32Element PotentialMagic;
+				streamoff pos;
+				iss.exceptions( ios::eofbit | ios::failbit | ios::badbit );
 
-		// Try reading from each byte in turn
-		istringstream iss(s);
-		while( iss.good() ) {
-			TLittleEndian32Element PotentialMagic;
-			streamoff pos;
-			iss.exceptions( ios::eofbit | ios::failbit | ios::badbit );
+				// Bookmark
+				pos = iss.tellg();
 
-			// Bookmark
-			pos = iss.tellg();
-
-			// Attempt read
-			try {
-				PotentialMagic.read(iss);
-			} catch( ... ) {
-				break;
-			}
-
-			// Restore
-			iss.seekg(static_cast<streamoff>(pos+1));
-
-			// Compare magic against all known networks
-
-			const TNetworkParameters **p = KNOWN_NETWORKS;
-			while( *p != NULL ) {
-				if( (*p)->Magic == PotentialMagic.getValue() )
+				// Attempt read
+				try {
+					PotentialMagic.read(iss);
+				} catch( ... ) {
 					break;
-				p++;
-			}
-			if( *p != NULL ) {
-				Network->setNetworkParameters( *p );
-				State = Handshaking;
-				break;
+				}
+
+				// Restore
+				iss.seekg(static_cast<streamoff>(pos+1));
+
+				// Compare magic against all known networks
+				log() << "[PEER]  - Testing potential network magic " << hex << PotentialMagic.getValue() << dec << endl;
+
+				const TNetworkParameters **p = KNOWN_NETWORKS;
+				while( *p != NULL ) {
+					if( (*p)->Magic == PotentialMagic.getValue() )
+						break;
+					p++;
+				}
+				if( *p != NULL ) {
+					log() << "[PEER]  - Network magic found, using " << (*p)->className() << endl;
+					if( Network != NULL )
+						Network->setNetworkParameters( *p );
+					State = Handshaking;
+					break;
+				}
 			}
 		}
 
