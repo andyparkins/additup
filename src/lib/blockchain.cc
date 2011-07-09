@@ -172,6 +172,39 @@ const string &TMessageBasedBlock::getParentHash() const
 // ---------
 
 //
+// Function:	TDatabaseBlock :: TDatabaseBlock
+// Description:
+//
+TDatabaseBlock::TDatabaseBlock( TDatabaseBlockPool *p ) :
+	TBlock( p )
+{
+}
+
+//
+// Function:	TDatabaseBlock :: ~TDatabaseBlock
+// Description:
+//
+TDatabaseBlock::~TDatabaseBlock()
+{
+}
+
+//
+// Function:	TDatabaseBlock :: setMessage
+// Description:
+//
+void TDatabaseBlock::updateFromMessage( const string &hash, const TMessage_block *m )
+{
+	if( m == NULL ) {
+		// XXX: Delete existing record?
+		return;
+	}
+
+	// XXX: Copy message to database
+}
+
+// ---------
+
+//
 // Function:	TBlockPool :: TBlockPool
 // Description:
 //
@@ -299,6 +332,33 @@ bool TMemoryBlockPool::blockExists( const string &hash ) const
 
 	it = Pool.find( hash );
 	return (it != Pool.end());
+}
+
+// ---------
+
+//
+// Function:	TDatabaseBlockPool :: TDatabaseBlockPool
+// Description:
+//
+TDatabaseBlockPool::TDatabaseBlockPool()
+{
+}
+
+//
+// Function:	TDatabaseBlockPool :: ~TDatabaseBlockPool
+// Description:
+//
+TDatabaseBlockPool::~TDatabaseBlockPool()
+{
+}
+
+//
+// Function:	TDatabaseBlockPool :: createBlock
+// Description:
+//
+TBlock *TDatabaseBlockPool::createBlock()
+{
+	return new TDatabaseBlock( this );
 }
 
 

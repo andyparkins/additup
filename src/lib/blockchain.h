@@ -56,6 +56,7 @@
 
 // -------------- Class pre-declarations
 class TBlockPool;
+class TDatabaseBlockPool;
 class TMessage_block;
 
 
@@ -115,6 +116,25 @@ class TMessageBasedBlock : public TBlock
 	mutable string cachedHash;
 };
 
+//
+// Class:	TDatabaseBlock
+// Description:
+//
+class TDatabaseBlock : public TBlock
+{
+  public:
+	TDatabaseBlock( TDatabaseBlockPool * );
+	~TDatabaseBlock();
+
+	void updateFromMessage( const string &, const TMessage_block * );
+
+	const string &getHash() const;
+	const string &getParentHash() const;
+
+  protected:
+	TDatabaseBlockPool *Pool;
+};
+
 // ---------
 
 //
@@ -156,6 +176,26 @@ class TMemoryBlockPool : public TBlockPool
 
   protected:
 	map<string, TBlock*> Pool;
+};
+
+//
+// Class:	TDatabaseBlockPool
+// Description:
+//
+class TDatabaseBlockPool : public TBlockPool
+{
+  public:
+	TDatabaseBlockPool();
+	~TDatabaseBlockPool();
+
+	void putBlock( TBlock * );
+	TBlock *getBlock( const string & ) const;
+	bool blockExists( const string & ) const;
+
+  protected:
+	TBlock *createBlock();
+
+  protected:
 };
 
 
