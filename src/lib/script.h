@@ -266,6 +266,140 @@ class script_run_verify_error : public script_run_error
 		script_run_error("an OP_VERIFY based command failed") {}
 };
 
+// ----------
+
+//
+// Class: TStackElement
+// Description:
+//
+class TStackElement
+{
+  public:
+	virtual TStackElement *clone() const = 0;
+
+	virtual ostream &printOn( ostream & ) const = 0;
+};
+
+//
+// Class: TStackElement_t
+// Description:
+//
+template <typename t>
+class TStackElement_t : public TStackElement
+{
+  public:
+	TStackElement_t( const t &d ) : Data(d) {}
+	TStackElement *clone() const { return new TStackElement_t<t>(*this); }
+
+	ostream &printOn( ostream &s ) const;
+
+  public:
+	t Data;
+};
+typedef TStackElement_t<bool> TStackElementBoolean;
+typedef TStackElement_t<int> TStackElementInteger;
+typedef TStackElement_t<TBigInteger> TStackElementBigInteger;
+typedef TStackElement_t<string> TStackElementString;
+
+
+// -------------
+
+//
+// Class: TExecutionContext
+// Description:
+//
+class TExecutionContext
+{
+  public:
+	TExecutionContext();
+
+	ostream &printOn( ostream &s ) const;
+
+	list<TStackElement*> &operator()() { return Stack; }
+
+	TStackElement *take() { TStackElement *x = Stack.back(); Stack.pop_back(); return x; }
+	void give( TStackElement *s ) { Stack.push_back(s); }
+
+	void setTransaction( TTransaction * );
+
+  public:
+	list<TStackElement*> Stack;
+	list<TStackElement*> AltStack;
+	typedef list<TStackElement*>::iterator iterator;
+	typedef list<TStackElement*>::const_iterator const_iterator;
+
+	TTransaction *Transaction;
+	bool Invalid;
+};
+
+//
+// Class: TBitcoinScriptBase
+// Description:
+//
+class TBitcoinScriptBase
+{
+  public:
+	TBitcoinScriptBase();
+	TBitcoinScriptBase( const TStackOperator **, unsigned int );
+	virtual ~TBitcoinScriptBase();
+
+	void execute( TExecutionContext & ) const;
+
+	void append( TStackOperator *op );
+
+	typedef list<TStackOperator*>::const_iterator tInstructionPointer;
+
+	virtual ostream &printOn( ostream & ) const;
+
+  protected:
+	virtual void init();
+
+  protected:
+	bool Initialised;
+	list<TStackOperator *> Program;
+
+  private:
+	// Not implemented yet -- needs deep copy
+	TBitcoinScriptBase( const TBitcoinScriptBase & ) {}
+};
+
+//
+// Class: TBitcoinScript
+// Description:
+//
+class TBitcoinScript : public TBitcoinScriptBase
+{
+  public:
+	TBitcoinScript() {};
+	TBitcoinScript( const TStackOperator **, unsigned int );
+	TBitcoinScript( const string & );
+	~TBitcoinScript();
+	virtual uint32_t getMinimumAcceptedVersion() const = 0;
+
+	istream &read( istream & );
+	ostream &write( ostream & ) const;
+
+  protected:
+	list<const TStackOperatorFromStream *> Templates;
+};
+
+//
+// Class: TBitcoinScript_0
+// Description:
+//
+class TBitcoinScript_0 : public TBitcoinScript
+{
+  public:
+	TBitcoinScript_0();
+	TBitcoinScript_0( const TStackOperator **, unsigned int );
+	TBitcoinScript_0( const string & );
+
+	uint32_t getMinimumAcceptedVersion() const;
+
+  protected:
+	void init();
+};
+
 // -------------
 
 //
@@ -1877,140 +2011,6 @@ class TStackOperator_INTOP_FINALSIGNATURE : public TStackOperatorInternal
 	const char *className() const { return "TStackOperator_INTOP_FINALSIGNATURE"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
-};
-
-// -------------
-
-//
-// Class: TStackElement
-// Description:
-//
-class TStackElement
-{
-  public:
-	virtual TStackElement *clone() const = 0;
-
-	virtual ostream &printOn( ostream & ) const = 0;
-};
-
-//
-// Class: TStackElement_t
-// Description:
-//
-template <typename t>
-class TStackElement_t : public TStackElement
-{
-  public:
-	TStackElement_t( const t &d ) : Data(d) {}
-	TStackElement *clone() const { return new TStackElement_t<t>(*this); }
-
-	ostream &printOn( ostream &s ) const;
-
-  public:
-	t Data;
-};
-typedef TStackElement_t<bool> TStackElementBoolean;
-typedef TStackElement_t<int> TStackElementInteger;
-typedef TStackElement_t<TBigInteger> TStackElementBigInteger;
-typedef TStackElement_t<string> TStackElementString;
-
-
-// -------------
-
-//
-// Class: TExecutionContext
-// Description:
-//
-class TExecutionContext
-{
-  public:
-	TExecutionContext();
-
-	ostream &printOn( ostream &s ) const;
-
-	list<TStackElement*> &operator()() { return Stack; }
-
-	TStackElement *take() { TStackElement *x = Stack.back(); Stack.pop_back(); return x; }
-	void give( TStackElement *s ) { Stack.push_back(s); }
-
-	void setTransaction( TTransaction * );
-
-  public:
-	list<TStackElement*> Stack;
-	list<TStackElement*> AltStack;
-	typedef list<TStackElement*>::iterator iterator;
-	typedef list<TStackElement*>::const_iterator const_iterator;
-
-	TTransaction *Transaction;
-	bool Invalid;
-};
-
-//
-// Class: TBitcoinScriptBase
-// Description:
-//
-class TBitcoinScriptBase
-{
-  public:
-	TBitcoinScriptBase();
-	TBitcoinScriptBase( const TStackOperator **, unsigned int );
-	virtual ~TBitcoinScriptBase();
-
-	void execute( TExecutionContext & ) const;
-
-	void append( TStackOperator *op );
-
-	typedef list<TStackOperator*>::const_iterator tInstructionPointer;
-
-	virtual ostream &printOn( ostream & ) const;
-
-  protected:
-	virtual void init();
-
-  protected:
-	bool Initialised;
-	list<TStackOperator *> Program;
-
-  private:
-	// Not implemented yet -- needs deep copy
-	TBitcoinScriptBase( const TBitcoinScriptBase & ) {}
-};
-
-//
-// Class: TBitcoinScript
-// Description:
-//
-class TBitcoinScript : public TBitcoinScriptBase
-{
-  public:
-	TBitcoinScript() {};
-	TBitcoinScript( const TStackOperator **, unsigned int );
-	TBitcoinScript( const string & );
-	~TBitcoinScript();
-	virtual uint32_t getMinimumAcceptedVersion() const = 0;
-
-	istream &read( istream & );
-	ostream &write( ostream & ) const;
-
-  protected:
-	list<const TStackOperatorFromStream *> Templates;
-};
-
-//
-// Class: TBitcoinScript_0
-// Description:
-//
-class TBitcoinScript_0 : public TBitcoinScript
-{
-  public:
-	TBitcoinScript_0();
-	TBitcoinScript_0( const TStackOperator **, unsigned int );
-	TBitcoinScript_0( const string & );
-
-	uint32_t getMinimumAcceptedVersion() const;
-
-  protected:
-	void init();
 };
 
 
