@@ -278,6 +278,7 @@ class TStackOperator
   public:
 	TStackOperator() {}
 	virtual const char *className() const { return "TStackOperator"; }
+	virtual TStackOperator *clone() const = 0;
 
 	virtual TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer & ) const = 0;
 
@@ -1768,6 +1769,7 @@ class TStackOperatorInternal : public TStackOperator
 class TStackOperator_INTOP_PUSHSUBSCRIPT : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_PUSHSUBSCRIPT(*this); }
 	const char *className() const { return "TStackOperator_INTOP_PUSHSUBSCRIPT"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
@@ -1780,6 +1782,7 @@ class TStackOperator_INTOP_PUSHSUBSCRIPT : public TStackOperatorInternal
 class TStackOperator_INTOP_DELETESIG : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_DELETESIG(*this); }
 	const char *className() const { return "TStackOperator_INTOP_DELETESIG"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
@@ -1792,6 +1795,7 @@ class TStackOperator_INTOP_DELETESIG : public TStackOperatorInternal
 class TStackOperator_INTOP_REMOVEHASHTYPE : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_REMOVEHASHTYPE(*this); }
 	const char *className() const { return "TStackOperator_INTOP_REMOVEHASHTYPE"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
@@ -1804,6 +1808,7 @@ class TStackOperator_INTOP_REMOVEHASHTYPE : public TStackOperatorInternal
 class TStackOperator_INTOP_PUSHCOPYTRANSACTION : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_PUSHCOPYTRANSACTION(*this); }
 	const char *className() const { return "TStackOperator_INTOP_PUSHCOPYTRANSACTION"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
@@ -1816,6 +1821,7 @@ class TStackOperator_INTOP_PUSHCOPYTRANSACTION : public TStackOperatorInternal
 class TStackOperator_INTOP_REMOVECODESEPARATORS : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_REMOVECODESEPARATORS(*this); }
 	const char *className() const { return "TStackOperator_INTOP_REMOVECODESEPARATORS"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
@@ -1828,6 +1834,7 @@ class TStackOperator_INTOP_REMOVECODESEPARATORS : public TStackOperatorInternal
 class TStackOperator_INTOP_REMOVETXSCRIPTS : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_REMOVETXSCRIPTS(*this); }
 	const char *className() const { return "TStackOperator_INTOP_REMOVETXSCRIPTS"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
@@ -1840,6 +1847,7 @@ class TStackOperator_INTOP_REMOVETXSCRIPTS : public TStackOperatorInternal
 class TStackOperator_INTOP_REPLACETXSCRIPT : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_REPLACETXSCRIPT(*this); }
 	const char *className() const { return "TStackOperator_INTOP_REPLACETXSCRIPT"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
@@ -1852,6 +1860,7 @@ class TStackOperator_INTOP_REPLACETXSCRIPT : public TStackOperatorInternal
 class TStackOperator_INTOP_SIGHASH : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_SIGHASH(*this); }
 	const char *className() const { return "TStackOperator_INTOP_SIGHASH"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
@@ -1864,6 +1873,7 @@ class TStackOperator_INTOP_SIGHASH : public TStackOperatorInternal
 class TStackOperator_INTOP_FINALSIGNATURE : public TStackOperatorInternal
 {
   public:
+	TStackOperator *clone() const { return new TStackOperator_INTOP_FINALSIGNATURE(*this); }
 	const char *className() const { return "TStackOperator_INTOP_FINALSIGNATURE"; }
 
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
