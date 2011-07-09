@@ -105,13 +105,9 @@ class TMessageBasedBlock : public TBlock
 	const string &getHash() const;
 	const string &getParentHash() const;
 
-	void setNetworkHash( const string &s ) { NetworkHash = s; }
-	const string &getNetworkHash() const { return NetworkHash; }
-
 	void flush() { cachedHash.clear(); }
 
   protected:
-	string NetworkHash;
 	TMessage_block *Message;
 	mutable string cachedHash;
 };
