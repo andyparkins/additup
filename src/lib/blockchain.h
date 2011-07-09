@@ -156,6 +156,9 @@ class TBlockPool
 
   protected:
 	virtual TBlock *createBlock() = 0;
+
+  protected:
+	set<string> Tips;
 };
 
 //
