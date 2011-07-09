@@ -762,6 +762,16 @@ ostream &TMessage_block::printOn( ostream &s ) const
 {
 	TMessageWithChecksum::printOn(s);
 	s << "{ N=" << Transactions.size();
+	s << "; Merkle=[";
+	vector<TBigInteger>::const_iterator it;
+	for( it = MerkleTree.begin(); it != MerkleTree.end(); it++ )
+		s << hex << (*it) << dec << ", ";
+	s << "]";
+	s << "; TX=[";
+	for( unsigned int i = 0; i < Transactions.size(); i++ ) {
+		s << hex << Transactions[i].getHash() << dec << ", ";
+	}
+	s << "]";
 	s << " }";
 	return s;
 }
