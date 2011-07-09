@@ -1254,14 +1254,14 @@ class TStackOperator_OP_CODESEPARATOR : public TStackOperatorFromOpcode
 // Class: TStackOperator_OP_CHECKSIG
 // Desciption:
 //
-class TStackOperator_OP_CHECKSIG : public TStackOperatorFromOpcode
+class TStackOperator_OP_CHECKSIG : public TStackOperatorFromCompoundOpcode
 {
   public:
 	const char *className() const { return "TStackOperator_OP_CHECKSIG"; }
 	TStackOperatorFromStream *clone() const { return new TStackOperator_OP_CHECKSIG(*this); }
 	eScriptOp getOpcode() const { return OP_CHECKSIG; }
 
-	void execute( TExecutionStack &Stack ) const;
+	istream &readAndAppend( TBitcoinScript *, istream & ) const;
 };
 
 //
@@ -1518,6 +1518,125 @@ class TStackOperator_OP_NOP_N : public TStackOperatorFromOpcodes
 
 	void execute( TExecutionStack &Stack ) const {}
 };
+
+//
+// Class: TStackOperatorInternal
+// Desciption:
+//
+class TStackOperatorInternal : public TStackOperator
+{
+  public:
+	const char *className() const { return "TStackOperatorInternal"; }
+};
+
+//
+// Class: TStackOperator_INTOP_PUSHSUBSCRIPT
+// Desciption:
+//
+class TStackOperator_INTOP_PUSHSUBSCRIPT : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_PUSHSUBSCRIPT"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
+//
+// Class: TStackOperator_INTOP_DELETESIG
+// Desciption:
+//
+class TStackOperator_INTOP_DELETESIG : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_DELETESIG"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
+//
+// Class: TStackOperator_INTOP_REMOVEHASHTYPE
+// Desciption:
+//
+class TStackOperator_INTOP_REMOVEHASHTYPE : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_REMOVEHASHTYPE"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
+//
+// Class: TStackOperator_INTOP_PUSHCOPYTRANSACTION
+// Desciption:
+//
+class TStackOperator_INTOP_PUSHCOPYTRANSACTION : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_PUSHCOPYTRANSACTION"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
+//
+// Class: TStackOperator_INTOP_REMOVECODESEPARATORS
+// Desciption:
+//
+class TStackOperator_INTOP_REMOVECODESEPARATORS : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_REMOVECODESEPARATORS"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
+//
+// Class: TStackOperator_INTOP_REMOVETXSCRIPTS
+// Desciption:
+//
+class TStackOperator_INTOP_REMOVETXSCRIPTS : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_REMOVETXSCRIPTS"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
+//
+// Class: TStackOperator_INTOP_REPLACETXSCRIPT
+// Desciption:
+//
+class TStackOperator_INTOP_REPLACETXSCRIPT : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_REPLACETXSCRIPT"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
+//
+// Class: TStackOperator_INTOP_SIGHASH
+// Desciption:
+//
+class TStackOperator_INTOP_SIGHASH : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_SIGHASH"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
+//
+// Class: TStackOperator_INTOP_FINALSIGNATURE
+// Desciption:
+//
+class TStackOperator_INTOP_FINALSIGNATURE : public TStackOperatorInternal
+{
+  public:
+	const char *className() const { return "TStackOperator_INTOP_FINALSIGNATURE"; }
+
+	TBitcoinProgram::tInstructionPointer &execute( TExecutionStack &Stack ) const;
+};
+
 
 // -------------- Template instantiations
 
@@ -3085,19 +3204,20 @@ void TStackOperator_OP_CODESEPARATOR::execute( TExecutionStack &Stack ) const
 // 8. The script for the current transaction input in txCopy is set to
 //    subScript
 //
-void TStackOperator_OP_CHECKSIG::execute( TExecutionStack &Stack ) const
+istream &TStackOperator_OP_CHECKSIG::readAndAppend( TBitcoinScript *Script, istream &is ) const
 {
-	auto_ptr<TStackElement> pk( Stack.take() );
-	auto_ptr<TStackElement> s( Stack.take() );
-	TStackElementString *PublicKey = dynamic_cast<TStackElementString*>(pk.get());
-	TStackElementString *Signature = dynamic_cast<TStackElementString*>(s.get());
-
-	if( PublicKey == NULL || Signature == NULL )
-		throw script_run_error( "Invalid parameter type given to OP_CHECKSIG" );
-
-	bool Verified = false;
-
-	Stack.give( new TStackElementBoolean( Verified ) );
+	// Read the opcode
+	TStackOperatorFromCompoundOpcode::readAndAppend( Script, is );
+	Script->append( new TStackOperator_INTOP_PUSHSUBSCRIPT );
+	Script->append( new TStackOperator_INTOP_DELETESIG );
+	Script->append( new TStackOperator_INTOP_REMOVEHASHTYPE );
+	Script->append( new TStackOperator_INTOP_PUSHCOPYTRANSACTION );
+	Script->append( new TStackOperator_INTOP_REMOVECODESEPARATORS );
+	Script->append( new TStackOperator_INTOP_REMOVETXSCRIPTS );
+	Script->append( new TStackOperator_INTOP_REPLACETXSCRIPT );
+	Script->append( new TStackOperator_INTOP_SIGHASH );
+	Script->append( new TStackOperator_INTOP_FINALSIGNATURE );
+	return is;
 }
 
 //
@@ -3229,6 +3349,84 @@ void TStackOperator_OP_RESERVED2::execute( TExecutionStack &Stack ) const
 {
 	Stack.Invalid = true;
 	throw script_run_verify_error();
+}
+
+// ---------
+
+//
+// Function:  TStackOperator_INTOP_PUSHSUBSCRIPT
+// Operation:
+void TStackOperator_INTOP_PUSHSUBSCRIPT::execute( TExecutionStack &Stack ) const
+{
+}
+
+//
+// Function:  TStackOperator_INTOP_DELETESIG
+// Operation:
+void TStackOperator_INTOP_DELETESIG::execute( TExecutionStack &Stack ) const
+{
+}
+
+//
+// Function:  TStackOperator_INTOP_REMOVEHASHTYPE
+// Operation:
+void TStackOperator_INTOP_REMOVEHASHTYPE::execute( TExecutionStack &Stack ) const
+{
+}
+
+//
+// Function:  TStackOperator_INTOP_PUSHCOPYTRANSACTION
+// Operation:
+void TStackOperator_INTOP_PUSHCOPYTRANSACTION::execute( TExecutionStack &Stack ) const
+{
+}
+
+//
+// Function:  TStackOperator_INTOP_REMOVECODESEPARATORS
+// Operation:
+void TStackOperator_INTOP_REMOVECODESEPARATORS::execute( TExecutionStack &Stack ) const
+{
+}
+
+//
+// Function:  TStackOperator_INTOP_REMOVETXSCRIPTS
+// Operation:
+void TStackOperator_INTOP_REMOVETXSCRIPTS::execute( TExecutionStack &Stack ) const
+{
+}
+
+//
+// Function:  TStackOperator_INTOP_REPLACETXSCRIPT
+// Operation:
+void TStackOperator_INTOP_REPLACETXSCRIPT::execute( TExecutionStack &Stack ) const
+{
+}
+
+//
+// Function:  TStackOperator_INTOP_SIGHASH
+// Operation:
+void TStackOperator_INTOP_SIGHASH::execute( TExecutionStack &Stack ) const
+{
+}
+
+//
+// Function:  TStackOperator_INTOP_FINALSIGNATURE
+// Operation:
+void TStackOperator_INTOP_FINALSIGNATURE::execute( TExecutionStack &Stack ) const
+{
+	// XXX: COMPLETELY WRONG
+
+	auto_ptr<TStackElement> pk( Stack.take() );
+	auto_ptr<TStackElement> s( Stack.take() );
+	TStackElementString *PublicKey = dynamic_cast<TStackElementString*>(pk.get());
+	TStackElementString *Signature = dynamic_cast<TStackElementString*>(s.get());
+
+	if( PublicKey == NULL || Signature == NULL )
+		throw script_run_error( "Invalid parameter type given to OP_CHECKSIG" );
+
+	bool Verified = false;
+
+	Stack.give( new TStackElementBoolean( Verified ) );
 }
 
 
