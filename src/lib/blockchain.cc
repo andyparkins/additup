@@ -362,6 +362,28 @@ bool TBlockMemoryPool::blockExists( const string &hash ) const
 	return (it != Pool.end());
 }
 
+//
+// Function:	TBlockMemoryPool :: scanForNewChildLinks
+// Description:
+//
+void TBlockMemoryPool::scanForNewChildLinks()
+{
+	map<string, TBlock*>::iterator it;
+
+	for( it = Pool.begin(); it != Pool.end(); it++ ) {
+		TBlock *CurrentBlock = it->second;
+		if( CurrentBlock == NULL )
+			continue;
+
+		TBlock *ParentBlock = getBlock( CurrentBlock->getParentHash() );
+		if( ParentBlock != NULL )
+			continue;
+
+		// Tell the parent about the child
+		ParentBlock->registerChild( CurrentBlock );
+	}
+}
+
 // ---------
 
 #if 0
@@ -388,6 +410,14 @@ TDatabaseBlockPool::~TDatabaseBlockPool()
 TBlock *TDatabaseBlockPool::createBlock()
 {
 	return new TDatabaseBlock( this );
+}
+
+//
+// Function:	TDatabaseBlockPool :: scanForNewChildLinks
+// Description:
+//
+void TDatabaseBlockPool::scanForNewChildLinks()
+{
 }
 #endif
 

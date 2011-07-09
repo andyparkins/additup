@@ -154,7 +154,8 @@ class TBlockPool
 	virtual TBlock *getBlock( const string & ) const = 0;
 	virtual bool blockExists( const string & ) const = 0;
 
-  protected:
+	virtual void scanForNewChildLinks() = 0;
+
 	virtual TBlock *createBlock() = 0;
 
   protected:
@@ -175,7 +176,8 @@ class TBlockMemoryPool : public TBlockPool
 	TBlock *getBlock( const string & ) const;
 	bool blockExists( const string & ) const;
 
-  protected:
+	void scanForNewChildLinks();
+
 	TBlock *createBlock();
 
   protected:
@@ -197,7 +199,8 @@ class TDatabaseBlockPool : public TBlockPool
 	TBlock *getBlock( const string & ) const;
 	bool blockExists( const string & ) const;
 
-  protected:
+	void scanForNewChildLinks();
+
 	TBlock *createBlock();
 
   protected:
