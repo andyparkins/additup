@@ -85,12 +85,13 @@ void TBlock::fit()
 	if( Parent == NULL ) {
 		// The fact that this parent hash is even mentioned means that
 		// we'll note its existence in the pool, and expect it to appear
-		// later
-		Pool->putBlock( getParentHash(), NULL );
-	} else {
-		// We are a child of our parent, tell it so
-		Parent->registerChild( this );
+		// later.  This lets us record the child relationship in advance
+		Parent = Pool->createBlock();
+		Pool->putBlock( getParentHash(), Parent );
 	}
+
+	// We are a child of our parent, tell it so
+	Parent->registerChild( this );
 }
 
 // ---------
