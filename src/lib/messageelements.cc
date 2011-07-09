@@ -29,6 +29,7 @@
 // --- Project
 #include "script.h"
 #include "crypto.h"
+#include "logstream.h"
 
 
 // -------------- Namespace
@@ -222,7 +223,31 @@ const TBigInteger &TTransactionElement::getHash() const
 	ostringstream oss;
 	write(oss);
 
-	cachedHash.fromBytes( Hasher->transform(oss.str()) );
+	log() << __PRETTY_FUNCTION__ << " transaction bytes ";
+	TLog::hexify( log(), oss.str() );
+	log() << endl;
+
+	string digest = Hasher->transform(oss.str());
+
+	// e.g. SHA256(SHA256()) is 32 bytes
+	// 96 3f a3 b0 8b 82 37 07
+	// 32 37 83 88 99 a1 3f 91
+	// 94 eb 17 4e 84 c4 7e b5
+	// 52 67 2f 76 6d 9d 82 36
+//	log() << __PRETTY_FUNCTION__ << " digest bytes ";
+//	TLog::hexify( log(), digest );
+//	log() << endl;
+
+	cachedHash.fromBytes( digest );
+
+	// e.g. as a number, should stay the same
+	// 9f3fa3b08b823707
+	// 3237838899a13f91
+	// 94eb174e84c47eb5
+	// 52672f766d9d8236
+//	log() << __PRETTY_FUNCTION__ << " big integer ";
+//	log() << hex << cachedHash << dec;
+//	log() << endl;
 
 	return cachedHash;
 }
