@@ -185,38 +185,120 @@ TBlockPool::TBlockPool()
 //
 TBlockPool::~TBlockPool()
 {
+}
+
+//
+// Function:	TBlockPool :: receiveBlock
+// Description:
+//
+void TBlockPool::receiveBlock( const string &NetworkHash, TMessage_block *message )
+{
+	// Create a new block
+	TBlock *thisBlock = createBlock();
+
+	// Show it the message (this allows it to calculate its hash)
+	thisBlock->updateFromMessage( NetworkHash, message );
+
+	// See if we already have this block
+	TBlock *existingBlock = getBlock( thisBlock->getHash() );
+	if( existingBlock == NULL ) {
+		// If so, discard the received update, and use the pooled
+		// version instead.  We do it this way around, as the already
+		// stored version can have information we might not have to
+		// hand; but we can easily supply that stored version the
+		// information we _do_ have to hand.
+		delete thisBlock;
+		thisBlock = existingBlock;
+		// Let the existing block have a look at the message as well
+		thisBlock->updateFromMessage( NetworkHash, message );
+	} else {
+		// If not, store the new block in the pool
+		putBlock( thisBlock->getHash(), thisBlock );
+	}
+
+	// Now try and fit this block into the chain, given the new
+	// information supplied in the message
+	thisBlock->fit();
+}
+
+// ---------
+
+//
+// Function:	TMemoryBlockPool :: TMemoryBlockPool
+// Description:
+//
+TMemoryBlockPool::TMemoryBlockPool()
+{
+}
+
+//
+// Function:	TMemoryBlockPool :: ~TMemoryBlockPool
+// Description:
+//
+TMemoryBlockPool::~TMemoryBlockPool()
+{
 	// delete the pool
 	while( !Pool.empty() ) {
-		delete *(Pool.begin());
+		delete Pool.begin()->second;
 		Pool.erase( Pool.begin() );
 	}
 }
 
 //
-// Function:	TBlockPool :: block
+// Function:	TMemoryBlockPool :: createBlock
 // Description:
 //
-void TBlockPool::block( TMessage_block *message )
+TBlock *TMemoryBlockPool::createBlock()
 {
-	TBlock *newblock;
-	newblock = new TBlock( this );
+	return new TMessageBasedBlock( this );
+}
 
-	// Store the block against its own hash in the map
-	Pool[newblock->getCalculatedHash()] = newblock;
-
-	// The map makes it easier for us to do lookups, so we can find a
-	// parent and children easily
-
-	// Find our parent
+//
+// Function:	TMemoryBlockPool :: putBlock
+// Description:
+//
+void TMemoryBlockPool::putBlock( TBlock *Block )
+{
 	map<string, TBlock*>::iterator it;
-	it = Pool.find( newblock->getParentHash() );
 
-	if( it != Pool.end() ) {
-		// If it's found then we set it to the new block's parent
-		newblock->Parent = (*it);
-		// ... and add ourselves as its child
-		Parent->addChild( newblock );
+	it = Pool.find( Block->getHash() );
+
+	if( it == Pool.end() ) {
+		Pool[Block->getHash()] = Block;
+	} else {
+		// Replace the existing block -- it's the caller's duty to
+		// update rather than replace if that's their wish
+		delete it->second;
+		it->second = Block;
 	}
+}
+
+//
+// Function:	TMemoryBlockPool :: getBlock
+// Description:
+//
+TBlock *TMemoryBlockPool::getBlock( const string &hash ) const
+{
+	map<string, TBlock*>::const_iterator it;
+
+	it = Pool.find( hash );
+	if( it == Pool.end() ) {
+		return NULL;
+	} else {
+		return it->second;
+	}
+}
+
+//
+// Function:	TMemoryBlockPool :: blockExists
+// Description:
+//
+bool TMemoryBlockPool::blockExists( const string &hash ) const
+{
+	map<string, TBlock*>::const_iterator it;
+
+	it = Pool.find( hash );
+	return (it != Pool.end());
 }
 
 

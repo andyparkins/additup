@@ -125,12 +125,39 @@ class TBlockPool
 {
   public:
 	TBlockPool();
+	virtual ~TBlockPool();
 
-	void block( TMessage_block * );
+	void receiveBlock( const string &, TMessage_block * );
 
-  protected;
+	virtual void putBlock( const string &, TBlock * ) = 0;
+	virtual TBlock *getBlock( const string & ) const = 0;
+	virtual bool blockExists( const string & ) const = 0;
+
+  protected:
+	virtual TBlock *createBlock() = 0;
+};
+
+//
+// Class:	TMemoryBlockPool
+// Description:
+//
+class TMemoryBlockPool : public TBlockPool
+{
+  public:
+	TMemoryBlockPool();
+	~TMemoryBlockPool();
+
+	void putBlock( TBlock * );
+	TBlock *getBlock( const string & ) const;
+	bool blockExists( const string & ) const;
+
+  protected:
+	TBlock *createBlock();
+
+  protected:
 	map<string, TBlock*> Pool;
 };
+
 
 // -------------- Constants
 
