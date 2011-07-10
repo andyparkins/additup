@@ -77,12 +77,14 @@ TMessage *TMessageFactory::answer( TMessage *Message )
 {
 	if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
-	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
-		// RX< version209
-		// TX> verack
-		return new TMessage_verack();
-	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
-		// No response needed
+//	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
+//		// RX< version209
+//		// TX> verack
+//		return new TMessage_verack();
+//	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
+//		// No response needed
+//	} else if( dynamic_cast<TMessage_verack*>( Message ) != NULL ) {
+//		// No response needed
 	} else if( dynamic_cast<TMessage_inv*>( Message ) != NULL ) {
 		// RX< inv
 		// TX> getdata
@@ -123,8 +125,6 @@ TMessage *TMessageFactory::answer( TMessage *Message )
 	} else if( dynamic_cast<TMessage_block*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
-		// No response needed
-	} else if( dynamic_cast<TMessage_verack*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
 		// No response needed
@@ -376,8 +376,8 @@ TBitcoinScript *TMessageFactory_0::createVersionedBitcoinScript() const
 //
 void TMessageFactory_10600::init()
 {
-	Templates.push_back( new TMessage_version_10600() );
-	Templates.push_back( new TMessage_verack() );
+//	Templates.push_back( new TMessage_version_10600() );
+//	Templates.push_back( new TMessage_verack() );
 	Templates.push_back( new TMessage_addr_0() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );
@@ -411,8 +411,8 @@ TBitcoinScript *TMessageFactory_10600::createVersionedBitcoinScript() const
 //
 void TMessageFactory_20900::init()
 {
-	Templates.push_back( new TMessage_version_20900() );
-	Templates.push_back( new TMessage_verack() );
+//	Templates.push_back( new TMessage_version_20900() );
+//	Templates.push_back( new TMessage_verack() );
 	Templates.push_back( new TMessage_addr_0() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );
@@ -446,8 +446,8 @@ TBitcoinScript *TMessageFactory_20900::createVersionedBitcoinScript() const
 //
 void TMessageFactory_31402::init()
 {
-	Templates.push_back( new TMessage_version_20900() );
-	Templates.push_back( new TMessage_verack() );
+//	Templates.push_back( new TMessage_version_20900() );
+//	Templates.push_back( new TMessage_verack() );
 	Templates.push_back( new TMessage_addr_31402() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );
