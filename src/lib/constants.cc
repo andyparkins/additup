@@ -399,16 +399,20 @@ int main( int argc, char *argv[] )
 //	}
 
 	try {
+		log() << "--- Parameters" << endl;
+
 		// String genesisHash = n.genesisBlock.getHashAsString();
 		// assert genesisHash.equals("00000007199508e34a9ff81e6ec0c477a4cccff2a4767a8eee39c11db367b008");
-		log() << "NETWORK_TESTNET->genesisBlock.hash = ";
-		TLog::hexify( log(), NETWORK_TESTNET->GenesisBlock->getHash() );
+		log() << "NETWORK_TESTNET->genesisBlock = ";
+		NETWORK_TESTNET->GenesisBlock->printOn( log() );
+		log() << endl;
+
 		log() << endl;
 
 		// String genesisHash = n.genesisBlock.getHashAsString();
 		// assert genesisHash.equals("000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f") : genesisHash;
-		log() << "NETWORK_PRODNET->genesisBlock.hash = ";
-		TLog::hexify( log(), NETWORK_PRODNET->GenesisBlock->getHash() );
+		log() << "NETWORK_PRODNET->genesisBlock = ";
+		NETWORK_PRODNET->GenesisBlock->printOn( log() );
 		log() << endl;
 
 	} catch( std::exception &e ) {
