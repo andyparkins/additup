@@ -54,18 +54,19 @@ ifdef strict
 	CFLAGS += -Wshorten-64-to-32
 endif
 
+default: build
+
 # Per-module Makefile components
 -include $(OBJS:.o=.mak)
 
 # Auto generated dependencies
 include depends.mak
 
-default: build
-
 info:
 	@echo "--- INFO (make)"
 	@echo "PLATFORM   = $(PLATFORM)"
 	@echo "PROJECT    = $(PROJECT)$(VERSIONSTRING)"
+	@echo "LIBNAME    = $(LIBNAME)"
 	@echo "CXXFLAGS   = $(CXXFLAGS)"
 	@echo "--- INFO (end)"
 
