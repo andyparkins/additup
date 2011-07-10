@@ -756,7 +756,7 @@ void TMessage_block::setMerkleRoot()
 	// The last item in the merkle tree is the root.  We simply copy it
 	// to the block header
 
-	blockHeader().MerkleRoot = MerkleTree.back().reversedBytes().toBytes();
+	blockHeader().MerkleRoot = MerkleTree.back();
 }
 
 //
