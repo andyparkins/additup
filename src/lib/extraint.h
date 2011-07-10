@@ -261,6 +261,7 @@ class TGenericBigSignedInteger : public TGenericBigInteger<tLittleInteger>
 	TGenericBigSignedInteger operator-() const;
 	TGenericBigSignedInteger operator<<( tIndex b ) const { return TGenericBigSignedInteger(*this) <<= b; };
 	TGenericBigSignedInteger operator>>( tIndex b ) const { return TGenericBigSignedInteger(*this) >>= b; };
+	TGenericBigSignedInteger reversedBytes() const;
 
 	// Comparison
 	eComparisonResult compareTo( const TGenericBigSignedInteger & ) const;

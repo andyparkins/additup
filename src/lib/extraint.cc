@@ -1706,6 +1706,18 @@ TGenericBigSignedInteger<tLittleInteger>::operator-() const
 }
 
 //
+// Function:	TGenericBigSignedInteger :: reversedBytes
+// Description:
+//
+template <typename tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>
+TGenericBigSignedInteger<tLittleInteger>::reversedBytes() const
+{
+	TGenericBigSignedInteger<tLittleInteger> X( TGenericBigInteger<tLittleInteger>::reversedBytes() );
+	return X;
+}
+
+//
 // Function:	TGenericBigSignedInteger :: operator<<=
 // Description:
 /// Implement A = A << B
