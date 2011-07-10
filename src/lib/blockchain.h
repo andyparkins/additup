@@ -86,6 +86,7 @@ class TBlock
 
 	void fit();
 
+//	bool hasChild( const TBigInteger &s ) const;
 	bool hasChildren() const { return !ChildHashes.empty(); }
 	unsigned int childCount() const { return ChildHashes.size(); }
 
