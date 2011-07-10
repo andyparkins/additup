@@ -146,6 +146,15 @@ const TMessageFactory *TMessage::factory() const
 }
 
 //
+// Function:	TMessage :: setHeader
+// Description:
+//
+void TMessage::setHeader()
+{
+	MessageHeader.Command = commandString();
+}
+
+//
 // Function:	TMessage :: acceptCommandCode
 // Description:
 //
@@ -277,6 +286,8 @@ void TMessageWithChecksum::verifyPayloadChecksum() const
 //
 void TMessageWithChecksum::setHeader()
 {
+	TMessage::setHeader();
+
 	// Write the message to a buffer
 	ostringstream oss;
 	write( oss );

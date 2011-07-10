@@ -139,6 +139,8 @@ class TMessage
 	void setTemplate( bool b ) const { TemplateMessage = b; }
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
+	void setHeader();
+
   protected:
 	virtual bool acceptCommandCode( const string & ) const;
 	virtual const char *commandString() const = 0;
