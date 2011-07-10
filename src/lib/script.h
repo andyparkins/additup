@@ -2095,6 +2095,47 @@ class TStackOperator_INTOP_FINALSIGNATURE : public TStackOperatorInternal
 	TBitcoinScript::tInstructionPointer execute( TExecutionContext &, const TBitcoinScript::tInstructionPointer &ip ) const;
 };
 
+////
+//// Class:	TScriptPatternElement
+//// Description:
+////
+//class TScriptPatternElement
+//{
+//  public:
+//	TScriptPatternElement();
+//	TScriptPatternElement *clone() { return TScriptPatternElement(*this); }
+//
+//	bool is( TStackOperator * ) const = 0;
+//};
+//
+////
+//// Class:	TScriptPatternOperatorElement
+//// Description:
+////
+//class TScriptPatternOperatorElement
+//{
+//  public:
+//	TScriptPatternElement( TStackOperator * );
+//	TScriptPatternElement *clone() { return TScriptPatternOperatorElement(*this); }
+//
+//  protected:
+//
+//};
+//
+//
+//
+////
+//// Class:	TScriptPattern
+//// Description:
+////
+//class TScriptPattern
+//{
+//  public:
+//	void push( TScriptPatternElement * );
+//
+//	bool is( TBitcoinScript * ) const;
+//};
+
 
 // -------------- Constants
 
