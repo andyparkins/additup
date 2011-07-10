@@ -21,6 +21,8 @@
 // --- C
 // --- C++
 #include <string>
+#include <map>
+#include <set>
 // --- Qt
 // --- OS
 // --- Project lib
@@ -70,16 +72,40 @@ class TBlock
 {
   public:
 	TBlock( TBlockPool * );
-	~TBlock();
+	virtual ~TBlock();
 
-	void setMessage( const TMessage_block * );
+	virtual void updateFromMessage( const string &, const TMessage_block * ) = 0;
+
+	virtual const string &getHash() const = 0;
+	virtual const string &getParentHash() const = 0;
+	virtual void registerChild( TBlock * );
+
+	void fit();
+
+  protected:
+	TBlockPool *Pool;
+
+	TBlock *Parent;
+	set<string> ChildHashes;
+};
+
+//
+// Class:	TMessageBasedBlock
+// Description:
+//
+class TMessageBasedBlock : public TBlock
+{
+  public:
+	TMessageBasedBlock( TBlockPool * );
+	~TMessageBasedBlock();
+
+	void updateFromMessage( const string &, const TMessage_block * );
+
+	const string &getHash() const;
+	const string &getParentHash() const;
 
 	void setNetworkHash( const string &s ) { NetworkHash = s; }
 	const string &getNetworkHash() const { return NetworkHash; }
-	const string &getCalculatedHash() const;
-
-	const string &getParentHash() const {
-		return Message->BlockHeader.PreviousBlock; }
 
 	void flush() { cachedHash.clear(); }
 
@@ -87,12 +113,9 @@ class TBlock
 	string NetworkHash;
 	TMessage_block *Message;
 	mutable string cachedHash;
-
-	TBlockPool *Pool;
-
-	TBlock *Parent;
-	list<TBlock*> Children;
 };
+
+// ---------
 
 //
 // Class:	TBlockPool

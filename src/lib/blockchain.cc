@@ -45,7 +45,6 @@
 // Description:
 //
 TBlock::TBlock( TBlockPool *p ) :
-	Message( NULL ),
 	Pool( p ),
 	Parent( NULL )
 {
@@ -57,17 +56,74 @@ TBlock::TBlock( TBlockPool *p ) :
 //
 TBlock::~TBlock()
 {
+}
+
+//
+// Function:	TBlock :: registerChild
+// Description:
+//
+void TBlock::registerChild( TBlock *Child )
+{
+	ChildHashes.insert(Child->getHash());
+}
+
+//
+// Function:	TBlock :: fit
+// Description:
+//
+void TBlock::fit()
+{
+	// Sanity check
+	if( Parent == NULL ) {
+		Parent = Pool->getBlock( getParentHash() );
+	} else if( Parent != Pool->getBlock( getParentHash() ) ) {
+		throw runtime_error( "Block already has a parent; can't be different" );
+	}
+
+	// Our parent is not in the pool.  That's okay, it's possible for a
+	// child to be seen before a parent.
+	if( Parent == NULL ) {
+		// The fact that this parent hash is even mentioned means that
+		// we'll note its existence in the pool, and expect it to appear
+		// later
+		Pool->putBlock( getParentHash(), NULL );
+	} else {
+		// We are a child of our parent, tell it so
+		Parent->registerChild( this );
+	}
+}
+
+// ---------
+
+//
+// Function:	TMessageBasedBlock :: TMessageBasedBlock
+// Description:
+//
+TMessageBasedBlock::TMessageBasedBlock( TBlockPool *p ) :
+	TBlock( p ),
+	Message( NULL )
+{
+}
+
+//
+// Function:	TMessageBasedBlock :: ~TMessageBasedBlock
+// Description:
+//
+TMessageBasedBlock::~TMessageBasedBlock()
+{
 	delete Message;
 }
 
 //
-// Function:	TBlock :: setMessage
+// Function:	TMessageBasedBlock :: setMessage
 // Description:
 //
-void TBlock::setMessage( const TMessage_block *m )
+void TMessageBasedBlock::updateFromMessage( const string &hash, const TMessage_block *m )
 {
-	if( Message != NULL )
+	if( Message != NULL ) {
+		// XXX: Merge incoming message into existing message?
 		delete Message;
+	}
 
 	if( m == NULL ) {
 		Message = NULL;
@@ -76,14 +132,17 @@ void TBlock::setMessage( const TMessage_block *m )
 
 	// Copy the block message.  It's important that we use clone() in
 	// case there are multiple versions of TMessage_block in the future.
+	// The type-abusing reinterpret_cast<> is justified because we were
+	// given a TMessage_block as a parameter; it's just that clone()
+	// returns a TMessage, so must be coerced back to TMessage_block.
 	Message = reinterpret_cast<TMessage_block*>( m->clone() );
 }
 
 //
-// Function:	TBlock :: getCalculatedHash
+// Function:	TBlock :: getHash
 // Description:
 //
-const string &TBlock::getCalculatedHash() const
+const string &TMessageBasedBlock::getHash() const
 {
 	// If we've already calculated it, then return that
 	if( !cachedHash.empty() )
@@ -94,10 +153,20 @@ const string &TBlock::getCalculatedHash() const
 
 	// Messages are already version enabled; to enable future alteration
 	// of block hashing method, we'll defer to the message itself for
-	// this calculation
+	// this calculation, which saves us needing to implement another
+	// versioned infrastructure
 	cachedHash = Message->calculateHash();
 
 	return cachedHash;
+}
+
+//
+// Function:	TBlock :: getParentHash
+// Description:
+//
+const string &TMessageBasedBlock::getParentHash() const
+{
+	return Message->blockHeader().PreviousBlock.getValue();
 }
 
 // ---------
