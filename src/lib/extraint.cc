@@ -421,6 +421,45 @@ TGenericBigInteger<tLittleInteger>::fromBytes( const string &s )
 	return *this;
 }
 
+////
+//// Function:	TGenericBigInteger :: fractionalise
+//// Description:
+////
+//template <typename tLittleInteger>
+//double TGenericBigInteger<tLittleInteger>::fractionalise( tIndex fixedPoint )
+//{
+//	// fixedPoint tells us what bit to use as the binary point, where
+//	// zero is integer
+//
+//	// IEEE-754
+//	// http://en.wikipedia.org/wiki/Double_precision
+//	// 1 sign bit
+//	// 11 exponent bits
+//	// 52 mantissa bits (with one implied 1 at the front, making 53
+//	// total)
+//
+//	// Now we want to make our big integer conform, accepting that
+//	// we'll lose a bit of precision
+//	TGenericBigInteger<tLittleInteger> Work( *this );
+//	tIndex highestBit = Work.highestBit();
+//	double Accumulator = 0, y = 1;
+//
+//	// We want the highest bit in the 53rd bit
+//	Work >>= highestBit - 53;
+//	do {
+//		// Apply a block
+//		Accumulator += getBlock(0) * y;
+//		// Next block
+//		Work.blockShiftRight(1);
+//		// A block is different size depending on the size of
+//		// tLittleInteger, we need to be generic, so we need a loop, and
+//		// hope the compiler optimises this constant multiplication out
+//		for( unsigned int i = 0; i < sizeof(tLittleInteger); i++ )
+//			y *= 256;
+//		highestBit -= bitsPerBlock;
+//	} while( highestBit > bitsPerBlock );
+//}
+
 //
 // Function:	TGenericBigInteger :: operator=
 // Description:

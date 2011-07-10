@@ -172,6 +172,8 @@ class TGenericBigInteger
 	string toBytes(unsigned int = 0) const;
 	TGenericBigInteger &fromString( const string &, unsigned int = 10 );
 
+//	double fractionalise( tIndex ) const;
+
   protected:
 	void normalise();
 
