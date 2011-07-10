@@ -223,9 +223,38 @@ const TBigInteger &TTransactionElement::getHash() const
 	ostringstream oss;
 	write(oss);
 
-	log() << __PRETTY_FUNCTION__ << " transaction bytes ";
-	TLog::hexify( log(), oss.str() );
-	log() << endl;
+//	log() << __PRETTY_FUNCTION__ << " transaction bytes ";
+//	TLog::hexify( log(), oss.str() );
+//	log() << endl;
+//
+//	log() << "  for transaction {V=" << Version.getValue()
+//		<< "; Ni=" << Inputs.size()
+//		<< "; {";
+//	for(unsigned int i = 0; i < Inputs.size(); i++ ) {
+//		log() << i << ":" << hex << Inputs[i].OutPoint.TransactionHash.get() << dec
+//			<< "." << (int)(Inputs[i].OutPoint.Index)
+//			<< " ";
+//	}
+//	log() << "}"
+//		<< "; No=" << Outputs.size()
+//		<< "; {";
+//	for(unsigned int i = 0; i < Outputs.size(); i++ ) {
+//		log() << "value" << i << ":" << hex << Outputs[i].getValue() << dec << " ";
+//	}
+//	log() << "}; Locktime=" << LockTime.getValue() << "}" << endl;
+
+	// Version             = 01 00 00 00
+	// TX_In.Count         = 01
+	// TX_In[0].Outhash    = a1 a0 99 98 97 96 95 94 93 92 91 90 89 88 87 86 85 84 83 82 81 80 79 78 77 76 75 74 73 72 71 70
+	// TX_In[0].Outref     = 00 00 00 00
+	// TX_In[0].ScriptLen  = 4d
+	// TX_In[0].Script     = 04 ff ff 00 1d 01 04 45 54 68 65 20 54 69 6d 65 73 20 30 33 2f 4a 61 6e 2f 32 30 30 39 20 43 68 61 6e 63 65 6c 6c 6f 72 20 6f 6e 20 62 72 69 6e 6b 20 6f 66 20 73 65 63 6f 6e 64 20 62 61 69 6c 6f 75 74 20 66 6f 72 20 62 61 6e 6b 73
+	// TX_In[0].Sequence   = ff ff ff ff
+	// TX_Out.Count        = 01
+	// TX_Out[0].Value     = 00 f2 05 2a 01 00 00 00
+	// TX_Out[0].ScriptLen = 43
+	// TX_Out[0].Script    = 41 04 67 8a fd b0 fe 55 48 27 19 67 f1 a6 71 30 b7 10 5c d6 a8 28 e0 39 09 a6 79 62 e0 ea 1f 61 de b6 49 f6 bc 3f 4c ef 38 c4 f3 55 04 e5 1e c1 12 de 5c 38 4d f7 ba 0b 8d 57 8a 4c 70 2b 6b f1 1d 5f ac
+	// LockTime            = 00 00 00 00
 
 	string digest = Hasher->transform(oss.str());
 
