@@ -172,7 +172,7 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 
 		// We're done, update calculated fields
 		message.setMerkleRoot();
-		message.setHeader();
+		message.setFields();
 
 		TBitcoinHash GenesisHash;
 		GenesisHash.fromBytes(
@@ -219,7 +219,7 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 
 		// We're done, update calculated fields
 		message.setMerkleRoot();
-		message.setHeader();
+		message.setFields();
 
 		TBitcoinHash GenesisHash;
 		GenesisHash.fromBytes(

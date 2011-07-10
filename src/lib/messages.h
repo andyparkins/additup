@@ -139,7 +139,7 @@ class TMessage
 	void setTemplate( bool b ) const { TemplateMessage = b; }
 	void setPeer( TBitcoinPeer *p ) { Peer = p; }
 
-	void setHeader();
+	virtual void setFields();
 
   protected:
 	virtual bool acceptCommandCode( const string & ) const;
@@ -189,7 +189,7 @@ class TMessageWithChecksum : public TMessage
 
 	unsigned int getMessageSize() { return TMessage::getMessageSize() + 4; }
 
-	void setHeader();
+	void setFields();
 
   protected:
 	void verifyPayloadChecksum() const;

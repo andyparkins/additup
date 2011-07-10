@@ -146,10 +146,10 @@ const TMessageFactory *TMessage::factory() const
 }
 
 //
-// Function:	TMessage :: setHeader
+// Function:	TMessage :: setFields
 // Description:
 //
-void TMessage::setHeader()
+void TMessage::setFields()
 {
 	MessageHeader.Command = commandString();
 }
@@ -281,12 +281,12 @@ void TMessageWithChecksum::verifyPayloadChecksum() const
 }
 
 //
-// Function:	TMessageWithChecksum :: setHeader
+// Function:	TMessageWithChecksum :: setFields
 // Description:
 //
-void TMessageWithChecksum::setHeader()
+void TMessageWithChecksum::setFields()
 {
-	TMessage::setHeader();
+	TMessage::setFields();
 
 	// Write the message to a buffer
 	ostringstream oss;
