@@ -136,6 +136,21 @@ const TNetworkParameters *TBitcoinPeer::getNetworkParameters() const
 }
 
 //
+// Function:	TBitcoinPeer :: nextOutgoing
+// Description:
+//
+TMessage *TBitcoinPeer::nextOutgoing()
+{
+	if( OutgoingQueue.empty() )
+		return NULL;
+
+	TMessage *m = OutgoingQueue.front();
+	OutgoingQueue.pop_front();
+
+	return m;
+}
+
+//
 // Function:	TBitcoinPeer :: receive
 // Description:
 // receive() passes incoming bytes to the appropriate factory, creating
@@ -308,6 +323,7 @@ void TBitcoinPeer::receive( const string &s )
 
 #ifdef UNITTEST
 #include <iostream>
+#include <sstream>
 #include "unittest.h"
 #include "logstream.h"
 #include "bitcoinnetwork.h"
@@ -326,6 +342,14 @@ int main( int argc, char *argv[] )
 			log() << "[TEST] RX< " << p->size() << " bytes" << endl;
 			Peer.receive( *p );
 			p++;
+
+			ostringstream oss;
+			TMessage *out = Peer.nextOutgoing();
+			if( out != NULL ) {
+				out->write( oss );
+				log() << "[TEST] TX> " << oss.str().size() << endl;
+			}
+			delete out;
 		}
 
 	} catch( std::exception &e ) {

@@ -23,6 +23,7 @@
 // --- C++
 #include <iostream>
 #include <memory>
+#include <list>
 // --- Qt
 // --- OS
 // --- Project lib
@@ -58,6 +59,7 @@
 class TBitcoinNetwork;
 class TMessageFactory;
 class TNetworkParameters;
+class TMessage;
 
 
 // -------------- Function pre-class prototypes
@@ -120,12 +122,16 @@ class TBitcoinPeer
 
 	const TMessageFactory *factory() const { return Factory; }
 
+	TMessage *nextOutgoing();
+
   protected:
 	const TNodeInfo *Info;
 	TBitcoinNetwork *Network;
 	TMessageFactory *Factory;
 
 	eState State;
+
+	list<TMessage *> OutgoingQueue;
 };
 
 
