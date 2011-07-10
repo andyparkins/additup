@@ -180,6 +180,20 @@ const TBigInteger &TMessageBasedBlock::getParentHash() const
 	return Message->blockHeader().PreviousBlock;
 }
 
+//
+// Function:	TMessageBasedBlock :: printOn
+// Description:
+//
+ostream &TMessageBasedBlock::printOn( ostream &os ) const
+{
+	os << "Hash: " << hex << getHash() << dec << endl;
+	os << "Message: ";
+	os << *Message;
+	os << endl;
+
+	return os;
+}
+
 // ---------
 
 #if 0

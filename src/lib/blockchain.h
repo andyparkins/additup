@@ -89,6 +89,8 @@ class TBlock
 	bool hasChildren() const { return !ChildHashes.empty(); }
 	unsigned int childCount() const { return ChildHashes.size(); }
 
+	virtual ostream &printOn( ostream & ) const = 0;
+
   protected:
 	TBlockPool *Pool;
 
@@ -112,6 +114,8 @@ class TMessageBasedBlock : public TBlock
 	const TBigInteger &getParentHash() const;
 
 	void flush() { cachedHash.invalidate(); }
+
+	ostream &printOn( ostream & ) const;
 
   protected:
 	TMessage_block *Message;
