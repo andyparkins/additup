@@ -237,6 +237,8 @@ class TMessage_version : public TMessageWithoutChecksum
 
 	virtual TVersionedMessageFactory *createMessageFactory() const = 0;
 
+	void setFields();
+
   protected:
 	const char *commandString() const { return "version"; }
 

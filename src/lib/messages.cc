@@ -364,6 +364,28 @@ istream &TMessageWithoutChecksum::read( istream &is )
 // --------
 
 //
+// Function:	TMessage_version :: setFields
+// Description:
+//
+void TMessage_version::setFields()
+{
+	TMessageWithoutChecksum::setFields();
+
+	Version = minimumAcceptedVersion();
+	Services;
+	Timestamp = time(NULL);
+	AddrMe;
+	if( Version >= 10600 ) {
+		AddrFrom;
+		Nonce;
+		SubVersionNum;
+	}
+	if( Version >= 20900 ) {
+		StartingHeight;
+	}
+}
+
+//
 // Function:	TMessage_version :: printOn
 // Description:
 //
