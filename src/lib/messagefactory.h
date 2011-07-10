@@ -144,6 +144,8 @@ class TVersioningMessageFactory : public TMessageFactory
 
 	TMessage *answer( TMessage * );
 
+	bool getReady() const { return VerackSent && VerackReceived; }
+
   protected:
 	void init();
 
