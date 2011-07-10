@@ -707,7 +707,7 @@ void TMessage_block::calculateMerkleTree()
 	//   size == 8  ->  i = {0, 2, 4, 6}   i2 = {1, 3, 5, 7}
 	//   size == 4  ->  i = {0, 2}         i2 = (1, 3}
 	//   size == 2  ->  i = {0}            i2 = {1}
-	//   size == 1  ->  i = {0}            i2 = {1}
+	//   size == 1  ->  i = {0}            i2 = {0}
 	//
 	// Finally, the two array indexes for the two hashes being in turn
 	// hashed are calculated as offsets from a final iterator, j.
@@ -715,45 +715,32 @@ void TMessage_block::calculateMerkleTree()
 	//   size == 8  ->  j = 0   i = {0, 2, 4, 6}   i2 = {1, 3, 5, 7}
 	//   size == 4  ->  j = 8   i = {0, 2}         i2 = (1, 3}
 	//   size == 2  ->  j = 12  i = {0}            i2 = {1}
-	//   size == 1  ->  j = 14  i = {0}            i2 = {1}
 	//
 	// indexes are therefore
 	//
 	//   size == 8  ->  pairs = { {0,1}, {2,3}, {4,5}, {6,7} }  size() = 12
 	//   size == 4  ->  pairs = { {8,9}, {10,11} }              size() = 14
 	//   size == 2  ->  pairs = { {12, 13} }                    size() = 15
-	//   size == 1  ->  pairs = { {14, 15} }                    size() = 16
 	//
-	// Bug note: The above is what I think the algorithm _should_ do,
-	// but there is a misuse of a protective condition that means what
-	// it actually does is this:
-	//
-	//   size == 8  ->  pairs = { {0,1}, {2,3}, {4,5}, {6,7} }  size() = 12
-	//   size == 4  ->  pairs = { {8,3}, {10,3} }               size() = 14
-	//   size == 2  ->  pairs = { {12, 1} }                     size() = 15
-	//   size == 1  ->  pairs = { {14, 0} }                     size() = 16
-	//
-	// Note that the second in each pair is limited to (size-1), when I
-	// suspect it should be limited to (tree.size()-1).
-	//
+	// I've then renamed the variables to be clearer about what's going
+	// on
 
-	unsigned int j = 0;
-	for( unsigned int size = Transactions.size(); size > 1; size = (size + 1) / 2 ) {
-		for( unsigned int i = 0; i < size; i += 2 ) {
-			// XXX: suspect this is wrong; should be tree.size()
-			// not size itself.
-			unsigned int i2 = (i + 1 < size - 1) ? (i + 1) : (size - 1);
+	unsigned int depthIndex = 0;
+	for( unsigned int depthSize = Transactions.size();
+			depthSize > 1; depthSize = (depthSize + 1) / 2 ) {
+		for( unsigned int Offset0 = 0; Offset0 < depthSize; Offset0 += 2 ) {
+			unsigned int Offset1 = (Offset0 + 1 < depthSize - 1) ? (Offset0 + 1) : (depthSize - 1);
 
 			string Buffer;
-			Buffer = MerkleTree[j + i].toBytes()
-				+ MerkleTree[j + i2].toBytes();
+			Buffer = MerkleTree[depthIndex + Offset0].toBytes()
+				+ MerkleTree[depthIndex + Offset1].toBytes();
 
 			// The PayloadHasher is fine for creating the Merkle hashes
 			Buffer = PayloadHasher->transform( Buffer );
 
 			MerkleTree.push_back( TBigInteger().fromBytes( Buffer ) );
 		}
-		j += size;
+		depthIndex += depthSize;
 	}
 }
 
