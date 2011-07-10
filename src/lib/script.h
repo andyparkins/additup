@@ -1899,7 +1899,7 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 {
   public:
 	TStackOperator_PUSH_N() {};
-	TStackOperator_PUSH_N( const string &r ) { Raw = r; }
+	TStackOperator_PUSH_N( const string &r ) { Raw = r; OP = static_cast<eScriptOp>(Raw.size()); }
 
 	const char *className() const { return "TStackOperator_PUSH_N"; }
 	bool acceptOpcode( eScriptOp op ) const { return op >= PUSH_1 && op <= PUSH_75; }
@@ -1916,8 +1916,8 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 	}
 
 	ostream &write( ostream &os ) {
-		// Write the opcode byte (which is simply N)
-		os.put( Raw.size() );
+		// Write the opcode byte
+		TStackOperatorFromOpcode::write(os);
 		// Write the bytes
 		os.write( Raw.data(), Raw.size() );
 		return os;
