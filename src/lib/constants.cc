@@ -115,9 +115,8 @@ void TPredefinedNetworkParameters::configureGenesisMessage( TMessage_block &mess
 {
 	message.blockHeader().Version = 1;
 	// Genesis block has no parent, indicate with zero hash
-	message.blockHeader().PreviousBlock.zero();
-	// Zero for now, but this gets recalculated later
-	message.blockHeader().MerkleRoot.zero();
+	message.blockHeader().PreviousBlock = 0;
+	message.blockHeader().MerkleRoot.get().invalidate();
 
 	// Genesis transaction
 
@@ -136,8 +135,8 @@ void TPredefinedNetworkParameters::configureGenesisMessage( TMessage_block &mess
 	TInputSplitElement &Input( Transaction.createInput() );
 	// Regardless of the defaults in the future, the genesis block will
 	// be the same
-	Input.OutPoint.TransactionHash.zero();
-	Input.OutPoint.Index = 0;
+	Input.OutPoint.TransactionHash = 0;
+	Input.OutPoint.Index = -1;
 	Input.Sequence = 0xffffffff;
 	Input.encodeSignatureScript( genesisSignature );
 

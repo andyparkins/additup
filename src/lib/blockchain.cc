@@ -104,6 +104,7 @@ TMessageBasedBlock::TMessageBasedBlock( TBlockPool *p ) :
 	TBlock( p ),
 	Message( NULL )
 {
+	cachedHash.invalidate();
 }
 
 //
@@ -119,7 +120,7 @@ TMessageBasedBlock::~TMessageBasedBlock()
 // Function:	TMessageBasedBlock :: setMessage
 // Description:
 //
-void TMessageBasedBlock::updateFromMessage( const string &hash, const TMessage_block *m )
+void TMessageBasedBlock::updateFromMessage( const TBigInteger &hash, const TMessage_block *m )
 {
 	if( Message != NULL ) {
 		// XXX: Merge incoming message into existing message?
@@ -149,13 +150,13 @@ void TMessageBasedBlock::updateFromMessage( const string &hash, const TMessage_b
 }
 
 //
-// Function:	TBlock :: getHash
+// Function:	TMessageBasedBlock :: getHash
 // Description:
 //
-const string &TMessageBasedBlock::getHash() const
+const TBigInteger &TMessageBasedBlock::getHash() const
 {
 	// If we've already calculated it, then return that
-	if( !cachedHash.empty() )
+	if( cachedHash.isValid() )
 		return cachedHash;
 
 	if( Message == NULL )
@@ -171,12 +172,12 @@ const string &TMessageBasedBlock::getHash() const
 }
 
 //
-// Function:	TBlock :: getParentHash
+// Function:	TMessageBasedBlock :: getParentHash
 // Description:
 //
-const string &TMessageBasedBlock::getParentHash() const
+const TBigInteger &TMessageBasedBlock::getParentHash() const
 {
-	return Message->blockHeader().PreviousBlock.getValue();
+	return Message->blockHeader().PreviousBlock;
 }
 
 // ---------
@@ -203,7 +204,7 @@ TDatabaseBlock::~TDatabaseBlock()
 // Function:	TDatabaseBlock :: setMessage
 // Description:
 //
-void TDatabaseBlock::updateFromMessage( const string &hash, const TMessage_block *m )
+void TDatabaseBlock::updateFromMessage( const TBigInteger &hash, const TMessage_block *m )
 {
 	if( m == NULL ) {
 		// XXX: Delete existing record?
@@ -236,7 +237,7 @@ TBlockPool::~TBlockPool()
 // Function:	TBlockPool :: receiveBlock
 // Description:
 //
-void TBlockPool::receiveBlock( const string &NetworkHash, const TMessage_block *message )
+void TBlockPool::receiveBlock( const TBigInteger &NetworkHash, const TMessage_block *message )
 {
 	// Create a new block
 	TBlock *thisBlock = createBlock();
@@ -318,11 +319,11 @@ TBlock *TBlockMemoryPool::createBlock()
 // Function:	TBlockMemoryPool :: putBlock
 // Description:
 //
-void TBlockMemoryPool::putBlock( TBlock *Block )
+void TBlockMemoryPool::putBlock( const TBigInteger &Hash, TBlock *Block )
 {
-	map<string, TBlock*>::iterator it;
+	iterator it;
 
-	it = Pool.find( Block->getHash() );
+	it = Pool.find( Hash );
 
 	if( it == Pool.end() ) {
 		Pool[Block->getHash()] = Block;
@@ -338,9 +339,9 @@ void TBlockMemoryPool::putBlock( TBlock *Block )
 // Function:	TBlockMemoryPool :: getBlock
 // Description:
 //
-TBlock *TBlockMemoryPool::getBlock( const string &hash ) const
+TBlock *TBlockMemoryPool::getBlock( const TBigInteger &hash ) const
 {
-	map<string, TBlock*>::const_iterator it;
+	const_iterator it;
 
 	it = Pool.find( hash );
 	if( it == Pool.end() ) {
@@ -354,9 +355,9 @@ TBlock *TBlockMemoryPool::getBlock( const string &hash ) const
 // Function:	TBlockMemoryPool :: blockExists
 // Description:
 //
-bool TBlockMemoryPool::blockExists( const string &hash ) const
+bool TBlockMemoryPool::blockExists( const TBigInteger &hash ) const
 {
-	map<string, TBlock*>::const_iterator it;
+	const_iterator it;
 
 	it = Pool.find( hash );
 	return (it != Pool.end());
@@ -368,7 +369,7 @@ bool TBlockMemoryPool::blockExists( const string &hash ) const
 //
 void TBlockMemoryPool::scanForNewChildLinks()
 {
-	map<string, TBlock*>::iterator it;
+	iterator it;
 
 	for( it = Pool.begin(); it != Pool.end(); it++ ) {
 		TBlock *CurrentBlock = it->second;

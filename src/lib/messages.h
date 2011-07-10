@@ -607,7 +607,7 @@ class TMessage_block : public TMessageWithChecksum
 		return os;
 	}
 
-	virtual string calculateHash() const;
+	virtual TBigInteger calculateHash() const;
 
 	const TBlockHeaderElement &blockHeader() const { return BlockHeader; }
 	TBlockHeaderElement &blockHeader() { return BlockHeader; }

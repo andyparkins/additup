@@ -618,9 +618,9 @@ ostream &TMessage_tx::printOn( ostream &s ) const
 // Function:	TMessage_block :: calculateHash
 // Description:
 //
-string TMessage_block::calculateHash() const
+TBigInteger TMessage_block::calculateHash() const
 {
-	string hash;
+	TBigInteger hash;
 	ostringstream oss;
 
 	// "The SHA256 hash that identifies each block (and which must have
@@ -642,7 +642,7 @@ string TMessage_block::calculateHash() const
 //	log() << "TMessage_block = ";
 //	TLog::hexify( log(), oss.str() );
 //	log() << endl;
-	hash = PayloadHasher->transform( oss.str() );
+	hash.fromBytes( PayloadHasher->transform( oss.str() ) );
 //	log() << "TMessage_block.hash = ";
 //	TLog::hexify( log(), hash );
 //	log() << endl;

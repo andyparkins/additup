@@ -27,6 +27,7 @@
 // --- OS
 // --- Project lib
 // --- Project
+#include "extraint.h"
 
 
 // -------------- Namespace
@@ -77,10 +78,10 @@ class TBlock
 	TBlock( TBlockPool * );
 	virtual ~TBlock();
 
-	virtual void updateFromMessage( const string &, const TMessage_block * ) = 0;
+	virtual void updateFromMessage( const TBigInteger &, const TMessage_block * ) = 0;
 
-	virtual const string &getHash() const = 0;
-	virtual const string &getParentHash() const = 0;
+	virtual const TBigInteger &getHash() const = 0;
+	virtual const TBigInteger &getParentHash() const = 0;
 	virtual void registerChild( TBlock * );
 
 	void fit();
@@ -92,7 +93,7 @@ class TBlock
 	TBlockPool *Pool;
 
 	TBlock *Parent;
-	set<string> ChildHashes;
+	set<TBigInteger> ChildHashes;
 };
 
 //
@@ -105,16 +106,16 @@ class TMessageBasedBlock : public TBlock
 	TMessageBasedBlock( TBlockPool * );
 	~TMessageBasedBlock();
 
-	void updateFromMessage( const string &, const TMessage_block * );
+	void updateFromMessage( const TBigInteger &, const TMessage_block * );
 
-	const string &getHash() const;
-	const string &getParentHash() const;
+	const TBigInteger &getHash() const;
+	const TBigInteger &getParentHash() const;
 
-	void flush() { cachedHash.clear(); }
+	void flush() { cachedHash.invalidate(); }
 
   protected:
 	TMessage_block *Message;
-	mutable string cachedHash;
+	mutable TBigInteger cachedHash;
 };
 
 #if 0
@@ -128,10 +129,10 @@ class TDatabaseBlock : public TBlock
 	TDatabaseBlock( TDatabaseBlockPool * );
 	~TDatabaseBlock();
 
-	void updateFromMessage( const string &, const TMessage_block * );
+	void updateFromMessage( const TBigInteger &, const TMessage_block * );
 
-	const string &getHash() const;
-	const string &getParentHash() const;
+	const TBigInteger &getHash() const;
+	const TBigInteger &getParentHash() const;
 
   protected:
 	TDatabaseBlockPool *Pool;
@@ -150,20 +151,20 @@ class TBlockPool
 	TBlockPool();
 	virtual ~TBlockPool();
 
-	void receiveBlock( const string &, const TMessage_inv * );
-	void receiveBlock( const string &, const TMessage_block * );
-	void receiveBlock( const string &, const TMessage_headers * );
+	void receiveBlock( const TBigInteger &, const TMessage_inv * );
+	void receiveBlock( const TBigInteger &, const TMessage_block * );
+	void receiveBlock( const TBigInteger &, const TMessage_headers * );
 
-	virtual void putBlock( const string &, TBlock * ) = 0;
-	virtual TBlock *getBlock( const string & ) const = 0;
-	virtual bool blockExists( const string & ) const = 0;
+	virtual void putBlock( const TBigInteger &, TBlock * ) = 0;
+	virtual TBlock *getBlock( const TBigInteger & ) const = 0;
+	virtual bool blockExists( const TBigInteger & ) const = 0;
 
 	virtual void scanForNewChildLinks() = 0;
 
 	virtual TBlock *createBlock() = 0;
 
   protected:
-	set<string> Tips;
+	set<TBigInteger> Tips;
 };
 
 //
@@ -176,16 +177,18 @@ class TBlockMemoryPool : public TBlockPool
 	TBlockMemoryPool();
 	~TBlockMemoryPool();
 
-	void putBlock( TBlock * );
-	TBlock *getBlock( const string & ) const;
-	bool blockExists( const string & ) const;
+	void putBlock( const TBigInteger &, TBlock * );
+	TBlock *getBlock( const TBigInteger & ) const;
+	bool blockExists( const TBigInteger & ) const;
 
 	void scanForNewChildLinks();
 
 	TBlock *createBlock();
 
   protected:
-	map<string, TBlock*> Pool;
+	map<TBigInteger, TBlock*> Pool;
+	typedef map<TBigInteger, TBlock*>::iterator iterator;
+	typedef map<TBigInteger, TBlock*>::const_iterator const_iterator;
 };
 
 #if 0
@@ -199,9 +202,9 @@ class TDatabaseBlockPool : public TBlockPool
 	TDatabaseBlockPool();
 	~TDatabaseBlockPool();
 
-	void putBlock( TBlock * );
-	TBlock *getBlock( const string & ) const;
-	bool blockExists( const string & ) const;
+	void putBlock( const TBigInteger &, TBlock * );
+	TBlock *getBlock( const TBigInteger & ) const;
+	bool blockExists( const TBigInteger & ) const;
 
 	void scanForNewChildLinks();
 
