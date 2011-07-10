@@ -380,25 +380,33 @@ class TVariableSizedStringElement : public TSizedStringElement
 // Class:	THashElement
 // Description:
 //
-class THashElement : public TFixedStringElement<32>
+class THashElement : public TMessageElement
 {
   public:
-	THashElement() { zero(); }
+	THashElement() { Hash.invalidate(); }
 
 	istream &read( istream &is ) {
-		// XXX: COMPLETELY WRONG
-		// Hashes are stored little endian
-		return TFixedStringElement<32>::read(is);
+		char buffer[32];
+		is.read( buffer, sizeof(buffer) );
+		string s( buffer, sizeof(buffer) );
+		Hash.fromBytes(s);
+		Hash = Hash.reversedBytes();
+		return is;
 	}
 	ostream &write( ostream &os ) const {
-		// XXX: COMPLETELY WRONG
-		// Hashes are stored little endian
-		return TFixedStringElement<32>::write(os);
+		// Hashes are written little endian
+		os.write( Hash.reversedBytes().toBytes(32).data(), 32 );
+		return os;
 	}
 
-	void zero() { Value.assign(N, '\0'); }
+	operator TBigInteger() const { return Hash; }
+	operator const TBigInteger&() const { return Hash; }
+	TBigInteger &get() { return Hash; }
+	const TBigInteger &get() const { return Hash; }
+	THashElement &operator=( const TBigInteger &s ) { Hash = s; return *this; }
 
-	using TSizedStringElement::operator=;
+  protected:
+	TBigInteger Hash;
 };
 
 //
