@@ -260,10 +260,9 @@ void TBitcoinPeer::receive( const string &s )
 		Factory->receive(s);
 
 		auto_ptr<TMessage> Message( Factory->nextIncoming() );
+		TMessage *Response( Factory->answer( Message.get() ) );
 
 		if( dynamic_cast<TMessage_version*>( Message.get() ) != NULL ) {
-			State = Connected;
-
 			// We don't care exactly what version message, the
 			// TMessage_version base class is more than enough for us to
 			// query the message
@@ -273,6 +272,8 @@ void TBitcoinPeer::receive( const string &s )
 
 			delete Factory;
 			Factory = VersionMessage->createMessageFactory();
+
+			State = Connected;
 
 			log() << "[PEER] Factory is now " << Factory->className() << endl;
 		} else if( dynamic_cast<TMessage_verack*>( Message.get() ) != NULL ) {
@@ -288,6 +289,11 @@ void TBitcoinPeer::receive( const string &s )
 				log() << "[PEER] Ignoring " << *Message.get() << endl;
 			}
 		}
+
+		if( Response != NULL ) {
+			log() << "[PEER] Queueing " << *Response << endl;
+			OutgoingQueue.push_back( Response );
+		}
 	}
 
 	// If we've been handshaking, then the version message is still in
@@ -302,16 +308,24 @@ void TBitcoinPeer::receive( const string &s )
 		Factory->receive(s);
 
 		auto_ptr<TMessage> Message;
+		TMessage *Response;
 
 		do {
 			Message.reset( Factory->nextIncoming() );
 			if( Message.get() == NULL )
 				break;
+			Response = Factory->answer( Message.get() );
 
 			log() << "[PEER] Got message " << *Message << endl;
 
+			if( Response != NULL ) {
+				log() << "[PEER] Queueing " << *Response << endl;
+				OutgoingQueue.push_back( Response );
+			}
+
 		} while( true );
 	}
+
 }
 
 
