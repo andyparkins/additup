@@ -75,6 +75,8 @@ TMessageFactory::~TMessageFactory()
 //
 TMessage *TMessageFactory::answer( TMessage *Message )
 {
+	TMessage *Answer = NULL;
+
 	if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
 //	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
@@ -136,7 +138,13 @@ TMessage *TMessageFactory::answer( TMessage *Message )
 		// No response needed
 	}
 
-	return NULL;
+	if( Answer == NULL )
+		return;
+
+	Answer->setPeer( Peer );
+	Answer->setFields();
+
+	return Answer;
 }
 
 //
@@ -299,6 +307,8 @@ void TMessageFactory::init()
 //
 TMessage *TVersioningMessageFactory::answer( TMessage *Message )
 {
+	TMessage *Answer = NULL;
+
 	if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
@@ -306,7 +316,7 @@ TMessage *TVersioningMessageFactory::answer( TMessage *Message )
 		// TX> verack
 		if( !VerackSent ) {
 			VerackSent = true;
-			return new TMessage_verack();
+			Answer = new TMessage_verack();
 		}
 	} else if( dynamic_cast<TMessage_version*>( Message ) != NULL ) {
 		// No response needed
@@ -315,7 +325,13 @@ TMessage *TVersioningMessageFactory::answer( TMessage *Message )
 		VerackReceived = true;
 	}
 
-	return NULL;
+	if( Answer == NULL )
+		return;
+
+	Answer->setPeer( Peer );
+	Answer->setFields();
+
+	return Answer;
 }
 
 //
