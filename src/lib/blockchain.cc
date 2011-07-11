@@ -506,13 +506,13 @@ void TBlockPool::receiveHeader( const TBlockHeaderElement &Header )
 	// children can also have changed.  In particular:
 	//
 	// (1) This block's parent can definitely not be a chain tip
-	Tips.erase( thisBlock->getParentHash() );
+	Branches.erase( thisBlock->getParentHash() );
 	// (2) If this block has no children, then it can be a chain tip (at
 	// least until we find otherwise)
 	if( !thisBlock->hasChildren() )
-		Tips.insert( thisBlock->getHash() );
+		Branches.insert( thisBlock->getHash() );
 
-	// With these rules in place, the Tips array represents all blocks
+	// With these rules in place, the Branches array represents all blocks
 	// in the pool that have no children.  Once the full block chain has
 	// been downloaded this should be a very limited set.
 }

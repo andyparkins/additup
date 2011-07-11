@@ -259,7 +259,7 @@ class TBlockPool
   protected:
 	const TBitcoinNetwork *Network;
 
-	set<TBitcoinHash> Tips;
+	set<TBitcoinHash> Branches;
 };
 
 //
