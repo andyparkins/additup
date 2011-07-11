@@ -21,11 +21,11 @@
 // -------------- Includes
 // --- C
 // --- C++
-#include <string>
 // --- Qt
 // --- OS
 // --- Project
 // --- Project lib
+#include "bytearray.h"
 
 
 // -------------- Namespace
@@ -80,18 +80,18 @@
 // Global:	UNITTESTSampleMessages[]
 // Description:
 //
-static const string UNITTESTSampleMessages[] = {
+static const TByteArray UNITTESTSampleMessages[] = {
 	// Short invalid message
-	string("\xf9\xbe\xb4\xd9"    // Magic
+	TByteArray("\xf9\xbe\xb4\xd9"    // Magic
 			"unimplement\0"      // Command
 			, 16 ),
 	// TMessageUnimplemented
-	string("\xf9\xbe\xb4\xd9"    // Magic
+	TByteArray("\xf9\xbe\xb4\xd9"    // Magic
 			"unimplement\0"      // Command
 			"\0\0\0\0"         // Length
 			, 20 ),
 	// TMessage_version_20900
-	string("\xf9\xbe\xb4\xd9"    // Magic
+	TByteArray("\xf9\xbe\xb4\xd9"    // Magic
 			"version\0\0\0\0\0"  // Command
 			"\x55\0\0\0"         // Length
 			"\xa4\x51\x00\x00"   // Version
@@ -104,7 +104,7 @@ static const string UNITTESTSampleMessages[] = {
 			"\0\0\0\0"           // Start height
 			, 105 ),
 	// TMessage_version_10600
-	string("\xf9\xbe\xb4\xd9"    // Magic
+	TByteArray("\xf9\xbe\xb4\xd9"    // Magic
 			"version\0\0\0\0\0"  // Command
 			"\x51\0\0\0"         // Length
 			"\x68\x29\x00\x00"   // Version
@@ -116,7 +116,7 @@ static const string UNITTESTSampleMessages[] = {
 			"\0"                 // Sub version information (NUL terminated)
 			, 101 ),
 	// TMessage_version_0
-	string("\xf9\xbe\xb4\xd9"    // Magic
+	TByteArray("\xf9\xbe\xb4\xd9"    // Magic
 			"version\0\0\0\0\0"  // Command
 			"\x2e\0\0\0"         // Length
 			"\x00\x00\x00\x00"   // Version
@@ -126,7 +126,7 @@ static const string UNITTESTSampleMessages[] = {
 			, 66 ),
 	// --- From https://en.bitcoin.it/wiki/Protocol_specification
 	// version
-	string(
+	TByteArray(
 		"\xf9\xbe\xb4\xd9\x76\x65\x72\x73\x69\x6f\x6e\x00\x00\x00\x00\x00"
 		"\x55\x00\x00\x00\x9c\x7c\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00"
 		"\xe6\x15\x10\x4d\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00"
@@ -136,19 +136,19 @@ static const string UNITTESTSampleMessages[] = {
 		"\x3a\xb4\x57\x13\x00\x55\x81\x01\x00"
 		, 105 ),
 	// verack
-	string(
+	TByteArray(
 		"\xf9\xbe\xb4\xd9\x76\x65\x72\x61\x63\x6b\x00\x00\x00\x00\x00\x00"
 		"\x00\x00\x00\x00"
 		, 20 ),
 	// addr (with checksum corrected from 0xc239857f to 0x9b3952ed)
-	string(
+	TByteArray(
 		"\xF9\xBE\xB4\xD9\x61\x64\x64\x72\x00\x00\x00\x00\x00\x00\x00\x00"
 		"\x1F\x00\x00\x00\xed\x52\x39\x9b\x01\xE2\x15\x10\x4D\x01\x00\x00"
 		"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xFF"
 		"\xFF\x0A\x00\x00\x01\x20\x8D"
 		, 55 ),
 	// tx
-	string(
+	TByteArray(
 		"\xF9\xBE\xB4\xD9\x74\x78\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 		"\x02\x01\x00\x00\xE2\x93\xCD\xBE\x01\x00\x00\x00\x01\x6D\xBD\xDB"
 		"\x08\x5B\x1D\x8A\xF7\x51\x84\xF0\xBC\x01\xFA\xD5\x8D\x12\x66\xE9"
@@ -169,7 +169,7 @@ static const string UNITTESTSampleMessages[] = {
 		"\x8B\x4E\xCC\x52\x88\xAC\x00\x00\x00\x00"
 		, 282 ),
 	// block
-	string(
+	TByteArray(
 		"\xF9\xBE\xB4\xD9\x62\x6C\x6F\x63\x6B\x00\x00\x00\x00\x00\x00\x00"
 		"\xE6\x1F\x00\x00\xF7\x04\x16\x8F\x01\x00\x00\x00\xB1\x06\xB1\x57"
 		"\x6D\x93\x45\xB1\x87\x8D\x41\x78\x8B\xAF\x18\xB2\x1A\x1F\x97\xB1"
@@ -683,15 +683,15 @@ static const string UNITTESTSampleMessages[] = {
 		"\x19\x76\xA9\x14\x8E\x49\x98\x53\xAC\xF6\xF3\xAC\x1C\x60\x87\xEB"
 		"\xD1\x01\x8B\x52\x6D\x8F\xDB\x60\x88\xAC\x00\x00\x00\x00"
 		, 8190 ),
-	string()
+	TByteArray()
 };
 
 //
 // Global:	UNITTESTSampleScripts[]
 // Description:
 //
-static const string UNITTESTSampleScripts[] = {
-	string(
+static const TByteArray UNITTESTSampleScripts[] = {
+	TByteArray(
 		// --- Typical OP_CHECKSIG script
 		// PUSH_72
 		"\x48"
@@ -724,7 +724,7 @@ static const string UNITTESTSampleScripts[] = {
 		"\xac"
 		, 1 + 72 + 1 + 65 + 1 + 1 + 1 + 20 + 1 + 1 ),
 
-	string()
+	TByteArray()
 };
 
 // End of conditional compilation
