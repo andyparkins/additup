@@ -306,6 +306,9 @@ void TMessageWithChecksum::setFields()
 {
 	TMessage::setFields();
 
+	if( Peer == NULL )
+		return;
+
 	// Update checksum
 	generatePayloadChecksum();
 }
