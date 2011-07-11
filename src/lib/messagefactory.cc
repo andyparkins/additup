@@ -73,7 +73,7 @@ TMessageFactory::~TMessageFactory()
 // Function:	TMessageFactory :: answer
 // Description:
 //
-TMessage *TMessageFactory::answer( TMessage *Message )
+void TMessageFactory::answer( TMessage *Message )
 {
 	TMessage *Answer = NULL;
 
@@ -117,7 +117,7 @@ TMessage *TMessageFactory::answer( TMessage *Message )
 		// peers from a database of known active peers. The typical
 		// presumption is that a node is likely to be active if it has
 		// been sending a message within the last three hours."
-		return new TMessage_addr();
+		Answer = new TMessage_addr();
 	} else if( dynamic_cast<TMessage_submitorder*>( Message ) != NULL ) {
 		// RX< submitorder
 		// TX> reply
@@ -145,8 +145,6 @@ TMessage *TMessageFactory::answer( TMessage *Message )
 
 	Answer->setPeer( Peer );
 	Answer->setFields();
-
-	return Answer;
 }
 
 //
@@ -307,7 +305,7 @@ void TMessageFactory::init()
 // Function:	TVersioningMessageFactory :: answer
 // Description:
 //
-TMessage *TVersioningMessageFactory::answer( TMessage *Message )
+void TVersioningMessageFactory::answer( TMessage *Message )
 {
 	TMessage *Answer = NULL;
 
@@ -338,8 +336,6 @@ TMessage *TVersioningMessageFactory::answer( TMessage *Message )
 
 	Answer->setPeer( Peer );
 	Answer->setFields();
-
-	return Answer;
 }
 
 //

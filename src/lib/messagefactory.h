@@ -85,7 +85,7 @@ class TMessageFactory
 	void receive( const string & );
 	void transmit( TMessage * );
 
-	virtual TMessage *answer( TMessage * );
+	virtual void answer( TMessage * );
 
 	TMessage *oldestIncoming() const {
 		if( IncomingQueue.size() == 0 )
@@ -149,7 +149,7 @@ class TVersioningMessageFactory : public TMessageFactory
 
 	const char *className() { return "TVersioningMessageFactory"; }
 
-	TMessage *answer( TMessage * );
+	void answer( TMessage * );
 
 	bool getReady() const { return VerackSent && VerackReceived; }
 

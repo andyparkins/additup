@@ -258,7 +258,7 @@ void TBitcoinPeer::receive( const string &s )
 		Factory->receive(s);
 
 		auto_ptr<TMessage> Message( Factory->nextIncoming() );
-		TMessage *Response( Factory->answer( Message.get() ) );
+		Factory->answer( Message.get() );
 
 		if( dynamic_cast<TMessage_version*>( Message.get() ) != NULL ) {
 			// We don't care exactly what version message, the
@@ -303,13 +303,12 @@ void TBitcoinPeer::receive( const string &s )
 		Factory->receive(s);
 
 		auto_ptr<TMessage> Message;
-		TMessage *Response;
 
 		do {
 			Message.reset( Factory->nextIncoming() );
 			if( Message.get() == NULL )
 				break;
-			Response = Factory->answer( Message.get() );
+			Factory->answer( Message.get() );
 
 			log() << "[PEER] Got message " << *Message << endl;
 
