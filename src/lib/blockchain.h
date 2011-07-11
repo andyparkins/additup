@@ -155,8 +155,8 @@ class TBlock
 //	bool hasChild( const TBigInteger &s ) const;
 	bool hasChildren() const { return !ChildHashes.empty(); }
 	unsigned int childCount() const { return ChildHashes.size(); }
-	bool isAncestorOf( const TBlock * ) const;
 	const TBlock *getChildOnBranch( const TBlock * ) const;
+	bool isAncestorOf( const TBlock * ) const;
 
 	TBitcoinHash getNextRequiredDifficulty() const;
 

@@ -247,6 +247,36 @@ const TBlock *TBlock::getChildOnBranch( const TBlock *branch ) const
 }
 
 //
+// Function:	TBlock :: isAncestorOf
+// Description:
+// See if the given block is a child of us.
+//
+// In this chain:
+//   o -- this -- o -- o -- o -- that
+// this _is_ an ancestor of that.
+//
+// In this chain:
+//   o -- that -- o -- o -- o -- this
+// this is _not_ an ancestor of that.
+//
+// In this chain:
+//   o -- o -- o -- this
+//         \                    (not a multiline comment)
+//          o -- o -- that
+// neither this nor that is an ancestor of the other.
+//
+bool TBlock::isAncestorOf( const TBlock *that ) const
+{
+	// We can use getCommonAncestor() to sort this out, since the only
+	// case where we return true is if the common ancestor is ourselves.
+	const TBlock *commonAncestor = Pool->getCommonAncestor( this, that );
+	if( commonAncestor == this )
+		return true;
+
+	return false;
+}
+
+//
 // Function:	TBlock :: printOn
 // Description:
 //
