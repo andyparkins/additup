@@ -354,6 +354,9 @@ void TBitcoinNetwork::process( TMessage *Message )
 			log() << "[NETW] Rejecting block " << *block << ", " << e.what() << endl;
 		}
 	} else if( dynamic_cast<TMessage_headers*>( Message ) != NULL ) {
+		TMessage_headers *headers = reinterpret_cast<TMessage_headers*>( Message );
+		// Pass the message straight to the block chain
+		BlockPool->receiveHeaders( headers );
 		// No response needed
 	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
 		// No response needed

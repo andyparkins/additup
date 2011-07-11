@@ -505,6 +505,26 @@ void TBlockPool::receiveBlock( const TMessage_block *message )
 	// been downloaded this should be a very limited set.
 }
 
+//
+// Function:	TBlockPool :: receiveHeaders
+// Description:
+//
+void TBlockPool::receiveHeaders( const TMessage_headers *headers )
+{
+	for( unsigned int i = 0; i < headers->size(); i++ ) {
+		if( (*headers)[i].ObjectType != TheadersentoryElement::MSG_BLOCK )
+			continue;
+
+		// RX< headers
+		if( blockExists( (*headers)[i].Hash.get() ) )
+			continue;
+
+		log() << "[BLKC] Block header " << (*headers)[i].Hash.get()
+			<< " not found in pool" << endl;
+	}
+}
+
+
 // ---------
 
 //
