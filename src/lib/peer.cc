@@ -24,6 +24,9 @@
 #include <stdexcept>
 // --- Qt
 // --- OS
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 // --- Project libs
 // --- Project
 #include "messagefactory.h"
@@ -53,6 +56,7 @@
 //
 TNodeInfo::TNodeInfo( uint32_t ip ) :
 	IPv4( ip ),
+	Port( 0 ),
 	LastConnectAttempt(0),
 	LastConnectSuccess(0)
 {
@@ -74,6 +78,20 @@ ostream &TNodeInfo::write( ostream &os ) const
 }
 
 //
+// Function:	TNodeInfo :: toSockAddr
+// Description:
+//
+void TNodeInfo::toSockAddr( struct sockaddr &SA ) const
+{
+	sockaddr_in &SAI( reinterpret_cast<sockaddr_in&>( SA ) );
+
+	memset( &SAI, 0, sizeof( SAI ) );
+	SAI.sin_family = PF_INET;
+	SAI.sin_port = htons( Port );
+	SAI.sin_addr.s_addr = htonl( IPv4 );
+}
+
+//
 // Function:	TNodeInfo :: printOn
 // Description:
 //
@@ -83,6 +101,7 @@ ostream &TNodeInfo::printOn( ostream &os ) const
 		<< "." << ((IPv4 & 0xff0000) >> 16)
 		<< "." << ((IPv4 & 0xff00) >> 8)
 		<< "." << ((IPv4 & 0xff) >> 0)
+		<< ":" << Port
 		<< " " << LastConnectAttempt << ", " << LastConnectSuccess;
 
 	return os;

@@ -61,6 +61,7 @@ class TBitcoinNetwork;
 class TMessageFactory;
 class TNetworkParameters;
 class TMessage;
+struct sockaddr;
 
 
 // -------------- Function pre-class prototypes
@@ -80,12 +81,16 @@ class TNodeInfo
 	ostream &write( ostream & ) const;
 	string get() const;
 
+	void toSockAddr( struct sockaddr & ) const;
+
 	operator bool() const { return IPv4 != 0; }
 	operator uint32_t() const { return IPv4; }
 
 	ostream &printOn( ostream & ) const;
 
 	uint32_t IPv4;
+	unsigned short Port;
+
 	time_t LastConnectAttempt;
 	time_t LastConnectSuccess;
 };
