@@ -254,12 +254,13 @@ class TBlockPool
 
 	const TBitcoinNetwork *getNetwork() { return Network; }
 
-	const TBlock *getBestBranch() const;
+	const TBlock *getBestBranch() const { return getBlock( NominatedBranch ); }
 
   protected:
 	const TBitcoinNetwork *Network;
 
 	set<TBitcoinHash> Branches;
+	TBitcoinHash NominatedBranch;
 };
 
 //
