@@ -114,6 +114,8 @@ class TNetworkParameters
 	unsigned int DIFFICULTY_TIMESPAN;
 	unsigned int NEW_BLOCK_PERIOD;
 
+	unsigned int GETDATA_MAX_INV;
+
 	// Checkpoints
 	map<unsigned int, TBitcoinHash> Checkpoints;
 
