@@ -20,14 +20,20 @@
 // --- C
 #include <time.h>
 // --- C++
+#include <sstream>
 // --- Qt
 // --- OS
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 // --- Project libs
 // --- Project
 #include "logstream.h"
 #include "messages.h"
 #include "blockchain.h"
 #include "transactions.h"
+#include "bytearray.h"
+#include "extraexcept.h"
 
 
 // -------------- Namespace
@@ -360,12 +366,189 @@ void TBitcoinNetwork::connectToNode( const TNodeInfo &n )
 	Node->LastConnectAttempt = time(NULL);
 }
 
+// -----------
+
+//
+// Function:	TBitcoinNetwork_Sockets :: TBitcoinNetwork_Sockets
+// Description:
+//
+TBitcoinNetwork_Sockets::TBitcoinNetwork_Sockets()
+{
+}
+
+//
+// Function:	TBitcoinNetwork_Sockets :: run
+// Description:
+// It's expected that this function will be the entry point for users of
+// this library to fire-and-forget.
+//
+// We expect to be running in a separate thread, so will not concern
+// ourselves with non-blocking I/O.
+//
+void TBitcoinNetwork_Sockets::run()
+{
+	fd_set readfds;
+	fd_t maxfd;
+	map<TBitcoinPeer *, fd_t>::iterator it;
+	int ret;
+	struct timeval timeout;
+
+	log() << "[NETW] *** TBitcoinNetwork running" << endl;
+
+	log() << "[NETW] " << Directory.size() << " directory entries available" << endl;
+
+	log() << "[NETW] --- TBitcoinNetwork main loop started" << endl;
+	while( true ) {
+		// Check for low connections
+		if( PeerDescriptors.size() < 1 ) {
+			log() << "[NETW] Connectivity is low, " << PeerDescriptors.size() << endl;
+			connectToAny();
+		}
+
+		// Prepare the monitor list, and send pending packets while
+		// we're at it
+		FD_ZERO( &readfds );
+		maxfd = 0;
+		for( it = PeerDescriptors.begin(); it != PeerDescriptors.end(); it++ ) {
+			FD_SET( it->second, &readfds );
+			if( maxfd < it->second )
+				maxfd = it->second;
+
+			sendTo( it->first );
+		}
+		// Prepare timeout
+		timeout.tv_sec = 60;
+		timeout.tv_usec = 0;
+
+		// Select
+//		log() << "[NETW] Waiting for data" << endl;
+		ret = select( maxfd + 1, &readfds, NULL, NULL, &timeout );
+		if( ret == 0 ) {
+			log() << "[NETW] No data received for 60s" << endl;
+			continue;
+		} else if( ret < 0 ) {
+			throw libc_error( "select()" );
+		}
+
+		// Find the peers that match the activated descriptors
+		for( it = PeerDescriptors.begin(); it != PeerDescriptors.end(); it++ ) {
+			if( FD_ISSET( it->second, &readfds ) )
+				receiveFrom( it->first );
+		}
+	}
+	log() << "[NETW] --- TBitcoinNetwork main loop finished" << endl;
+}
+
+//
+// Function:	TBitcoinNetwork_Sockets :: receiveFrom
+// Description:
+//
+void TBitcoinNetwork_Sockets::receiveFrom( TBitcoinPeer *Peer )
+{
+	fd_t fd = PeerDescriptors[Peer];
+	int n;
+	TByteArray ba(1024);
+
+	// Perform the read
+	n = read( fd, ba, ba.size() );
+	if( n == 0 ) {
+		// end of file
+		disconnect( Peer );
+		return;
+	} else if( n < 0 ) {
+		throw libc_error( "read()" );
+	}
+
+	// let the peer deal with what it received
+	Peer->receive( ba );
+}
+
+//
+// Function:	TBitcoinNetwork_Sockets :: sendTo
+// Description:
+//
+void TBitcoinNetwork_Sockets::sendTo( TBitcoinPeer *Peer )
+{
+	fd_t fd = PeerDescriptors[Peer];
+	ostringstream oss;
+	TMessage *out;
+
+	while( (out = Peer->nextOutgoing()) ) {
+		out->write( oss );
+		write( fd, oss.str().data(), oss.str().size() );
+	}
+}
+
+//
+// Function:	TBitcoinNetwork_Sockets :: connectToNode
+// Description:
+//
+void TBitcoinNetwork_Sockets::connectToNode( const TNodeInfo &Node )
+{
+	fd_t fd;
+	sockaddr_in SAI;
+	sockaddr &SA(reinterpret_cast<sockaddr &>(SAI));
+	int ret;
+
+	// Configure the generating fd
+	fd = socket( PF_INET, SOCK_STREAM, 0 );
+	if( fd < 0 )
+		throw socket_error( "socket()" );
+
+	// XXX: iterate through known networks
+
+	// Connect address
+	Node.toSockAddr( SA );
+	if( SAI.sin_port == 0 )
+		SAI.sin_port = htons( 8333 );
+
+	// Connect
+	log() << "[NETW] Attempting connection to ";
+	Node.printOn( log() );
+	log() << endl;
+	ret = connect( fd, &SA, sizeof( SAI ) );
+	if( ret < 0 )
+		throw socket_error( "connect()" );
+	log() << "[NETW] Successfully connected, creating TBitcoinPeer object to manage descriptor " << fd << endl;
+
+	// Create a peer to match
+	TBitcoinPeer *Peer = new TBitcoinPeer( &Node, this );
+	PeerDescriptors[Peer] = fd;
+	Peer->setState( TBitcoinPeer::Connecting );
+
+	// Prod the remote to begin
+	Peer->receive( TByteArray() );
+}
+
+//
+// Function:	TBitcoinNetwork_Sockets :: disconnect
+// Description:
+//
+void TBitcoinNetwork_Sockets::disconnect( TBitcoinPeer *Peer )
+{
+	fd_t fd = PeerDescriptors[Peer];
+	int ret;
+
+	ret = shutdown( fd, SHUT_RDWR );
+	if( ret < 0 )
+		throw socket_error( "shutdown()" );
+	ret = close( fd );
+	if( ret < 0 )
+		throw libc_error( "close()" );
+
+	PeerDescriptors.erase( Peer );
+	delete Peer;
+
+	return;
+}
+
 
 // -------------- Function definitions
 
 
 #ifdef UNITTEST
 #include <iostream>
+#include <sstream>
 #include "logstream.h"
 #include "constants.h"
 
@@ -375,15 +558,18 @@ int main( int argc, char *argv[] )
 {
 	try {
 		log() << "--- Create network" << endl;
-		TBitcoinNetwork Network;
+		TBitcoinNetwork_Sockets Network;
 
-		const TOfficialSeedNode *pSeed = SEED_NODES;
-		while( *pSeed ) {
-			Network.updateDirectory( *pSeed );
-			pSeed++;
-		}
+		TNodeInfo localhost( TNodeInfo::fromDottedQuad(127.0.0.1) );
+		Network.updateDirectory( localhost );
 
-		Network.connectToAny();
+//		const TOfficialSeedNode *pSeed = SEED_NODES;
+//		while( *pSeed ) {
+//			Network.updateDirectory( *pSeed );
+//			pSeed++;
+//		}
+
+		Network.run();
 
 	} catch( std::exception &e ) {
 		log() << e.what() << endl;

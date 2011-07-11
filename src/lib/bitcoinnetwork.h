@@ -139,7 +139,7 @@ class TBitcoinNetwork
 	TBitcoinNetwork();
 
 	void connectToAny();
-	void connectToNode( const TNodeInfo & );
+	virtual void connectToNode( const TNodeInfo & ) = 0;
 
 	const TNetworkParameters *getNetworkParameters() const { return Parameters; }
 	void setNetworkParameters( const TNetworkParameters *p ) { Parameters = p; }
@@ -149,6 +149,10 @@ class TBitcoinNetwork
 	TNodeInfo &updateDirectory( const TNodeInfo & );
 
 	void process( TMessage * );
+
+  protected:
+	virtual void disconnect( TBitcoinPeer * ) = 0;
+
 
   protected:
 	const TNetworkParameters *Parameters;
@@ -162,6 +166,30 @@ class TBitcoinNetwork
 	TBlockPool *BlockPool;
 
 	time_t NetworkTimeOffset;
+};
+
+//
+// Class:	TBitcoinNetwork_Sockets
+// Description:
+//
+class TBitcoinNetwork_Sockets : public TBitcoinNetwork
+{
+  protected:
+	typedef int fd_t;
+
+  public:
+	TBitcoinNetwork_Sockets();
+
+	void run();
+
+  protected:
+	void receiveFrom( TBitcoinPeer * );
+	void sendTo( TBitcoinPeer * );
+	void connectToNode( const TNodeInfo & );
+	void disconnect( TBitcoinPeer * );
+
+  protected:
+	map<TBitcoinPeer *, fd_t> PeerDescriptors;
 };
 
 
