@@ -63,6 +63,7 @@ class TMessage_block;
 class TMessage_inv;
 class TMessage_headers;
 class TBitcoinNetwork;
+class TBitcoinPeer;
 class TBlockHeaderElement;
 
 
@@ -154,6 +155,8 @@ class TBlock
 //	bool hasChild( const TBigInteger &s ) const;
 	bool hasChildren() const { return !ChildHashes.empty(); }
 	unsigned int childCount() const { return ChildHashes.size(); }
+	bool isAncestorOf( const TBlock * ) const;
+	const TBlock *getChildOnBranch( const TBlock * ) const;
 
 	TBitcoinHash getNextRequiredDifficulty() const;
 
@@ -237,6 +240,8 @@ class TBlockPool
 	void receiveInventory( TMessage_inv * );
 	void receiveBlock( const TMessage_block * );
 	void receiveHeaders( const TMessage_headers * );
+	void queueBlock( TBitcoinPeer *, const TBitcoinHash & );
+	void queueBlock( TBitcoinPeer *, const TBlock * );
 
 	virtual void putBlock( const TBitcoinHash &, TBlock * ) = 0;
 	virtual TBlock *getBlock( const TBitcoinHash & ) const = 0;
@@ -247,6 +252,8 @@ class TBlockPool
 	virtual TBlock *createBlock() = 0;
 
 	const TBitcoinNetwork *getNetwork() { return Network; }
+
+	const TBlock *getBestBranch() const;
 
   protected:
 	const TBitcoinNetwork *Network;
