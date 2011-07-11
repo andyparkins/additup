@@ -156,7 +156,8 @@ ostream &TBitcoinHash::printOn( ostream &s ) const
 
 	// Force the use of string pad by calling it even for hex (which the
 	// base class doesn't do)
-	s << toString(16);
+	string x = toString(16);
+	s << x.substr(0,20) << "..." << x.substr(x.size()-4, x.size()-1);
 
 	return s;
 }
