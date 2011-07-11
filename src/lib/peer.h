@@ -28,6 +28,7 @@
 // --- OS
 // --- Project lib
 // --- Project
+#include "bytearray.h"
 
 
 // -------------- Namespace
@@ -117,7 +118,7 @@ class TBitcoinPeer
 
 	void setState( eState s ) { State = s; }
 	eState getState() const { return State; }
-	void receive( const string & );
+	void receive( const TByteArray & );
 
 	const TNetworkParameters *getNetworkParameters() const;
 

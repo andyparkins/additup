@@ -234,9 +234,9 @@ void TBitcoinPeer::queueIncoming( TMessage *m )
 // are in full communication.
 //
 //
-void TBitcoinPeer::receive( const string &s )
+void TBitcoinPeer::receive( const TByteArray &s )
 {
-	string incoming(s);
+	TByteArray incoming(s);
 
 	if( State == Unconnected ) {
 		log() << "[PEER] State: Unconnected" << endl;
