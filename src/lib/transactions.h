@@ -63,6 +63,7 @@ class TMessage_tx;
 class TTransactionPool;
 class TMemoryTransactionPool;
 class TBitcoinNetwork;
+class TBitcoinPeer;
 
 
 // -------------- Function pre-class prototypes
@@ -257,6 +258,7 @@ class TTransactionPool
 	void receiveInventory( TMessage_inv * );
 	void receiveBlock( const TMessage_block * );
 	void receiveTransaction( const TMessage_tx * );
+	void queueTransaction( TBitcoinPeer *, const TBitcoinHash & );
 
   protected:
 	virtual TTransaction *createTransaction() = 0;
