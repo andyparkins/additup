@@ -151,10 +151,12 @@ const TMessageFactory *TMessage::factory() const
 //
 void TMessage::setFields()
 {
-	if( Peer != NULL && Peer->getNetworkParameters() != NULL ) {
-		MessageHeader.Magic = Peer->getNetworkParameters()->Magic;
-	} else {
-		MessageHeader.Magic = 0;
+	if( MessageHeader.Magic == 0 ) {
+		if( Peer != NULL && Peer->getNetworkParameters() != NULL ) {
+			MessageHeader.Magic = Peer->getNetworkParameters()->Magic;
+		} else {
+			MessageHeader.Magic = 0;
+		}
 	}
 	MessageHeader.Command = commandString();
 
