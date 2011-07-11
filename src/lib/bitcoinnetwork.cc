@@ -342,7 +342,7 @@ void TBitcoinNetwork::process( TMessage *Message )
 				}
 			} else if( inv.ObjectType == TInventoryElement::MSG_TX ) {
 				// TX> tx
-				TransactionPool->queueTransaction( Peer, inv.Hash );
+//				TransactionPool->queueTransaction( Peer, inv.Hash );
 			} else if( inv.ObjectType == TInventoryElement::ERROR ) {
 				log() << "[NETW] Remote requested ERROR hash " << inv.Hash
 					<< ", which I don't know how to handle" << endl;
