@@ -29,6 +29,7 @@
 // --- Project lib
 // --- Project
 #include "bytearray.h"
+#include "hashtypes.h"
 
 
 // -------------- Namespace
@@ -142,6 +143,9 @@ class TBitcoinPeer
 	void queueOutgoing( TMessage * );
 	void queueIncoming( TMessage * );
 
+	const TBitcoinHash &getContinuationHash() const { return ContinuationHash; }
+	void setContinuationHash( const TBitcoinHash &ch ) { ContinuationHash = ch; }
+
   protected:
 	const TNodeInfo *Info;
 	TBitcoinNetwork *Network;
@@ -155,6 +159,8 @@ class TBitcoinPeer
 
 	list<TMessage*> IncomingQueue;
 	list<TMessage*> OutgoingQueue;
+
+	TBitcoinHash ContinuationHash;
 };
 
 

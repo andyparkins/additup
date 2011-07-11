@@ -317,17 +317,101 @@ void TBitcoinNetwork::process( TMessage *Message )
 		// RX< tx
 		TransactionPool->receiveInventory( inv );
 	} else if( dynamic_cast<TMessage_getdata*>( Message ) != NULL ) {
-		// RX< getdata
-		// TX> block
-		//  or
-		// RX< getdata
-		// TX> tx
+		TMessage_getdata *getdata = reinterpret_cast<TMessage_getdata*>( Message );
+
+		if( getdata->size() > getNetworkParameters()->GETDATA_MAX )
+			return;
+
+		for( unsigned int i = 0; i < getdata->size(); i++ ) {
+			// RX< getdata
+			TInventoryElement &inv( (*getdata)[i] );
+			if( inv.ObjectType == TInventoryElement::MSG_BLOCK ) {
+				// TX> block
+				BlockPool->queueBlock( Peer, inv.Hash );
+				// --- continuation of earlier getblocks
+				if( Peer->getContinuationHash() == inv.Hash ) {
+					TMessage_inv *inv = new TMessage_inv;
+					// From official client:
+					// "Bypass PushInventory, this must send even if
+					// redundant, and we want it right after the last
+					// block so they don't wait for other stuff first."
+					TInventoryElement &elem( inv->appendInventory() );
+					elem.ObjectType = TInventoryElement::MSG_BLOCK;
+					elem.Hash = BlockPool->getBestBranch()->getHash();
+					Peer->setContinuationHash( TBitcoinHash() );
+				}
+			} else if( inv.ObjectType == TInventoryElement::MSG_TX ) {
+				// TX> tx
+				TransactionPool->queueTransaction( Peer, inv.Hash );
+			} else if( inv.ObjectType == TInventoryElement::ERROR ) {
+				log() << "[NETW] Remote requested ERROR hash " << inv.Hash
+					<< ", which I don't know how to handle" << endl;
+			}
+		}
 	} else if( dynamic_cast<TMessage_getblocks*>( Message ) != NULL ) {
+		// No need to dynamic cast again
+		TMessage_getblocks *getblocks = reinterpret_cast<TMessage_getblocks*>( Message );
+		TMessage_inv *inv = new TMessage_inv;
 		// RX< getblocks
+
+		// The remote sends us a list of blocks it has, and we are to
+		// send it an inventory containing blocks it doesn't have, but
+		// (apparently) we only show it blocks in the main chain.  The
+		// blocks it has are most likely the last blockchain tips it had
+		// received.  It doesn't know which one of them became the main
+		// chain so we must help it by sending only the main chain.
+		// (I'm not sure why this is so; for a peer-to-peer network, it
+		// would be better for the peer to decide for itself what it
+		// thinks the main chain is).
+		for( unsigned int i = 0; i < getblocks->size(); i++ ) {
+			const TBitcoinHash &BlockHash = (*getblocks)[i];
+			const TBlock *Block = BlockPool->getBlock( BlockHash );
+
+			// If we don't have that block, then we can't supply its
+			// children
+			if( Block == NULL )
+				continue;
+
+			// We only send blocks from what we consider the best chain
+			if( !Block->isAncestorOf( BlockPool->getBestBranch() ) )
+				continue;
+
+			Peer->setContinuationHash( TBitcoinHash() );
+
+			unsigned int Limit = getNetworkParameters()->GETBLOCKS_RESPONSES_MAX;
+			while( true ) {
+				Block = Block->getChildOnBranch( BlockPool->getBestBranch() );
+				// No more blocks
+				if( Block == NULL )
+					break;
+				// Caller requested a stop
+				if( Block->getHash() == getblocks->getStop() )
+					break;
+
+				// append this block's hash to the inventory
+				TInventoryElement &elem( inv->appendInventory() );
+				elem.ObjectType = TInventoryElement::MSG_BLOCK;
+				elem.Hash = Block->getHash();
+
+				// If we need to send more than is allowed, then we have
+				// to defer our next inv until they have requested the
+				// last block we've just offered.
+				// This is dreadful.  This makes the bitcoin protocol
+				// stateful, which it shouldn't be.  See also getdata
+				Limit--;
+				if( Limit == 0 ) {
+					Peer->setContinuationHash( Block->getHash() );
+					break;
+				}
+			}
+		}
 		// TX> inv
+		if( inv->size() > 0 ) {
+			Peer->queueOutgoing( inv );
+		} else {
+			delete inv;
+		}
 	} else if( dynamic_cast<TMessage_getheaders*>( Message ) != NULL ) {
-		// RX< getheaders
-		// TX> headers
 	} else if( dynamic_cast<TMessage_getaddr*>( Message ) != NULL ) {
 		// "The getaddr message sends a request to a node asking for
 		// information about known active peers to help with identifying
