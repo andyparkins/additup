@@ -243,6 +243,7 @@ class TBlockPool
 	void receiveHeader( const TBlockHeaderElement & );
 	void queueBlock( TBitcoinPeer *, const TBitcoinHash & ) const;
 	void queueBlock( TBitcoinPeer *, const TBlock * ) const;
+	const TBlock *getCommonAncestor( const TBlock *, const TBlock * ) const;
 
 	virtual void putBlock( const TBitcoinHash &, TBlock * ) = 0;
 	virtual TBlock *getBlock( const TBitcoinHash & ) const = 0;

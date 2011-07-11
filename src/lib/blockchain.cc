@@ -424,6 +424,66 @@ TBlockPool::~TBlockPool()
 }
 
 //
+// Function:	TBlockPool :: getCommonAncestor
+// Description:
+//
+// Given the following pool:
+//
+//   o -- o -- o -- A -- o -- o -- b1 -- o -- o
+//                   \                             (not multiline comment)
+//                    o -- o -- b2 -- o -- o
+//
+// This function will return A, given b1 and b2.
+//
+// Given the following pool:
+//
+//   o -- o -- o -- b2 -- o -- o -- b1 -- o
+//
+// This function will return b2.
+//
+const TBlock *TBlockPool::getCommonAncestor( const TBlock *b1, const TBlock *b2 ) const
+{
+	set<const TBlock*> Seenpool;
+
+	// Consider
+	//
+	//  1 -- 2 -- 3 -- 4 -- 5
+	//        \                           (not multiline comment)
+	//         6 -- 7 -- 8 -- 9
+	//
+	// We'll add blocks to a set until we find one we've already seen
+	//   +5 +9
+	//   +4 +8
+	//   +3 +7
+	//   +2 +6
+	//    1  2  (have already seen 2, so that is the common ancestor)
+	//
+
+	// Keep pushing b1 and b2 parents until one is found in the other
+	while( b1 != NULL || b2 != NULL ) {
+		// If b1 is already in the pool, then b1 is the common root
+		if( Seenpool.count( b1 ) != 0 )
+			return b1;
+		if( Seenpool.count( b2 ) != 0 )
+			return b2;
+
+		// Insert the current blocks into the sub pool
+		if( b1 != NULL )
+			Seenpool.insert( b1 );
+		if( b2 != NULL )
+			Seenpool.insert( b2 );
+
+		// Move back a parent
+		if( b1 != NULL )
+			b1 = b1->getParent();
+		if( b2 != NULL )
+			b2 = b2->getParent();
+	}
+
+	return NULL;
+}
+
+//
 // Function:	TBlockPool :: receiveInventory
 // Description:
 //
