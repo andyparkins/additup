@@ -412,6 +412,56 @@ void TBitcoinNetwork::process( TMessage *Message )
 			delete inv;
 		}
 	} else if( dynamic_cast<TMessage_getheaders*>( Message ) != NULL ) {
+		// No need to dynamic cast again
+		TMessage_getheaders *getheaders = reinterpret_cast<TMessage_getheaders*>( Message );
+		TMessage_headers *headers = new TMessage_headers;
+		// RX< getheaders
+
+		// The remote sends us a list of blocks it has, and we are to
+		// send it an headersentory containing blocks it doesn't have, but
+		// (apparently) we only show it blocks in the main chain.  The
+		// blocks it has is most likely the last blockchain tips it had
+		// received.  It doesn't know which one of them became the main
+		// chain so we must help it by sending only the main chain.
+		// (I'm not sure why this is so; for a peer-to-peer network, it
+		// would be better for the peer to decide for itself what it
+		// thinks the main chain is).
+		for( unsigned int i = 0; i < getheaders->size(); i++ ) {
+			const TBitcoinHash &BlockHash = (*getheaders)[i];
+			const TBlock *Block = BlockPool->getBlock( BlockHash );
+
+			// If we don't have that block, then we can't supply its
+			// children
+			if( Block == NULL )
+				continue;
+
+			// We only send blocks from what we consider the best chain
+			if( !Block->isAncestorOf( BlockPool->getBestBranch() ) )
+				continue;
+
+			unsigned int Limit = getNetworkParameters()->GETHEADERS_RESPONSES_MAX;
+			while( true ) {
+				Block = Block->getChildOnBranch( BlockPool->getBestBranch() );
+				// No more blocks
+				if( Block == NULL )
+					break;
+				// Caller requested a stop
+				if( Block->getHash() == getheaders->getStop() )
+					break;
+				// append this block header to the mesage
+				Block->writeToHeader( headers->appendBlockHeader() );
+				// Limit
+				Limit--;
+				if( Limit == 0 )
+					break;
+			}
+		}
+		// TX> headers
+		if( headers->size() > 0 ) {
+			Peer->queueOutgoing( headers );
+		} else {
+			delete headers;
+		}
 	} else if( dynamic_cast<TMessage_getaddr*>( Message ) != NULL ) {
 		// "The getaddr message sends a request to a node asking for
 		// information about known active peers to help with identifying
