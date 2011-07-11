@@ -77,7 +77,9 @@ TMessage *TMessageFactory::answer( TMessage *Message )
 {
 	TMessage *Answer = NULL;
 
-	if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
+	if( Message == NULL ) {
+		// Spontaneous
+	} else if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
 //	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
 //		// RX< version209
@@ -309,7 +311,13 @@ TMessage *TVersioningMessageFactory::answer( TMessage *Message )
 {
 	TMessage *Answer = NULL;
 
-	if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
+	if( Message == NULL ) {
+		// Spontaneous
+		if( !VersionSent ) {
+			VersionSent = true;
+			Answer = new TMessage_version_20900;
+		}
+	} else if( dynamic_cast<TMessageUnimplemented*>( Message ) != NULL ) {
 		// No response needed
 	} else if( dynamic_cast<TMessage_version_20900*>( Message ) != NULL ) {
 		// RX< version209

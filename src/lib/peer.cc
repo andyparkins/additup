@@ -253,6 +253,8 @@ void TBitcoinPeer::receive( const string &s )
 		if( Factory == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in handshaking mode" );
 
+		// Spontaneous queue is answer(NULL);
+		Factory->answer(NULL);
 		Factory->receive(s);
 
 		auto_ptr<TMessage> Message( Factory->nextIncoming() );
@@ -296,6 +298,8 @@ void TBitcoinPeer::receive( const string &s )
 		if( Factory == NULL )
 			throw logic_error( "TBitcoinPeer::receive() must have factory in connected mode" );
 
+		// Spontaneous queue is answer(NULL);
+		Factory->answer(NULL);
 		Factory->receive(s);
 
 		auto_ptr<TMessage> Message;
