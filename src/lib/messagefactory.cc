@@ -124,6 +124,7 @@ void TMessageFactory::receive( const string &s )
 			// The clone gets automatically deleted unless we release
 			// the auto_ptr
 			auto_ptr<TMessage> AutoTidyClone( (*it)->clone() );
+			AutoTidyClone->setPeer( Peer );
 
 			// Clear outstanding exceptions
 			iss.clear();
