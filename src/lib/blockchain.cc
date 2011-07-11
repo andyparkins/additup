@@ -203,6 +203,50 @@ TBitcoinHash TBlock::getNextRequiredDifficulty() const
 }
 
 //
+// Function:	TBlock :: getChildOnBranch
+// Description:
+//
+// Consider this chain:
+//   1 -- 2 -- this -- 3 -- branch1
+//         \       \    \                (not multiline comment)
+//          \       \    4 -- branch3
+//           \       \                   (not multiline comment)
+//            \       5 -- branch2
+//             \                         (not multiline comment)
+//              6 -- 7 -- branch4
+//
+// this->getChildOnBranch( branch1 ) returns 3.
+// this->getChildOnBranch( branch2 ) returns 5.
+// this->getChildOnBranch( branch3 ) returns 3.
+// this->getChildOnBranch( branch4 ) returns NULL.
+//
+const TBlock *TBlock::getChildOnBranch( const TBlock *branch ) const
+{
+	set<TBitcoinHash>::const_iterator it;
+
+	// getCommonAncestor( 3, branch1 ) == 3
+	// getCommonAncestor( 5, branch1 ) == this
+	// getCommonAncestor( 3, branch2 ) == this
+	// getCommonAncestor( 5, branch2 ) == 5
+	// getCommonAncestor( 3, branch3 ) == 3
+	// getCommonAncestor( 5, branch3 ) == this
+	// getCommonAncestor( 3, branch4 ) == 2
+	// getCommonAncestor( 5, branch4 ) == 2
+	for( it = ChildHashes.begin(); it != ChildHashes.end(); it++ ) {
+		const TBlock *child = Pool->getBlock( *it );
+		const TBlock *commonAncestor = Pool->getCommonAncestor( child, branch );
+
+		// If the child is the common ancestor of the branch, then it is
+		// on that branch
+		if( commonAncestor == child ) {
+			return child;
+		}
+	}
+
+	return NULL;
+}
+
+//
 // Function:	TBlock :: printOn
 // Description:
 //
