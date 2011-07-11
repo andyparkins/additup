@@ -527,6 +527,33 @@ void TBlockPool::receiveBlock( const TMessage_block *message )
 }
 
 //
+// Function:	TBlockPool :: queueBlock
+// Description:
+//
+void TBlockPool::queueBlock( TBitcoinPeer *Peer, const TBlock *Block ) const
+{
+	TMessage_block *msgblock;
+	msgblock = new TMessage_block;
+	msgblock->setPeer( Peer );
+
+	Block->writeToHeader( msgblock->blockHeader() );
+
+	// XXX: That's the header done, but how do we get the transactions
+	// in?
+
+	Peer->queueOutgoing( msgblock );
+}
+
+//
+// Function:	TBlockPool :: queueBlock
+// Description:
+//
+void TBlockPool::queueBlock( TBitcoinPeer *Peer, const TBitcoinHash &Hash ) const
+{
+	queueBlock( Peer, getBlock( Hash ) );
+}
+
+//
 // Function:	TBlockPool :: receiveHeaders
 // Description:
 //

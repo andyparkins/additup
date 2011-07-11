@@ -241,8 +241,8 @@ class TBlockPool
 	void receiveBlock( const TMessage_block * );
 	void receiveHeaders( const TMessage_headers * );
 	void receiveHeader( const TBlockHeaderElement & );
-	void queueBlock( TBitcoinPeer *, const TBitcoinHash & );
-	void queueBlock( TBitcoinPeer *, const TBlock * );
+	void queueBlock( TBitcoinPeer *, const TBitcoinHash & ) const;
+	void queueBlock( TBitcoinPeer *, const TBlock * ) const;
 
 	virtual void putBlock( const TBitcoinHash &, TBlock * ) = 0;
 	virtual TBlock *getBlock( const TBitcoinHash & ) const = 0;
