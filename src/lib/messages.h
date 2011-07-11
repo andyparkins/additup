@@ -141,6 +141,7 @@ class TMessage
 	TBitcoinPeer *getPeer() { return Peer; }
 
 	virtual void setFields();
+	void setMagic( uint32_t m ) { MessageHeader.Magic = m; }
 
   protected:
 	virtual bool acceptCommandCode( const string & ) const;

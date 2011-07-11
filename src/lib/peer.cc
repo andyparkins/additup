@@ -277,7 +277,8 @@ void TBitcoinPeer::receive( const TByteArray &s )
 			log() << "[PEER] Network parameters not available" << endl;
 			// If we don't already know our network, then the first thing
 			// we're looking for is a magic number to tell us what network
-			// we're connected to.
+			// we're connected to.  We can't transmit anything until we
+			// know that.
 
 			// We will make the assumption that the accidental
 			// transmission of bytes matching a network magic number is
@@ -322,6 +323,20 @@ void TBitcoinPeer::receive( const TByteArray &s )
 					}
 					State = Handshaking;
 					break;
+				}
+			}
+
+			// Send some version messages -- the correct one will get us
+			// an answer, the wrong ones will be ignored
+			if( incoming.empty() ) {
+				set<const TNetworkParameters *>::const_iterator p = TSingleton<KNOWN_NETWORKS>::O().begin();
+				while( p != TSingleton<KNOWN_NETWORKS>::O().end() ) {
+					TMessage_version *version;
+					version = new TMessage_version_31402;
+					version->setFields();
+					version->setMagic( (*p)->Magic );
+					queueOutgoing( version );
+					p++;
 				}
 			}
 		}
