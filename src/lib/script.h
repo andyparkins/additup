@@ -393,15 +393,15 @@ class TBitcoinScript : public TBitcoinScriptBase
 };
 
 //
-// Class: TBitcoinScript_0
+// Class: TBitcoinScript_1
 // Description:
 //
-class TBitcoinScript_0 : public TBitcoinScript
+class TBitcoinScript_1 : public TBitcoinScript
 {
   public:
-	TBitcoinScript_0();
-	TBitcoinScript_0( const TStackOperator **, unsigned int );
-	TBitcoinScript_0( const string &, eReadMode );
+	TBitcoinScript_1();
+	TBitcoinScript_1( const TStackOperator **, unsigned int );
+	TBitcoinScript_1( const string &, eReadMode );
 
 	uint32_t getMinimumAcceptedVersion() const;
 

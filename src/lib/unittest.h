@@ -115,11 +115,11 @@ static const TByteArray UNITTESTSampleMessages[] = {
 			"\0\0\0\0\0\0\0\0"   // Nonce
 			"\0"                 // Sub version information (NUL terminated)
 			, 101 ),
-	// TMessage_version_0
+	// TMessage_version_1
 	TByteArray("\xf9\xbe\xb4\xd9"    // Magic
 			"version\0\0\0\0\0"  // Command
 			"\x2e\0\0\0"         // Length
-			"\x00\x00\x00\x00"   // Version
+			"\x01\x00\x00\x00"   // Version
 			"\x01\0\0\0\0\0\0\0" // Services
 			"\0\0\0\x80\0\0\0\0" // Timestamp in seconds
 			"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" // Address Me

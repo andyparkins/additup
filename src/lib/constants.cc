@@ -117,9 +117,9 @@ void TPredefinedNetworkParameters::configureGenesisMessage( TMessage_block &mess
 
 	// Genesis transaction
 
-	TBitcoinScript_0 genesisSignature(SATOSHI_GENESIS_SIGSCRIPT,
+	TBitcoinScript_1 genesisSignature(SATOSHI_GENESIS_SIGSCRIPT,
 			ARRAY_SIZE(SATOSHI_GENESIS_SIGSCRIPT));
-	TBitcoinScript_0 genesisPublicKey(SATOSHI_GENESIS_PUBKEYSCRIPT,
+	TBitcoinScript_1 genesisPublicKey(SATOSHI_GENESIS_PUBKEYSCRIPT,
 			ARRAY_SIZE(SATOSHI_GENESIS_PUBKEYSCRIPT));
 
 	// Note: references so we can edit in place

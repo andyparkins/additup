@@ -79,14 +79,14 @@ TMessageTemplates::TMessageTemplates()
 	static const TMessage *ModuleTemplates[] = {
 		// Note: version messages have to be in reverse order so that the
 		// highest matching version will be tried first.  This is
-		// necessary because version_0 will happilly accept a
+		// necessary because version_1 will happilly accept a
 		// version_209 message, being that it is backwards compatible
 		new TMessage_version_20900(),
 		new TMessage_version_10600(),
-		new TMessage_version_0(),
+		new TMessage_version_1(),
 		new TMessage_verack(),
 		new TMessage_addr_31402(),
-		new TMessage_addr_0(),
+		new TMessage_addr_1(),
 		new TMessage_inv(),
 		new TMessage_getdata(),
 		new TMessage_getblocks(),
@@ -442,10 +442,10 @@ istream &TMessage_version::read( istream &is )
 }
 
 //
-// Function:	TMessage_version_0 :: read
+// Function:	TMessage_version_1 :: read
 // Description:
 //
-istream &TMessage_version_0::read( istream &is )
+istream &TMessage_version_1::read( istream &is )
 {
 	TMessage_version::read(is);
 
@@ -465,10 +465,10 @@ istream &TMessage_version_0::read( istream &is )
 }
 
 //
-// Function:	TMessage_version_0 :: write
+// Function:	TMessage_version_1 :: write
 // Description:
 //
-ostream &TMessage_version_0::write( ostream &os ) const
+ostream &TMessage_version_1::write( ostream &os ) const
 {
 	TMessage_version::write(os);
 
@@ -482,12 +482,12 @@ ostream &TMessage_version_0::write( ostream &os ) const
 }
 
 //
-// Function:	TMessage_version_0 :: createMessageFactory
+// Function:	TMessage_version_1 :: createMessageFactory
 // Description:
 //
-TVersionedMessageFactory *TMessage_version_0::createMessageFactory() const
+TVersionedMessageFactory *TMessage_version_1::createMessageFactory() const
 {
-	TMessageFactory_0 *factory = new TMessageFactory_0;
+	TMessageFactory_1 *factory = new TMessageFactory_1;
 	// The factory has the same peer as us
 	factory->setPeer( Peer );
 	return factory;
@@ -499,7 +499,7 @@ TVersionedMessageFactory *TMessage_version_0::createMessageFactory() const
 //
 istream &TMessage_version_10600::read( istream &is )
 {
-	TMessage_version_0::read(is);
+	TMessage_version_1::read(is);
 
 	// d46
 	is >> AddrFrom;
@@ -519,7 +519,7 @@ istream &TMessage_version_10600::read( istream &is )
 //
 ostream &TMessage_version_10600::write( ostream &os ) const
 {
-	TMessage_version_0::write(os);
+	TMessage_version_1::write(os);
 
 	os << AddrFrom;
 	os << Nonce;
@@ -595,10 +595,10 @@ TVersionedMessageFactory *TMessage_version_31402::createMessageFactory() const
 // --------
 
 //
-// Function:	TMessage_addr_0 :: printOn
+// Function:	TMessage_addr_1 :: printOn
 // Description:
 //
-ostream &TMessage_addr_0::printOn( ostream &s ) const
+ostream &TMessage_addr_1::printOn( ostream &s ) const
 {
 	s << className();
 	s << "{ N=" << AddressData.size();

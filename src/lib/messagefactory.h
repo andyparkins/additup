@@ -168,13 +168,13 @@ class TVersionedMessageFactory : public TMessageFactory
 };
 
 //
-// Class:	TMessageFactory_0
+// Class:	TMessageFactory_1
 // Description:
 //
-class TMessageFactory_0 : public TVersionedMessageFactory
+class TMessageFactory_1 : public TVersionedMessageFactory
 {
   public:
-	const char *className() { return "TMessageFactory_0"; }
+	const char *className() { return "TMessageFactory_1"; }
 
 	TBitcoinScript *createVersionedBitcoinScript() const;
 

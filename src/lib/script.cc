@@ -336,45 +336,45 @@ ostream &TBitcoinScript::write( ostream &os ) const
 // -----------
 
 //
-// Function:	TBitcoinScript_0 :: TBitcoinScript_0
+// Function:	TBitcoinScript_1 :: TBitcoinScript_1
 // Description:
 //
-TBitcoinScript_0::TBitcoinScript_0()
+TBitcoinScript_1::TBitcoinScript_1()
 {
 }
 
 //
-// Function:	TBitcoinScript_0 :: TBitcoinScript_0
+// Function:	TBitcoinScript_1 :: TBitcoinScript_1
 // Description:
 //
-TBitcoinScript_0::TBitcoinScript_0( const TStackOperator **a, unsigned int n ) :
+TBitcoinScript_1::TBitcoinScript_1( const TStackOperator **a, unsigned int n ) :
 	TBitcoinScript(a,n)
 {
 }
 
 //
-// Function:	TBitcoinScript_0 :: TBitcoinScript_0
+// Function:	TBitcoinScript_1 :: TBitcoinScript_1
 // Description:
 //
-TBitcoinScript_0::TBitcoinScript_0( const string &s, eReadMode a ) :
+TBitcoinScript_1::TBitcoinScript_1( const string &s, eReadMode a ) :
 	TBitcoinScript(s, a)
 {
 }
 
 //
-// Function:	TBitcoinScript_0 :: getMinimumAcceptedVersion
+// Function:	TBitcoinScript_1 :: getMinimumAcceptedVersion
 // Description:
 //
-uint32_t TBitcoinScript_0::getMinimumAcceptedVersion() const
+uint32_t TBitcoinScript_1::getMinimumAcceptedVersion() const
 {
 	return 0;
 }
 
 //
-// Function:	TBitcoinScript_0 :: init
+// Function:	TBitcoinScript_1 :: init
 // Description:
 //
-void TBitcoinScript_0::init()
+void TBitcoinScript_1::init()
 {
 	// Claimant scripts are limited
 	ClaimantTemplates.push_back( new TStackOperator_OP_FALSE );
@@ -2296,7 +2296,7 @@ int main( int argc, char *argv[] )
 		while( !p->empty() ) {
 			istringstream iss(*p);
 			TExecutionContext S;
-			TBitcoinScript_0 BCP;
+			TBitcoinScript_1 BCP;
 
 			BCP.read(iss, TBitcoinScript::AuthorisationScript );
 

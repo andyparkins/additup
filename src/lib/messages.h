@@ -262,26 +262,29 @@ class TMessage_version : public TMessageWithoutChecksum
 };
 
 //
-// Class: TMessage_version_0
+// Class: TMessage_version_1
 // Description:
 //
-class TMessage_version_0 : public TMessage_version
+class TMessage_version_1 : public TMessage_version
 {
   public:
-	const char *className() const { return "TMessage_version_0"; }
-	TMessage *clone() const { return new TMessage_version_0(*this); }
+	const char *className() const { return "TMessage_version_1"; }
+	TMessage *clone() const { return new TMessage_version_1(*this); }
 
 	istream &read( istream & );
 	ostream &write( ostream & ) const;
 
 	TVersionedMessageFactory *createMessageFactory() const;
+
+  protected:
+	uint32_t minimumAcceptedVersion() const { return 1; }
 };
 
 //
 // Class: TMessage_version_10600
 // Description:
 //
-class TMessage_version_10600 : public TMessage_version_0
+class TMessage_version_10600 : public TMessage_version_1
 {
   public:
 	const char *className() const { return "TMessage_version_10600"; }
@@ -376,14 +379,14 @@ class TMessage_addr : public TMessageWithChecksum
 };
 
 //
-// Class: TMessage_addr_0
+// Class: TMessage_addr_1
 // Description:
 //
-class TMessage_addr_0 : public TMessage_addr
+class TMessage_addr_1 : public TMessage_addr
 {
   public:
-	const char *className() const { return "TMessage_addr_0"; }
-	TMessage *clone() const { return new TMessage_addr_0(*this); }
+	const char *className() const { return "TMessage_addr_1"; }
+	TMessage *clone() const { return new TMessage_addr_1(*this); }
 
 	istream &read( istream &is ) {
 		TMessageWithChecksum::read(is);

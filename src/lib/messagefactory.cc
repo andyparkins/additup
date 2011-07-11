@@ -294,7 +294,7 @@ void TVersioningMessageFactory::init()
 	Templates.push_back( new TMessage_version_31402() );
 	Templates.push_back( new TMessage_version_20900() );
 	Templates.push_back( new TMessage_version_10600() );
-	Templates.push_back( new TMessage_version_0() );
+	Templates.push_back( new TMessage_version_1() );
 
 	TMessageFactory::init();
 }
@@ -302,14 +302,14 @@ void TVersioningMessageFactory::init()
 // ---------
 
 //
-// Function:	TMessageFactory_0 :: init
+// Function:	TMessageFactory_1 :: init
 // Description:
 //
-void TMessageFactory_0::init()
+void TMessageFactory_1::init()
 {
-//	Templates.push_back( new TMessage_version_0() );
+//	Templates.push_back( new TMessage_version_1() );
 	Templates.push_back( new TMessage_verack() );
-	Templates.push_back( new TMessage_addr_0() );
+	Templates.push_back( new TMessage_addr_1() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );
 	Templates.push_back( new TMessage_getblocks() );
@@ -326,12 +326,12 @@ void TMessageFactory_0::init()
 }
 
 //
-// Function:	TMessageFactory_0 :: createVersionedBitcoinScript
+// Function:	TMessageFactory_1 :: createVersionedBitcoinScript
 // Description:
 //
-TBitcoinScript *TMessageFactory_0::createVersionedBitcoinScript() const
+TBitcoinScript *TMessageFactory_1::createVersionedBitcoinScript() const
 {
-	return new TBitcoinScript_0;
+	return new TBitcoinScript_1;
 }
 
 // ---------
@@ -344,7 +344,7 @@ void TMessageFactory_10600::init()
 {
 //	Templates.push_back( new TMessage_version_10600() );
 	Templates.push_back( new TMessage_verack() );
-	Templates.push_back( new TMessage_addr_0() );
+	Templates.push_back( new TMessage_addr_1() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );
 	Templates.push_back( new TMessage_getblocks() );
@@ -366,7 +366,7 @@ void TMessageFactory_10600::init()
 //
 TBitcoinScript *TMessageFactory_10600::createVersionedBitcoinScript() const
 {
-	return new TBitcoinScript_0;
+	return new TBitcoinScript_1;
 }
 
 // ---------
@@ -379,7 +379,7 @@ void TMessageFactory_20900::init()
 {
 //	Templates.push_back( new TMessage_version_20900() );
 	Templates.push_back( new TMessage_verack() );
-	Templates.push_back( new TMessage_addr_0() );
+	Templates.push_back( new TMessage_addr_1() );
 	Templates.push_back( new TMessage_inv() );
 	Templates.push_back( new TMessage_getdata() );
 	Templates.push_back( new TMessage_getblocks() );
@@ -401,7 +401,7 @@ void TMessageFactory_20900::init()
 //
 TBitcoinScript *TMessageFactory_20900::createVersionedBitcoinScript() const
 {
-	return new TBitcoinScript_0;
+	return new TBitcoinScript_1;
 }
 
 // ---------
@@ -438,7 +438,7 @@ void TMessageFactory_31402::init()
 //
 TBitcoinScript *TMessageFactory_31402::createVersionedBitcoinScript() const
 {
-	return new TBitcoinScript_0;
+	return new TBitcoinScript_1;
 }
 
 
