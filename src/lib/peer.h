@@ -129,6 +129,7 @@ class TBitcoinPeer
 	eState getState() const { return State; }
 	void receive( const TByteArray & );
 
+	const TBitcoinNetwork *getNetwork() const { return Network; }
 	const TNetworkParameters *getNetworkParameters() const;
 
 	const TMessageFactory *factory() const { return Factory; }
