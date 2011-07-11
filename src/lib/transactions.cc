@@ -117,6 +117,30 @@ TCoinTransfer *TMessageBasedTransaction::createTransfer( unsigned int n )
 //
 const TBitcoinHash &TMessageBasedTransaction::getHash() const
 {
+	// All our inputs must point at us as their claimant, we can simply
+	// return one of those hashes.
+	return Input[0]->getClaimantReference().TransactionHash;
+
+//	TTransactionElement Transaction;
+//
+//	Transaction.Version = 1;
+//	Transaction.LockTime = 0;
+//
+//	// Our inputs array is a list of coin transfers; those transfers
+//	// show a creator transaction and a claimant transaction.  This
+//	// transaction is the claimant transaction, so for our inputs we are
+//	// interested in where that input came from: the creator transaction
+//	for( unsigned int i = 0; i < Inputs.size(); i++ ) {
+//		TInputSplitElement &Input( Transaction.createInput() );
+//		Input.Outpoint.TransactionHash = Inputs[i]->getCreatorReference().TransactionHash;
+//		Input.Outpoint.TransactionHash = Inputs[i]->getCreatorReference().OutputIndex;
+//		Input.SignatureScript = Inputs[i]->ClaimantScript;
+//		Input.Sequence = Inputs[i]->SpentSequenceNumber;
+//
+//		// Should we choose to, we could check that the Input[i] coin
+//		// transfer has us as its target.
+//	}
+
 	return cachedHash;
 }
 
