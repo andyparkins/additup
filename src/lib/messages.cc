@@ -510,6 +510,10 @@ istream &TMessage_version_10600::read( istream &is )
 	// d80: Variable sized NUL-terminated string
 	is >> SubVersionNum;
 
+	// Self connection check
+	if( Nonce == Peer->getNetwork()->getNonce() )
+		throw message_parse_error_self();
+
 	return is;
 }
 

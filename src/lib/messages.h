@@ -113,6 +113,14 @@ class message_parse_error_magic : public message_parse_error
 		message_parse_error("message magic is wrong") {}
 };
 
+class message_parse_error_self : public message_parse_error
+{
+  public:
+	message_parse_error_self() :
+		message_parse_error("self-connection detected") {}
+};
+
+
 //
 // Class: TMessage
 // Description:
