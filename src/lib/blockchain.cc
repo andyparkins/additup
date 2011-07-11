@@ -307,6 +307,9 @@ const TBitcoinHash &TMessageBasedBlock::getHash() const
 	// Field sizes: 4 + 32 + 32 + 4 + 4 + 4 = 80
 	// OpenSSL should pad on its own...
 
+	if( Pool == NULL )
+		return cachedHash;
+
 //	log() << "TMessage_block = ";
 //	TLog::hexify( log(), oss.str() );
 //	log() << endl;
