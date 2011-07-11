@@ -130,8 +130,6 @@ class TBitcoinPeer
 	TMessageFactory *Factory;
 
 	eState State;
-
-	list<TMessage *> OutgoingQueue;
 };
 
 

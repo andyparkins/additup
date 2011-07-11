@@ -141,13 +141,9 @@ const TNetworkParameters *TBitcoinPeer::getNetworkParameters() const
 //
 TMessage *TBitcoinPeer::nextOutgoing()
 {
-	if( OutgoingQueue.empty() )
+	if( Factory == NULL )
 		return NULL;
-
-	TMessage *m = OutgoingQueue.front();
-	OutgoingQueue.pop_front();
-
-	return m;
+	return Factory->nextOutgoing();
 }
 
 //
@@ -289,11 +285,6 @@ void TBitcoinPeer::receive( const string &s )
 				log() << "[PEER] Ignoring " << *Message.get() << endl;
 			}
 		}
-
-		if( Response != NULL ) {
-			log() << "[PEER] Queueing " << *Response << endl;
-			OutgoingQueue.push_back( Response );
-		}
 	}
 
 	// If we've been handshaking, then the version message is still in
@@ -317,11 +308,6 @@ void TBitcoinPeer::receive( const string &s )
 			Response = Factory->answer( Message.get() );
 
 			log() << "[PEER] Got message " << *Message << endl;
-
-			if( Response != NULL ) {
-				log() << "[PEER] Queueing " << *Response << endl;
-				OutgoingQueue.push_back( Response );
-			}
 
 		} while( true );
 	}
