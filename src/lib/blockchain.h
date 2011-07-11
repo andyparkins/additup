@@ -149,6 +149,7 @@ class TBlock
 	virtual TBitcoinHash getClaimedDifficulty() const = 0;
 	virtual time_t getTimestamp() const = 0;
 	virtual void registerChild( TBlock * );
+//	virtual TBitcoinHash getCumulativeDifficulty() const = 0;
 
 	void fit();
 
