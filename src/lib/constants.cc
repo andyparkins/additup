@@ -194,8 +194,10 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 		configureGenesisMessage( message );
 		message.blockHeader().Timestamp = 1296688602;
 		message.blockHeader().Nonce = 384568319;
-		// XXX: Doesn't this imply we need different genesis messages
-		// for test and production networks?
+		// Doesn't this imply we need different genesis messages
+		// for test and production networks?  Regardless of what it
+		// implies, the official client uses the same genesis message
+		// for both production and testnets.
 		message.blockHeader().DifficultyBits.setTarget(0x07fff8, 0x1d);
 
 		// We're done, update calculated fields
