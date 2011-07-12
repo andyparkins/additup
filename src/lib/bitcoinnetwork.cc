@@ -100,6 +100,13 @@ TNetworkParameters::TNetworkParameters() :
 	DIFFICULTY_TIMESPAN = 14 * 24 * 60 * 60;
 	NEW_BLOCK_PERIOD = 10 * 60;
 
+	// Block reward starts at 50, and is halved every four years.  Only
+	// it's not every four years, it's every 210,000 blocks
+	//    int64 nSubsidy = 50 * COIN;
+	//    nSubsidy >>= (nHeight / 210000);
+	INITIAL_MINING_REWARD.setValue(50);
+	INFLATION_PERIOD = 210000;
+
 	INV_MAX = 50000;
 	GETDATA_MAX = 50000;
 	GETBLOCKS_RESPONSES_MAX = 500;

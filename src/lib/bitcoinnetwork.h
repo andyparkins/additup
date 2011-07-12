@@ -130,6 +130,9 @@ class TNetworkParameters
 	TCoinsElement MAX_MONEY;
 	TCoinsElement MIN_TX_FEE;
 
+	TCoinsElement INITIAL_MINING_REWARD;
+	unsigned int INFLATION_PERIOD;
+
 	// Some of my own in the same style, but supplied as literals
 	// instead of constants in the official
 	// client

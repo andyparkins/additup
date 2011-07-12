@@ -152,7 +152,7 @@ void TPredefinedNetworkParameters::configureGenesisMessage( TMessage_block &mess
 
 	TOutputSplitElement &Output( Transaction.createOutput() );
 	Output.encodePubKeyScript( genesisPublicKey );
-	Output.setValue( 50 );
+	Output.setValue( INITIAL_MINING_REWARD );
 
 //	genesisSignature.printOn(log());
 //	genesisPublicKey.printOn(log());
