@@ -83,6 +83,8 @@ TNetworkParameters::TNetworkParameters() :
 
 	// Default to something sensible (from official client)
 	COINBASE_MATURITY = 100;
+	COINBASE_MAXIMUM_SCRIPT_SIZE = 2;
+	COINBASE_MAXIMUM_SCRIPT_SIZE = 100;
 
 	MAX_BLOCK_SIZE = 1000000;
 	MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;

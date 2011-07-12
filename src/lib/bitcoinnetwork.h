@@ -120,6 +120,8 @@ class TNetworkParameters
 	// kept the names to allow ease of understanding for those familiar
 	// with the offical constants.
 	unsigned int COINBASE_MATURITY;
+	unsigned int COINBASE_MINIMUM_SCRIPT_SIZE;
+	unsigned int COINBASE_MAXIMUM_SCRIPT_SIZE;
 	unsigned int MAX_BLOCK_SIZE;
 	unsigned int MAX_BLOCK_SIZE_GEN;
 	unsigned int MAX_BLOCK_SIGOPS;
