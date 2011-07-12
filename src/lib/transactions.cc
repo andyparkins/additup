@@ -73,7 +73,8 @@ TTransaction::~TTransaction()
 // Description:
 //
 TTransaction::TTransaction( TTransactionPool *p ) :
-	TransactionPool(p)
+	TransactionPool(p),
+	Priority( 0 )
 {
 }
 
@@ -235,6 +236,7 @@ void TTransactionPool::receiveBlock( const TMessage_block *Message )
 //
 void TTransactionPool::receiveTransaction( const TMessage_tx *tx )
 {
+
 }
 
 // --------

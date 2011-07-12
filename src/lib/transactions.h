@@ -190,6 +190,7 @@ class TMemoryCoinTransfer : public TCoinTransfer
 class TTransaction
 {
   public:
+  public:
 	TTransaction( TTransactionPool * );
 	virtual ~TTransaction();
 
@@ -204,8 +205,14 @@ class TTransaction
 //	virtual TCoinElement sumInputs() const = 0;
 //	virtual TCoinElement sumOutputs() const = 0;
 
+//	virtual TCoinElement getFee() const { return sumOutput() - sumInputs(); }
+
+	bool operator<( const TTransaction & ) const;
+
   protected:
 	TTransactionPool *TransactionPool;
+
+	unsigned int Priority;
 };
 
 //
