@@ -232,8 +232,9 @@ class TTransaction
 	virtual const TBitcoinHash &getHash() const = 0;
 
 //	virtual void putOutput( unsigned int, TCoinTransfer * ) = 0;
-//	virtual TCoinTransfer *getOutput( unsigned int ) const = 0;
+	virtual TCoinTransfer *getOutput( unsigned int ) const = 0;
 //	virtual bool outputExists( unsigned int ) const = 0;
+	virtual TCoinTransfer *getInput( unsigned int ) const = 0;
 
 	virtual TCoinTransfer *createTransfer( unsigned int ) = 0;
 
