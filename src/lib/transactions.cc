@@ -120,6 +120,18 @@ const TBitcoinHash &TMessageBasedTransaction::getHash() const
 	return cachedHash;
 }
 
+//
+// Function:	TMessageBasedTransaction :: isCoinbase
+// Description:
+// A coinbase transaction has only one input, and that input is a NULL
+// reference.
+//
+bool TMessageBasedTransaction::isCoinbase() const
+{
+	return Inputs.size() == 1
+		&& Inputs[0].isNull();
+}
+
 // -------------
 
 //
@@ -151,18 +163,6 @@ void TMemoryCoinTransfer::validate()
 	// authorisation script requires
 	Script->read( CScript, TBitcoinScript::ClaimantScript );
 	Script->read( AScript, TBitcoinScript::AuthorisationScript );
-}
-
-//
-// Function:	TMemoryCoinTransfer :: isCoinbase
-// Description:
-//
-bool TMemoryCoinTransfer::isCoinbase() const
-{
-//	return Creation.TransactionHash == Network->getParameters()->COINBASE_REFERENCE_HASH
-//		&& Creation.SplitIndex == Network->getParameters()->COINBASE_REFERENCE_INDEX
-
-	return false;
 }
 
 // ------

@@ -162,8 +162,6 @@ class TCoinTransfer
 	virtual bool confirmationAvailable() const = 0;
 	virtual bool confirmed() const = 0;
 
-	virtual bool isCoinbase() const = 0;
-
 	virtual void validate() = 0;
 
 //	bool spendAttempt( TTransactionElement & );
@@ -187,8 +185,6 @@ class TMemoryCoinTransfer : public TCoinTransfer
 
 	bool confirmationAvailable() const { return State != ScriptNotRun; }
 	bool confirmed() const { return State == ConfirmedValid; }
-
-	bool isCoinbase() const;
 
 	void validate();
 
@@ -240,6 +236,8 @@ class TTransaction
 //	virtual bool outputExists( unsigned int ) const = 0;
 
 	virtual TCoinTransfer *createTransfer( unsigned int ) = 0;
+
+	virtual bool isCoinbase() const = 0;
 
 //	virtual TCoinElement sumInputs() const = 0;
 //	virtual TCoinElement sumOutputs() const = 0;
