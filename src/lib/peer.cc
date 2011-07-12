@@ -284,18 +284,21 @@ void TBitcoinPeer::receive( const TByteArray &s )
 		// need to do anything other than this initial setPeer() call.
 		Factory->setPeer( this );
 
-		// We're now in handshaking mode
+		// We're now checking we know what messages look like
 		State = Parameters;
 	}
 
 	if( State == Parameters ) {
+		// This should only need doing for the very first peer;
+		// subsequent peers will look at the network and find the
+		// network parameters are already set, and will use those.
 		log() << "[PEER] State: Parameters" << endl;
 		if( Network != NULL && getNetworkParameters() != NULL ) {
 			log() << "[PEER] Network parameters already available, "
 				<< getNetworkParameters()->className() << endl;
 			State = Handshaking;
 		} else {
-			log() << "[PEER] Network parameters not available" << endl;
+			log() << "[PEER] Network parameters not available, queueing messages with all known magics" << endl;
 			// If we don't already know our network, then the first thing
 			// we're looking for is a magic number to tell us what network
 			// we're connected to.  We can't transmit anything until we
@@ -347,8 +350,10 @@ void TBitcoinPeer::receive( const TByteArray &s )
 				}
 			}
 
-			// Send some version messages -- the correct one will get us
+			// Send some version messages -- the correct magic will get us
 			// an answer, the wrong ones will be ignored
+			// XXX: This is dodgy.  What if the other end is doing this
+			// sort of auto-detection as well?
 			if( incoming.empty() ) {
 				KNOWN_NETWORKS::T::const_iterator p = KNOWN_NETWORKS::O().begin();
 				while( p != KNOWN_NETWORKS::O().end() ) {
@@ -476,7 +481,6 @@ void TBitcoinPeer::receive( const TByteArray &s )
 
 		} while( true );
 	}
-
 }
 
 

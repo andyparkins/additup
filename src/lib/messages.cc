@@ -978,6 +978,15 @@ int main( int argc, char *argv[] )
 				continue;
 			}
 
+// f9 be b4 d9
+// 76 65 72 73 69 6f 6e 00 00 00 00 00  command (version)
+// 2e 00 00 00  Payload
+// 00 00 00 00  Version
+// 01 00 00 00 00 00 00 00  Services
+// 00 00 00 80 00 00 00 00
+// 00 00 00 00 00 00
+// 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
 			// Now check that conversion back produces the input
 			ostringstream oss;
 			potential->write( oss );
