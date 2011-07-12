@@ -155,6 +155,7 @@ class TBitcoinPeer
 
 	bool VersionSent;
 	bool VerackReceived;
+	bool Inbound;
 	TMessage_version *VersionMessage;
 
 	list<TMessage*> IncomingQueue;
