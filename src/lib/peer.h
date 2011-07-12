@@ -78,6 +78,7 @@ struct sockaddr;
 class TNodeInfo
 {
   public:
+	TNodeInfo();
 	TNodeInfo( uint32_t );
 
 	ostream &write( ostream & ) const;

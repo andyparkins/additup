@@ -51,7 +51,19 @@
 // -------------- Class declarations
 
 //
-// Function:	TNodeInfo :: write
+// Function:	TNodeInfo :: TNodeInfo
+// Description:
+//
+TNodeInfo::TNodeInfo() :
+	IPv4( 0 ),
+	Port( 0 ),
+	LastConnectAttempt(0),
+	LastConnectSuccess(0)
+{
+}
+
+//
+// Function:	TNodeInfo :: TNodeInfo
 // Description:
 //
 TNodeInfo::TNodeInfo( uint32_t ip ) :
