@@ -154,6 +154,21 @@ void TPredefinedNetworkParameters::configureGenesisMessage( TMessage_block &mess
 	Output.encodePubKeyScript( genesisPublicKey );
 	Output.setValue( INITIAL_MINING_REWARD );
 
+	// Now that the transaction is configured, we can calculate the
+	// merkle root
+	message.setMerkleRoot();
+
+	// We can also confirm the merkle root, since it should always be
+	// the same
+	TBitcoinHash MerkleHash;
+	MerkleHash.fromBytes( string("\x4a\x5e\x1e\x4b\xaa\xb8\x9f\x3a"
+		"\x32\x51\x8a\x88\xc3\x1b\xc8\x7f"
+		"\x61\x8f\x76\x67\x3e\x2c\xc7\x7a"
+		"\xb2\x12\x7b\x7a\xfd\xed\xa3\x3b", 32 );
+
+	if( message.blockHeader().MerkleRoot.get() != MerkleHash )
+		throw logic_error( "GenesisBlock Merkle root doesn't match pre-programmed hash" );
+
 //	genesisSignature.printOn(log());
 //	genesisPublicKey.printOn(log());
 }
@@ -233,7 +248,6 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		message.blockHeader().DifficultyBits.setTarget(0x00ffff, 0x1d);
 
 		// We're done, update calculated fields
-		message.setMerkleRoot();
 		message.setFields();
 
 		TBitcoinHash GenesisHash;
