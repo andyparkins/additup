@@ -493,6 +493,8 @@ void TBitcoinNetwork::process( TMessage *Message )
 		BlockPool->receiveHeaders( headers );
 		// No response needed
 	} else if( dynamic_cast<TMessage_addr*>( Message ) != NULL ) {
+		TMessage_addr *addr = reinterpret_cast<TMessage_addr*>( Message );
+		addr->updateNetworkDirectory();
 		// No response needed
 	} else if( dynamic_cast<TMessage_reply*>( Message ) != NULL ) {
 		// No response needed
