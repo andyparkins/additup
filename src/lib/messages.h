@@ -61,6 +61,7 @@ class TMessageDigest;
 class TVersionedMessageFactory;
 class TBitcoinPeer;
 class TMessageFactory;
+class TNodeInfo;
 
 
 // -------------- Function pre-class prototypes
@@ -381,7 +382,12 @@ class TMessage_addr : public TMessageWithChecksum
 {
   public:
 	const char *className() const { return "TMessage_addr"; }
-	TMessage *clone() const { return new TMessage_addr(*this); }
+//	TMessage *clone() const { return new TMessage_addr(*this); }
+
+	virtual void updateNetworkDirectory() const = 0;
+
+	virtual unsigned int size() const = 0;
+	virtual void writeAddressToNodeInfo( unsigned int, TNodeInfo & ) = 0;
 
   protected:
 	const char *commandString() const { return "addr"; }
@@ -407,6 +413,11 @@ class TMessage_addr_1 : public TMessage_addr
 		os << AddressData;
 		return os;
 	}
+
+	void updateNetworkDirectory() const;
+
+	unsigned int size() const { return AddressData.size(); }
+	void writeAddressToNodeInfo( unsigned int, TNodeInfo & );
 
   protected:
 	ostream &printOn( ostream & ) const;
@@ -435,6 +446,11 @@ class TMessage_addr_31402 : public TMessage_addr
 		os << AddressData;
 		return os;
 	}
+
+	void updateNetworkDirectory() const;
+
+	unsigned int size() const { return AddressData.size(); }
+	void writeAddressToNodeInfo( unsigned int, TNodeInfo & );
 
   protected:
 	ostream &printOn( ostream & ) const;

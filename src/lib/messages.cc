@@ -600,6 +600,24 @@ TVersionedMessageFactory *TMessage_version_31402::createMessageFactory() const
 // --------
 
 //
+// Function:	TMessage_addr_1 :: updateNetworkDirectory
+// Description:
+//
+void TMessage_addr_1::updateNetworkDirectory() const
+{
+	// Official client says this:
+	// "Don't want addr from older versions unless seeding"
+	return;
+
+	time_t Now = Peer->getNetwork()->getNetworkTime();
+
+	for( unsigned int i; i < size(); i++ ) {
+		TNodeInfo Node;
+		writeAddressToNodeInfo( Node );
+	}
+}
+
+//
 // Function:	TMessage_addr_1 :: printOn
 // Description:
 //
@@ -617,6 +635,14 @@ ostream &TMessage_addr_1::printOn( ostream &s ) const
 }
 
 // --------
+
+//
+// Function:	TMessage_addr_31402 :: updateNetworkDirectory
+// Description:
+//
+void TMessage_addr_31402::updateNetworkDirectory() const
+{
+}
 
 //
 // Function:	TMessage_addr_31402 :: printOn
