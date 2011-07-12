@@ -476,6 +476,7 @@ void TBitcoinNetwork::process( TMessage *Message )
 		try {
 			// Pass the message straight to the transaction pool
 			TransactionPool->receiveTransaction( tx );
+			log() << "[NETW] Transactions in pool " << TransactionPool->size() << endl;
 		} catch( exception &e ) {
 			log() << "[NETW] Rejecting transaction " << *tx << ", " << e.what() << endl;
 		}
@@ -484,6 +485,7 @@ void TBitcoinNetwork::process( TMessage *Message )
 		// Pass the message straight to the block chain
 		try {
 			BlockPool->receiveBlock( block );
+			log() << "[NETW] Blocks in pool " << BlockPool->size() << endl;
 		} catch( exception &e ) {
 			log() << "[NETW] Rejecting block " << *block << ", " << e.what() << endl;
 		}
@@ -656,6 +658,10 @@ void TBitcoinNetwork_Sockets::receiveFrom( TBitcoinPeer *Peer )
 	// How many bytes were actually read?
 	ba.resize(n);
 
+//	log() << "[NETW] RX< ";
+//	TLog::hexify( log(), ba );
+//	log() << endl;
+
 	// let the peer deal with what it received
 	Peer->receive( ba );
 }
@@ -673,6 +679,10 @@ void TBitcoinNetwork_Sockets::sendTo( TBitcoinPeer *Peer )
 	while( (out = Peer->nextOutgoing()) ) {
 		oss.str("");
 		out->write( oss );
+//		log() << "[NETW] TX> " << *out << " -> ";
+//		TLog::hexify( log(), oss.str() );
+//		log() << " (" << oss.str().size() << ")";
+//		log() << endl;
 		write( fd, oss.str().data(), oss.str().size() );
 	}
 }
