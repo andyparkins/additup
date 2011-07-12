@@ -565,6 +565,24 @@ int main( int argc, char *argv[] )
 		return 255;
 	}
 
+	try {
+		TMessageHeaderElement header;
+		header.Magic = 0;
+		header.Command = "TESTING";
+		header.PayloadLength = 0;
+
+		ostringstream oss;
+		header.write( oss );
+
+		log() << "TMessageHeaderElement = ";
+		TLog::hexify( log(), oss.str() );
+		log() << endl;
+
+	} catch( exception &e ) {
+		log() << e.what() << endl;
+		return 255;
+	}
+
 	return 0;
 }
 #endif
