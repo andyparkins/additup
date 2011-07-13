@@ -26,6 +26,7 @@
 #include <iostream>
 // --- Qt
 // --- OS
+#include <sys/mman.h>
 // --- Project
 // --- Project lib
 
@@ -68,6 +69,7 @@
 // Description:
 //
 // http://www.codeproject.com/KB/cpp/allocator.aspx
+// https://github.com/bitcoin/bitcoin/commit/c1aacf0be347b10a6ab9bbce841e8127412bce41
 //
 template<typename T, typename baseAllocator = std::allocator<T> >
 class TAutoClearAllocator : public baseAllocator
@@ -105,12 +107,21 @@ class TAutoClearAllocator : public baseAllocator
 		typedef TAutoClearAllocator<U> other;
 	};
 
-	// Base class allocate() is fine
+	// Private memory should be locked as well as cleared
+	T *allocate( size_type n, const void *target = NULL )  {
+		T *ptr;
+		ptr = baseAllocator::allocate(n, target);
+		if( ptr != NULL )
+			mlock( ptr, sizeof(T) * n );
+		return ptr;
+	}
 
 	// Override deallocation to zero the memory before freeing
 	void deallocate( T *ptr, size_type n ) {
-		if( ptr != NULL )
+		if( ptr != NULL ) {
 			memset( ptr, 0, sizeof(T) * n );
+			munlock( ptr );
+		}
 		baseAllocator::deallocate( ptr, n );
 	}
 };
