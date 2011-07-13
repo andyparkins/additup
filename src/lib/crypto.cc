@@ -279,6 +279,10 @@ void TEllipticCurveKey::setPublicKey( const TByteArray &s )
 //
 void TEllipticCurveKey::generate()
 {
+	// Clear the existing key
+	if( KeyAvailable )
+		invalidate();
+
 	// Create a new private and public key
 	if( !EC_KEY_generate_key( Key ) )
 		throw runtime_error( "EC_KEY_generate_key()" );
@@ -301,6 +305,8 @@ void TEllipticCurveKey::invalidate()
 
 	// Create a new key structure
 	Key = EC_KEY_new_by_curve_name( NID_secp256k1 );
+	if( Key == NULL )
+		throw runtime_error( "EC_KEY_new_by_curve_name()" );
 	KeyAvailable = false;
 }
 
