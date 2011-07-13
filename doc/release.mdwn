@@ -334,3 +334,28 @@ key for that address or group of addresses.
 
 You should be able to feed this into the Bitcoin client and have it sign
 it with the appropriate private keys.
+
+
+### Reject duplicate transactions
+
+It has happened that an identical coinbase transaction has entered the
+block chain twice.  This is a gross error.  It is impossible to spend
+the outputs of both of these transactions, since transactions refer to
+other transaction IDs, not blocks.
+
+It's perfectly possible to reject a transaction's entry into the orphan
+pool if the same hash has already been used elsewhere.
+
+This is only really relevant for miners.
+
+We could also do with a solution for the problem.  Consider someone who
+pays, say, their ISP bill in bitcoins.  Every month, 1 BTC from address
+A to address B.  In the event that they fund address A with 1 BTC in
+advance to make this payment (i.e. there will be no change) then it
+would be possible to make the same transaction, and hence the same hash.
+The solution is to add something to the transaction generation that
+changes with time... let's say the time.
+
+That will add an extra template to the allowed transaction formats list,
+but is pretty essential.
+
