@@ -34,6 +34,10 @@
 // -------------- World Globals (need "extern"s in header)
 
 
+// -------------- Module function declarations
+static bool EC_KEY_regenerate_key( EC_KEY *, BIGNUM * );
+
+
 // -------------- Class declarations
 
 //
@@ -528,6 +532,64 @@ TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_ripemd160>, THash_ripemd160 );
 
 
 // -------------- Function definitions
+
+//
+// Function:	EC_KEY_regenerate_key
+// Description:
+// Elliptic curve public keys are part of the private key.  So, given
+// the private key we can recreate the public key.  This function takes
+// an arbitrary private key, stored as an OpenSSL BIGNUM and recreates
+// the appropriate public key.  Both the public and private key are
+// stored back in the EC_KEY structure ready for normal use.
+//
+// I've copied it close to (I've changed it to my coding style, and
+// commented it) literally from `bitcoin/src/key.h`.  I've copied it
+// because it it's doing something that needs understanding of some
+// OpenSSL internals, and it's doubtful I would know how to do this
+// without this as a reference.
+//
+static bool EC_KEY_regenerate_key( EC_KEY *ECKeyStructure, BIGNUM *PrivateKey )
+{
+	bool Success = false;
+	BN_CTX *BigNumberContext = NULL;
+	EC_POINT *PublicKey = NULL;
+
+	// Can't read a curve type from a NULL structure
+	if( ECKeyStructure == NULL )
+		return 0;
+
+	// Read the EC group from the key structure
+	const EC_GROUP *CurveGroup = EC_KEY_get0_group( ECKeyStructure );
+
+	BigNumberContext = BN_CTX_new();
+	if( BigNumberContext == NULL)
+		goto err;
+
+	// The public key part of an elliptic curve is a point on the curve,
+	// allocate a new point structure
+	PublicKey = EC_POINT_new( CurveGroup );
+	if( PublicKey == NULL )
+		goto err;
+
+	// Regenerate the public key co-ordinates on our target elliptic
+	// curve from the given private key.
+	if( !EC_POINT_mul(CurveGroup, PublicKey, PrivateKey,
+				NULL, NULL, BigNumberContext) )
+		goto err;
+
+	EC_KEY_set_private_key( ECKeyStructure, PrivateKey );
+	EC_KEY_set_public_key( ECKeyStructure, PublicKey );
+
+	Success = true;
+
+err:
+	if( PublicKey != NULL )
+		EC_POINT_free(PublicKey);
+	if( BigNumberContext != NULL )
+		BN_CTX_free(BigNumberContext);
+
+	return Success;
+}
 
 
 #ifdef UNITTEST
