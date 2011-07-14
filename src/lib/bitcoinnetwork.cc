@@ -239,6 +239,19 @@ unsigned int TNetworkParameters::expectedGHashesPerBlock( const TBitcoinHash &Ta
 // -----------
 
 //
+// Function:	TBitcoinEventObject :: messageReceived
+// Description:
+//
+void TBitcoinEventObject::messageReceived( const TMessage *M ) const
+{
+	if( Message != NULL ) {
+		log() << "[NETW] RX< " << *Message << endl;
+	}
+}
+
+// -----------
+
+//
 // Function:	TBitcoinNetwork :: TBitcoinNetwork
 // Description:
 //
@@ -248,7 +261,8 @@ TBitcoinNetwork::TBitcoinNetwork() :
 	Self( NULL ),
 	TransactionPool( NULL ),
 	BlockPool( NULL ),
-	NetworkTimeOffset( 0 )
+	NetworkTimeOffset( 0 ),
+	EventObject( &NULLEventObject )
 {
 	BlockPool = new TBlockMemoryPool( this );
 	TransactionPool = new TMemoryTransactionPool( this );
@@ -276,9 +290,7 @@ TNodeInfo &TBitcoinNetwork::updateDirectory( const TNodeInfo &Node )
 //
 void TBitcoinNetwork::process( TMessage *Message )
 {
-	if( Message != NULL ) {
-		log() << "[NETW] RX< " << *Message << endl;
-	}
+	EventObject->messageReceived( Message );
 
 	if( Message == NULL ) {
 		// Spontaneous
@@ -652,6 +664,19 @@ void TBitcoinNetwork::receive_alert( TMessage_alert *alert )
 TMessage_version *TBitcoinNetwork::createMyVersionMessage() const
 {
 	return new TMessage_version_31402;
+}
+
+//
+// Function:	TBitcoinNetwork :: registerEventObject
+// Description:
+//
+void TBitcoinNetwork::registerEventObject( TBitcoinEventObject *O )
+{
+	if( O == NULL ) {
+		EventObject = &NULLEventObject;
+	} else {
+		EventObject = O;
+	}
 }
 
 //

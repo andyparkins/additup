@@ -162,6 +162,18 @@ class TNetworkParameters
 };
 
 //
+// Class:	TBitcoinEventObject
+// Description:
+//
+class TBitcoinEventObject
+{
+  public:
+	virtual ~TBitcoinEventObject() {}
+
+	virtual void messageReceived( const TMessage * ) const;
+};
+
+//
 // Class:	TBitcoinNetwork
 // Description:
 /// Object representing the entire bitcoin network.
@@ -191,6 +203,9 @@ class TBitcoinNetwork
 	uint64_t getNonce() const { return Nonce; }
 
 	virtual TMessage_version *createMyVersionMessage() const;
+
+	void registerEventObject( const TBitcoinEventObject * );
+	const TBitcoinEventObject *eventObject() const { return EventObject; }
 
 	// Handlers
 	void receive_version( TMessage_version * );
@@ -226,6 +241,11 @@ class TBitcoinNetwork
 	TBlockPool *BlockPool;
 
 	time_t NetworkTimeOffset;
+
+	const TBitcoinEventObject *EventObject;
+
+  private:
+	const TBitcoinEventObject NULLEventObject;
 };
 
 //
