@@ -86,6 +86,37 @@ That directory will contain:
  - Address annotations.  Similarly, the user should be able to label
    any address.
 
+### Shared Wallets
+
+There are many bitcoin web services, mybitcoin, instawallet, exchanges.
+
+All of which take control of your bitcoins.
+
+This is old fashioned thinking though, the idea that my money should be
+deposited somewhere else before I can use it.  There are some advantages
+(in terms of privacy) to depositing your coins in the web service's
+wallet; but it's not a requirement.
+
+If we had a client with the above facility: wallets in human readable
+form, with keys split into private and public parts and stored in
+separate files, then we could "deposit" private keys with our web
+service instead of depositing coins.  We are no worse off in terms of
+security: the web service has control of coins that are ours.  The
+difference is this though: we retain control too.
+
+Let's say instawallet used a private key address that I gave it for my
+online wallet.  I retain control of that key.  instawallet can use the
+blockchain to monitor the current balance, it can spend coins when I
+tell it to just as it can now.  One day, instawallet goes down.  Not a
+hack, but a server crash.  Because the private key was shared, I can
+still move those coins.
+
+There is a disadvantage in that moving funds within a web service is no
+instant, it would have to use the blockchain.  There are ways that could
+be mitigated though; depending on the level of trust the service has in
+the owner of an address.
+
+
 ### Two Factor Authentication
 
 Detection of the presence of a USB key and use of it (or more likely a
