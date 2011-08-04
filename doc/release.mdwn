@@ -395,3 +395,21 @@ changes with time... let's say the time.
 That will add an extra template to the allowed transaction formats list,
 but is pretty essential.
 
+
+### Long term addresses
+
+Let's imagine I have my savings stored in a single bitcoin address. I
+want that address to be valid for fifty years.  I keep it (mostly)
+offline and load it in (using the simultaneous and split wallet support
+mentioned above) to withdraw some savings (depositing obviously doesn't
+need the private key, and the bookmarking facility will let me monitor
+the balance).  The current client will return the change to a different
+address.  For preserving my anonymity that is mostly the right thing to
+do; in this case it isn't though, I withdraw 1 BTC from a 5000 BTC
+savings address and 4999 BTC go to a new address -- one that I haven't
+printed out and stored in a safety deposit box.
+
+The solution is to store a per-address flag saying whether that key
+should have change returned to it or not.
+
+
