@@ -31,6 +31,11 @@ would be opened for writing _only_ once, upon creation.  From then on
 there would be no need to ever write to the file.  This makes them far
 safer against power failures or crashes than any database will ever be.
 
+In particular, it would be possible to print private keys.  (Under the
+assumption that the user wants to lock that private key in a safe
+deposit box).
+
+
 ### The word "wallet" is wrong
 
 No bitcoins are stored in the wallet.  The analogy is therefore flawed
