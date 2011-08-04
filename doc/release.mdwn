@@ -413,3 +413,31 @@ The solution is to store a per-address flag saying whether that key
 should have change returned to it or not.
 
 
+### Receipts
+
+This is slightly outside the realm of responsibility for a client, but
+it would need support in the client to work.
+
+Nobody is going to keep copious notes when they buy things with
+bitcoins.  With a bank, at the end of the month I get a statement that
+tells me where I spent my money.  With Bitcoin all I would get is a list
+of addresses.  My solution to this is to have a secondary distributed
+system (or centralised, it doesn't matter), where vendors can publish
+the details of a particular sale.  Even if it was just their name.
+
+People will obviously not want that information published, so it needs
+to be encrypted if it is going to be publicised.  The solution is to use
+the public key of the sender of coins to encrypt the details of the
+receipt, then store it in a distributed database against the transaction
+hash.  The client then makes a web lookup for all expenditure on a
+particular address, and receives (of course) a load of encrypted
+messages.  Being the owner of the matching private key means that they
+are (uniquely) able to decrypt those messages, which the client would
+automatically do and copy the message into its local database.
+
+I think this can be done with ECDH using the exact same keys as are used
+for signing.  I also can't see how it breaks security as the private key
+is never used, and if it were possible to break a private key simply by
+generating known messages to it, then it wouldn't be very secure anyway.
+
+
