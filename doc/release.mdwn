@@ -440,4 +440,8 @@ for signing.  I also can't see how it breaks security as the private key
 is never used, and if it were possible to break a private key simply by
 generating known messages to it, then it wouldn't be very secure anyway.
 
-
+As a bonus, the message could be signed by the receiver of the coins so
+that the client has a way of verifying that it came from the merchant.
+This stops people from spamming transactions.  If the signature signed
+the encrypted message, the receipt server could verify too, and discard
+messages from anyone else.
