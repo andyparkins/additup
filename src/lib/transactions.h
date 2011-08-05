@@ -282,7 +282,7 @@ class TMessageBasedTransaction : public TTransaction
 	mutable TBitcoinHash cachedHash;
 
 	map<unsigned int, TCoinTransfer *> Inputs;
-	map<unsigned int, TCoinTransfer *> Outputs;
+	map<unsigned int, TMemoryCoinTransfer *> Outputs;
 
   protected:
 	static TOutputReference NULL_REFERENCE;
