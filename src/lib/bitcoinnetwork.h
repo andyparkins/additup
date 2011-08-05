@@ -29,6 +29,7 @@
 #include "peer.h"
 #include "hashtypes.h"
 #include "messageelements.h"
+#include "eventobjects.h"
 
 
 // -------------- Namespace
@@ -159,19 +160,6 @@ class TNetworkParameters
 	// they are fundamental rather than arbitrary choices.
 	static const TBitcoinHash NULL_REFERENCE_HASH;
 	static const unsigned int NULL_REFERENCE_INDEX;
-};
-
-//
-// Class:	TBitcoinEventObject
-// Description:
-//
-class TBitcoinEventObject
-{
-  public:
-	TBitcoinEventObject() {}
-	virtual ~TBitcoinEventObject() {}
-
-	virtual void messageReceived( const TMessage * ) const {}
 };
 
 //
