@@ -164,7 +164,7 @@ void TPredefinedNetworkParameters::configureGenesisMessage( TMessage_block &mess
 	MerkleHash.fromBytes( string("\x4a\x5e\x1e\x4b\xaa\xb8\x9f\x3a"
 		"\x32\x51\x8a\x88\xc3\x1b\xc8\x7f"
 		"\x61\x8f\x76\x67\x3e\x2c\xc7\x7a"
-		"\xb2\x12\x7b\x7a\xfd\xed\xa3\x3b", 32 );
+		"\xb2\x12\x7b\x7a\xfd\xed\xa3\x3b", 32 ) );
 
 	if( message.blockHeader().MerkleRoot.get() != MerkleHash )
 		throw logic_error( "GenesisBlock Merkle root doesn't match pre-programmed hash" );
