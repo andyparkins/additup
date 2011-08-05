@@ -449,7 +449,7 @@ class TStackOperatorFromStream : public TStackOperator
 
 	virtual bool acceptOpcode( eScriptOp ) const = 0;
 
-	virtual ostream &write( ostream & ) = 0;
+	virtual ostream &write( ostream & ) const = 0;
 };
 
 //
@@ -469,7 +469,7 @@ class TStackOperatorFromOpcode : public TStackOperatorFromStream
 		return is;
 	}
 
-	ostream &write( ostream &os ) {
+	ostream &write( ostream &os ) const {
 		os.put( getOpcode() );
 		return os;
 	}
@@ -539,7 +539,7 @@ class TStackOperator_OP_PUSHDATAN : public TStackOperatorFromOpcode
 		return is;
 	}
 
-	ostream &write( ostream &os ) {
+	ostream &write( ostream &os ) const {
 		// Write the opcode byte
 		TStackOperatorFromOpcode::write(os);
 		// Write the appropriate number of size bytes
@@ -1863,7 +1863,7 @@ class TStackOperatorFromOpcodes : public TStackOperatorFromStream
 		return is;
 	}
 
-	ostream &write( ostream &os ) {
+	ostream &write( ostream &os ) const {
 		os.put(OP);
 		return os;
 	}
@@ -1937,7 +1937,7 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 		return is;
 	}
 
-	ostream &write( ostream &os ) {
+	ostream &write( ostream &os ) const {
 		// Write the opcode byte
 		TStackOperatorFromOpcodes::write(os);
 		// Write the bytes
