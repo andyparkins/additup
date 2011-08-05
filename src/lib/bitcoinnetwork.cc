@@ -242,7 +242,7 @@ unsigned int TNetworkParameters::expectedGHashesPerBlock( const TBitcoinHash &Ta
 // Function:	TBitcoinEventObject :: messageReceived
 // Description:
 //
-void TBitcoinEventObject::messageReceived( const TMessage *M ) const
+void TBitcoinEventObject::messageReceived( const TMessage *Message ) const
 {
 	if( Message != NULL ) {
 		log() << "[NETW] RX< " << *Message << endl;
