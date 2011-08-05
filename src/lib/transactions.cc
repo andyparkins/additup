@@ -160,12 +160,12 @@ const TBitcoinHash &TMessageBasedTransaction::getHash() const
 // Function:	TMessageBasedTransaction :: isCoinbase
 // Description:
 // A coinbase transaction has only one input, and that input is a NULL
-// reference.
+// reference.  The output is the beneficiary of the coinbase.
 //
 bool TMessageBasedTransaction::isCoinbase() const
 {
 	return Inputs.size() == 1
-		&& Inputs[0].isNull();
+		&& Inputs.begin()->second->getCreatorReference().isNull();
 }
 
 // -------------

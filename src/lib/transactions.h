@@ -267,6 +267,8 @@ class TMessageBasedTransaction : public TTransaction
 
 	TCoinTransfer *createTransfer( unsigned int );
 
+	bool isCoinbase() const;
+
   protected:
 	mutable TBitcoinHash cachedHash;
 
