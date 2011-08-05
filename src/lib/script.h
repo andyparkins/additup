@@ -1939,7 +1939,7 @@ class TStackOperator_PUSH_N : public TStackOperatorFromOpcodes
 
 	ostream &write( ostream &os ) {
 		// Write the opcode byte
-		TStackOperatorFromOpcode::write(os);
+		TStackOperatorFromOpcodes::write(os);
 		// Write the bytes
 		os.write( Raw.data(), Raw.size() );
 		return os;
