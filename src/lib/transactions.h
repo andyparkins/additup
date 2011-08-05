@@ -96,6 +96,8 @@ class TTransferBeneficiary
 class TTransactionReference
 {
   public:
+	TTransactionReference() : TransactionHash( TNetworkParameters::NULL_REFERENCE_HASH ) {}
+
 	virtual unsigned int getIndex() const = 0;
 
 	bool isNull() const {
@@ -114,6 +116,8 @@ class TTransactionReference
 class TInputReference : public TTransactionReference
 {
   public:
+	TInputReference() : InputIndex( TNetworkParameters::NULL_REFERENCE_INDEX ) {}
+
 	unsigned int getIndex() const { return InputIndex; }
   public:
 	unsigned int InputIndex;
@@ -126,6 +130,8 @@ class TInputReference : public TTransactionReference
 class TOutputReference : public TTransactionReference
 {
   public:
+	TOutputReference() : OutputIndex( TNetworkParameters::NULL_REFERENCE_INDEX ) {}
+
 	unsigned int getIndex() const { return OutputIndex; }
   public:
 	unsigned int OutputIndex;
