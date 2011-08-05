@@ -492,3 +492,17 @@ that the client has a way of verifying that it came from the merchant.
 This stops people from spamming transactions.  If the signature signed
 the encrypted message, the receipt server could verify too, and discard
 messages from anyone else.
+
+
+### Deanonymising Prevention
+
+Dan Kaminsky came up with a method of deanonymising Bitcoin.  The rule
+is essentially, "the first IP to relay a transaction for a given
+identity, is the identity"; this obviously requires maintaining a
+massive level of connectivity, but that's not outside the realms of
+possibility.  Some features to prevent that:
+
+ - Never send a created transaction to inbound connections.
+ - Relay a transaction to connected nodes in a random order, at random
+   times.
+
