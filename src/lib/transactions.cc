@@ -81,6 +81,18 @@ TTransaction::TTransaction( TTransactionPool *p ) :
 // -------------
 
 //
+// Static:	TMessageBasedTransaction :: NULL_REFERENCE
+// Description:
+// A transaction chain starts at a coinbase transaction; but a coinbase
+// transaction has one input.  That input is a TMessageBasedTransaction object; but
+// there is no transaction to which it can refer, that's what makes it a
+// coinbase transaction.  This static member of TMessageBasedTransaction supplies
+// a place for that coinbase transaction to point at to represent the
+// transfer-from-nowhere that is a coinbase.
+//
+TOutputReference TMessageBasedTransaction::NULL_REFERENCE;
+
+//
 // Function:	TMessageBasedTransaction :: TMessageBasedTransaction
 // Description:
 //

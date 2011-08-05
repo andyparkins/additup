@@ -283,6 +283,9 @@ class TMessageBasedTransaction : public TTransaction
 
 	map<unsigned int, TCoinTransfer *> Inputs;
 	map<unsigned int, TCoinTransfer *> Outputs;
+
+  protected:
+	static TOutputReference NULL_REFERENCE;
 };
 
 // --------------
