@@ -180,7 +180,7 @@ TMemoryCoinTransfer::TMemoryCoinTransfer( const TTransaction *t, unsigned int n 
 	Beneficiary( NULL )
 {
 	Creation.TransactionHash = t->getHash();
-	Creation.SplitIndex = n;
+	Creation.OutputIndex = n;
 }
 
 //
