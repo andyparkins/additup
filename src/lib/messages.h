@@ -387,7 +387,7 @@ class TMessage_addr : public TMessageWithChecksum
 	virtual void updateNetworkDirectory() const = 0;
 
 	virtual unsigned int size() const = 0;
-	virtual void writeAddressToNodeInfo( unsigned int, TNodeInfo & ) = 0;
+	virtual void writeAddressToNodeInfo( unsigned int, TNodeInfo & ) const = 0;
 
   protected:
 	const char *commandString() const { return "addr"; }
@@ -417,7 +417,7 @@ class TMessage_addr_1 : public TMessage_addr
 	void updateNetworkDirectory() const;
 
 	unsigned int size() const { return AddressData.size(); }
-	void writeAddressToNodeInfo( unsigned int, TNodeInfo & );
+	void writeAddressToNodeInfo( unsigned int, TNodeInfo & ) const;
 
   protected:
 	ostream &printOn( ostream & ) const;
@@ -450,7 +450,7 @@ class TMessage_addr_31402 : public TMessage_addr
 	void updateNetworkDirectory() const;
 
 	unsigned int size() const { return AddressData.size(); }
-	void writeAddressToNodeInfo( unsigned int, TNodeInfo & );
+	void writeAddressToNodeInfo( unsigned int, TNodeInfo & ) const;
 
   protected:
 	ostream &printOn( ostream & ) const;

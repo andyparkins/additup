@@ -613,8 +613,16 @@ void TMessage_addr_1::updateNetworkDirectory() const
 
 	for( unsigned int i; i < size(); i++ ) {
 		TNodeInfo Node;
-		writeAddressToNodeInfo( Node );
+		writeAddressToNodeInfo( i, Node );
 	}
+}
+
+//
+// Function:	TMessage_addr_1 :: writeAddressToNodeInfo
+// Description:
+//
+void TMessage_addr_1::writeAddressToNodeInfo( unsigned int i, TNodeInfo & ) const
+{
 }
 
 //
@@ -641,6 +649,14 @@ ostream &TMessage_addr_1::printOn( ostream &s ) const
 // Description:
 //
 void TMessage_addr_31402::updateNetworkDirectory() const
+{
+}
+
+//
+// Function:	TMessage_addr_31402 :: writeAddressToNodeInfo
+// Description:
+//
+void TMessage_addr_31402::writeAddressToNodeInfo( unsigned int i, TNodeInfo & ) const
 {
 }
 
