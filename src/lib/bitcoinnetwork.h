@@ -168,6 +168,7 @@ class TNetworkParameters
 class TBitcoinEventObject
 {
   public:
+	TBitcoinEventObject() {}
 	virtual ~TBitcoinEventObject() {}
 
 	virtual void messageReceived( const TMessage * ) const;
