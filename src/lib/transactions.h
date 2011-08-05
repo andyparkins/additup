@@ -238,9 +238,9 @@ class TTransaction
 	virtual const TBitcoinHash &getHash() const = 0;
 
 //	virtual void putOutput( unsigned int, TCoinTransfer * ) = 0;
-	virtual TCoinTransfer *getOutput( unsigned int ) const = 0;
+	virtual const TCoinTransfer *getOutput( unsigned int ) const = 0;
 //	virtual bool outputExists( unsigned int ) const = 0;
-	virtual TCoinTransfer *getInput( unsigned int ) const = 0;
+	virtual const TCoinTransfer *getInput( unsigned int ) const = 0;
 
 	virtual TCoinTransfer *createOutput( unsigned int ) = 0;
 
@@ -271,8 +271,8 @@ class TMessageBasedTransaction : public TTransaction
 
 	const TBitcoinHash &getHash() const;
 
-	TCoinTransfer *getOutput( unsigned int i ) const { return Outputs.find(i)->second; }
-	TCoinTransfer *getInput( unsigned int i ) const { return Inputs.find(i)->second; }
+	const TCoinTransfer *getOutput( unsigned int i ) const { return Outputs.find(i)->second; }
+	const TCoinTransfer *getInput( unsigned int i ) const { return Inputs.find(i)->second; }
 
 	TCoinTransfer *createOutput( unsigned int );
 
