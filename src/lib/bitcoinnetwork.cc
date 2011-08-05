@@ -904,6 +904,20 @@ void TBitcoinNetwork_Sockets::disconnect( TBitcoinPeer *Peer )
 #include "logstream.h"
 #include "constants.h"
 
+//
+// Class:	TBitcoinEventAnnounce
+// Description:
+//
+class TBitcoinEventAnnounce : public TBitcoinEventObject
+{
+  public:
+	void messageReceived( const TMessage *Message ) const {
+		if( Message != NULL ) {
+			log() << "[NETW] RX< " << *Message << endl;
+		}
+	}
+};
+
 // -------------- main()
 
 int main( int argc, char *argv[] )
@@ -911,6 +925,9 @@ int main( int argc, char *argv[] )
 	try {
 		log() << "--- Create network" << endl;
 		TBitcoinNetwork_Sockets Network;
+		TBitcoinEventAnnounce EventHandler;
+
+		Network.registerEventObject( &EventHandler );
 
 		TNodeInfo localhost( TNodeInfo::fromDottedQuad(127.0.0.1) );
 		Network.updateDirectory( localhost );
