@@ -670,7 +670,7 @@ TMessage_version *TBitcoinNetwork::createMyVersionMessage() const
 // Function:	TBitcoinNetwork :: registerEventObject
 // Description:
 //
-void TBitcoinNetwork::registerEventObject( TBitcoinEventObject *O )
+void TBitcoinNetwork::registerEventObject( const TBitcoinEventObject *O )
 {
 	if( O == NULL ) {
 		EventObject = &NULLEventObject;
