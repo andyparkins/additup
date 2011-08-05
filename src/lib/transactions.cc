@@ -114,10 +114,10 @@ TMessageBasedTransaction::~TMessageBasedTransaction()
 }
 
 //
-// Function:	TMessageBasedTransaction :: createTransfer
+// Function:	TMessageBasedTransaction :: createOutput
 // Description:
 //
-TCoinTransfer *TMessageBasedTransaction::createTransfer( unsigned int n )
+TCoinTransfer *TMessageBasedTransaction::createOutput( unsigned int n )
 {
 	Outputs[n] = new TMemoryCoinTransfer( this, n );
 	return Outputs[n];

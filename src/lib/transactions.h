@@ -242,7 +242,7 @@ class TTransaction
 //	virtual bool outputExists( unsigned int ) const = 0;
 	virtual TCoinTransfer *getInput( unsigned int ) const = 0;
 
-	virtual TCoinTransfer *createTransfer( unsigned int ) = 0;
+	virtual TCoinTransfer *createOutput( unsigned int ) = 0;
 
 	virtual bool isCoinbase() const = 0;
 
@@ -274,7 +274,7 @@ class TMessageBasedTransaction : public TTransaction
 	TCoinTransfer *getOutput( unsigned int i ) const { return Outputs.find(i)->second; }
 	TCoinTransfer *getInput( unsigned int i ) const { return Inputs.find(i)->second; }
 
-	TCoinTransfer *createTransfer( unsigned int );
+	TCoinTransfer *createOutput( unsigned int );
 
 	bool isCoinbase() const;
 
