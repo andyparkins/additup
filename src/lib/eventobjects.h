@@ -53,6 +53,7 @@
 
 // -------------- Class pre-declarations
 class TMessage;
+class TInventoryElement;
 
 
 // -------------- Function pre-class prototypes
@@ -71,6 +72,7 @@ class TBitcoinEventObject
 	virtual ~TBitcoinEventObject() {}
 
 	virtual void messageReceived( const TMessage * ) const {}
+	virtual void inventoryHashError( const TInventoryElement * ) const {}
 };
 
 

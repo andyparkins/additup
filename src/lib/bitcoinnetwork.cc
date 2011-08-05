@@ -403,8 +403,7 @@ void TBitcoinNetwork::receive_getdata( TMessage_getdata *getdata )
 			// TX> tx
 //			TransactionPool->queueTransaction( Peer, inv.Hash );
 		} else if( inv.ObjectType == TInventoryElement::ERROR ) {
-			log() << "[NETW] Remote requested ERROR hash " << inv.Hash
-				<< ", which I don't know how to handle" << endl;
+			EventObject->inventoryHashError( &inv );
 		}
 	}
 }
@@ -915,6 +914,10 @@ class TBitcoinEventAnnounce : public TBitcoinEventObject
 		if( Message != NULL ) {
 			log() << "[NETW] RX< " << *Message << endl;
 		}
+	}
+	void inventoryHashError( const TInventoryElement *inv ) const {
+		log() << "[NETW] Remote requested ERROR hash " << inv->Hash
+			<< ", which I don't know how to handle" << endl;
 	}
 };
 
