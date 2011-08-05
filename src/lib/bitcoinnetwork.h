@@ -171,7 +171,7 @@ class TBitcoinEventObject
 	TBitcoinEventObject() {}
 	virtual ~TBitcoinEventObject() {}
 
-	virtual void messageReceived( const TMessage * ) const;
+	virtual void messageReceived( const TMessage * ) const {}
 };
 
 //
