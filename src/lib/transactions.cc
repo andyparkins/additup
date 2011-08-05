@@ -117,9 +117,21 @@ TCoinTransfer *TMessageBasedTransaction::createTransfer( unsigned int n )
 //
 const TBitcoinHash &TMessageBasedTransaction::getHash() const
 {
-	// All our inputs must point at us as their claimant, we can simply
-	// return one of those hashes.
-	return Input[0]->getClaimantReference().TransactionHash;
+	if( cachedHash.isValid() )
+		return cachedHash;
+
+	map<unsigned int, TCoinTransfer *>::const_iterator it;
+
+	it = Inputs.begin();
+	if( it == Inputs.end() ) {
+		cachedHash.invalidate();
+		// XXX: This isn't right, we need to calculate it when there are
+		// no inputs
+	} else {
+		// All our inputs must point at us as their claimant, we can simply
+		// return one of those hashes.
+		cachedHash = it->second->getClaimantReference().TransactionHash;
+	}
 
 //	TTransactionElement Transaction;
 //
