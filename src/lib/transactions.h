@@ -271,6 +271,9 @@ class TMessageBasedTransaction : public TTransaction
 
 	const TBitcoinHash &getHash() const;
 
+	TCoinTransfer *getOutput( unsigned int i ) const { return Outputs.find(i)->second; }
+	TCoinTransfer *getInput( unsigned int i ) const { return Inputs.find(i)->second; }
+
 	TCoinTransfer *createTransfer( unsigned int );
 
 	bool isCoinbase() const;
