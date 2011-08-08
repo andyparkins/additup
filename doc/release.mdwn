@@ -1,4 +1,31 @@
-## Release Plans
+Release Plans
+=============
+
+## Licensing
+
+The repository for this project is published at github
+
+  https://github.com/andyparkins/additup
+
+That, by definition, makes it open source (i.e. you can see the source
+code).  However, while I intend, eventually, to pick a Free Software
+license for this project, I haven't yet.  That means that (if my
+understanding of copyright law is correct), I still retain copyright to
+every part of this project.
+
+I'm happy with that as a situation as it stands until the project is
+more developed, since it means anyone who is interested can view the
+project, anyone who wanted to contribute can (and would retain their
+copyright as well), but the code cannot be (legally) taken by someone
+who is not friendly to free software.
+
+I expect to pick some variant of the GPL when I do pick; but I would
+like to get advice from the community first (should it ever reach the
+stage where what license it's under is relevant).
+
+
+
+## Features
 
 Features I'd like to have in my alternative client.
 
