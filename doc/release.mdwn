@@ -24,19 +24,27 @@ like to get advice from the community first (should it ever reach the
 stage where what license it's under is relevant).
 
 
+## Naming
 
-## Features
+I needed a name for this project that wasn't "bitcoin" (to avoid
+confusion); so I picked the first name that came to mind that contained
+the letters "ADP", my initials.
 
-Features I'd like to have in my alternative client.
 
-### Grammar
+## Grammar
 
-"Bitcoin" is the project; "bitcoins" are the currency.  The vaguaries of
+"Bitcoin" is the project; "bitcoins" are the currency.  The vagaries of
 English make this problem easy then for most cases.  If the word you are
 using is plural, _it must be 'bitcoins'_.  If the word you are using is
 singular and you aren't talking about a currency unit, _it must be
 'Bitcoin'_.  The only difficult case then is, "I'm about to send you a
-bitcoin using the Bitcoin client".
+bitcoin using the Bitcoin client".  I'll try to stick to this
+convention, and anywhere I don't will be a bug.
+
+
+## Features
+
+Features I'd like to have in my alternative client.
 
 ### Separation of wallet and block chain
 
