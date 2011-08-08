@@ -30,6 +30,18 @@ I needed a name for this project that wasn't "bitcoin" (to avoid
 confusion); so I picked the first name that came to mind that contained
 the letters "ADP", my initials.
 
+## Donations
+
+1HJDJzxZWDiePYvFKKoR3iKhMu6Z2GLb6T
+
+Donations, should you wish to make any can be sent to the above address
+(or you can contact me if you would like a private address).  Note: your
+donation will _not_ speed up development (unless you send me a
+life-changing amount); I work on this because I find it interesting, not
+for any monetary reward.  I am not asking for donations; but I know that
+people like to show their appreciation; and I do appreciate
+appreciation.
+
 
 ## Grammar
 
