@@ -102,6 +102,19 @@
    wouldn't have been unreasonable to use a fixed point integer with the
    point at bit 27.
 
+ - ... however, the 'value' field for bitcoin transactions is 64 bits.
+   Defined to be in units of 10^-8 bitcoins.  This was daft.  2^64
+   divided by 10^8 tells us the maximum number of whole bitcoins we can
+   store in this value field... 184,467,440,737; 184 _billion_.  But
+   wait; only 21 million bitcoins are ever going to be mined.  The
+   protocol enforces that.  Therefore even if one person were to gain
+   every single bitcoin ever mined, and move all of them at once, there
+   would still be wasted resolution in this field.  log10(2^64 / (21E6))
+   is 11.9; which we would have to round down to 11.  The value field
+   should therefore, for maximum resolution, have been specified to
+   store in 10^-11 bitcoins.  In other words, three decimal places of
+   accuracy have been wasted.
+
  - The protocol message names are ambiguous.  "inv", "getdata", "reply".
    What do they do... without looking at the protocol spec.   Better
    names would have been things like "RequestBlockHeader",
@@ -226,13 +239,6 @@
    therefore the maximum shift left is 2024 bits.  Why?  Exponent is
    always going to be less than or equal to 0x23 in this definition.
    Some possible precision has therefore been wasted.
-
- - Which genius decided that one "nanocoin" (as they are called in the
-   bitcoin and java library sources) was 100,000,000th of a coin?  The
-   word nano has a standard meaning, and that meaning is one billionth.
-   These "nanocoins" are actually one hundred nano coins or 0.1 of a
-   microcoin.  Abusing SI prefixes just makes it harder for a reader of
-   the source to be sure what is happening.
 
  - Hashes and endianness.  Hashes are stored and displayed in fairly
    arbitrary endianness.  As far as I can tell (and it's not clear),
