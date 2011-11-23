@@ -53,7 +53,12 @@
 class Object
 {
   public:
-	Object() : x(0) {}
+	Object() : x(0) {
+		// This should be standard for any singleton class; it's not
+		// required, but will protect against accidental instantiations
+		if( TSingleton<Object>::exists() )
+			throw *TSingleton<Object>::instance();
+	}
 
 	unsigned int x;
 };
@@ -87,6 +92,15 @@ int main( int argc, char *argv[] )
 			<< TSingleObject::instance()->x << endl;
 		if( TSingleObject::instance()->x != 10 )
 			throw logic_error( "Instance value didn't change" );
+
+		log() << "Singleton bypass attempt" << endl;
+		try {
+			Object *InvalidObject = new Object;
+			delete InvalidObject;
+			throw runtime_error("Attempt to bypass singleton protection succeeded, and shouldn't");
+		} catch( Object &O ) {
+			log() << " - bypass attempt threw an exception.  Good." << endl;
+		}
 
 	} catch( exception &e ) {
 		cerr << e.what() << endl;

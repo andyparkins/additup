@@ -62,6 +62,11 @@
 //
 // Class:	TSingleton
 // Description:
+// The singleton pattern is a class that only has one instance in the
+// whole running program, and that instance is created on first use.
+// It's not enough to simply use a module global, as the order of
+// instantiation is not guaranteed for global objects.
+//
 // Rather than make every singleton class write this code again and
 // again, this template makes it common.
 //
@@ -91,6 +96,21 @@
 // The only drawback of using this method is that it doesn't implicitly
 // prevent creation of more than one of the singleton class as would be
 // possible if we made each singleton class explicitly singleton.
+//
+// A possible work around for that limitation, if you are willing to
+// change the class itself, is to test the singleton in the class
+// constructor.
+//
+// \code
+//   TObject::TObject() {
+//      if( TSingleton<TObject>::exists() )
+//         throw runtime_error("singleton exists");
+//   }
+// \endcode
+//
+// This will work because the create() call below has to run the
+// constructor before it can assign to the instance, making exists()
+// return true.  So the above test will only pass once.
 //
 template <typename Singleton>
 class TSingleton
