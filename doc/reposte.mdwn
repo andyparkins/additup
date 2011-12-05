@@ -194,6 +194,9 @@ the Bitcoin exchange rates.  Bitcoins might increase in value, they
 might decrease -- just like any other investment, and people make their
 own judgement.
 
+And finally: a ponzi scheme requires new investors.  Bitcoin does not.
+Therefore bitcoin is not a ponzi scheme.
+
 
 ### Bitcoins are a Pyramid Scheme
 
