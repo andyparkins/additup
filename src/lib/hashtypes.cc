@@ -112,7 +112,7 @@ ostream &TBitcoinBase58::printOn( ostream &s ) const
 	if( s.flags() & ostream::hex ) {
 		TBigUnsignedInteger::printOn(s);
 	} else {
-		s << toString(58);
+		s << toString();
 	}
 
 	return s;

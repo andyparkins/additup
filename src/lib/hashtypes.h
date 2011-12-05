@@ -68,6 +68,8 @@ class TBitcoinBase58 : public TBigUnsignedInteger
 
 	ostream &printOn( ostream &s ) const;
 
+	string toString() const { return TBigUnsignedInteger::toString(58); }
+
   protected:
 	unsigned int fromCharacter( unsigned int, unsigned int ) const;
 	unsigned int toCharacter( unsigned int, unsigned int ) const;
