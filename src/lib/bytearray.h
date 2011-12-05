@@ -238,6 +238,7 @@ typedef TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > > TSecureByt
 // Note: we do not supply an operator<< for the auto clearing secure
 // byte array; there is no reason to make it easy to show secure bytes
 inline ostream &operator<<( ostream &s, const TByteArray &O ) { return s.write(O,O.size()); }
+ostream &dumpArray( ostream &s, const TByteArray &O );
 
 
 // -------------- Function prototypes

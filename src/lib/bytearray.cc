@@ -19,6 +19,7 @@
 // -------------- Includes
 // --- C
 // --- C++
+#include <iomanip>
 // --- Qt
 // --- OS
 // --- Project libs
@@ -42,6 +43,24 @@ template class TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > >;
 
 
 // -------------- Function definitions
+
+ostream &dumpArray( ostream &s, const TByteArray &B )
+{
+	unsigned int i;
+	const unsigned char *p = B.ptr();
+
+	s << setfill('0') << hex;
+	for( i = 0; i < B.size(); i++ ) {
+		if( i != 0 )
+			s << " ";
+
+		s << setw(2) << (unsigned int)*p;
+		p++;
+	}
+	s << setfill(' ') << dec;
+
+	return s;
+}
 
 
 #ifdef UNITTEST
