@@ -167,7 +167,7 @@ class TGenericBigInteger
 	bool operator>=( const TGenericBigInteger &O ) const { return isValid() && O.isValid() && !(*this < O); }
 
 	virtual ostream &printOn( ostream & ) const;
-	string toString( unsigned int = 10 ) const;
+	string toString( tLittleInteger = 10 ) const;
 
 	string toBytes(unsigned int = 0) const;
 	TGenericBigInteger &fromString( const string &, unsigned int = 10 );
@@ -274,7 +274,7 @@ class TGenericBigSignedInteger : public TGenericBigInteger<tLittleInteger>
 	bool operator>=( const TGenericBigSignedInteger &O ) const { return isValid() && O.isValid() && !(*this < O); }
 
 	ostream &printOn( ostream & ) const;
-	string toString( unsigned int = 10 ) const;
+	string toString( tLittleInteger = 10 ) const;
 	TGenericBigSignedInteger &fromString( const string &, unsigned int = 10 );
 
   protected:

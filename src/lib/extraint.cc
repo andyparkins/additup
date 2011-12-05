@@ -204,7 +204,7 @@ unsigned int TGenericBigInteger<tLittleInteger>::fromCharacter( unsigned int ch,
 // Description:
 //
 template <typename tLittleInteger>
-string TGenericBigInteger<tLittleInteger>::toString( unsigned int Base ) const
+string TGenericBigInteger<tLittleInteger>::toString( tLittleInteger Base ) const
 {
 	unsigned int ch;
 	string output;
@@ -240,7 +240,7 @@ string TGenericBigInteger<tLittleInteger>::toString( unsigned int Base ) const
 //		cerr << hex << quotient << dec << " r " << remainder.getBlock(0) << endl;
 
 		// Remainder is guaranteed to be less than Base, and Base is an
-		// unsigned int, so we're safe using the zero block untouched
+		// little int, so we're safe using the zero block untouched
 		ch = toCharacter( remainder.getBlock(0), Base );
 
 		// Hitting an invalid conversion is a serious error
@@ -373,7 +373,6 @@ string TGenericBigInteger<tLittleInteger>::toBytes( unsigned int Minimum ) const
 	if( output.size() < Minimum )
 		output = string().assign( Minimum - output.size(), '\0' ) + output;
 
-	// Equal sizes, equal content
 	return output;
 }
 
@@ -1512,7 +1511,7 @@ TGenericBigSignedInteger<tLittleInteger> &TGenericBigSignedInteger<tLittleIntege
 // Description:
 //
 template <typename tLittleInteger>
-string TGenericBigSignedInteger<tLittleInteger>::toString( unsigned int Base ) const
+string TGenericBigSignedInteger<tLittleInteger>::toString( tLittleInteger Base ) const
 {
 	if( Negative ) {
 		return string("-") + TGenericBigInteger<tLittleInteger>::toString( Base );
