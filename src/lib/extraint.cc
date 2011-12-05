@@ -339,6 +339,11 @@ string TGenericBigInteger<tLittleInteger>::toBytes( unsigned int Minimum ) const
 		// optimise this as appropriate.
 		switch(sizeof(tLittleInteger)) {
 			// Big endian, so MSBs go first
+			case 8:
+				output += ((*it) & 0xff00000000000000ULL) >> 56;
+				output += ((*it) & 0xff000000000000ULL) >> 48;
+				output += ((*it) & 0xff0000000000ULL) >> 40;
+				output += ((*it) & 0xff00000000ULL) >> 32;
 			case 4:
 				output += ((*it) & 0xff000000) >> 24;
 				output += ((*it) & 0xff0000) >> 16;
@@ -400,17 +405,26 @@ TGenericBigInteger<tLittleInteger>::fromBytes( const string &s )
 		pos -= sizeof( tLittleInteger );
 
 		switch( sizeof( tLittleInteger ) ) {
+			case 8:
+				if( pos + 7 >= 0 )
+					Accumulator |= static_cast<unsigned char>(s[pos+7]) << (sizeof(tLittleInteger)*8 - 64);
+				if( pos + 6 >= 0 )
+					Accumulator |= static_cast<unsigned char>(s[pos+6]) << (sizeof(tLittleInteger)*8 - 56);
+				if( pos + 5 >= 0 )
+					Accumulator |= static_cast<unsigned char>(s[pos+5]) << (sizeof(tLittleInteger)*8 - 48);
+				if( pos + 4 >= 0 )
+					Accumulator |= static_cast<unsigned char>(s[pos+4]) << (sizeof(tLittleInteger)*8 - 40);
 			case 4:
 				if( pos + 3 >= 0 )
-					Accumulator |= static_cast<unsigned char>(s[pos+3]) << 0;
+					Accumulator |= static_cast<unsigned char>(s[pos+3]) << (sizeof(tLittleInteger)*8 - 32);
 				if( pos + 2 >= 0 )
-					Accumulator |= static_cast<unsigned char>(s[pos+2]) << 8;
+					Accumulator |= static_cast<unsigned char>(s[pos+2]) << (sizeof(tLittleInteger)*8 - 24);
 			case 2:
 				if( pos + 1 >= 0 )
-					Accumulator |= static_cast<unsigned char>(s[pos+1]) << 16;
+					Accumulator |= static_cast<unsigned char>(s[pos+1]) << (sizeof(tLittleInteger)*8 - 16);
 			case 1:
 				if( pos + 0 >= 0 )
-					Accumulator |= static_cast<unsigned char>(s[pos+0]) << 24;
+					Accumulator |= static_cast<unsigned char>(s[pos+0]) << (sizeof(tLittleInteger)*8 - 8);
 		}
 
 		LittleDigits.push_back( Accumulator );
