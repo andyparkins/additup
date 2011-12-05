@@ -63,6 +63,7 @@
 class TBitcoinBase58 : public TBigUnsignedInteger
 {
   public:
+	TBitcoinBase58() { invalidate(); }
 	TBitcoinBase58( const TBitcoinBase58 &O ) { operator=(O); }
 	TBitcoinBase58( const string &s, unsigned int b = 58 ) { fromString(s,b); }
 
