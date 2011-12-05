@@ -130,11 +130,11 @@ const unsigned int TBitcoinHash::HASH_BYTES = 32;
 // Function:	TBitcoinHash :: stringPad
 // Description:
 //
-string TBitcoinHash::stringPad( const string &s, unsigned int ) const
+string TBitcoinHash::stringPad( const string &s, unsigned int Base ) const
 {
 	if( s.size() < HASH_BYTES*2 ) {
 		string pad;
-		pad.assign( HASH_BYTES*2 - s.size(), '0' );
+		pad.assign( HASH_BYTES*2 - s.size(), toCharacter(0,Base) );
 		return pad + s;
 	} else if( s.size() > HASH_BYTES*2 ) {
 		throw logic_error( "TBitcoinHashes can't be more than HASH_BYTES bytes" );
