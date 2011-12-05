@@ -194,6 +194,7 @@ TBitcoinHash TBitcoinHash::reversedBytes() const
 #ifdef UNITTEST
 #include <iostream>
 #include <stdexcept>
+#include "logstream.h"
 
 // -------------- main()
 
@@ -213,29 +214,29 @@ int main( int argc, char *argv[] )
 		// biggest 34 digit base58 number though?
 		TBitcoinBase58 l("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
 
-		cerr << "i = " << i << "; 0x" << hex << i << dec << endl;
+		log() << "i = " << i << "; 0x" << hex << i << dec << endl;
 //		if( i.getBlock(2) != 0x5 || i.getBlock(1) != 0x6bc75e2d || i.getBlock(0) != 0x630fffff )
 //			throw logic_error("Assignment from decimal-representing string incorrect");
-		cerr << "j = " << j << "; 0x" << hex << j << dec << endl;
-		cerr << "k = " << k << "; 0x" << hex << k << dec << endl;
+		log() << "j = " << j << "; 0x" << hex << j << dec << endl;
+		log() << "k = " << k << "; 0x" << hex << k << dec << endl;
 		k++;
-		cerr << "k = " << k << "; 0x" << hex << k << dec << endl;
-		cerr << "l = " << l << "; 0x" << hex << l << dec << endl;
+		log() << "k = " << k << "; 0x" << hex << k << dec << endl;
+		log() << "l = " << l << "; 0x" << hex << l << dec << endl;
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 
 	try {
-		cerr << "Testing constructors and initialisation" << endl;
+		log() << "Testing constructors and initialisation" << endl;
 
 		TBitcoinHash i("0"); // 0x94a00911
 		TBitcoinHash j("ffffffffffffffffffffffffffffffffffffffffffffffffff");
 
-		cerr << "i = " << i << endl;
-		cerr << "j = " << j << endl;
+		log() << "i = " << i << endl;
+		log() << "j = " << j << endl;
 	} catch( exception &e ) {
-		cerr << e.what() << endl;
+		log() << e.what() << endl;
 		return 255;
 	}
 
