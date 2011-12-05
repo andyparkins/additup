@@ -65,6 +65,39 @@
 // -------------- Class declarations
 
 //
+// Class:	TBufferDescription
+// Description:
+// A simple class to wrap the three properties of a memory buffer:
+//  - Address
+//  - Maximum size
+//  - Used size
+// For type safety its far better (and quicker) to pass one of these
+// around than (address, size) pairs.
+//
+class TBufferDescription
+{
+  public:
+	TBufferDescription( void *, size_t );
+	~TBufferDescription();
+
+	bool isValid() const { return buffer() != NULL; }
+
+	void *buffer() const { return Pointer; }
+	size_t capacity() const { return Capacity; }
+	size_t used() const { return Used; }
+
+	void setUsed( size_t u ) { Used = u; }
+
+	// Auto-cast
+	operator void*() const { return buffer(); }
+
+  protected:
+	void *Pointer;
+	size_t Capacity;
+	size_t Used;
+};
+
+//
 // Class:	TAutoClearAllocator
 // Description:
 //
