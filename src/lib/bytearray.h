@@ -163,9 +163,9 @@ class TByteArray_t : public vector<unsigned char>
 	using vector<unsigned char>::operator=;
 
 	typedef unsigned char *Pointer;
-	Pointer ptr() { return &operator[](0); }
+	Pointer ptr( size_type n = 0 ) { return &operator[](n); }
 	typedef const unsigned char *constPointer;
-	constPointer ptr() const { return &operator[](0); }
+	constPointer ptr( size_type n = 0) const { return &operator[](n); }
 
 	// unsigned char typecasts
 	operator Pointer() { return ptr(); }
