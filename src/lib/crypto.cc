@@ -35,7 +35,6 @@
 
 
 // -------------- Module function declarations
-static bool EC_KEY_regenerate_key( EC_KEY *, BIGNUM * );
 
 
 // -------------- Class declarations
@@ -264,8 +263,90 @@ void TEllipticCurveKey::setPrivateKey( const TSecureByteArray &s )
 	// structure
 	if( d2i_ECPrivateKey( &Key, &pba, s.size() ) == NULL )
 		throw runtime_error( "d2i_ECPrivateKey()" );
+}
 
+//
+// Function:	TEllipticCurveKey :: setSecret
+// Description:
+//
+// Elliptic curve public keys are part of the private key.  So, given
+// the private key we can recreate the public key.  This function takes
+// an arbitrary private key, and recreates the appropriate public key.
+// Both the public and private key are stored back in the EC_KEY
+// structure ready for normal use.
+//
+// I've copied it close to (I've changed it to my coding style, and
+// commented it) literally from `bitcoin/src/key.h`.  I've copied it
+// because it it's doing something that needs understanding of some
+// OpenSSL internals, and it's doubtful I would know how to do this
+// without this as a reference.
+//
+void TEllipticCurveKey::setSecret( const TSecureByteArray &s )
+{
+	invalidate();
+
+	if( s.size() != 32 )
+		throw runtime_error("TEllipticCurveKey::setSecret() must use 256 bits");
+
+	BN_CTX *BigNumberContext = NULL;
+	EC_POINT *PublicKeyPoint = NULL;
+	const EC_GROUP *CurveGroup = EC_KEY_get0_group( Key );
+
+	PublicKeyPoint = EC_POINT_new( CurveGroup );
+	if( PublicKeyPoint == NULL )
+		throw runtime_error("EC_POINT_new()");
+
+	// OpenSSL uses its own bignum implementation for the EC
+	// multiplication operation; make space for it
+	BIGNUM *Secret = BN_bin2bn( s, 32, BN_new() );
+	if( Secret == NULL )
+		throw runtime_error("BN_bin2bn()");
+
+	BigNumberContext = BN_CTX_new();
+	if( BigNumberContext == NULL ) {
+		EC_POINT_free(PublicKeyPoint);
+		BN_clear_free(Secret);
+		throw runtime_error("BN_CTX_new()");
+	}
+
+	if( !EC_POINT_mul( CurveGroup,
+				PublicKeyPoint,
+				Secret,
+				NULL, NULL, BigNumberContext ) ) {
+		EC_POINT_free(PublicKeyPoint);
+		BN_CTX_free(BigNumberContext);
+		BN_clear_free(Secret);
+		throw runtime_error("EC_POINT_mul()");
+	}
+
+	// Copy the raw numbers into the combined key structure
+	EC_KEY_set_private_key( Key, Secret );
+	EC_KEY_set_public_key( Key, PublicKeyPoint );
+
+	// Tidy
+	EC_POINT_free(PublicKeyPoint);
+	BN_CTX_free(BigNumberContext);
+	BN_clear_free(Secret);
+
+	// Done
 	KeyAvailable = true;
+}
+
+//
+// Function:	TEllipticCurveKey :: getSecret
+// Description:
+//
+TSecureByteArray TEllipticCurveKey::getSecret() const
+{
+	TSecureByteArray ret;
+
+	const BIGNUM *bn = EC_KEY_get0_private_key( Key );
+	if( bn == NULL )
+		throw runtime_error("EC_KEY_get0_private_key()");
+	ret.resize( BN_num_bytes(bn) );
+	BN_bn2bin( bn, ret );
+
+	return ret;
 }
 
 //
@@ -537,65 +618,6 @@ TEMPLATE_INSTANCE( TSSLMessageDigestTemplate<EVP_ripemd160>, THash_ripemd160 );
 
 
 // -------------- Function definitions
-
-//
-// Function:	EC_KEY_regenerate_key
-// Description:
-// Elliptic curve public keys are part of the private key.  So, given
-// the private key we can recreate the public key.  This function takes
-// an arbitrary private key, stored as an OpenSSL BIGNUM and recreates
-// the appropriate public key.  Both the public and private key are
-// stored back in the EC_KEY structure ready for normal use.
-//
-// I've copied it close to (I've changed it to my coding style, and
-// commented it) literally from `bitcoin/src/key.h`.  I've copied it
-// because it it's doing something that needs understanding of some
-// OpenSSL internals, and it's doubtful I would know how to do this
-// without this as a reference.
-//
-static bool EC_KEY_regenerate_key( EC_KEY *ECKeyStructure, BIGNUM *PrivateKey )
-{
-	bool Success = false;
-	BN_CTX *BigNumberContext = NULL;
-	EC_POINT *PublicKey = NULL;
-
-	// Can't read a curve type from a NULL structure
-	if( ECKeyStructure == NULL )
-		return 0;
-
-	// Read the EC group from the key structure
-	const EC_GROUP *CurveGroup = EC_KEY_get0_group( ECKeyStructure );
-
-	BigNumberContext = BN_CTX_new();
-	if( BigNumberContext == NULL)
-		goto err;
-
-	// The public key part of an elliptic curve is a point on the curve,
-	// allocate a new point structure
-	PublicKey = EC_POINT_new( CurveGroup );
-	if( PublicKey == NULL )
-		goto err;
-
-	// Regenerate the public key co-ordinates on our target elliptic
-	// curve from the given private key.
-	if( !EC_POINT_mul(CurveGroup, PublicKey, PrivateKey,
-				NULL, NULL, BigNumberContext) )
-		goto err;
-
-	EC_KEY_set_private_key( ECKeyStructure, PrivateKey );
-	EC_KEY_set_public_key( ECKeyStructure, PublicKey );
-
-	Success = true;
-
-err:
-	if( PublicKey != NULL )
-		EC_POINT_free(PublicKey);
-	if( BigNumberContext != NULL )
-		BN_CTX_free(BigNumberContext);
-
-	return Success;
-}
-
 
 #ifdef UNITTEST
 #include <iostream>

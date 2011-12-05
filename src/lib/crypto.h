@@ -158,8 +158,10 @@ class TEllipticCurveKey : public TDigitalSignature
 
 	TByteArray getPublicKey() const;
 	TSecureByteArray getPrivateKey() const;
+	TSecureByteArray getSecret() const;
 	void setPublicKey( const TByteArray & );
 	void setPrivateKey( const TSecureByteArray & );
+	void setSecret( const TSecureByteArray & );
 
 	void generate();
 	void invalidate();
