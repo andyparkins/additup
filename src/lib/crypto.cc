@@ -254,6 +254,9 @@ TByteArray TEllipticCurveKey::getPublicKey() const
 //
 void TEllipticCurveKey::setPrivateKey( const TSecureByteArray &s )
 {
+	// Kill off an existing key
+	invalidate();
+
 	// d2i_ECPrivateKey() needs a pointer to modify
 	TSecureByteArray::constPointer pba = s;
 
@@ -261,6 +264,8 @@ void TEllipticCurveKey::setPrivateKey( const TSecureByteArray &s )
 	// structure
 	if( d2i_ECPrivateKey( &Key, &pba, s.size() ) == NULL )
 		throw runtime_error( "d2i_ECPrivateKey()" );
+
+	KeyAvailable = true;
 }
 
 //
