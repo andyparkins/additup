@@ -196,21 +196,23 @@ class TByteArray_t : public vector<unsigned char>
 	using vector<unsigned char>::operator=;
 
 	typedef unsigned char *Pointer;
-	Pointer ptr( size_type n = 0 ) { return &operator[](n); }
+	Pointer ptr( size_type n = 0 ) { return &vector<unsigned char>::operator[](n); }
 	typedef const unsigned char *constPointer;
-	constPointer ptr( size_type n = 0) const { return &operator[](n); }
+	constPointer ptr( size_type n = 0) const { return &vector<unsigned char>::operator[](n); }
+
+	unsigned char &operator[](int n) { return *ptr(n); }
 
 	// unsigned char typecasts
 	operator Pointer() { return ptr(); }
 	operator constPointer() const { return ptr(); }
 
 	// char typecasts
-	operator char *() { return reinterpret_cast<char*>(&operator[](0)); }
-	operator const char *() const { return reinterpret_cast<const char*>(&operator[](0)); }
+	operator char *() { return reinterpret_cast<char*>(ptr()); }
+	operator const char *() const { return reinterpret_cast<const char*>(ptr()); }
 
 	// void typecasts
-	operator void *() { return reinterpret_cast<void*>(&operator[](0)); }
-	operator const void *() const { return reinterpret_cast<const void*>(&operator[](0)); }
+	operator void *() { return reinterpret_cast<void*>(ptr()); }
+	operator const void *() const { return reinterpret_cast<const void*>(ptr()); }
 
 	// string conversions
 	operator string() const { return string().assign( *this, size() ); }
