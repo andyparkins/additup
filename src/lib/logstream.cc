@@ -54,7 +54,8 @@ TLog *TLog::Singleton = NULL;
 // Function:	TLog :: TLog
 // Description:
 //
-TLog::TLog()
+TLog::TLog() :
+	Level(TLog::Info)
 {
 }
 

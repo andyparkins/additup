@@ -80,8 +80,12 @@ class TLog
 
 	ostream &getStream() const { return cerr; }
 
+	void setLogLevel( eLogLevel l ) { Level = l; }
+
   protected:
 	static TLog *Singleton;
+
+	eLogLevel Level;
 
   private:
 	// Only TLog is allowed to make TLogs - this ensures that only one
