@@ -709,6 +709,11 @@ int main( int argc, char *argv[] )
 		} else {
 			log() << " : does not verify" << endl;
 		}
+
+		log() << "EC: Creating a public-key-only ECKEY" << endl;
+		TEllipticCurveKey ECKEY2;
+		ECKEY2.setPublicKey( ECKEY.getPublicKey() );
+
 	} catch( exception &e ) {
 		log() << e.what() << endl;
 		return 255;
