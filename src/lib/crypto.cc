@@ -263,6 +263,8 @@ void TEllipticCurveKey::setPrivateKey( const TSecureByteArray &s )
 	// structure
 	if( d2i_ECPrivateKey( &Key, &pba, s.size() ) == NULL )
 		throw runtime_error( "d2i_ECPrivateKey()" );
+
+	KeyAvailable = true;
 }
 
 //
@@ -361,6 +363,8 @@ void TEllipticCurveKey::setPublicKey( const TByteArray &s )
 
 	if( o2i_ECPublicKey( &Key, &pba, s.size() ) == NULL )
 		throw runtime_error( "o2i_ECPublicKey()" );
+
+	KeyAvailable = true;
 }
 
 //
