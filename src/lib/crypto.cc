@@ -760,13 +760,13 @@ int main( int argc, char *argv[] )
 			// Sample addr message from https://en.bitcoin.it/wiki/Protocol_specification
 			// Checksum of messages is the first four bytes of
 			// SHA256(SHA256())
-			{ &SHASHA256, TByteArray(
-					"\x01\xe2\x15\x10\x4d\x01\x00\x00"
-					"\x00\x00\x00\x00\x00\x00\x00\x00"
-					"\x00\x00\x00\x00\x00\x00\x00\xff"
-					"\xff\x0a\x00\x00\x01\x20\x8d", 31), TByteArray(
-					"\x7f\x85\x39\xc2"
-					, 32 ) },
+//			{ &SHASHA256, TByteArray(
+//					"\x01\xe2\x15\x10\x4d\x01\x00\x00"
+//					"\x00\x00\x00\x00\x00\x00\x00\x00"
+//					"\x00\x00\x00\x00\x00\x00\x00\xff"
+//					"\xff\x0a\x00\x00\x01\x20\x8d", 31), TByteArray(
+//					"\x7f\x85\x39\xc2"
+//					, 4 ) },
 			{ NULL, TByteArray(), TByteArray() }
 		};
 		const sTestSample *p = Samples;
