@@ -24,6 +24,7 @@
 // --- OS
 // --- Project lib
 #include "extraint.h"
+#include "bytearray.h"
 // --- Project
 
 
@@ -53,6 +54,7 @@
 
 
 // -------------- Class pre-declarations
+class TEllipticCurveKey;
 
 
 // -------------- Function pre-class prototypes
@@ -75,6 +77,32 @@ class TBitcoinBase58 : public TBigUnsignedInteger
   protected:
 	unsigned int fromCharacter( unsigned int, unsigned int ) const;
 	unsigned int toCharacter( unsigned int, unsigned int ) const;
+};
+
+class TBitcoinAddress : public TBitcoinBase58
+{
+  public:
+	TBitcoinAddress( unsigned char v = 0 ) : AddressClass(v) { invalidate(); }
+	TBitcoinAddress( const TEllipticCurveKey &, unsigned char v = 0 );
+	TBitcoinAddress( const TBitcoinAddress &O ) : TBitcoinBase58(O) {}
+
+	void fromKey( const TEllipticCurveKey & );
+	void fromString( const string & );
+
+	unsigned char getClass() const { return AddressClass; }
+	const TByteArray getHash() const { return KeyHash; }
+	const TByteArray getChecksum() const { return Checksum; }
+
+	bool isValid() const;
+
+  protected:
+	void parse();
+	string stringPad( const string &, unsigned int ) const;
+
+  protected:
+	unsigned char AddressClass;
+	TByteArray KeyHash;
+	TByteArray Checksum;
 };
 
 //

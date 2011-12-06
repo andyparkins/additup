@@ -25,6 +25,7 @@
 // --- OS
 // --- Project libs
 // --- Project
+#include "crypto.h"
 
 
 // -------------- Namespace
@@ -121,6 +122,159 @@ ostream &TBitcoinBase58::printOn( ostream &s ) const
 // ------
 
 //
+// Function:	TBitcoinAddress :: TBitcoinAddress
+// Description:
+//
+TBitcoinAddress::TBitcoinAddress( const TEllipticCurveKey &K, unsigned char v ) :
+	AddressClass(v)
+{
+	fromKey(K);
+}
+
+//
+// Function:	TBitcoinAddress :: fromKey
+// Description:
+// A Bitcoin address, truely, is an ECDSA public key.  However, it's
+// usually presented as a hash calculated as follows:
+// \code
+//   AddressClassByte = 0 on prodnet; 111 on testnet
+//   Keyhash = ripemd( sha256( ECDSA_Public_Key )
+//   Checksum = left( sha256( sha256( AddressClassByte CONCAT Keyhash ) ), 4 )
+//   Bitcoin_Address = Base58Encode( AddressClassByte CONCAT KeyHash CONCAT Checksum );
+// \endcode
+//
+void TBitcoinAddress::fromKey( const TEllipticCurveKey &K )
+{
+	TByteArray CSBuffer;
+
+	invalidate();
+
+	// Hashers
+	THash_sha256 SHA256;
+	THash_ripemd160 RIPEMD160;
+	TDoubleHash SHASHA256( &SHA256, &SHA256 );
+	TDoubleHash RIPESHA256( &RIPEMD160, &SHA256 );
+
+	// Core key hash
+	KeyHash = RIPESHA256.transform( K.getPublicKey() );
+
+	// Prepend the address class
+	CSBuffer.resize( KeyHash.size() + 1 );
+	*(CSBuffer.ptr()) = AddressClass;
+	memcpy( CSBuffer.ptr(1), KeyHash, KeyHash.size() );
+
+	// Checksum of class and keyhash
+	Checksum = SHASHA256.transform( CSBuffer );
+
+	// Append four bytes of checksum
+	CSBuffer.resize( CSBuffer.size() + 4 );
+	memcpy( CSBuffer.ptr(CSBuffer.size()-4), Checksum, 4 );
+
+	// Base class converts this to bignumber
+	fromBytes( CSBuffer );
+}
+
+//
+// Function:	TBitcoinAddress :: isValid
+// Description:
+//
+bool TBitcoinAddress::isValid() const
+{
+	// Hashers
+	THash_sha256 SHA256;
+	TDoubleHash SHASHA256( &SHA256, &SHA256 );
+
+	// We assume all the constituent parts have been set (call parse()
+	// if they haven't); we're now checking for consistency
+
+	// The keyhash is supplied hashed, there is nothing to do with that,
+	// instead we prepend the address class byte and calculate a
+	// checksum
+
+	TByteArray CSBuffer;
+
+	// Prepend the address class
+	CSBuffer.resize( KeyHash.size() + 1 );
+	CSBuffer[0] = AddressClass;
+	memcpy( CSBuffer.ptr(1), KeyHash, KeyHash.size() );
+
+	// Checksum of class and keyhash
+	CSBuffer = SHASHA256.transform( CSBuffer );
+
+	// Compare the first four bytes of the calculated checksum against
+	// the parsed checksum
+
+	if( Checksum.size() < 4 || CSBuffer.size() < 4 ) {
+		return false;
+	}
+
+	if( memcmp( Checksum.ptr(), CSBuffer.ptr(), 4 ) != 0 ) {
+		return false;
+	}
+
+	return true;
+}
+
+//
+// Function:	TBitcoinAddress :: fromKey
+// Description:
+//
+void TBitcoinAddress::fromString( const string &s )
+{
+	// The base class can handle the conversion to bytes
+	TBitcoinBase58::fromString(s);
+
+	parse();
+}
+
+//
+// Function:	TBitcoinAddress :: parse
+// Description:
+//
+void TBitcoinAddress::parse()
+{
+	// We can now extract the constituent parts
+	TByteArray Buffer( toBytes(1 + 20 + 4) );
+
+	KeyHash.clear();
+	Checksum.clear();
+
+	if( Buffer.size() < 5 )
+		throw runtime_error( "Can't parse an undersized address" );
+
+	// Enough space for a RIPE160 hash
+	KeyHash.resize( Buffer.size() - 1 - 4 );
+	// Enough space for the four checksum bytes
+	Checksum.resize( 4 );
+
+	AddressClass = Buffer[0];
+	memcpy( KeyHash.ptr(), Buffer.ptr(1), Buffer.size() - 4 - 1 );
+	memcpy( Checksum.ptr(), Buffer.ptr( Buffer.size() - 4 ), 4 );
+}
+
+//
+// Function:	TBitcoinAddress :: stringPad
+// Description:
+//
+string TBitcoinAddress::stringPad( const string &s, unsigned int Base ) const
+{
+	string output;
+
+	if( Base == 58 ) {
+		output = s;
+		// Pad to minimum length for a bitcoin address (34)
+		while( output.length() < 34 )
+			output = string() + static_cast<char>(toCharacter(0,58)) + output;
+	} else {
+		return s;
+	}
+
+	return output;
+}
+
+// ------
+
+//
 // Static:	TBitcoinHash :: HASH_BYTES
 // Description:
 //
@@ -201,7 +355,7 @@ TBitcoinHash TBitcoinHash::reversedBytes() const
 int main( int argc, char *argv[] )
 {
 	try {
-		cerr << "Testing constructors and initialisation" << endl;
+		log() << "--- Testing constructors and initialisation (base58)" << endl;
 
 		TBitcoinBase58 i("1Eym7pyJcaambv8FG4ZoU8A4xsiL9us2zz");
 		TBitcoinBase58 j("1111111111111111111114oLvT2"); // 0x94a00911
@@ -228,13 +382,51 @@ int main( int argc, char *argv[] )
 	}
 
 	try {
-		log() << "Testing constructors and initialisation" << endl;
+		log() << "--- Testing constructors and initialisation (hashes)" << endl;
 
 		TBitcoinHash i("0"); // 0x94a00911
 		TBitcoinHash j("ffffffffffffffffffffffffffffffffffffffffffffffffff");
 
 		log() << "i = " << i << endl;
 		log() << "j = " << j << endl;
+	} catch( exception &e ) {
+		log() << e.what() << endl;
+		return 255;
+	}
+
+	try {
+		log() << "--- Testing key to address conversion" << endl;
+
+		// https://en.bitcoin.it/wiki/Technical_background_of_Bitcoin_addresses
+		TByteArray PubKey("\x04"
+				"\x67\x8a\xfd\xb0\xfe\x55\x48\x27\x19\x67\xf1\xa6\x71\x30\xb7\x10"
+				"\x5c\xd6\xa8\x28\xe0\x39\x09\xa6\x79\x62\xe0\xea\x1f\x61\xde\xb6"
+				"\x49\xf6\xbc\x3f\x4c\xef\x38\xc4\xf3\x55\x04\xe5\x1e\xc1\x12\xde"
+				"\x5c\x38\x4d\xf7\xba\x0b\x8d\x57\x8a\x4c\x70\x2b\x6b\xf1\x1d\x5f", 65 );
+		TEllipticCurveKey ECKEY;
+		ECKEY.setPublicKey(PubKey);
+
+		TBitcoinAddress BA( ECKEY );
+
+		log() << "AC: address = " << BA
+			<< "; " << hex << BA << dec << endl;
+
+		if( BA.toString() != "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" )
+			throw runtime_error("Public key conversion failed");
+
+		if( !BA.isValid() )
+			throw runtime_error("Expected address to be valid");
+		if( BA.getClass() != 0 )
+			throw runtime_error("Expected address to be class 0 (prodnet)");
+
+		log() << "AC: Copying address by string" << endl;
+
+		TBitcoinAddress BA2;
+		BA2.fromString( BA.toString() );
+
+		if( BA2.toString() != "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" )
+			throw runtime_error("Public key copy by string failed");
+
 	} catch( exception &e ) {
 		log() << e.what() << endl;
 		return 255;
