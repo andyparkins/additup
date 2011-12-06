@@ -65,11 +65,12 @@ class TBitcoinBase58 : public TBigUnsignedInteger
   public:
 	TBitcoinBase58() { invalidate(); }
 	TBitcoinBase58( const TBitcoinBase58 &O ) { operator=(O); }
-	TBitcoinBase58( const string &s, unsigned int b = 58 ) { fromString(s,b); }
+	TBitcoinBase58( const string &s, unsigned int b = 58 ) { TBigUnsignedInteger::fromString(s,b); }
 
 	ostream &printOn( ostream &s ) const;
 
 	string toString() const { return TBigUnsignedInteger::toString(58); }
+	void fromString( const string &s ) { TBigUnsignedInteger::fromString(s,58); }
 
   protected:
 	unsigned int fromCharacter( unsigned int, unsigned int ) const;
