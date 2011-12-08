@@ -66,7 +66,7 @@ class TBitcoinBase58 : public TBigUnsignedInteger
 {
   public:
 	TBitcoinBase58() { invalidate(); }
-	TBitcoinBase58( const TBitcoinBase58 &O ) { operator=(O); }
+	TBitcoinBase58( const TBigUnsignedInteger &O ) { operator=(O); }
 	TBitcoinBase58( const string &s, unsigned int b = 58 ) { TBigUnsignedInteger::fromString(s,b); }
 
 	ostream &printOn( ostream &s ) const;
@@ -84,7 +84,7 @@ class TBitcoinAddress : public TBitcoinBase58
   public:
 	TBitcoinAddress( unsigned char v = 0 ) : AddressClass(v) { invalidate(); }
 	TBitcoinAddress( const TEllipticCurveKey &, unsigned char v = 0 );
-	TBitcoinAddress( const TBitcoinAddress &O ) : TBitcoinBase58(O) {}
+	TBitcoinAddress( const TBigUnsignedInteger &O ) : TBitcoinBase58(O) { parse(); }
 
 	void fromKey( const TEllipticCurveKey & );
 	void fromString( const string & );
