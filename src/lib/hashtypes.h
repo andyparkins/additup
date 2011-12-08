@@ -85,6 +85,7 @@ class TBitcoinAddress : public TBitcoinBase58
 	TBitcoinAddress( unsigned char v = 0 ) : AddressClass(v) { invalidate(); }
 	TBitcoinAddress( const TEllipticCurveKey &, unsigned char v = 0 );
 	TBitcoinAddress( const TBigUnsignedInteger &O ) : TBitcoinBase58(O) { parse(); }
+	TBitcoinAddress( const string &s ) : TBitcoinBase58(s) { parse(); }
 
 	void fromKey( const TEllipticCurveKey & );
 	void fromString( const string & );
