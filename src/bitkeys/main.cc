@@ -22,11 +22,13 @@
 // --- C++
 #include <stdexcept>
 #include <typeinfo>
+#include <list>
 // --- OS
 // --- Project libs
 #include <logstream.h>
 #include <hashtypes.h>
 #include <autoversion.h>
+#include <hashtypes.h>
 // --- Project
 
 
@@ -58,6 +60,33 @@ static void version()
 	cerr << "bitkeys" << VCSID_CONST << endl;
 }
 
+static void address( int argc, char *argv[] )
+{
+	list<TBitcoinAddress> Addresses;
+	list<TBitcoinAddress>::const_iterator it;
+
+	for( unsigned int i = 1; i < argc; i++ ) {
+		if( argv[i][0] == '-' )
+			continue;
+		Addresses.push_back( TBitcoinAddress(argv[i]) );
+	}
+
+	for( it = Addresses.begin(); it != Addresses.end(); it++ ) {
+		cerr << "--- " << (*it).toString() << endl;
+		cerr << "Class    : " << hex << (unsigned int)((*it).getClass()) << dec
+			<< ((*it).isValid() ? " (VALID " : " (INVALID ")
+			<< ((unsigned int)((*it).getClass()) == 0 ? "PRODNET" : "")
+			<< ((unsigned int)((*it).getClass()) == 111 ? "TESTNET" : "")
+			<< ")" << endl;
+		cerr << "Hash     : ";
+		dumpArray(cerr, (*it).getHash());
+		cerr << endl;
+		cerr << "Checksum : ";
+		dumpArray(cerr, (*it).getChecksum());
+		cerr << endl;
+	}
+}
+
 // ----- Main
 
 int main( int argc, char *argv[] )
@@ -66,6 +95,7 @@ int main( int argc, char *argv[] )
 		MODE_INVALID,
 		MODE_HELP,
 		MODE_VERSION,
+		MODE_ADDRESS,
 		MODE_COUNT
 	} Mode = MODE_INVALID;
 
@@ -84,6 +114,8 @@ int main( int argc, char *argv[] )
 				log( TLog::Info ) << "Log level changed because --quiet switch found on command line" << endl;
 			} else if( strcmp(argv[i], "--version") == 0 ) {
 				Mode = MODE_VERSION;
+			} else if( strcmp(argv[i], "--address") == 0 ) {
+				Mode = MODE_ADDRESS;
 			} else if( strcmp(argv[i], "--help") == 0 ) {
 				Mode = MODE_HELP;
 			}
@@ -95,6 +127,9 @@ int main( int argc, char *argv[] )
 				break;
 			case MODE_VERSION:
 				version();
+				break;
+			case MODE_ADDRESS:
+				address( argc, argv );
 				break;
 			default:
 				break;
