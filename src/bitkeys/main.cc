@@ -49,9 +49,10 @@
 static void help()
 {
 	cerr << "Usage: " << endl
-		<< " bitkeys <mode specifier> <options>" << endl
+		<< " bitkeys <mode specifier> [<options>] [<parameters>]" << endl
 		<< "      --help     show help" << endl
 		<< "      --version  print version" << endl
+		<< "      --address  show information about given addresses" << endl
 		;
 }
 
@@ -97,7 +98,7 @@ int main( int argc, char *argv[] )
 		MODE_VERSION,
 		MODE_ADDRESS,
 		MODE_COUNT
-	} Mode = MODE_INVALID;
+	} Mode = MODE_HELP;
 
 	try {
 		unsigned int i;
