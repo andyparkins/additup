@@ -103,6 +103,7 @@ void TMessageFactory::receive( const string &s )
 			// can read, so we discard all of it.
 //			log() << "Discarding " << RXBuffer.size() << endl;
 			RXBuffer.clear();
+			// XXX: What about the last 1-3 bytes?
 			break;
 		} else {
 //			log() << "Ignoring " << pos << endl;

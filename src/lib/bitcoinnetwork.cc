@@ -354,16 +354,20 @@ void TBitcoinNetwork::receive_verack( TMessage_verack *verack )
 //
 // Function:	TBitcoinNetwork :: receive_inv
 // Description:
+// The inventory message announces the availability of new transactions
+// or new blocks.  It will be received unrequested.
 //
 void TBitcoinNetwork::receive_inv( TMessage_inv *inv )
 {
 	if( inv->size() > getNetworkParameters()->INV_MAX )
 		return;
 
+	// Announcing a new block
 	// RX< inv
 	// TX> getdata
 	// RX< block
 	BlockPool->receiveInventory( inv );
+	// Announcing a new transaction
 	// RX< inv
 	// TX> getdata
 	// RX< tx
@@ -373,6 +377,8 @@ void TBitcoinNetwork::receive_inv( TMessage_inv *inv )
 //
 // Function:	TBitcoinNetwork :: receive_getdata
 // Description:
+// The getdata message is a request that the peer be sent a copy of a
+// particular block or a particular transaction.
 //
 void TBitcoinNetwork::receive_getdata( TMessage_getdata *getdata )
 {
@@ -394,9 +400,11 @@ void TBitcoinNetwork::receive_getdata( TMessage_getdata *getdata )
 				// "Bypass PushInventory, this must send even if
 				// redundant, and we want it right after the last
 				// block so they don't wait for other stuff first."
+				// Don't think the above is relevant to us
 				TInventoryElement &elem( inv->appendInventory() );
 				elem.ObjectType = TInventoryElement::MSG_BLOCK;
 				elem.Hash = BlockPool->getBestBranch()->getHash();
+				// We have done the continuation
 				Peer->setContinuationHash( TBitcoinHash() );
 			}
 		} else if( inv.ObjectType == TInventoryElement::MSG_TX ) {
@@ -416,7 +424,7 @@ void TBitcoinNetwork::receive_getdata( TMessage_getdata *getdata )
 // inventory containing blocks it doesn't have, but we only show it
 // blocks in the main chain.
 //
-// The blocks it has list it sends are most likely the last blockchain
+// The blocks-it-has-list it sends are most likely the last blockchain
 // tips it had received.  It doesn't know which one of them became the
 // main chain so we must help it by sending only the main chain.  (I'm
 // not sure why this is so; for a peer-to-peer network, it would be
@@ -477,6 +485,9 @@ void TBitcoinNetwork::receive_getblocks( TMessage_getblocks *getblocks )
 	} else {
 		delete inv;
 	}
+
+	// We expect this 'inv' to result in a 'getdata' request from the
+	// peer; since it was asking about blocks it doesn't have.
 }
 
 //
