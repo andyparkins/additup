@@ -5,3 +5,4 @@
 core*
 # --- Out-of-repository Configuration
 config.mak
+depends.mak
