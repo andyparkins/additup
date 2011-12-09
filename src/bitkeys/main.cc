@@ -36,6 +36,7 @@
 
 
 // -------------- Module Globals
+bool HexInput = false;
 
 
 // -------------- World Globals (need "extern"s in header)
@@ -69,7 +70,13 @@ static void address( int argc, char *argv[] )
 	for( unsigned int i = 1; i < argc; i++ ) {
 		if( argv[i][0] == '-' )
 			continue;
-		Addresses.push_back( TBitcoinAddress(argv[i]) );
+		if( !HexInput ) {
+			Addresses.push_back( TBitcoinAddress(argv[i]) );
+		} else {
+			TBitcoinAddress x;
+			x.fromString( argv[i], 16 );
+			Addresses.push_back(x);
+		}
 	}
 
 	for( it = Addresses.begin(); it != Addresses.end(); it++ ) {
@@ -115,6 +122,8 @@ int main( int argc, char *argv[] )
 				log( TLog::Info ) << "Log level changed because --quiet switch found on command line" << endl;
 			} else if( strcmp(argv[i], "--version") == 0 ) {
 				Mode = MODE_VERSION;
+			} else if( strcmp(argv[i], "--hex") == 0 ) {
+				HexInput = true;
 			} else if( strcmp(argv[i], "--address") == 0 ) {
 				Mode = MODE_ADDRESS;
 			} else if( strcmp(argv[i], "--help") == 0 ) {
