@@ -96,6 +96,10 @@ class TKNOWN_NETWORKS
 	TKNOWN_NETWORKS();
 	~TKNOWN_NETWORKS();
 
+	// Search functions
+	const TNetworkParameters *magicToNetwork( uint32_t ) const;
+	const TNetworkParameters *addressClassToNetwork( uint8_t ) const;
+
 	ostream &printOn( ostream & ) const;
 
 	iterator begin() { return KnownNetworks.begin(); }

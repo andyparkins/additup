@@ -344,18 +344,13 @@ void TBitcoinPeer::receive( const TByteArray &s )
 				// Compare magic against all known networks
 				log() << "[PEER]  - Testing potential network magic " << hex << PotentialMagic.getValue() << dec << endl;
 
-				KNOWN_NETWORKS::T::const_iterator p = KNOWN_NETWORKS::O().begin();
-				while( p != KNOWN_NETWORKS::O().end() ) {
-					if( (*p)->Magic == PotentialMagic.getValue() )
-						break;
-					p++;
-				}
-				if( p != KNOWN_NETWORKS::O().end() ) {
+				const TNetworkParameters *p = KNOWN_NETWORKS::O().magicToNetwork( PotentialMagic.getValue() );
+				if( p == NULL ) {
 					if( Network != NULL ) {
-						log() << "[PEER]  - Network magic found, using " << (*p)->className() << endl;
-						Network->setNetworkParameters( *p );
+						log() << "[PEER]  - Network magic found, for " << p->networkName() << endl;
+						Network->setNetworkParameters( p );
 					} else {
-						log() << "[PEER]  - Network magic for " << (*p)->className() << " will not be used" << endl;
+						log() << "[PEER]  - Network magic for " << p->networkName() << " will not be used" << endl;
 					}
 					State = Handshaking;
 					break;

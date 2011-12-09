@@ -365,6 +365,40 @@ ostream &TKNOWN_NETWORKS::printOn( ostream &s) const
 	return s;
 }
 
+//
+// Function:	TKNOWN_NETWORKS :: magicToNetwork
+// Description:
+//
+const TNetworkParameters *TKNOWN_NETWORKS::magicToNetwork( uint32_t magic ) const
+{
+	const_iterator p = begin();
+
+	while( p != end() ) {
+		if( (*p)->Magic == magic )
+			return (*p);
+		p++;
+	}
+
+	return NULL;
+}
+
+//
+// Function:	TKNOWN_NETWORKS :: addressClassToNetwork
+// Description:
+//
+const TNetworkParameters *TKNOWN_NETWORKS::addressClassToNetwork( uint8_t addrclass ) const
+{
+	const_iterator p = begin();
+
+	while( p != end() ) {
+		if( (*p)->BitcoinAddressPrefix == addrclass )
+			return (*p);
+		p++;
+	}
+
+	return NULL;
+}
+
 // ----------
 
 //
