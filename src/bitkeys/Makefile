@@ -73,6 +73,13 @@ info:
 
 build: prebuild $(PROJECT)
 
+run: build
+	./$(PROJECT) --address 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
+	./$(PROJECT) --address --hex 0062e907b15cbf27d5425399ebf6f0fb50ebb88f18c29b7d93
+	./$(PROJECT) --secret 915VSQfWNUB8CihzKjH8FZDChf9ZTdKhS9L5wKqgbJmw
+	./$(PROJECT) --secret --hex 76e292975f477698382b1aab142dca51d5cf798ce823111780d98e46a3f28fd2
+	./$(PROJECT) --secret generate
+
 
 # --- Build recipes
 
