@@ -9,25 +9,20 @@
 #
 # ----------------------------------------------------------------------------
 
--include platform.mak
--include config.mak
-
 # --- Parameters
-SUBDIRS		:= lib
+DEPS := lib bitkeys
 
 # --- Recipes
 default: build
 
-info:
-	@echo "--- INFO (make)"
-	@echo "PLATFORM   = $(PLATFORM)"
-	@echo "--- INFO (end)"
+build: $(DEPS:=.d)
 
-build: $(SUBDIRS)
-	for d in $(SUBDIRS); do $(MAKE) -C $$d; done
+clean: $(DEPS:=.d.clean)
 
-clean:
-	for d in $(SUBDIRS); do $(MAKE) -C $$d clean; done
+%.d: %
+	$(MAKE) -C $*
 
+%.d.clean: %
+	$(MAKE) -C $* clean
 
-.PHONY: default info build
+#.PHONY: default build clean $(DEPS:=.d) $(DEPS:=.d.clean)

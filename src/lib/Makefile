@@ -1,14 +1,28 @@
+# ----------------------------------------------------------------------------
+# Version Control
+#    $Author$
+#      $Date$
+#        $Id$
+#
+# Legal
+#    Copyright 2011  Andy Parkins
+#
+# ----------------------------------------------------------------------------
 
+# --- Parameters
 DEPS := additup general
+
+# --- Recipes
+default: build
 
 build: $(DEPS:=.d)
 
 clean: $(DEPS:=.d.clean)
 
-%.d:
+%.d: %
 	$(MAKE) -C $*
 
-%.d.clean:
+%.d.clean: %
 	$(MAKE) -C $* clean
 
-	
+#.PHONY: default build clean $(DEPS:=.d) $(DEPS:=.d.clean)
