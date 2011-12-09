@@ -30,6 +30,7 @@
 #include <autoversion.h>
 #include <hashtypes.h>
 #include <crypto.h>
+#include <constants.h>
 // --- Project
 
 
@@ -38,7 +39,7 @@
 
 // -------------- Module Globals
 bool HexInput = false;
-unsigned int DefaultClass = 0;
+unsigned int DefaultClass;
 
 
 // -------------- World Globals (need "extern"s in header)
@@ -85,8 +86,8 @@ static void address( int argc, char *argv[] )
 		cerr << "--- " << (*it).toString() << endl;
 		cerr << "Class    : " << hex << (unsigned int)((*it).getClass()) << dec
 			<< ((*it).isValid() ? " (VALID " : " (INVALID ")
-			<< ((unsigned int)((*it).getClass()) == 0 ? "PRODNET" : "")
-			<< ((unsigned int)((*it).getClass()) == 111 ? "TESTNET" : "")
+			<< ((unsigned int)((*it).getClass()) == NETWORK_PRODNET->BitcoinAddressPrefix ? NETWORK_PRODNET->networkName() : "")
+			<< ((unsigned int)((*it).getClass()) == NETWORK_TESTNET->BitcoinAddressPrefix ? NETWORK_TESTNET->networkName() : "")
 			<< ")" << endl;
 		cerr << "Hash     : ";
 		dumpArray(cerr, (*it).getHash());
@@ -153,8 +154,8 @@ static void secret( int argc, char *argv[] )
 		cerr << "Public addr  : " << addr.toString() << endl;
 		cerr << "Class        : " << hex << (unsigned int)(addr.getClass()) << dec
 			<< (addr.isValid() ? " (VALID " : " (INVALID ")
-			<< ((unsigned int)(addr.getClass()) == 0 ? "PRODNET" : "")
-			<< ((unsigned int)(addr.getClass()) == 111 ? "TESTNET" : "")
+			<< ((unsigned int)(addr.getClass()) == NETWORK_PRODNET->BitcoinAddressPrefix ? NETWORK_PRODNET->networkName() : "")
+			<< ((unsigned int)(addr.getClass()) == NETWORK_TESTNET->BitcoinAddressPrefix ? NETWORK_TESTNET->networkName() : "")
 			<< ")" << endl;
 		cerr << "Public hash  : ";
 		dumpArray(cerr, addr.getHash());
@@ -178,6 +179,11 @@ int main( int argc, char *argv[] )
 		MODE_COUNT
 	} Mode = MODE_HELP;
 
+	// Initialise network parameters
+	KNOWN_NETWORKS::create();
+	// Set the default class to PRODNET
+	DefaultClass = NETWORK_PRODNET->BitcoinAddressPrefix;
+
 	try {
 		unsigned int i;
 
@@ -196,7 +202,7 @@ int main( int argc, char *argv[] )
 			} else if( strcmp(argv[i], "--hex") == 0 ) {
 				HexInput = true;
 			} else if( strcmp(argv[i], "--testnet") == 0 ) {
-				DefaultClass = 111;
+				DefaultClass = NETWORK_TESTNET->BitcoinAddressPrefix;
 			} else if( strcmp(argv[i], "--secret") == 0 ) {
 				Mode = MODE_SECRET;
 			} else if( strcmp(argv[i], "--address") == 0 ) {
