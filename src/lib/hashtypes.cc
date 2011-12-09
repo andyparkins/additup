@@ -219,10 +219,10 @@ bool TBitcoinAddress::isValid() const
 // Function:	TBitcoinAddress :: fromKey
 // Description:
 //
-void TBitcoinAddress::fromString( const string &s )
+void TBitcoinAddress::fromString( const string &s, unsigned int b )
 {
 	// The base class can handle the conversion to bytes
-	TBitcoinBase58::fromString(s);
+	TBitcoinBase58::fromString(s, b);
 
 	parse();
 }

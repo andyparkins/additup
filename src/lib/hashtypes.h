@@ -72,7 +72,9 @@ class TBitcoinBase58 : public TBigUnsignedInteger
 	ostream &printOn( ostream &s ) const;
 
 	string toString() const { return TBigUnsignedInteger::toString(58); }
-	void fromString( const string &s ) { TBigUnsignedInteger::fromString(s,58); }
+
+	using TBigUnsignedInteger::fromString;
+	void fromString( const string &s, unsigned int b = 58 ) { TBigUnsignedInteger::fromString(s,b); }
 
   protected:
 	unsigned int fromCharacter( unsigned int, unsigned int ) const;
@@ -88,7 +90,9 @@ class TBitcoinAddress : public TBitcoinBase58
 	TBitcoinAddress( const string &s ) : TBitcoinBase58(s) { parse(); }
 
 	void fromKey( const TEllipticCurveKey & );
-	void fromString( const string & );
+
+	using TBigUnsignedInteger::fromString;
+	void fromString( const string &, unsigned int b = 58 );
 
 	unsigned char getClass() const { return AddressClass; }
 	const TByteArray getHash() const { return KeyHash; }
