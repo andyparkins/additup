@@ -47,84 +47,8 @@
 
 // -------------- Class declarations
 
-//
-// Class: TMessageTemplates
-// Description:
-// Master message list.
-//
-class TMessageTemplates
-{
-  public:
-	TMessageTemplates();
-	~TMessageTemplates();
-
-	typedef list<const TMessage *> container;
-
-	container Templates;
-
-	static TMessageTemplates t;
-};
-
-TMessageTemplates TMessageTemplates::t;
-
 
 // -------------- Class member definitions
-
-//
-// Function:	TMessageTemplates :: TMessageTemplates
-// Description:
-//
-TMessageTemplates::TMessageTemplates()
-{
-	static const TMessage *ModuleTemplates[] = {
-		// Note: version messages have to be in reverse order so that the
-		// highest matching version will be tried first.  This is
-		// necessary because version_1 will happilly accept a
-		// version_209 message, being that it is backwards compatible
-		new TMessage_version_20900(),
-		new TMessage_version_10600(),
-		new TMessage_version_1(),
-		new TMessage_verack(),
-		new TMessage_addr_31402(),
-		new TMessage_addr_1(),
-		new TMessage_inv(),
-		new TMessage_getdata(),
-		new TMessage_getblocks(),
-		new TMessage_getheaders(),
-		new TMessage_tx(),
-		new TMessage_block(),
-		new TMessage_headers(),
-		new TMessage_getaddr(),
-		new TMessage_checkorder(),
-		new TMessage_submitorder(),
-		new TMessage_reply(),
-		new TMessage_ping(),
-		new TMessage_alert(),
-		// Note: The unimplemented type should always be tried last
-		new TMessageUnimplemented(),
-		NULL
-	};
-
-	// ---
-	const TMessage **p = ModuleTemplates;
-
-	// Insert each template message into the master list
-	while( *p != NULL ) {
-		Templates.push_back( *p );
-		Templates.back()->setTemplate( true );
-		p++;
-	}
-}
-
-//
-// Function:	TMessageTemplates :: ~TMessageTemplates
-// Description:
-//
-TMessageTemplates::~TMessageTemplates()
-{
-}
-
-// --------
 
 //
 // Function:	TMessage :: TMessage
@@ -914,6 +838,83 @@ const string TMessage_alert::ALERT_VERIFICATION_KEYS[] = {
 
 
 #ifdef UNITTEST
+//
+// Class: TMessageTemplates
+// Description:
+// Master message list.
+//
+class TMessageTemplates
+{
+  public:
+	TMessageTemplates();
+	~TMessageTemplates();
+
+	typedef list<const TMessage *> container;
+
+	container Templates;
+
+	static TMessageTemplates t;
+};
+
+TMessageTemplates TMessageTemplates::t;
+
+
+//
+// Function:	TMessageTemplates :: TMessageTemplates
+// Description:
+//
+TMessageTemplates::TMessageTemplates()
+{
+	static const TMessage *ModuleTemplates[] = {
+		// Note: version messages have to be in reverse order so that the
+		// highest matching version will be tried first.  This is
+		// necessary because version_1 will happilly accept a
+		// version_209 message, being that it is backwards compatible
+		new TMessage_version_20900(),
+		new TMessage_version_10600(),
+		new TMessage_version_1(),
+		new TMessage_verack(),
+		new TMessage_addr_31402(),
+		new TMessage_addr_1(),
+		new TMessage_inv(),
+		new TMessage_getdata(),
+		new TMessage_getblocks(),
+		new TMessage_getheaders(),
+		new TMessage_tx(),
+		new TMessage_block(),
+		new TMessage_headers(),
+		new TMessage_getaddr(),
+		new TMessage_checkorder(),
+		new TMessage_submitorder(),
+		new TMessage_reply(),
+		new TMessage_ping(),
+		new TMessage_alert(),
+		// Note: The unimplemented type should always be tried last
+		new TMessageUnimplemented(),
+		NULL
+	};
+
+	// ---
+	const TMessage **p = ModuleTemplates;
+
+	// Insert each template message into the master list
+	while( *p != NULL ) {
+		Templates.push_back( *p );
+		Templates.back()->setTemplate( true );
+		p++;
+	}
+}
+
+//
+// Function:	TMessageTemplates :: ~TMessageTemplates
+// Description:
+//
+TMessageTemplates::~TMessageTemplates()
+{
+}
+
+// --------
+
 #include <iostream>
 #include <typeinfo>
 #include <sys/time.h>
