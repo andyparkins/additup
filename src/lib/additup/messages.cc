@@ -24,13 +24,12 @@
 // --- Qt
 // --- OS
 // --- Project libs
-#include "crypto.h"
+#include <general/crypto.h>
+#include <general/logstream.h>
+// --- Project
 #include "messagefactory.h"
-#include "logstream.h"
 #include "peer.h"
 #include "bitcoinnetwork.h"
-// --- Project
-#include "logstream.h"
 
 
 // -------------- Namespace
@@ -918,7 +917,7 @@ TMessageTemplates::~TMessageTemplates()
 #include <iostream>
 #include <typeinfo>
 #include <sys/time.h>
-#include "logstream.h"
+#include <general/logstream.h>
 #include "unittest.h"
 #include "constants.h"
 #include "blockchain.h"

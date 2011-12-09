@@ -24,12 +24,12 @@
 // --- Qt
 // --- OS
 // --- Project libs
+#include <general/crypto.h>
 // --- Project
 #include "hashtypes.h"
 #include "blockchain.h"
 #include "messages.h"
 #include "script.h"
-#include "crypto.h"
 
 
 // -------------- Namespace
@@ -495,7 +495,7 @@ const TNetworkParameters *NETWORK_PRODNET = NULL;
 
 #ifdef UNITTEST
 #include <iostream>
-#include "logstream.h"
+#include <general/logstream.h>
 
 // -------------- main()
 

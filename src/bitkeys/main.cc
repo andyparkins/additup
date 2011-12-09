@@ -25,12 +25,12 @@
 #include <list>
 // --- OS
 // --- Project libs
-#include <logstream.h>
-#include <hashtypes.h>
-#include <autoversion.h>
-#include <hashtypes.h>
-#include <crypto.h>
-#include <constants.h>
+#include <general/logstream.h>
+#include <general/crypto.h>
+#include <general/autoversion.h>
+#include <additup/hashtypes.h>
+#include <additup/hashtypes.h>
+#include <additup/constants.h>
 // --- Project
 
 

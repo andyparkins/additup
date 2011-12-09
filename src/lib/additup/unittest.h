@@ -23,9 +23,9 @@
 // --- C++
 // --- Qt
 // --- OS
-// --- Project
 // --- Project lib
-#include "bytearray.h"
+#include <general/bytearray.h>
+// --- Project
 
 
 // -------------- Namespace

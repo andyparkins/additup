@@ -1,4 +1,4 @@
--include ../revision.mak
+-include ../../revision.mak
 autoversion_DEFINES := VCSID=\"$(VERSIONSTRING)\"
 
 # --- Automatic version module generation

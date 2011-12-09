@@ -27,13 +27,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 // --- Project libs
+#include <general/logstream.h>
+#include <general/bytearray.h>
+#include <general/extraexcept.h>
 // --- Project
-#include "logstream.h"
 #include "messages.h"
 #include "blockchain.h"
 #include "transactions.h"
-#include "bytearray.h"
-#include "extraexcept.h"
 
 
 // -------------- Namespace
@@ -913,7 +913,7 @@ void TBitcoinNetwork_Sockets::disconnect( TBitcoinPeer *Peer )
 #ifdef UNITTEST
 #include <iostream>
 #include <sstream>
-#include "logstream.h"
+#include <general/logstream.h>
 #include "constants.h"
 
 //

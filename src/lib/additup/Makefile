@@ -9,17 +9,18 @@
 #
 # ----------------------------------------------------------------------------
 
--include ../platform.mak
--include ../config.mak
+-include ../../platform.mak
+-include ../../config.mak
 
 SOURCES		:= $(wildcard *.cc)
 SOURCES		:= $(filter-out $(REMOVEDSOURCES),$(SOURCES))
 HEADERS		:= $(SOURCES:.cc=.h)
 OBJS		:= $(SOURCES:.cc=.o)
-PROJECT		?= bitkeys
-LIBPATH     := ../lib/additup ../lib/general
-INCLUDE     := ../lib
-LDFLAGS     :=
+PROJECT		?= additup
+LIBNAME     := lib$(PROJECT)
+INCLUDE     := ..
+LIBPATH     := ../general .
+LDFLAGS     := -lgeneral -ladditup
 CXXFLAGS    = -Wall -g -DDEBUG -fmessage-length=0
 
 ifneq ($(PLATFORM),win32)
@@ -32,7 +33,7 @@ else
 	LDFLAGS += -mconsole -mno-cygwin -gstabs
 	LIBS += gdi32
 endif
-LIBS += additup general pthread dl ssl crypto
+LIBS += $(PROJECT) pthread dl ssl crypto general
 
 ifdef strict
 	# --- strict compilation
@@ -57,7 +58,6 @@ default: build
 
 # Per-module Makefile components
 -include $(OBJS:.o=.mak)
--include ../lib/libadditup.mak
 
 # Auto generated dependencies
 include depends.mak
@@ -66,31 +66,40 @@ info:
 	@echo "--- INFO (make)"
 	@echo "PLATFORM   = $(PLATFORM)"
 	@echo "PROJECT    = $(PROJECT)$(VERSIONSTRING)"
-	@echo "OBJS       = $(OBJS)"
+	@echo "LIBNAME    = $(LIBNAME)"
 	@echo "CXXFLAGS   = $(CXXFLAGS)"
 	@echo "--- INFO (end)"
 
-build: prebuild $(PROJECT)
+build: prebuild $(LIBNAME).mak $(LIBNAME).a
 
-run: build
-	./$(PROJECT) --address 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa
-	./$(PROJECT) --address --hex 0062e907b15cbf27d5425399ebf6f0fb50ebb88f18c29b7d93
-	./$(PROJECT) --secret 915VSQfWNUB8CihzKjH8FZDChf9ZTdKhS9L5wKqgbJmw
-	./$(PROJECT) --secret --hex 76e292975f477698382b1aab142dca51d5cf798ce823111780d98e46a3f28fd2
-	./$(PROJECT) --secret generate
+
+# Unit test standard makefile fragment
+UNITLIBS := $(LIBNAME).a
+include ../../unittest.mak
 
 
 # --- Build recipes
+$(LIBNAME).a: $(OBJS)
+	-$(RM) $@
+	$(AR) rcs $@ $(OBJS)
 
-$(PROJECT): $(OBJS)
-	$(CXX) $(LDFLAGS) -o $@ $(patsubst %,-L%,$(LIBPATH)) \
-		$(OBJS) $(patsubst %,-l%,$(LIBS))
+# Pull the dependent library list out of the per-module variables
+$(LIBNAME).mak: $(filter-out $(LIBNAME).mak,$(wildcard *.mak))
+	@echo "$(LIBNAME)_LIBS := $(sort $(foreach x, \
+			$(patsubst %.o,%_LIBS,$(OBJS)), \
+			$($x)))" > $@
+	@echo "$(LIBNAME)_EXTERNINCLUDE := $(sort $(foreach x, \
+			$(patsubst %.o,%_EXTERNINCLUDE,$(OBJS)), \
+			$($x)))" >> $@
+	@echo "$(LIBNAME)_LIBPATH := $(sort $(foreach x, \
+			$(patsubst %.o,%_LIBPATH,$(OBJS)), \
+			$($x)))" >> $@
 
 depends.mak: $(SOURCES) $(SOURCES:.cc=.h)
 	@$(CXX) -M $(CXXFLAGS) \
 		$(patsubst %,"-D%",$($*_DEFINES)) \
 		$(patsubst %,-I%,$(INCLUDE)) $(patsubst %,-I%,$($*_INCLUDE)) \
-		$(SOURCES) > $@
+		> $@
 
 %.o: %.cc %.h
 	$(CXX) $(CXXFLAGS) \
@@ -99,7 +108,7 @@ depends.mak: $(SOURCES) $(SOURCES:.cc=.h)
 		-c $*.cc
 
 # --- Utility recipes
-prebuild: tags
+prebuild: tags version-check
 
 tags: $(SOURCES) $(HEADERS)
 	ctags --language-force=c++ --extra=+q --fields=+i $(SOURCES) $(HEADERS)
@@ -107,8 +116,11 @@ tags: $(SOURCES) $(HEADERS)
 clean:
 	-$(RM) tags
 	-$(RM) depends.mak
+	-$(RM) $(LIBNAME).a $(LIBNAME).mak
 	-$(RM) $(OBJS)
-	-$(RM) $(PROJECT)
+	-$(RM) $(UNITEXES)
+	-$(RM) $(patsubst %,%.out,$(UNITEXES))
+	-$(RM) version-trigger version-built
 
 
-.PHONY: default info build tests prebuild clean
+.PHONY: default info build tests prebuild clean version-check

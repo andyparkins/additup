@@ -24,8 +24,8 @@
 // --- Qt
 // --- OS
 // --- Project libs
+#include <general/crypto.h>
 // --- Project
-#include "crypto.h"
 
 
 // -------------- Namespace
@@ -348,7 +348,7 @@ TBitcoinHash TBitcoinHash::reversedBytes() const
 #ifdef UNITTEST
 #include <iostream>
 #include <stdexcept>
-#include "logstream.h"
+#include <general/logstream.h>
 
 // -------------- main()
 

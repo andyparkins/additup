@@ -26,9 +26,9 @@
 // --- Qt
 // --- OS
 // --- Project libs
+#include <general/logstream.h>
+#include <general/crypto.h>
 // --- Project
-#include "logstream.h"
-#include "crypto.h"
 
 
 // -------------- Namespace
@@ -2281,7 +2281,7 @@ TStackOperator_INTOP_FINALSIGNATURE::execute( TExecutionContext &Stack, const TB
 #ifdef UNITTEST
 #include <iostream>
 #include <sstream>
-#include "logstream.h"
+#include <general/logstream.h>
 #include "unittest.h"
 
 // -------------- main()

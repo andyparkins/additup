@@ -23,11 +23,11 @@
 // --- Qt
 // --- OS
 // --- Project libs
+#include <general/logstream.h>
+#include <general/crypto.h>
 // --- Project
 #include "messages.h"
 #include "bitcoinnetwork.h"
-#include "logstream.h"
-#include "crypto.h"
 
 
 // -------------- Namespace

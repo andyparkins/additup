@@ -24,10 +24,10 @@
 // --- Qt
 // --- OS
 // --- Project libs
+#include <general/logstream.h>
 // --- Project
 #include "messages.h"
 #include "script.h"
-#include "logstream.h"
 #include "peer.h"
 #include "bitcoinnetwork.h"
 
@@ -453,7 +453,7 @@ TBitcoinScript *TMessageFactory_31402::createVersionedBitcoinScript() const
 #ifdef UNITTEST
 #include <iostream>
 #include "unittest.h"
-#include "logstream.h"
+#include <general/logstream.h>
 #include "peer.h"
 
 // -------------- main()

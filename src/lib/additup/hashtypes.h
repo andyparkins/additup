@@ -23,8 +23,8 @@
 // --- Qt
 // --- OS
 // --- Project lib
-#include "extraint.h"
-#include "bytearray.h"
+#include <general/extraint.h>
+#include <general/bytearray.h>
 // --- Project
 
 

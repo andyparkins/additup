@@ -28,8 +28,8 @@
 // --- Qt
 // --- OS
 // --- Project lib
+#include <general/extraint.h>
 // --- Project
-#include "extraint.h"
 #include "hashtypes.h"
 
 

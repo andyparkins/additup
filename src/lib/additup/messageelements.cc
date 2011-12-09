@@ -26,10 +26,10 @@
 // --- Qt
 // --- OS
 // --- Project libs
+#include <general/crypto.h>
+#include <general/logstream.h>
 // --- Project
 #include "script.h"
-#include "crypto.h"
-#include "logstream.h"
 #include "bitcoinnetwork.h"
 
 
@@ -454,7 +454,7 @@ const TBitcoinHash &TTransactionElement::getHash() const
 #ifdef UNITTEST
 #include <iostream>
 #include <sstream>
-#include "logstream.h"
+#include <general/logstream.h>
 
 // -------------- main()
 

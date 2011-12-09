@@ -26,9 +26,10 @@
 #include <iostream>
 #include <stdexcept>
 // --- OS
+// --- Project libs
+#include <general/bytearray.h>
 // --- Project
 #include "messageelements.h"
-#include "bytearray.h"
 
 
 // -------------- Namespace

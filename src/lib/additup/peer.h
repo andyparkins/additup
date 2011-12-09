@@ -27,8 +27,8 @@
 // --- Qt
 // --- OS
 // --- Project lib
+#include <general/bytearray.h>
 // --- Project
-#include "bytearray.h"
 #include "hashtypes.h"
 
 

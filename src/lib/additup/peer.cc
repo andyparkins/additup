@@ -28,11 +28,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 // --- Project libs
+#include <general/logstream.h>
 // --- Project
 #include "messagefactory.h"
 #include "messages.h"
 #include "messageelements.h"
-#include "logstream.h"
 #include "constants.h"
 
 
@@ -501,7 +501,7 @@ void TBitcoinPeer::receive( const TByteArray &s )
 #include <iostream>
 #include <sstream>
 #include "unittest.h"
-#include "logstream.h"
+#include <general/logstream.h>
 #include "bitcoinnetwork.h"
 
 // -------------- main()

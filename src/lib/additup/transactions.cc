@@ -23,10 +23,10 @@
 // --- Qt
 // --- OS
 // --- Project libs
+#include <general/logstream.h>
 // --- Project
 #include "script.h"
 #include "messages.h"
-#include "logstream.h"
 #include "peer.h"
 #include "bitcoinnetwork.h"
 

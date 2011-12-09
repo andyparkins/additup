@@ -27,10 +27,10 @@
 // --- Qt
 // --- OS
 // --- Project lib
+#include <general/singleton.h>
 // --- Project
 #include "peer.h"
 #include "bitcoinnetwork.h"
-#include "singleton.h"
 
 
 // -------------- Namespace
