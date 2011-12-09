@@ -406,6 +406,8 @@ void TBitcoinNetwork::receive_getdata( TMessage_getdata *getdata )
 				elem.Hash = BlockPool->getBestBranch()->getHash();
 				// We have done the continuation
 				Peer->setContinuationHash( TBitcoinHash() );
+				// Send it along
+				Peer->queueOutgoing( inv );
 			}
 		} else if( inv.ObjectType == TInventoryElement::MSG_TX ) {
 			// TX> tx
