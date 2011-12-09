@@ -185,7 +185,7 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 
 		DefaultTCPPort = 18333;
 		Magic = 0xdab5bffa;
-		BitcoinAddressPrefix = 111;
+		AddressClass = 111;
 		// From Java client: 230 bits of 1
 		ProofOfWorkLimit = (TBitcoinHash(1) << 231) - 1;
 
@@ -236,7 +236,7 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 
 		DefaultTCPPort = 8333;
 		Magic = 0xd9b4bef9;
-		BitcoinAddressPrefix = 0;
+		AddressClass = 0;
 
 		// Official client:
 		// "CBigNum bnProofOfWorkLimit(~uint256(0) >> 32);"
@@ -391,7 +391,7 @@ const TNetworkParameters *TKNOWN_NETWORKS::addressClassToNetwork( uint8_t addrcl
 	const_iterator p = begin();
 
 	while( p != end() ) {
-		if( (*p)->BitcoinAddressPrefix == addrclass )
+		if( (*p)->AddressClass == addrclass )
 			return (*p);
 		p++;
 	}

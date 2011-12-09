@@ -114,7 +114,7 @@ class TNetworkParameters
 	TBitcoinHash ProofOfWorkLimit;
 	uint16_t DefaultTCPPort;
 	uint32_t Magic;
-	uint8_t BitcoinAddressPrefix;
+	uint8_t AddressClass;
 
 	// The official client defines these as constants, I think they're
 	// better as network parameters, as they are pretty much arbitrarily

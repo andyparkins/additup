@@ -73,7 +73,7 @@ TNetworkParameters::TNetworkParameters() :
 	ProtocolVersion(0),
 	DefaultTCPPort(0),
 	Magic(0),
-	BitcoinAddressPrefix(0)
+	AddressClass(0)
 {
 	// Zero for proof of work limit is actually the hardest possible
 	// difficulty (if not impossible, as SHA256 won't produce a zero
