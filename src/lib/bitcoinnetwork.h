@@ -94,6 +94,7 @@ class TNetworkParameters
   public:
 	TNetworkParameters();
 	virtual const char *className() const { return "TNetworkParameters"; }
+	virtual const char *networkName() const = 0;
 
 	unsigned int DifficultyUpdateInterval() const { return DIFFICULTY_TIMESPAN / NEW_BLOCK_PERIOD; }
 

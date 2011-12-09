@@ -221,6 +221,7 @@ class TTestnetNetworkParameters : public TPredefinedNetworkParameters
 			throw logic_error( "GenesisBlock hash doesn't match pre-programmed hash" );
 	}
 	const char *className() const { return "TTestnetNetworkParameters"; }
+	const char *networkName() const { return "testnet"; }
 };
 
 //
@@ -319,6 +320,7 @@ class TProdnetNetworkParameters : public TPredefinedNetworkParameters
 		Checkpoints[118000] = TBitcoinHash("000000000000774a7f8a7a12dc906ddb9e17e75d684f15e00f8767f9e8f36553");
 	}
 	const char *className() const { return "TProdnetNetworkParameters"; }
+	const char *networkName() const { return "prodnet"; }
 };
 
 // -------------- Class member definitions
@@ -344,6 +346,23 @@ TKNOWN_NETWORKS::~TKNOWN_NETWORKS()
 		delete *(KnownNetworks.begin());
 		KnownNetworks.erase( KnownNetworks.begin() );
 	}
+}
+
+//
+// Function:	TKNOWN_NETWORKS :: printOn
+// Description:
+//
+ostream &TKNOWN_NETWORKS::printOn( ostream &s) const
+{
+	const_iterator it;
+
+	s << "{ ";
+	for( it = begin(); it != end(); it++ ) {
+		s << (*it)->networkName() << " ";
+	}
+	s << "}";
+
+	return s;
 }
 
 // ----------
@@ -467,7 +486,7 @@ int main( int argc, char *argv[] )
 
 		log() << "--- Known networks" << endl;
 		while( pNetwork != KNOWN_NETWORKS::O().end() ) {
-			log() << (*pNetwork)->className() << endl;
+			log() << (*pNetwork)->className() << " supplied " << (*pNetwork)->networkName() << endl;
 			log() << "GenesisBlock = ";
 			(*pNetwork)->GenesisBlock->printOn( log() );
 

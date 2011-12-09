@@ -96,6 +96,8 @@ class TKNOWN_NETWORKS
 	TKNOWN_NETWORKS();
 	~TKNOWN_NETWORKS();
 
+	ostream &printOn( ostream & ) const;
+
 	iterator begin() { return KnownNetworks.begin(); }
 	iterator end() { return KnownNetworks.end(); }
 	const_iterator begin() const { return KnownNetworks.begin(); }
