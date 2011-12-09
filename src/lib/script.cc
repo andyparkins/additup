@@ -167,7 +167,6 @@ void TBitcoinScriptBase::execute( TExecutionContext &Stack ) const
 
 		// Catch infinite loop
 		if( it == itn ) {
-			it = itn;
 			it++;
 		} else {
 			it = itn;
