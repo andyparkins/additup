@@ -29,6 +29,7 @@
 #include <hashtypes.h>
 #include <autoversion.h>
 #include <hashtypes.h>
+#include <crypto.h>
 // --- Project
 
 
@@ -37,6 +38,7 @@
 
 // -------------- Module Globals
 bool HexInput = false;
+unsigned int DefaultClass = 0;
 
 
 // -------------- World Globals (need "extern"s in header)
@@ -95,6 +97,74 @@ static void address( int argc, char *argv[] )
 	}
 }
 
+static void secret( int argc, char *argv[] )
+{
+	list<TEllipticCurveKey> Keys;
+	list<TEllipticCurveKey>::const_iterator it;
+
+	for( unsigned int i = 1; i < argc; i++ ) {
+		if( argv[i][0] == '-' )
+			continue;
+
+		TEllipticCurveKey ECKEY;
+
+		if( strcmp(argv[i], "generate") != 0 ) {
+			TBitcoinBase58 base58;
+
+			// Input as a big number; TBitcoinBase58 can do hex and base58
+			// so it serves dual duty here
+			if( !HexInput ) {
+				base58.fromString( argv[i] );
+			} else {
+				base58.fromString( argv[i], 16 );
+			}
+
+			// Set the secret part of the key, which will automatically
+			// reconstruct the public part
+			ECKEY.setSecret( base58.toBytes(32) );
+		} else {
+			// Make a random new key
+			ECKEY.generate();
+		}
+
+		Keys.push_back(ECKEY);
+	}
+
+	for( it = Keys.begin(); it != Keys.end(); it++ ) {
+		TBitcoinAddress addr(DefaultClass);
+		TBitcoinBase58 secret;
+
+		// Create a bitcoin address from the public key
+		addr.fromKey(*it);
+		// Convert the secret to base58
+		secret.fromBytes( (*it).getSecret() );
+
+		cerr << "--- KEY ------ " << secret.toString() << endl;
+		cerr << "Secret       : ";
+		dumpArray(cerr, secret.toBytes());
+		cerr << endl;
+		cerr << "Public key   : ";
+		TLog::hexify( cerr, (*it).getPublicKey() );
+		cerr << endl;
+		cerr << "Private (DER): ";
+		TLog::hexify( cerr, (*it).getPrivateKey() );
+		cerr << endl;
+
+		cerr << "Public addr  : " << addr.toString() << endl;
+		cerr << "Class        : " << hex << (unsigned int)(addr.getClass()) << dec
+			<< (addr.isValid() ? " (VALID " : " (INVALID ")
+			<< ((unsigned int)(addr.getClass()) == 0 ? "PRODNET" : "")
+			<< ((unsigned int)(addr.getClass()) == 111 ? "TESTNET" : "")
+			<< ")" << endl;
+		cerr << "Public hash  : ";
+		dumpArray(cerr, addr.getHash());
+		cerr << endl;
+		cerr << "Hash CS      : ";
+		dumpArray(cerr, addr.getChecksum());
+		cerr << endl;
+	}
+}
+
 // ----- Main
 
 int main( int argc, char *argv[] )
@@ -104,6 +174,7 @@ int main( int argc, char *argv[] )
 		MODE_HELP,
 		MODE_VERSION,
 		MODE_ADDRESS,
+		MODE_SECRET,
 		MODE_COUNT
 	} Mode = MODE_HELP;
 
@@ -124,6 +195,10 @@ int main( int argc, char *argv[] )
 				Mode = MODE_VERSION;
 			} else if( strcmp(argv[i], "--hex") == 0 ) {
 				HexInput = true;
+			} else if( strcmp(argv[i], "--testnet") == 0 ) {
+				DefaultClass = 111;
+			} else if( strcmp(argv[i], "--secret") == 0 ) {
+				Mode = MODE_SECRET;
 			} else if( strcmp(argv[i], "--address") == 0 ) {
 				Mode = MODE_ADDRESS;
 			} else if( strcmp(argv[i], "--help") == 0 ) {
@@ -140,6 +215,9 @@ int main( int argc, char *argv[] )
 				break;
 			case MODE_ADDRESS:
 				address( argc, argv );
+				break;
+			case MODE_SECRET:
+				secret( argc, argv );
 				break;
 			default:
 				break;
