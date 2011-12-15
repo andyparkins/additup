@@ -95,11 +95,11 @@ $(LIBNAME).mak: $(filter-out $(LIBNAME).mak,$(wildcard *.mak))
 			$(patsubst %.o,%_LIBPATH,$(OBJS)), \
 			$($x)))" >> $@
 
-depends.mak: $(SOURCES) $(SOURCES:.cc=.h)
+depends.mak: $(SOURCES)
 	@$(CXX) -M $(CXXFLAGS) \
 		$(patsubst %,"-D%",$($*_DEFINES)) \
 		$(patsubst %,-I%,$(INCLUDE)) $(patsubst %,-I%,$($*_INCLUDE)) \
-		> $@
+		$^ > $@
 
 %.o: %.cc %.h
 	$(CXX) $(CXXFLAGS) \
