@@ -33,8 +33,9 @@ Now; the owner of `PUBLIC_KEY_01` (with "owner" defined as the person
 with `PRIVATE_KEY_01`) wants to transfer ownership of those coins to
 `PUBLIC_KEY_02`.
 
-    TRANSACTION_02: PRIVATE_KEY_01_SIGNATURE(TRANSACTION_01)
+    TRANSACTION_02: TRANSACTION_01_OUTPUT_1
                  -> PUBLIC_KEY_02
+				    SIGNED... PRIVATE_KEY_01
 
 Only the owner of `PRIVATE_KEY_01` can create the signature in
 `TRANSACTION_02`; but anyone who knows `PUBLIC_KEY_01` can verify it.
@@ -50,8 +51,9 @@ Let's say the owner of `PRIVATE_KEY_01` is a cheeky devil and wants to
 spend that money again.  He prepares a new transaction, giving the same
 coins to `PUBLIC_KEY_03` (presumably in exchange for a Ferrari).
 
-    TRANSACTION_03: PRIVATE_KEY_01_SIGNATURE(TRANSACTION_01)
+    TRANSACTION_03: TRANSACTION_01_OUTPUT_1
                  -> PUBLIC_KEY_03
+				    SIGNED... PRIVATE_KEY_01
 
 He can't reference the output of `TRANSACTION_02` because he doesn't own
 `PRIVATE_KEY_02`, and so can't sign that reference, the transaction
