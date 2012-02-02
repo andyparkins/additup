@@ -81,6 +81,7 @@ class TLog
 	ostream &getStream() const { return cerr; }
 
 	void setLogLevel( eLogLevel l ) { Level = l; }
+	eLogLevel getLogLevel() const { return Level; }
 
   protected:
 	static TLog *Singleton;
