@@ -2060,7 +2060,7 @@ TStackOperator_OP_CHECKMULTISIG::execute( TExecutionContext &Stack, const TBitco
 // Operation: Same as OP_CHECKMULTISIG, but OP_VERIFY is executed afterward.
 void TStackOperator_OP_CHECKMULTISIGVERIFY::explode( TBitcoinScriptBase *Script ) const
 {
-	Script->append( new TStackOperator_OP_CHECKMULTISIGVERIFY );
+	Script->append( new TStackOperator_OP_CHECKMULTISIG );
 	Script->append( new TStackOperator_OP_VERIFY );
 }
 
