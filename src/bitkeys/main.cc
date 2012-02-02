@@ -38,7 +38,11 @@
 
 
 // -------------- Module Globals
-bool HexInput = false;
+enum eCLIInputMode {
+	InputMode_Base58 = 0,
+	InputMode_Hex,
+	InputMode_SHA256Phrase
+} CLIInputMode = InputMode_Base58;
 unsigned int DefaultClass;
 
 
@@ -114,12 +118,14 @@ static void address( int argc, char *argv[] )
 	for( unsigned int i = 1; i < argc; i++ ) {
 		if( argv[i][0] == '-' )
 			continue;
-		if( !HexInput ) {
+		if( CLIInputMode == InputMode_Base58 ) {
 			Addresses.push_back( TBitcoinAddress(argv[i]) );
-		} else {
+		} else if( CLIInputMode == InputMode_Hex ) {
 			TBitcoinAddress x;
 			x.fromString( argv[i], 16 );
 			Addresses.push_back(x);
+		} else {
+			throw runtime_error("Phrase input not supported for address mode");
 		}
 	}
 
@@ -152,12 +158,16 @@ static void secret( int argc, char *argv[] )
 		if( strcmp(argv[i], "generate") != 0 ) {
 			TBitcoinBase58 base58;
 
-			// Input as a big number; TBitcoinBase58 can do hex and base58
-			// so it serves dual duty here
-			if( !HexInput ) {
+			if( CLIInputMode == InputMode_Base58 ) {
 				base58.fromString( argv[i] );
-			} else {
+			} else if( CLIInputMode == InputMode_Hex ) {
 				base58.fromString( argv[i], 16 );
+			} else if( CLIInputMode == InputMode_SHA256Phrase ) {
+				THash_sha256 SHA256;
+				TByteArray message(argv[i]);
+				TByteArray digest;
+				digest = SHA256.transform(message);
+				base58.fromBytes( digest );
 			}
 
 			// Set the secret part of the key, which will automatically
@@ -184,6 +194,7 @@ int main( int argc, char *argv[] )
 		MODE_VERSION,
 		MODE_ADDRESS,
 		MODE_SECRET,
+		MODE_BRAINWALLET,
 		MODE_COUNT
 	} Mode = MODE_HELP;
 
@@ -208,11 +219,13 @@ int main( int argc, char *argv[] )
 			} else if( strcmp(argv[i], "--version") == 0 ) {
 				Mode = MODE_VERSION;
 			} else if( strcmp(argv[i], "--hex") == 0 ) {
-				HexInput = true;
+				CLIInputMode = InputMode_Hex;
 			} else if( strcmp(argv[i], "--testnet") == 0 ) {
 				DefaultClass = NETWORK_TESTNET->AddressClass;
 			} else if( strcmp(argv[i], "--secret") == 0 ) {
 				Mode = MODE_SECRET;
+			} else if( strcmp(argv[i], "--brainwallet") == 0 ) {
+				Mode = MODE_BRAINWALLET;
 			} else if( strcmp(argv[i], "--address") == 0 ) {
 				Mode = MODE_ADDRESS;
 			} else if( strcmp(argv[i], "--help") == 0 ) {
@@ -230,6 +243,8 @@ int main( int argc, char *argv[] )
 			case MODE_ADDRESS:
 				address( argc, argv );
 				break;
+			case MODE_BRAINWALLET:
+				CLIInputMode = InputMode_SHA256Phrase;
 			case MODE_SECRET:
 				secret( argc, argv );
 				break;

@@ -78,6 +78,7 @@ run: build
 	./$(PROJECT) --secret 915VSQfWNUB8CihzKjH8FZDChf9ZTdKhS9L5wKqgbJmw
 	./$(PROJECT) --secret --hex 76e292975f477698382b1aab142dca51d5cf798ce823111780d98e46a3f28fd2
 	./$(PROJECT) --secret generate
+	./$(PROJECT) --brainwallet "Man made it to the moon,, and decided it stinked like yellow cheeeese."
 
 
 # --- Build recipes
