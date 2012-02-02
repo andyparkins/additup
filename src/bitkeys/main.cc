@@ -74,9 +74,11 @@ static void showKeyArray( const list<TEllipticCurveKey> &Keys )
 		cerr << "Public key   : ";
 		TLog::hexify( cerr, (*it).getPublicKey() );
 		cerr << endl;
-		cerr << "Private (DER): ";
-		TLog::hexify( cerr, (*it).getPrivateKey() );
-		cerr << endl;
+		if( TLog::instance().getLogLevel() >= TLog::Verbose ) {
+			cerr << "Private (DER): ";
+			TLog::hexify( cerr, (*it).getPrivateKey() );
+			cerr << endl;
+		}
 
 		cerr << "Public addr  : " << addr.toString() << endl;
 		cerr << "Class        : " << hex << (unsigned int)(addr.getClass()) << dec
