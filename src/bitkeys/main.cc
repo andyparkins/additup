@@ -99,9 +99,14 @@ static void help()
 {
 	cerr << "Usage: " << endl
 		<< " bitkeys <mode specifier> [<options>] [<parameters>]" << endl
-		<< "      --help     show help" << endl
-		<< "      --version  print version" << endl
-		<< "      --address  show information about given addresses" << endl
+		<< "      --help          MODE show help" << endl
+		<< "      --version       MODE print version" << endl
+		<< "      --address       MODE show information about given addresses" << endl
+		<< "      --secret        MODE show information about ECC secrets"
+		<< "      --brainwallet   MODE show information about ECC secrets (phrased key)"
+		<< "      --verbose       activate verbose mode" << endl
+		<< "      --hex           parameters are treated as hex digits (address/secret modes)"
+		<< "      --testnet       use the testnet parameters for address type bytes"
 		;
 }
 
