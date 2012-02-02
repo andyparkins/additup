@@ -50,6 +50,47 @@ unsigned int DefaultClass;
 
 // -------------- Function Definitions
 
+static void showKeyArray( const list<TEllipticCurveKey> &Keys )
+{
+	list<TEllipticCurveKey>::const_iterator it;
+
+	for( it = Keys.begin(); it != Keys.end(); it++ ) {
+		TBitcoinAddress addr(DefaultClass);
+		TBitcoinBase58 secret;
+
+		// Create a bitcoin address from the public key
+		addr.fromKey(*it);
+		// Convert the secret to base58
+		secret.fromBytes( (*it).getSecret() );
+
+		cerr << "--- KEY ------ " << secret.toString() << endl;
+		cerr << "Secret       : ";
+		dumpArray(cerr, secret.toBytes());
+		cerr << endl;
+		cerr << "Public key   : ";
+		TLog::hexify( cerr, (*it).getPublicKey() );
+		cerr << endl;
+		cerr << "Private (DER): ";
+		TLog::hexify( cerr, (*it).getPrivateKey() );
+		cerr << endl;
+
+		cerr << "Public addr  : " << addr.toString() << endl;
+		cerr << "Class        : " << hex << (unsigned int)(addr.getClass()) << dec
+			<< (addr.isValid() ? " (VALID " : " (INVALID ")
+			<< ((unsigned int)(addr.getClass()) == NETWORK_PRODNET->AddressClass ? NETWORK_PRODNET->networkName() : "")
+			<< ((unsigned int)(addr.getClass()) == NETWORK_TESTNET->AddressClass ? NETWORK_TESTNET->networkName() : "")
+			<< ")" << endl;
+		cerr << "Public hash  : ";
+		dumpArray(cerr, addr.getHash());
+		cerr << endl;
+		cerr << "Hash CS      : ";
+		dumpArray(cerr, addr.getChecksum());
+		cerr << endl;
+	}
+}
+
+// -------------
+
 static void help()
 {
 	cerr << "Usage: " << endl
@@ -101,7 +142,6 @@ static void address( int argc, char *argv[] )
 static void secret( int argc, char *argv[] )
 {
 	list<TEllipticCurveKey> Keys;
-	list<TEllipticCurveKey>::const_iterator it;
 
 	for( unsigned int i = 1; i < argc; i++ ) {
 		if( argv[i][0] == '-' )
@@ -131,39 +171,7 @@ static void secret( int argc, char *argv[] )
 		Keys.push_back(ECKEY);
 	}
 
-	for( it = Keys.begin(); it != Keys.end(); it++ ) {
-		TBitcoinAddress addr(DefaultClass);
-		TBitcoinBase58 secret;
-
-		// Create a bitcoin address from the public key
-		addr.fromKey(*it);
-		// Convert the secret to base58
-		secret.fromBytes( (*it).getSecret() );
-
-		cerr << "--- KEY ------ " << secret.toString() << endl;
-		cerr << "Secret       : ";
-		dumpArray(cerr, secret.toBytes());
-		cerr << endl;
-		cerr << "Public key   : ";
-		TLog::hexify( cerr, (*it).getPublicKey() );
-		cerr << endl;
-		cerr << "Private (DER): ";
-		TLog::hexify( cerr, (*it).getPrivateKey() );
-		cerr << endl;
-
-		cerr << "Public addr  : " << addr.toString() << endl;
-		cerr << "Class        : " << hex << (unsigned int)(addr.getClass()) << dec
-			<< (addr.isValid() ? " (VALID " : " (INVALID ")
-			<< ((unsigned int)(addr.getClass()) == NETWORK_PRODNET->AddressClass ? NETWORK_PRODNET->networkName() : "")
-			<< ((unsigned int)(addr.getClass()) == NETWORK_TESTNET->AddressClass ? NETWORK_TESTNET->networkName() : "")
-			<< ")" << endl;
-		cerr << "Public hash  : ";
-		dumpArray(cerr, addr.getHash());
-		cerr << endl;
-		cerr << "Hash CS      : ";
-		dumpArray(cerr, addr.getChecksum());
-		cerr << endl;
-	}
+	showKeyArray( Keys );
 }
 
 // ----- Main
