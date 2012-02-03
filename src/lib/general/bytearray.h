@@ -231,7 +231,8 @@ class TByteArray_t : public vector<unsigned char>
 
 // -------------- Typedefs
 typedef TByteArray_t<allocator<unsigned char> > TByteArray;
-typedef TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > > TSecureByteArray;
+typedef TByteArray_t<TAutoClearAllocator<unsigned char> > TSecureByteArray;
+
 
 // -------------- Constants
 
@@ -247,7 +248,7 @@ ostream &dumpArray( ostream &s, const TByteArray &O );
 
 
 // -------------- Template instantiations
-extern template class TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > >;
+extern template class TByteArray_t<TAutoClearAllocator<unsigned char> >;
 
 
 
