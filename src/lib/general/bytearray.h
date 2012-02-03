@@ -182,25 +182,31 @@ class TAutoClearAllocator : public baseAllocator
 // concisely.
 //
 template <typename TAllocator = std::allocator<unsigned char> >
-class TByteArray_t : public vector<unsigned char>
+class TByteArray_t : public vector<unsigned char, TAllocator>
 {
   public:
+	typedef unsigned char T;
+	typedef T *Pointer;
+	typedef const T *constPointer;
+	typedef typename vector<T, TAllocator>::size_type size_type;
+
+  public:
 	TByteArray_t() {}
-	TByteArray_t( const string &s ) : vector<unsigned char>( s.begin(), s.end() ) {}
-	TByteArray_t( const unsigned char *p, size_type n ) { assign(p,n); }
-	TByteArray_t( const char *p ) { assign(p, strlen(p)); }
-	TByteArray_t( const char *p, size_type n ) { assign(p,n); }
-	TByteArray_t( size_type n, unsigned char v = 0 ) : vector<unsigned char>(n,v) {}
-	TByteArray_t( const TByteArray_t &O ) : vector<unsigned char>(O) {}
+	TByteArray_t( const string &s ) : vector<T, TAllocator>( s.begin(), s.end() ) {}
+	TByteArray_t( const T *p, size_type n ) : vector<T,TAllocator>() { assign(p,n); }
+	TByteArray_t( const char *p ) : vector<T,TAllocator>() { assign(p, strlen(p)); }
+	TByteArray_t( const char *p, size_type n ) : vector<T,TAllocator>() { assign(p,n); }
+	TByteArray_t( size_type n, T v = 0 ) : vector<T,TAllocator>(n,v) {}
+	TByteArray_t( const TByteArray_t &O ) : vector<T,TAllocator>(O) {}
 
-	using vector<unsigned char>::operator=;
+	using vector<T,TAllocator>::operator=;
+	using vector<T,TAllocator>::size;
+	using vector<T,TAllocator>::resize;
 
-	typedef unsigned char *Pointer;
-	Pointer ptr( size_type n = 0 ) { return &vector<unsigned char>::operator[](n); }
-	typedef const unsigned char *constPointer;
-	constPointer ptr( size_type n = 0) const { return &vector<unsigned char>::operator[](n); }
+	Pointer ptr( size_type n = 0 ) { return &vector<T,TAllocator>::operator[](n); }
+	constPointer ptr( size_type n = 0) const { return &vector<T,TAllocator>::operator[](n); }
 
-	unsigned char &operator[](int n) { return *ptr(n); }
+	T &operator[](int n) { return *ptr(n); }
 
 	// unsigned char typecasts
 	operator Pointer() { return ptr(); }
@@ -219,9 +225,9 @@ class TByteArray_t : public vector<unsigned char>
 	string str() const { return string().assign( *this, size() ); }
 
 	TByteArray_t &assign(const char *p, size_type n) {
-		return assign( reinterpret_cast<const unsigned char *>(p), n );
+		return assign( reinterpret_cast<const T *>(p), n );
 	}
-	TByteArray_t &assign(const unsigned char *p, size_type n) {
+	TByteArray_t &assign(const T *p, size_type n) {
 		resize(n);
 		memcpy(ptr(), p, n );
 		return *this;
