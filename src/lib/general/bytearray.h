@@ -153,7 +153,7 @@ class TAutoClearAllocator : public baseAllocator
 	void deallocate( T *ptr, size_type n ) {
 		if( ptr != NULL ) {
 			memset( ptr, 0, sizeof(T) * n );
-			munlock( ptr );
+			munlock( ptr, sizeof(T) * n );
 		}
 		baseAllocator::deallocate( ptr, n );
 	}
