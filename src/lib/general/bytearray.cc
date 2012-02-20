@@ -37,6 +37,17 @@
 
 // -------------- Class member definitions
 
+TBufferDescription::TBufferDescription( void *p, size_t l ) :
+	Pointer(p),
+	Capacity(l),
+	Used(0)
+{
+}
+
+TBufferDescription::~TBufferDescription()
+{
+}
+
 
 // -------------- Explicit template instantiations
 template class TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > >;
