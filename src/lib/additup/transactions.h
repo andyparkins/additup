@@ -161,6 +161,7 @@ class TCoinTransfer
   public:
   public:
 	TCoinTransfer( const TTransaction *, unsigned int );
+	virtual ~TCoinTransfer() {}
 
 	virtual TOutputReference getCreatorReference() const = 0;
 	virtual TInputReference getClaimantReference() const = 0;

@@ -136,6 +136,7 @@ class TMessage
 {
   public:
 	TMessage();
+	virtual ~TMessage() {}
 	virtual const char *className() const { return "TMessage"; }
 	virtual TMessage *clone() const = 0;
 

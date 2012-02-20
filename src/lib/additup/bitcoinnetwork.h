@@ -93,6 +93,7 @@ class TNetworkParameters
 {
   public:
 	TNetworkParameters();
+	virtual ~TNetworkParameters() {}
 	virtual const char *className() const { return "TNetworkParameters"; }
 	virtual const char *networkName() const = 0;
 
