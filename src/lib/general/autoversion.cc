@@ -26,7 +26,6 @@
 
 
 // -------------- Namespace
-using namespace std;
 
 
 // -------------- Module Globals

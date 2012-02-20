@@ -28,7 +28,6 @@
 
 // -------------- Namespace
 	// --- Imported namespaces
-	using namespace std;
 
 
 // -------------- Defines
