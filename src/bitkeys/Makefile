@@ -23,7 +23,7 @@ LDFLAGS     :=
 CXXFLAGS    = -Wall -g -DDEBUG -fmessage-length=0
 
 ifneq ($(PLATFORM),win32)
-	CXXFLAGS += -rdynamic -ggdb3
+	CXXFLAGS += -ggdb3
 	LDFLAGS  += -rdynamic
 else
 #	CXXFLAGS += -mno-cygwin -mthreads
