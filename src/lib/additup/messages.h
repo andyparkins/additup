@@ -551,7 +551,7 @@ class TMessageGetBase : public TMessageWithChecksum
 			>> HashStop;
 		return is;
 	}
-	ostream &write( ostream &os ) {
+	ostream &write( ostream &os ) const {
 		TMessageWithChecksum::write(os);
 		os << Version
 			<< HashStarts
