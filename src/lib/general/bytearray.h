@@ -229,7 +229,7 @@ class TByteArray_t : public vector<unsigned char, TAllocator>
 	}
 	TByteArray_t &assign(const T *p, size_type n) {
 		resize(n);
-		memcpy(ptr(), p, n );
+		memcpy(ptr(), p, n * sizeof(T) );
 		return *this;
 	}
 };
