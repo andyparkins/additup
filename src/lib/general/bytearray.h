@@ -83,10 +83,13 @@ class TBufferDescription
 	bool isValid() const { return buffer() != NULL; }
 
 	void *buffer() const { return Pointer; }
+	void *ptr() const { return Pointer; }
 	size_t capacity() const { return Capacity; }
 	size_t used() const { return Used; }
+	size_t size() const { return Used; }
 
 	void setUsed( size_t u ) { Used = u; }
+	void resize( size_t u ) { Used = u; }
 
 	// Auto-cast
 	operator void*() const { return buffer(); }
