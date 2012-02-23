@@ -193,9 +193,9 @@ class TByteArray_t : public vector<unsigned char, TAllocator>
   public:
 	TByteArray_t() {}
 	TByteArray_t( const string &s ) : vector<T, TAllocator>( s.begin(), s.end() ) {}
-	TByteArray_t( const T *p, size_type n ) : vector<T,TAllocator>() { assign(p,n); }
-	TByteArray_t( const char *p ) : vector<T,TAllocator>() { assign(p, strlen(p)); }
-	TByteArray_t( const char *p, size_type n ) : vector<T,TAllocator>() { assign(p,n); }
+	TByteArray_t( const T *p, size_type n ) { assign(p,n); }
+	TByteArray_t( const char *p ) { assign(p, strlen(p)); }
+	TByteArray_t( const char *p, size_type n ) { assign(p,n); }
 	TByteArray_t( size_type n, T v = 0 ) : vector<T,TAllocator>(n,v) {}
 	TByteArray_t( const TByteArray_t &O ) : vector<T,TAllocator>(O) {}
 
