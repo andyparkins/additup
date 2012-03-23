@@ -209,7 +209,8 @@ class TByteArray_t : public vector<unsigned char, TAllocator>
 	Pointer ptr( size_type n = 0 ) { return &vector<T,TAllocator>::operator[](n); }
 	constPointer ptr( size_type n = 0) const { return &vector<T,TAllocator>::operator[](n); }
 
-	T &operator[](int n) { return *ptr(n); }
+	T &at(int n) { return *ptr(n); }
+	const T &at(int n) const { return *ptr(n); }
 
 	// unsigned char typecasts
 	operator Pointer() { return ptr(); }
@@ -235,6 +236,11 @@ class TByteArray_t : public vector<unsigned char, TAllocator>
 		memcpy(ptr(), p, n * sizeof(T) );
 		return *this;
 	}
+
+	// comparisons
+	bool operator==( const char *m ) const { return strncmp(*this, m, size()) == 0; }
+	bool operator<( const char *m ) const { return strncmp(*this, m, size()) < 0; }
+	bool operator>( const char *m ) const { return strncmp(*this, m, size()) > 0; }
 };
 
 
