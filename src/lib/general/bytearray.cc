@@ -76,10 +76,21 @@ ostream &dumpArray( ostream &s, const TByteArray &B )
 
 #ifdef UNITTEST
 
+#include "logstream.h"
+
 // -------------- main()
 
 int main( int argc, char *argv[] )
 {
+	TLog::instance().setLogLevel( TLog::Debug );
+
+	try {
+	} catch( exception &e ) {
+		log(TLog::Error) << e.what() << endl;
+		return 255;
+	}
+
+	return 0;
 }
 #endif
 
