@@ -92,10 +92,6 @@ TNetworkParameters::TNetworkParameters() :
 
 	MINIMUM_TRANSACTION_SIZE = 100;
 
-	MIN_TX_FEE.setValue(0,50000);
-	MIN_MONEY.setValue(0,0);
-	MAX_MONEY.setValue(21000000,0);
-
 	BLOCK_TIMESTAMP_WINDOW = 2 * 60 * 60;
 	DIFFICULTY_TIMESPAN = 14 * 24 * 60 * 60;
 	NEW_BLOCK_PERIOD = 10 * 60;
@@ -106,6 +102,35 @@ TNetworkParameters::TNetworkParameters() :
 	//    nSubsidy >>= (nHeight / 210000);
 	INITIAL_MINING_REWARD.setValue(50);
 	INFLATION_PERIOD = 210000;
+
+	// From http://en.wikipedia.org/wiki/Series_%28mathematics%29
+	//
+	// If,
+	//
+	//   S = SUM(0,infinity, 1/(2^n)) = 1 + 1/2 + 1/4 + 1/8 + ... + 1/2^i + ...
+	//   S/2 = 1/2 + 1/4 + 1/8 + 1/16 + ... + 1/2^i + ...
+	//
+	// Therefore,
+	//
+	//     S - S/2 = 1
+	//   S(1 -1/2) = 1
+	//           S = 2
+	//
+	// The total bitcoins issued can be calculated from this result.
+	// Since, the total coins is given by:
+	//
+	//   T = 50*210000*1 + 50*210000*1/2 + 50*210000*1/4 + ...
+	//     = 50*210000*(1 + 1/2 + 1/4 + ...)
+	//     = 50*210000*S
+	//
+	// We know S=2 already,
+	//
+	//  T = 50 * 210000 * 2
+	//    = 21,000,000
+	//
+	MIN_TX_FEE.setValue(0,50000);
+	MIN_MONEY.setValue(0,0);
+	MAX_MONEY = INITIAL_MINING_REWARD * INFLATION_PERIOD * 2;
 
 	INV_MAX = 50000;
 	GETDATA_MAX = 50000;
