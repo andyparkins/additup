@@ -708,6 +708,8 @@ class TCoinsElement : public TLittleEndian64Element
 		return (Value / 1.0 / COIN);
 	}
 
+	using TLittleEndian64Element::operator=;
+
 	static const uint64_t COIN = 100000000LL;
 	static const uint64_t CENT = 1000000LL;
 };
