@@ -263,6 +263,7 @@ ostream &dumpArray( ostream &s, const TByteArray &O );
 
 
 // -------------- Template instantiations
+extern template class TByteArray_t<allocator<unsigned char> >;
 extern template class TByteArray_t<TAutoClearAllocator<unsigned char> >;
 
 
