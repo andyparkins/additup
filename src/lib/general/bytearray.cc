@@ -50,7 +50,7 @@ TBufferDescription::~TBufferDescription()
 
 
 // -------------- Explicit template instantiations
-template class TByteArray_t<TAutoClearAllocator<allocator<unsigned char> > >;
+template class TByteArray_t<TAutoClearAllocator<unsigned char> >;
 
 
 // -------------- Function definitions
