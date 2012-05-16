@@ -85,6 +85,7 @@ int main( int argc, char *argv[] )
 	TLog::instance().setLogLevel( TLog::Debug );
 
 	try {
+		TSecureByteArray ba;
 	} catch( exception &e ) {
 		log(TLog::Error) << e.what() << endl;
 		return 255;
